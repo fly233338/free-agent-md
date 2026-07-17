@@ -1,0 +1,42 @@
+schema_version: 1
+repository: fly233338/free-agent-md
+scan_limit: 300
+file_size_limit: 1048576
+history_days: 30
+readme_file_limit: 6
+search_tiers:
+  - name: large
+    stars: ">=5000"
+    active_days: 30
+  - name: medium
+    stars: "500..4999"
+    active_days: 14
+  - name: emerging
+    stars: "50..499"
+    active_days: 7
+categories:
+  - name: AI & ML
+    threshold: 3
+    topics: [ai, artificial-intelligence, machine-learning, deep-learning, llm, nlp, computer-vision, agents]
+    keywords: [ai, ml, model, neural, inference, agent, prompt]
+    languages: [Jupyter Notebook]
+  - name: Web & Apps
+    threshold: 3
+    topics: [web, frontend, react, vue, angular, mobile, android, ios, app]
+    keywords: [web, frontend, browser, mobile, app]
+    languages: [TypeScript, JavaScript, Dart, Swift, Kotlin]
+  - name: Backend & Data
+    threshold: 3
+    topics: [backend, database, data, api, server, distributed-systems]
+    keywords: [backend, database, api, server, data, sql]
+    languages: [SQL]
+  - name: Developer Tools
+    threshold: 3
+    topics: [developer-tools, cli, sdk, compiler, editor, testing, code-generation]
+    keywords: [cli, sdk, compiler, editor, lint, test, developer tool]
+    languages: [Shell, Vim Script]
+  - name: Infrastructure & Security
+    threshold: 3
+    topics: [devops, infrastructure, cloud, kubernetes, docker, security, cybersecurity, monitoring]
+    keywords: [cloud, kubernetes, docker, security, infrastructure, devops]
+    languages: [HCL, Dockerfile]

@@ -1,0 +1,14 @@
+{
+  "archived": [],
+  "generated_at": "2026-07-17T00:00:00Z",
+  "repositories": [],
+  "schema_version": 1,
+  "stats": {
+    "api_requests": 0,
+    "candidates": 0,
+    "files_found": 0,
+    "repositories_matched": 0,
+    "repositories_scanned": 0
+  }
+}
+
