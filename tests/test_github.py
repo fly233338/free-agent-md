@@ -68,26 +68,58 @@ def test_not_found_has_a_distinct_error() -> None:
             client.repository("gone/repository")
 
 
-def test_truncated_tree_falls_back_to_breadth_first_walk() -> None:
+def test_scoped_tree_reads_root_and_direct_children_of_allowed_directories_only() -> None:
+    requested: list[str] = []
+
     def handler(request: httpx.Request) -> httpx.Response:
         path = request.url.path
-        recursive = request.url.params.get("recursive")
-        if path.endswith("/root") and recursive == "1":
-            return _response(request, 200, {"truncated": True, "tree": []})
+        assert "recursive" not in request.url.params
+        requested.append(path)
         if path.endswith("/root"):
             return _response(
                 request,
                 200,
-                {"tree": [{"path": "docs", "type": "tree", "sha": "sub", "mode": "040000"}]},
+                {
+                    "tree": [
+                        {"path": "AGENTS.md", "type": "blob", "sha": "root-file", "mode": "100644"},
+                        {"path": "docs", "type": "tree", "sha": "docs", "mode": "040000"},
+                        {"path": ".codex", "type": "tree", "sha": "codex", "mode": "040000"},
+                    ]
+                },
             )
-        if path.endswith("/sub"):
+        if path.endswith("/codex"):
             return _response(
                 request,
                 200,
-                {"tree": [{"path": "AGENTS.md", "type": "blob", "sha": "file", "mode": "100644"}]},
+                {
+                    "tree": [
+                        {"path": "CLAUDE.md", "type": "blob", "sha": "file", "mode": "100644"},
+                        {"path": "nested", "type": "tree", "sha": "nested", "mode": "040000"},
+                    ]
+                },
             )
         raise AssertionError(path)
 
     with GitHubClient(transport=httpx.MockTransport(handler), sleeper=lambda _: None) as client:
-        entries = client.walk_tree("acme/tool", "root")
-    assert [entry["path"] for entry in entries] == ["docs", "docs/AGENTS.md"]
+        entries = client.scoped_tree("acme/tool", "root", [".codex"])
+    assert [entry["path"] for entry in entries] == [
+        "AGENTS.md",
+        "docs",
+        ".codex",
+        ".codex/CLAUDE.md",
+        ".codex/nested",
+    ]
+    assert requested == [
+        "/repos/acme/tool/git/trees/root",
+        "/repos/acme/tool/git/trees/codex",
+    ]
+
+
+def test_scoped_tree_rejects_truncated_root_instead_of_recursing() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert "recursive" not in request.url.params
+        return _response(request, 200, {"truncated": True, "tree": []})
+
+    with GitHubClient(transport=httpx.MockTransport(handler), sleeper=lambda _: None) as client:
+        with pytest.raises(GitHubError, match="root tree is truncated"):
+            client.scoped_tree("acme/tool", "root", [".codex"])

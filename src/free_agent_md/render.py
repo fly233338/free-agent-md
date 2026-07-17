@@ -98,7 +98,8 @@ def render_readme(catalog: Catalog, settings: Settings) -> str:
             "",
             "## Methodology",
             "",
-            "Candidates are collected from configurable GitHub star/activity tiers. Heat combines repository-scale star percentile (50%), "
+            "Candidates are collected from configurable GitHub star/activity tiers. Only the repository root and configured agent directories "
+            "are inspected, without recursive tree scans. Heat combines repository-scale star percentile (50%), "
             "seven-day star-growth percentile (30%), and push recency with a 14-day half-life (20%). "
             "See [`config.yml`](config.yml) for the deterministic category rules and scan limits.",
             "",

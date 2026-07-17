@@ -172,29 +172,37 @@ class GitHubClient:
     def repository(self, full_name: str) -> dict[str, Any]:
         return self.get_json(f"/repos/{full_name}")
 
-    def tree(self, full_name: str, tree_sha: str, *, recursive: bool) -> dict[str, Any]:
-        params = {"recursive": "1"} if recursive else {}
-        return self.get_json(f"/repos/{full_name}/git/trees/{tree_sha}", **params)
+    def tree(self, full_name: str, tree_sha: str) -> dict[str, Any]:
+        return self.get_json(f"/repos/{full_name}/git/trees/{tree_sha}")
 
-    def walk_tree(self, full_name: str, root_sha: str) -> list[dict[str, Any]]:
-        recursive = self.tree(full_name, root_sha, recursive=True)
-        if not recursive.get("truncated"):
-            tree = recursive.get("tree", [])
-            return [item for item in tree if isinstance(item, dict)]
-
-        entries: list[dict[str, Any]] = []
-        queue: list[tuple[str, str]] = [("", root_sha)]
-        while queue:
-            prefix, sha = queue.pop(0)
-            data = self.tree(full_name, sha, recursive=False)
-            for item in data.get("tree", []):
-                if not isinstance(item, dict) or not isinstance(item.get("path"), str):
-                    continue
-                path = f"{prefix}/{item['path']}" if prefix else item["path"]
-                expanded = {**item, "path": path}
-                entries.append(expanded)
-                if item.get("type") == "tree" and isinstance(item.get("sha"), str):
-                    queue.append((path, item["sha"]))
+    def scoped_tree(
+        self,
+        full_name: str,
+        root_sha: str,
+        directories: list[str],
+    ) -> list[dict[str, Any]]:
+        root = self.tree(full_name, root_sha)
+        if root.get("truncated"):
+            raise GitHubError(f"root tree is truncated for {full_name}")
+        root_entries = [item for item in root.get("tree", []) if isinstance(item, dict)]
+        entries = list(root_entries)
+        allowed = {directory.casefold() for directory in directories}
+        for directory in root_entries:
+            path = directory.get("path")
+            sha = directory.get("sha")
+            if (
+                directory.get("type") != "tree"
+                or not isinstance(path, str)
+                or path.casefold() not in allowed
+                or not isinstance(sha, str)
+            ):
+                continue
+            child = self.tree(full_name, sha)
+            if child.get("truncated"):
+                raise GitHubError(f"configured directory tree is truncated: {full_name}/{path}")
+            for item in child.get("tree", []):
+                if isinstance(item, dict) and isinstance(item.get("path"), str):
+                    entries.append({**item, "path": f"{path}/{item['path']}"})
         return entries
 
     def blob(self, full_name: str, sha: str) -> bytes:

@@ -115,7 +115,7 @@ def _discover_files(
     previous: RepositoryRecord | None,
 ) -> list[FileRecord]:
     full_name = str(item["full_name"])
-    entries = client.walk_tree(full_name, tree_sha)
+    entries = client.scoped_tree(full_name, tree_sha, settings.scan_directories)
     entries_by_path = {
         str(entry["path"]): entry
         for entry in entries
@@ -123,7 +123,10 @@ def _discover_files(
     }
     previous_files = {file.source_path: file for file in previous.files} if previous else {}
     records: list[FileRecord] = []
-    for entry in sorted(iter_instruction_entries(entries), key=lambda value: str(value["path"]).lower()):
+    for entry in sorted(
+        iter_instruction_entries(entries),
+        key=lambda value: (str(value["path"]).count("/"), str(value["path"]).lower()),
+    ):
         source_path = safe_repo_path(str(entry["path"]))
         if source_path is None:
             continue

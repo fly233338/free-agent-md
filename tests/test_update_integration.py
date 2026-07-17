@@ -28,11 +28,11 @@ class FixtureGitHub:
         }
         self.entries = entries if entries is not None else [
             {"path": "AGENTS.md", "type": "blob", "mode": "100644", "sha": "agents", "size": 6},
-            {"path": "docs/ClAuDe.Md", "type": "blob", "mode": "100644", "sha": "claude", "size": 6},
-            {"path": "g/GEMINI.md", "type": "blob", "mode": "120000", "sha": "link", "size": 9},
-            {"path": "g/target.md", "type": "blob", "mode": "100644", "sha": "target", "size": 6},
-            {"path": "huge/AGENTS.md", "type": "blob", "mode": "100644", "sha": "huge", "size": 2_000_000},
-            {"path": "bad/CLAUDE.md", "type": "blob", "mode": "120000", "sha": "badlink", "size": 12},
+            {"path": ".claude/ClAuDe.Md", "type": "blob", "mode": "100644", "sha": "claude", "size": 6},
+            {"path": ".gemini/GEMINI.md", "type": "blob", "mode": "120000", "sha": "link", "size": 9},
+            {"path": ".gemini/target.md", "type": "blob", "mode": "100644", "sha": "target", "size": 6},
+            {"path": ".codex/AGENTS.md", "type": "blob", "mode": "100644", "sha": "huge", "size": 2_000_000},
+            {"path": ".agent/CLAUDE.md", "type": "blob", "mode": "120000", "sha": "badlink", "size": 12},
         ]
         self.blobs = {
             "agents": b"agents",
@@ -51,7 +51,8 @@ class FixtureGitHub:
             raise RuntimeError("fixture collection interrupted")
         return "c" * 40, "tree"
 
-    def walk_tree(self, *_args):
+    def scoped_tree(self, _full_name, _tree_sha, directories):
+        assert ".codex" in directories
         return self.entries
 
     def blob(self, _full_name, sha):
@@ -90,11 +91,11 @@ def test_update_finds_nested_case_variants_and_safe_symlink(tmp_path, now) -> No
     assert catalog.stats.files_found == 3
     assert [file.source_path for file in catalog.repositories[0].files] == [
         "AGENTS.md",
-        "docs/ClAuDe.Md",
-        "g/GEMINI.md",
+        ".claude/ClAuDe.Md",
+        ".gemini/GEMINI.md",
     ]
-    assert (root / "snapshots" / "acme" / "tool" / "g" / "GEMINI.md").read_bytes() == b"gemini"
-    assert not (root / "snapshots" / "acme" / "tool" / "huge" / "AGENTS.md").exists()
+    assert (root / "snapshots" / "acme" / "tool" / ".gemini" / "GEMINI.md").read_bytes() == b"gemini"
+    assert not (root / "snapshots" / "acme" / "tool" / ".codex" / "AGENTS.md").exists()
 
 
 def test_fixed_fixture_repeat_is_identical_and_dry_run_does_not_write(tmp_path, now) -> None:
@@ -142,15 +143,15 @@ def test_single_removed_file_is_archived_while_repository_stays_ranked(tmp_path,
     root = _repository(tmp_path)
     fixture = FixtureGitHub(now)
     run_update(root, client=fixture, now=now)
-    remaining = [entry for entry in fixture.entries if entry["path"] != "docs/ClAuDe.Md"]
+    remaining = [entry for entry in fixture.entries if entry["path"] != ".claude/ClAuDe.Md"]
     catalog = run_update(root, client=FixtureGitHub(now, entries=remaining), now=now)
     repo = catalog.repositories[0]
-    removed = next(file for file in repo.files if file.source_path == "docs/ClAuDe.Md")
+    removed = next(file for file in repo.files if file.source_path == ".claude/ClAuDe.Md")
     assert removed.status == RecordStatus.DELETED
     assert catalog.stats.files_found == 2
-    assert "docs/ClAuDe.Md" in (root / "ARCHIVE.md").read_text(encoding="utf-8")
+    assert ".claude/ClAuDe.Md" in (root / "ARCHIVE.md").read_text(encoding="utf-8")
     readme = (root / "README.md").read_text(encoding="utf-8")
-    assert "docs/ClAuDe.Md" not in readme
+    assert ".claude/ClAuDe.Md" not in readme
 
 
 def test_collection_failure_leaves_last_success_untouched(tmp_path, now) -> None:
