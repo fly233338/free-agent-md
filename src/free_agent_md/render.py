@@ -49,6 +49,22 @@ def _repo_order(repo: RepositoryRecord) -> tuple[float, int, str]:
     return -repo.heat, -repo.stars, repo.full_name.lower()
 
 
+def _repository_table(repos: list[RepositoryRecord], settings: Settings) -> list[str]:
+    lines = [
+        "| Repository | Instruction files | Language | Stars | 7d Δ | Last push | Heat | Checked |",
+        "|---|---|---:|---:|---:|---:|---:|---:|",
+    ]
+    for repo in repos:
+        repository = f"[{_escape(repo.full_name)}]({repo.html_url})"
+        lines.append(
+            f"| {repository} | {_file_links(repo, settings.readme_file_limit)} | "
+            f"{_escape(repo.language)} | {repo.stars:,} | +{repo.stars_delta_7d:,} | "
+            f"{repo.pushed_at.date().isoformat()} | {repo.heat:.1f} | "
+            f"{repo.last_checked_at.date().isoformat()} |"
+        )
+    return lines
+
+
 def render_readme(catalog: Catalog, settings: Settings) -> str:
     categories = [rule.name for rule in settings.categories] + ["Other"]
     grouped: dict[str, list[RepositoryRecord]] = defaultdict(list)
@@ -72,21 +88,22 @@ def render_readme(catalog: Catalog, settings: Settings) -> str:
         if not repos:
             lines.extend(["_No repositories in this category._", ""])
             continue
-        lines.extend(
-            [
-                "| Repository | Instruction files | Language | Stars | 7d Δ | Last push | Heat | Checked |",
-                "|---|---|---:|---:|---:|---:|---:|---:|",
-            ]
-        )
-        for repo in repos:
-            repository = f"[{_escape(repo.full_name)}]({repo.html_url})"
-            lines.append(
-                f"| {repository} | {_file_links(repo, settings.readme_file_limit)} | "
-                f"{_escape(repo.language)} | {repo.stars:,} | +{repo.stars_delta_7d:,} | "
-                f"{repo.pushed_at.date().isoformat()} | {repo.heat:.1f} | "
-                f"{repo.last_checked_at.date().isoformat()} |"
-            )
+        visible = repos[: settings.readme_category_limit]
+        remaining = repos[settings.readme_category_limit :]
+        lines.extend(_repository_table(visible, settings))
         lines.append("")
+        if remaining:
+            lines.extend(
+                [
+                    "<details>",
+                    f"<summary>Show {len(remaining)} more repositories</summary>",
+                    "",
+                    *_repository_table(remaining, settings),
+                    "",
+                    "</details>",
+                    "",
+                ]
+            )
     lines.extend(
         [
             "## About the snapshots",

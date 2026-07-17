@@ -29,6 +29,17 @@ def test_readme_escapes_metadata_and_is_stably_sorted(now) -> None:
     assert rendered.index("a&lt;script&gt;/high") < rendered.index("z&#124;org/low")
 
 
+def test_readme_folds_repositories_after_category_limit(now) -> None:
+    lower = make_repo(now, repo_id=2, full_name="acme/lower", heat=10)
+    higher = make_repo(now, repo_id=1, full_name="acme/higher", heat=90)
+    catalog = Catalog(generated_at=now, repositories=[lower, higher])
+    settings = _settings().model_copy(update={"readme_category_limit": 1})
+    rendered = render_readme(catalog, settings)
+    details = rendered.index("<details>")
+    assert rendered.index("acme/higher") < details < rendered.index("acme/lower")
+    assert "<summary>Show 1 more repositories</summary>" in rendered
+
+
 def test_validation_detects_hash_mismatch(tmp_path, now) -> None:
     repo = make_repo(now)
     snapshot = tmp_path / "snapshots" / "acme" / "tool" / "AGENTS.md"

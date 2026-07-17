@@ -4,6 +4,7 @@ scan_limit: 300
 file_size_limit: 1048576
 history_days: 30
 readme_file_limit: 6
+readme_category_limit: 10
 scan_directories:
   - .agent
   - .agents

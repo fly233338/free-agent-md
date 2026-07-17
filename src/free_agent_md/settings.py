@@ -28,6 +28,7 @@ class Settings(BaseModel):
     file_size_limit: int = Field(gt=0)
     history_days: int = Field(default=30, gt=7)
     readme_file_limit: int = Field(default=6, gt=0)
+    readme_category_limit: int = Field(default=10, gt=0)
     scan_directories: list[str] = Field(default_factory=list)
     search_tiers: list[SearchTier]
     categories: list[CategoryRule]
