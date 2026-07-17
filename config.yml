@@ -4,6 +4,15 @@ scan_limit: 300
 file_size_limit: 1048576
 history_days: 30
 readme_file_limit: 6
+scan_directories:
+  - .agent
+  - .agents
+  - .claude
+  - .codex
+  - .cursor
+  - .gemini
+  - .github
+  - .windsurf
 search_tiers:
   - name: large
     stars: ">=5000"
