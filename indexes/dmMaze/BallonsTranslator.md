@@ -1,7 +1,7 @@
 # dmMaze/BallonsTranslator instruction files
 
-Upstream: [dmMaze/BallonsTranslator](https://github.com/dmMaze/BallonsTranslator) · License: `GPL-3.0` · Commit: `5f50af2e410c8eb2f8e7bd65e802a999c10be8fc`
+Upstream: [dmMaze/BallonsTranslator](https://github.com/dmMaze/BallonsTranslator) · License: `GPL-3.0` · Commit: `2a20211ccebc2dc906b62301727f9dcac81ec721`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/dmMaze/BallonsTranslator/AGENTS.md) | [Source](https://github.com/dmMaze/BallonsTranslator/blob/5f50af2e410c8eb2f8e7bd65e802a999c10be8fc/AGENTS.md) | `1de30446753f50ed207641e730425391881bf56ac1d2b5229cc6848ca8cec85b` | 10,679 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/dmMaze/BallonsTranslator/AGENTS.md) | [Source](https://github.com/dmMaze/BallonsTranslator/blob/2a20211ccebc2dc906b62301727f9dcac81ec721/AGENTS.md) | `538daf3df448bbdb727f873af47b0e668b968f3ddc4eb09110842d0f110043fe` | 11,331 B |
