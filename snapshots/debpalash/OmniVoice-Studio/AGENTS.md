@@ -1,0 +1,28 @@
+# Agent Rules — OmniVoice Studio
+
+Binding for every AI agent (Claude, Codex, Cursor, review bots, …). CLAUDE.md is the full constitution; this is the operating contract. When they conflict, CLAUDE.md wins.
+
+## Token economy (owner directive, 2026-07-20)
+- Lead with the outcome. No narration, no restating diffs, no filler praise, no plans you're about to execute anyway.
+- Status updates: one line. Final reports: only what changes the reader's next action.
+- Don't re-derive what CI, linters, or review bots already computed — read their output first (`gh pr checks`, bot comments via `gh api .../pulls/N/comments`).
+- Mechanical rules live in deterministic tests, never in agent effort: changelog style (`tests/test_changelog_style.py`), locale parity (`tests/test_locale_parity.py`), version lockstep (`tests/test_app_version.py`), CJK (`tests/test_no_hardcoded_cjk.py`).
+- Run targeted tests while iterating; full suites only before landing.
+- Tests and CI simulate CI honestly: `HF_HUB_OFFLINE=1` + empty `HF_HUB_CACHE` — a populated dev cache masks real failures.
+
+## Merge protocol (hard rules)
+1. Never merge without review. Harvest CodeRabbit + Greptile comments first; never merge with an unread Critical/P1.
+2. Never accept a PR as-is: fix findings ON the PR branch pre-merge (maintainer commits fine; credit contributors in CHANGELOG). No merge-then-fix, no comment-and-walk-away.
+3. Merge current `main` into stale branches before judging their CI — PR-green under an old workflow ≠ main-green.
+4. Gate: "Tests (backend + frontend)" green + MERGEABLE.
+5. After EVERY merge: watch `main`'s own post-merge runs to green (`gh run list --branch main`). Red main = drop everything and fix.
+
+## Change rules (see CLAUDE.md for full text)
+- Root-cause the class, not the instance; fail-before/pass-after regression test; smallest correct change.
+- Default behavior identical on macOS/Windows/Linux; platform-only features go behind explicit opt-in. Divergent default = P0.
+- Local-first: no new required network calls; any HF download gated on installed-ness or explicit user action; all synthetic audio through the `mark_synthetic` chokepoint.
+- Every user-facing string via i18n, present in ALL 21 `frontend/src/i18n/locales/*.json` with real translations.
+- Docs-sync in the same PR. CHANGELOG Unreleased: quiet one-liners ending `(#N)` + `— thanks @user!` for community work, under a short `**Highlights**` list.
+- Versioning: `frontend/package.json` is the single source of truth; never bump without the owner asking.
+- `frontend/package.json` dep changes require regenerating root `bun.lock` (Docker runs `--frozen-lockfile`).
+- Issues: absorb or decline — never defer to a future version. Check the open-PR queue before implementing community-reported fixes.
