@@ -73,6 +73,8 @@ Datasource skills are retrieval-method factories plus indexing hooks for externa
 
 The first concrete datasource is KakaoTalk through the external `katok` CLI. AutoRAG never reads KakaoTalk databases directly; failures surface as diagnostics, and remote embedding egress settings are rejected before the CLI is spawned.
 
+Nine connector-backed datasource skills ship built-in on a shared framework (`src/datasource/connector.ts`, `chunk-store.ts`, `connector-skill.ts`): **Slack** (workspace/channel history), **Discord** (guild/channel messages), **Notion** (workspace/database/page block trees), **GitHub** (owner/repo issues/PRs), **Google Drive** (Docs/Sheets/text exports), **Gmail** (account/label messages), **local mail export** (mbox/eml archives), **Obsidian** (vault/folder/tag markdown notes), and **RSS/news** (feed/category polling with a dedupe window). Each skill wraps a trusted `DatasourceConnector` that never throws — auth/permission/rate-limit/availability failures map to path/PII-opaque `datasource-*` diagnostics — and persists bounded chunks under `<workspace>/.autorag/datasources/<skill>/<instance>/` for lexical retrieval through the shared pipeline. Skills are configured via the trusted `datasources` + `datasourceAccess` config sections (`buildDatasourceSkills` factory); tokens are referenced by environment variable name only. Manual QA harnesses live in `scripts/manual-qa/` (see `docs/manual-qa-datasources.md`).
+
 ## Directory Access
 
 gpt-5.6-luna explorers navigate document collections through read-only `read`/`grep`/`find`/`ls`; each explorer is assigned exactly one normalized configured search root as its `cwd`. The top-level `subagent` invocation sets `agentScope: "user"` and `artifacts: false` exactly once for single, `tasks`, `chain`, or `parallel` dispatch; nested explorer task items omit both fields. Project-local `.pi-subagents` debug artifacts are therefore disabled. The gpt-5.6-sol orchestrator owns `check_memory`, Jikji, datasource, and `search_*` seed retrieval, delegates those seeds through `pi-subagents`, judges the returned evidence, and finalizes through the `emit_autorag_results` structured tool. Real file paths are visible to explorers and may appear in curated results and their source mapping; the orchestrator must not bypass the required delegation with direct document reading.
@@ -146,4 +148,8 @@ AutoRAG remembers past search outcomes across sessions:
 | `src/retrieval/merger.ts` | Cross-method result merging and deduplication |
 | `src/retrieval/methods/bm25.ts` | BM25 lexical RetrievalMethod over parsed mirrors |
 | `src/datasource/` | Datasource skill contracts, trusted access context, result filtering, polling metadata, diagnostics, and KakaoTalk/katok skill implementation |
+| `src/datasource/connector.ts` | Connector contract + opaque-text/id sanitizers for connector-backed skills |
+| `src/datasource/chunk-store.ts` | Persistent chunk store with BM25-style lexical search per skill instance |
+| `src/datasource/connector-skill.ts` | Shared DatasourceSkill base composing a connector with the chunk store |
+| `src/datasource/skills/` | Built-in skills: katok, slack, discord, notion, github, gdrive, gmail, mail-export, obsidian, rss (+ config factory) |
 | `src/agent/search-datasource-tool.ts` | `search_datasource_documents` tool with model-safe `{ query, topK?, scope? }` parameters |

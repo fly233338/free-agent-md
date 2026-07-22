@@ -71,6 +71,14 @@ marked ready for review.
 - Request review from **at least 2 relevant committers** using `gh pr edit --add-reviewer`.
 - When all comments on the Pull Request are addressed (by providing a fix or providing more explanation) and the PR checks are green, re-request review on existing reviewers so that they are aware that the new changeset is ready to be reviewed.
 
+### Doing a review
+
+When an AI agent is doing a review:
+
+- Wait until PR checks are green as they will already catch most trivial issues using less resources
+- It must challenge the code and ensure that it respects all conventions
+- For Dependabot PRs, either do not review them or be able to do a real review: check for deprecated APIs, removed features, or breaking changes in the changelog
+
 ### Merge Requirements
 
 - An agent MUST NOT merge a PR if there are any **unresolved review conversations**.
@@ -148,6 +156,37 @@ When merging a PR, an agent MUST perform the following steps **in order**:
   - Avoid usage of deprecated code
 - Changes should aim to preserve or improve overall code quality.
 
+### Assertions: Use AssertJ When Possible
+
+Prefer [AssertJ](https://assertj.github.io/doc/) assertions over JUnit assertions in test code.
+AssertJ is already available as a test dependency in the project and provides more readable,
+fluent assertions with better failure messages.
+
+**Examples:**
+
+```java
+// Preferred — AssertJ:
+assertThat(result).isEqualTo("expected");
+assertThat(list).hasSize(3).contains("a", "b");
+assertThat(exception).isInstanceOf(IOException.class).hasMessageContaining("timeout");
+assertThat(exchange.getIn().getBody(String.class)).startsWith("Hello");
+
+// Avoid — JUnit:
+assertEquals("expected", result);
+assertEquals(3, list.size());
+assertTrue(list.contains("a"));
+```
+
+**Rules:**
+
+- New test code SHOULD use AssertJ assertions (`assertThat(...)`) instead of JUnit assertions
+  (`assertEquals`, `assertTrue`, `assertFalse`, `assertNotNull`, etc.).
+- When modifying existing test code that uses JUnit assertions, migrate touched assertions to
+  AssertJ where it improves readability. No need to migrate the entire file.
+- Do NOT mix AssertJ and JUnit assertions in the same test method — pick one style per method.
+- `MockEndpoint.assertIsSatisfied()` and other Camel-specific assertion methods are NOT JUnit
+  assertions — keep using them as-is.
+
 ### Asynchronous Testing: Use Awaitility Instead of Thread.sleep
 
 Do **NOT** use `Thread.sleep()` in test code. It leads to flaky, slow, and non-deterministic tests.
@@ -204,6 +243,57 @@ await().atMost(10, TimeUnit.SECONDS).until(() -> mock.getReceivedCounter() >= 2)
 - Always set an explicit `atMost` timeout to avoid hanging builds.
 - Use `untilAsserted` or `until` with a clear predicate — do not replace a sleep with a
   busy-wait loop.
+
+### Test Visibility: Drop `public` From Test Classes and Methods
+
+JUnit 5 does **not** require test classes or test methods to be `public` — package-private
+(the default, no modifier) is sufficient and preferred. Removing the unnecessary `public`
+qualifier reduces visual noise and follows modern JUnit 5 conventions.
+
+**Examples:**
+
+```java
+// Preferred — package-private (no modifier):
+class MyComponentTest extends CamelTestSupport {
+    @Test
+    void testSendMessage() { ... }
+
+    @Override
+    protected RoutesBuilder createRouteBuilder() throws Exception {
+        return new RouteBuilder() {
+            @Override
+            public void configure() {   // stays public — overrides RouteBuilder.configure()
+                from("direct:start").to("mock:result");
+            }
+        };
+    }
+}
+
+// Avoid — unnecessary public:
+public class MyComponentTest extends CamelTestSupport {
+    @Test
+    public void testSendMessage() { ... }
+}
+```
+
+**Rules:**
+
+- New test classes and test methods MUST NOT use the `public` modifier.
+- When modifying an existing test file, remove the `public` modifier from the class declaration
+  and from any test methods you touch. Do NOT sweep the entire file — only change what you are
+  already modifying.
+- `@BeforeAll`, `@AfterAll`, `@BeforeEach` and `@AfterEach` methods follow the same rule: drop
+  `public` when adding or modifying them.
+- **Exception — methods that override or implement a supertype method keep the supertype's
+  visibility.** Java forbids reducing visibility on an override (JLS 8.4.8.3), so
+  `public void configure()` in a `RouteBuilder`, and any override of a public method from
+  `CamelTestSupport` or an implemented interface, MUST stay `public`.
+- **Exception — base and support classes stay `public`** when they are extended from another
+  package or module (a package-private class cannot be), and anything under
+  `components/camel-test/**` or `test-infra/**` stays `public` because those are released
+  artifacts consumed by downstream projects and by users' own tests.
+- Do NOT create a standalone PR solely to remove `public` from test files in bulk — apply the
+  convention incrementally as part of other work.
 
 ### Issue Investigation (Before Implementation)
 

@@ -144,6 +144,15 @@ cd mesheryctl && go test -run Integration ./...  # Integration tests
 make docs-mesheryctl                        # Generate CLI docs
 ```
 
+`make docs-mesheryctl` (i.e. `cd mesheryctl/doc && go run doc.go`) bakes the machine's
+`$HOME` into every generated page's "Options inherited from parent commands" block (the
+`--config` default path). Running it locally rewrites all ~100 pages under
+`docs/content/en/reference/references/mesheryctl/` with your local home directory even
+though only one command changed. CI/committed docs use `/home/runner/...` (the GitHub
+Actions runner home). After regenerating, `git diff --stat` the docs dir, `git checkout --`
+every file whose only change is that path, and manually fix the path back to
+`/home/runner/...` in the pages you actually intended to change.
+
 ### Docker
 
 ```bash
@@ -173,6 +182,13 @@ make helm-docs      # Generate Helm chart docs
 
 - Format with `gofmt`/`goimports`; lint with `make golangci` (config: `.golangci.yml`).
 - Use MeshKit error utilities (`github.com/meshery/meshkit/errors`); run `make error` for codes.
+  `make error` skips `mesheryctl` - a new `mesheryctl` code is taken from
+  `mesheryctl/helpers/component_info.json` (`next_error_code`) and that value bumped in the
+  same commit. `.github/workflows/error-codes-updater.yaml` re-runs errorutil and fails the
+  PR if its analysis reports anything.
+- Only `utils.Log.Error(err)` renders a MeshKit error's code, cause and remediation; cobra's
+  default print shows just the message. In `mesheryctl` commands, log the structured error
+  for the user *and* return it for the exit path.
 - Tests in `*_test.go`; manage deps with `go mod tidy`.
 
 ### JavaScript/React
@@ -335,3 +351,10 @@ Scripts in `.agents/hooks/`:
 - [Community Handbook](https://meshery.io/community#handbook)
 - [Security Policy](./SECURITY.md)
 - [Governance](./GOVERNANCE.md)
+
+## Maintaining this file
+
+Keep this file for knowledge useful to almost every future agent session in this project.
+Do not repeat what the codebase already shows; point to the authoritative file or command instead.
+Prefer rewriting or pruning existing entries over appending new ones.
+When updating this file, preserve this bar for all agents and keep entries concise.

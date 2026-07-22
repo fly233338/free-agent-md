@@ -59,7 +59,7 @@ The unit of work is the violated contract, not only the line where the symptom a
 
 ## Safety Rules
 
-- Never kill, stop, or restart the production macOS apps (`/Applications/Omi.app` / `Omi Beta.app`, bundle ids `com.omi.computer-macos` and `com.omi.computer-macos.beta`). Dev commands target only dev or `omi-*` named test bundles.
+- Never kill, stop, or restart the production macOS app (`/Applications/Omi.app`, bundle id `com.omi.computer-macos`). Dev commands target only dev or `omi-*` named test bundles.
 - **Nothing lands on `main` until the user explicitly says so.** Land through PRs only (regular merge, never squash); never push directly to `main`; never push or open PRs unless explicitly asked — commit locally on a feature branch by default. A prior approval never carries over to later changes.
 - **Exception — reverts merge right away.** A user request to revert a merged PR/commit is itself the approval to open and merge the revert PR.
 - **Exception — verified + peer-approved changes may auto-merge.** If you actually exercised the real user-facing path **and** an independent agent review approved it, you may open and merge without a separate go-ahead — except for risky, wide-blast-radius, or hard-to-reverse changes (migrations, release/CI pipeline, schema, access control, data deletion), which always need explicit user sign-off.
@@ -67,7 +67,7 @@ The unit of work is the violated contract, not only the line where the symptom a
 
 ## Git
 
-- **Setup (required before first commit):** `make setup` — fetches `origin/main`, fast-forwards when safe, installs repo Git hooks (including the auto-formatting pre-commit hook) with linked-worktree-safe paths.
+- **Setup (required before first commit):** `make setup` — fetches `origin/main`, fast-forwards when safe, installs linked-worktree-safe Git hooks (including auto-formatting pre-commit), and syncs the pinned `backend/.venv` required by selected backend pre-push checks. It does not install app or desktop runtime environments.
 - Before starting work: `git fetch origin && git pull --ff-only` on `main` — don't branch off stale state.
 - Always work in a git worktree for code changes (`git worktree add`); commit to the current branch and never switch branches mid-task.
 - Make individual commits per feature or testable surface, not per file or unrelated bulk changes.
@@ -122,7 +122,8 @@ Click at coordinates: `cliclick c:X,Y`. Mac screenshots: `screencapture -x /tmp/
 
 ## Deploys & Release Pipelines
 
-- Desktop (daily candidate → qualified beta → manual stable): `desktop/macos/AGENTS.md` → Release Pipeline.
+- Desktop macOS (daily candidate → qualified beta → manual stable): `desktop/macos/AGENTS.md` → Release Pipeline.
+- Desktop Windows (auto on `desktop/windows/**` merge → tag `v*-windows` → beta GitHub release): `.github/workflows/desktop_windows_release.yml`; setup and secrets: `desktop/windows/docs/release-pipeline.md`.
 - Backend: `gh workflow run gcp_backend.yml -f environment=prod -f branch=main`. Runtime env contract: `backend/AGENTS.md` → Service Map.
 - Firmware (Omi CV1): `omi/firmware/AGENTS.md`.
 
@@ -130,7 +131,7 @@ Click at coordinates: `cliclick c:X,Y`. Mac screenshots: `screencapture -x /tmp/
 
 | Blocked on | Hatch |
 |---|---|
-| Desktop candidate won't cut (`Desktop Swift Build & Tests` red/flaky) | `desktop_auto_release.yml` with `release_mode=break_glass` |
+| A signed, qualified desktop candidate did not reach Beta | `desktop_recover_beta.yml` with its exact tag, `confirm=recover-beta`, and a reason |
 | Backend deploy has no Release Eligibility proof | `gcp_backend.yml` with `skip_eligibility_proof=true`, `break_glass_confirm=deploy-without-proof`, `break_glass_reason` |
 
 Hatches relax *evidence* requirements only. They never relax that code is merged to `main` first, and never reach stable/prod pointers without their own explicit confirm.
