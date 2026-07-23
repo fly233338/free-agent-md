@@ -1,7 +1,7 @@
 # supabase/supabase instruction files
 
-Upstream: [supabase/supabase](https://github.com/supabase/supabase) · License: `Apache-2.0` · Commit: `f55ff0e6ddce27e851ce70a63834d70cf56f876c`
+Upstream: [supabase/supabase](https://github.com/supabase/supabase) · License: `Apache-2.0` · Commit: `b76d04d6a0ebc272a8587cc691294e3025830e3a`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `CLAUDE.md` | `.claude/CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/supabase/supabase/.claude/CLAUDE.md) | [Source](https://github.com/supabase/supabase/blob/f55ff0e6ddce27e851ce70a63834d70cf56f876c/.claude/CLAUDE.md) | `13c127361e6a7309602268f741afccbd69a6e54a45629de94e4bd105be9d6322` | 2,032 B |
+| `CLAUDE.md` | `.claude/CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/supabase/supabase/.claude/CLAUDE.md) | [Source](https://github.com/supabase/supabase/blob/b76d04d6a0ebc272a8587cc691294e3025830e3a/.claude/CLAUDE.md) | `3d1dc372bdbbad5bbfbca7549605fed269601f74cf081ac36a13fc7ccd57788e` | 4,842 B |
