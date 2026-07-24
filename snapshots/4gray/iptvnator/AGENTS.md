@@ -73,6 +73,10 @@ IPTVNATOR_TRACE_STARTUP=1 nx serve electron-backend
     - `IPTVNATOR_TRACE_PLAYER=1` traces external-player activity and bounded Embedded MPV runtime-probe stderr
     - `IPTVNATOR_TRACE_RENDERER_CONSOLE=1` mirrors renderer console output into the Electron terminal
 
+- Settings, portal request/response, and trace payloads must use
+  `@iptvnator/shared/logging` or the redacting portal logger before reaching
+  `console.*`; never log raw credentials while debugging.
+
 - GPU/compositor debugging:
 
 ```bash
@@ -378,6 +382,11 @@ Key files:
   Repository-specific guidance for the Electron non-EPG SQLite worker, including worker boundaries, request-scoped DB progress events, and validation steps for slow DB operations.
   Use when moving heavy database work off the main thread, adding worker-backed SQLite operations, or wiring loading/progress UI for Xtream and playlist DB flows.
   File: `.codex/skills/iptvnator-sqlite-db-worker/SKILL.md`
+
+- `stalker-portal`
+  Repository-specific guidance for Stalker/Ministra catalogs, all three VOD/series modes, cross-surface `is_series` behavior, playback metadata, collections, EPG, and remote control.
+  Use when changing Stalker routes, stores, detail views, playback, favorites/recent activity, EPG, or remote control.
+  File: `.codex/skills/stalker-portal/SKILL.md`
 
 - `xtream-electron`
   Repository-specific guidance for IPTVnator's Electron-first Xtream implementation, including feature/data-access boundaries, worker-backed DB flows, and Xtream loading/progress UX expectations.

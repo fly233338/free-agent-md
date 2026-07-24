@@ -130,6 +130,10 @@ Useful narrower flags:
 - `IPTVNATOR_TRACE_PLAYER=1` traces external-player activity and bounded Embedded MPV runtime-probe stderr
 - `IPTVNATOR_TRACE_RENDERER_CONSOLE=1` mirrors renderer console logs into the Electron terminal
 
+Settings, portal request/response, and trace payloads must use
+`@iptvnator/shared/logging` or the redacting portal logger before reaching
+`console.*`; never log raw credentials while debugging.
+
 For GPU/compositor debugging:
 
 ```bash
@@ -238,6 +242,7 @@ This is an Nx monorepo with the following structure:
     - **portal/shared/{data-access,ui,util}** - Cross-portal shared code
     - **services** - Abstract DataService contract and shared app services (incl. the TMDB metadata enrichment module in `lib/tmdb/`)
     - **shared/interfaces** - TypeScript interfaces and types (incl. `ElectronBridgeApi`)
+    - **shared/logging** - Dependency-free structured redaction for diagnostic logs
     - **shared/database** - Canonical Drizzle schema and DB connection (used by the Electron backend)
     - **shared/m3u-utils** - M3U playlist utilities
     - **shared/testing** - Shared test helpers
@@ -773,8 +778,10 @@ engine` (restart required) or
 **VOD/Series Detail Pages (two-state layout)**:
 
 - Xtream and Stalker detail pages use the shared `PortalDetailShellComponent` (`libs/ui/components/src/lib/portal-detail-shell/`) with two states: **Browse** (hero with poster/metadata/actions, episodes below) and **Watch** (hero collapses with a ~300ms morph, the inline player takes the full content width, metadata moves to an About block below the episodes)
+- The inline player (`PortalInlinePlayerComponent`) renders a full-width **theater stage** (`.player-shell__viewport`): the 16:9 player is centered and letterboxed so the leftover on wide-short windows is always the stage's black background, never app surface. An opt-in `playerAmbientMode` setting (Settings → Playback, default off, built-in web players only) fills that leftover with a blurred, dimmed copy of the poster (YouTube "Ambient mode" style)
 - Watch state derives from `inlinePlayback() !== null` only; external MPV/VLC playback keeps the browse layout. Esc and "Close player" exit to browse without navigation; the now-playing back arrow is route-level back (straight to the list via the host's `goBack()`)
 - A successful external MPV/VLC episode launch immediately persists the selected episode as the latest playback-position entry and retargets the series CTA to `Play episode N`; real player telemetry overwrites that marker when available, so episode identity is reliable while exact external timestamps remain best-effort.
+- Stalker preserves this contract for regular `/series`, embedded VOD `series[]`, and lazy Ministra VOD `is_series` items: quick-start translation parameters must reach the CTA, and inline/external episode handoffs must include the parent series id plus resolved season and episode numbers. This metadata lets the dashboard render the tracked S/E badge for VOD-backed series. Existing playback rows without it remain badge-less until the episode is played again.
 - Hosts pass hero chips/meta/actions as `*appDetailTags`/`*appDetailMeta`/`*appDetailActions` templates; the shell stamps them into both the hero and the About block
 - Seasons are tabs (`SeasonTabsComponent`, dropdown beyond 6 seasons) with auto-selection (playing episode's season → resume season → first) that fires the same `seasonSelected` lazy-load/enrichment hooks as manual clicks; grid/list episode view toggle persists to localStorage; season descriptions come from `get_series_info` (Xtream) or TMDB (Stalker)
 - Dashboard hero/Continue Watching clicks for an Xtream series carry a one-shot resume target through the global-recent inline-detail handoff; after series metadata and playback positions load, the exact saved episode starts at its stored position. A failed positions load leaves the target unconsumed and the handoff detail-only, so a transient storage error never starts the episode from the beginning. Ordinary global-recent grid clicks remain detail-only.
@@ -795,6 +802,7 @@ engine` (restart required) or
 - XMLTV format support
 - Background parsing in worker thread
 - Stored in database for quick lookup
+- Manual EPG mapping (Electron only): right-click a channel in any list (M3U views, Xtream portal list, Stalker ITV sidebar, global favorites) → "Map EPG channel" attaches it to an uploaded-XMLTV channel; stored in `epg_channel_mappings` keyed by the M3U lookup key or a playlist-scoped portal key (`xtream:{playlistId}:{id}` / `stalker:{playlistId}:{id}`, helpers in `libs/shared/interfaces/src/lib/epg-mapping-key.util.ts`); resolved on every EPG path (single + batch IPC lookups, portal detail views, preview queues); dialog: `libs/ui/components/src/lib/channel-list-container/epg-mapping-dialog/`
 
 **TMDB Metadata Enrichment** (opt-in):
 
@@ -807,7 +815,7 @@ engine` (restart required) or
 - Opt-in via `Settings > Metadata (TMDB)` (sends titles to TMDB); optional user API key overrides the embedded default (`DEFAULT_TMDB_API_KEY` in `libs/services/src/lib/tmdb/tmdb-config.ts` — an empty placeholder in the repo by design; the real key lives in the `TMDB_API_KEY` GitHub Actions secret and is injected at CI build time by `tools/tmdb/inject-tmdb-key.mjs`)
 - Match confidence: provider `tmdb_id` trusted fully; otherwise normalized-title + year (±1) search with a strict gate — no confident match means no enrichment
 - Detail views render provider data immediately; enrichment patches the selection asynchronously (staleness-guarded)
-- Cached in SQLite `tmdb_metadata` (Electron, via DB worker ops `DB_GET/SET_TMDB_METADATA`) or in-memory (PWA); localized via the app language setting
+- Cached in SQLite `tmdb_metadata` (Electron, via DB worker ops `DB_GET/SET_TMDB_METADATA`) or in-memory (PWA); localized via the app language setting. Search-match lookup keys are versioned, and connection startup removes obsolete unversioned rows once through the `migration:tmdb-search-lookup-v2-cache-cleanup:v1` app-state marker.
 - Service layer: `libs/services/src/lib/tmdb/`; store glue: `libs/portal/xtream/data-access/src/lib/stores/xtream-tmdb-enrichment.ts` and `libs/portal/stalker/data-access/src/lib/stores/stalker-tmdb-enrichment.ts` (hooked in `withStalkerSelection().setSelectedItem`)
 - TMDB attribution (logo + disclaimer) is required and shown in the settings TMDB section and About
 - See `docs/architecture/tmdb-metadata-enrichment.md`
@@ -865,6 +873,9 @@ Build configurations in `apps/web/project.json`:
 
 **Factory Pattern Implementation**:
 The factory pattern ensures a single codebase works in both environments without conditional checks scattered throughout the application. All environment-specific logic is encapsulated in the service implementations.
+
+**Build Commit In About**:
+CI injects the git commit into `apps/web/src/environments/build-commit.ts` via `tools/build/inject-build-commit.mjs` (same placeholder pattern as the TMDB key inject); `Settings > About` then shows `"<version> (<short-sha>)"`. The semver version itself deliberately stays untouched — a `-sha` suffix would flip electron-updater into prerelease mode and leak into installer/artifact version fields. Local/dev builds keep the placeholder empty and show the plain version.
 
 ### Testing Strategy
 
