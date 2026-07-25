@@ -1,8 +1,8 @@
 # clidey/whodb instruction files
 
-Upstream: [clidey/whodb](https://github.com/clidey/whodb) · License: `Apache-2.0` · Commit: `d456cdee589c1a0a820b311fdd819cb32434cd03`
+Upstream: [clidey/whodb](https://github.com/clidey/whodb) · License: `Apache-2.0` · Commit: `df33a078268ddf40c82cb1d0f538ee95e021ad36`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/clidey/whodb/AGENTS.md) | [Source](https://github.com/clidey/whodb/blob/d456cdee589c1a0a820b311fdd819cb32434cd03/AGENTS.md) | `8782da02a791b92dc47ef0498c45244a1ee38255f2a72b7d47e1674a05fbb932` | 13,034 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/clidey/whodb/CLAUDE.md) | [Source](https://github.com/clidey/whodb/blob/d456cdee589c1a0a820b311fdd819cb32434cd03/CLAUDE.md) | `5743fb14160069a7aaf492e509e653243dcb7d8885f605028c1d022852d539e3` | 402 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/clidey/whodb/AGENTS.md) | [Source](https://github.com/clidey/whodb/blob/df33a078268ddf40c82cb1d0f538ee95e021ad36/AGENTS.md) | `8782da02a791b92dc47ef0498c45244a1ee38255f2a72b7d47e1674a05fbb932` | 13,034 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/clidey/whodb/CLAUDE.md) | [Source](https://github.com/clidey/whodb/blob/df33a078268ddf40c82cb1d0f538ee95e021ad36/CLAUDE.md) | `5743fb14160069a7aaf492e509e653243dcb7d8885f605028c1d022852d539e3` | 402 B |

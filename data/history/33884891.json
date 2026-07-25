@@ -1,0 +1,12 @@
+{
+  "full_name": "apache/airflow",
+  "points": [
+    {
+      "checked_at": "2026-07-25T05:58:19Z",
+      "commit_sha": "d31eff5a37e91775ebd126d2a57097f9b9400c33",
+      "pushed_at": "2026-07-25T05:49:22Z",
+      "stars": 46240
+    }
+  ],
+  "repo_id": 33884891
+}
