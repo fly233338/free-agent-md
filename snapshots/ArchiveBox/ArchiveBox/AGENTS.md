@@ -29,7 +29,7 @@ Run collection commands from inside an initialized data directory:
 ```bash
 cd data
 uv run --project .. archivebox status
-uv run --project .. archivebox add 'https://example.com'
+uv run --project .. archivebox add --plugins=parse_txt_urls 'https://example.com/'
 uv run --project .. archivebox run
 ```
 
@@ -38,12 +38,11 @@ uv run --project .. archivebox run
 Recommended CLI install:
 
 ```bash
-uv tool install --force .
-export PLUGINS=parse_txt_urls
-archivebox_data="$(mktemp -d)"
-cd "$archivebox_data"
+uv tool install --python 3.13 --prerelease allow --upgrade 'git+https://github.com/ArchiveBox/ArchiveBox.git@dev'
+mkdir -p ~/archivebox/data
+cd ~/archivebox/data
 archivebox init --install
-archivebox add --plugins=parse_txt_urls 'https://example.com'
+archivebox add --plugins=parse_txt_urls 'https://example.com/'
 ```
 
 Alternative install methods:
@@ -55,8 +54,8 @@ Alternative install methods:
 
 ## Basic Usage
 
-<!--pytest-codeblocks:cont-->
 ```bash
+cd ~/archivebox/data
 archivebox version
 archivebox help
 archivebox status
@@ -65,7 +64,7 @@ archivebox add --plugins=parse_txt_urls 'https://example.com/docs-basic-usage'
 archivebox list --json --with-headers
 archivebox search 'example'
 archivebox update --filter-type=domain example.com
-archivebox remove --filter-type=exact 'https://example.com'
+archivebox remove --yes --delete --filter-type=exact 'https://example.com/docs-basic-usage'
 archivebox run
 ```
 
@@ -78,8 +77,4 @@ uv run pytest archivebox/tests/test_cli_add.py::test_add_help_shows_depth_and_ta
 uv run prek run --all-files
 ```
 
-Use the full release/deploy loop only when requested:
-
-```console
-./bin/release_dev_stack.sh
-```
+Releases are published only by `.github/workflows/release.yml` after the complete `dev` CI workflow succeeds. Local development and deployment commands must not publish packages, images, tags, or GitHub releases.

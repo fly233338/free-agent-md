@@ -1,8 +1,8 @@
 # CodeWithCJ/SparkyFitness instruction files
 
-Upstream: [CodeWithCJ/SparkyFitness](https://github.com/CodeWithCJ/SparkyFitness) · License: `NOASSERTION` · Commit: `aae63f759ff7c7d36c324c5cdf551da371c85ab7`
+Upstream: [CodeWithCJ/SparkyFitness](https://github.com/CodeWithCJ/SparkyFitness) · License: `NOASSERTION` · Commit: `b7dabb43da8987997a574cc180e1970de53b89b8`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/CodeWithCJ/SparkyFitness/AGENTS.md) | [Source](https://github.com/CodeWithCJ/SparkyFitness/blob/aae63f759ff7c7d36c324c5cdf551da371c85ab7/AGENTS.md) | `213ba98ed2c7aab7cf6867460bdaf600a941fd5cdbbe895e5451f037a153cee7` | 8,227 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/CodeWithCJ/SparkyFitness/CLAUDE.md) | [Source](https://github.com/CodeWithCJ/SparkyFitness/blob/aae63f759ff7c7d36c324c5cdf551da371c85ab7/CLAUDE.md) | `8c13f234431e045c83864443f2103933b95624b6108fc03cc07eca7a674bccf2` | 15 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/CodeWithCJ/SparkyFitness/AGENTS.md) | [Source](https://github.com/CodeWithCJ/SparkyFitness/blob/b7dabb43da8987997a574cc180e1970de53b89b8/AGENTS.md) | `9b5262c069bc80b46b1c917ce227ab0c4499029ae19d1b6efebbb1715a6f4f6e` | 8,604 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/CodeWithCJ/SparkyFitness/CLAUDE.md) | [Source](https://github.com/CodeWithCJ/SparkyFitness/blob/b7dabb43da8987997a574cc180e1970de53b89b8/CLAUDE.md) | `8c13f234431e045c83864443f2103933b95624b6108fc03cc07eca7a674bccf2` | 15 B |
