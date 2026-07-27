@@ -16,7 +16,8 @@ This file provides guidance to coding agents working in this repository.
 - Use scoped path aliases from `tsconfig.base.json` such as `@iptvnator/services`, `@iptvnator/shared/interfaces`, and `@iptvnator/ui/components`. Do not add new imports from legacy bare aliases such as `services`, `shared-interfaces`, `components`, `m3u-state`, or `database`.
 - Every Nx project should keep `scope:*`, `domain:*`, and `type:*` tags in `project.json` so `@nx/enforce-module-boundaries` remains useful for humans and agents.
 - See `docs/architecture/nx-workspace-boundaries.md` for the current Nx tag and alias policy.
-- Repository-specific skills are committed under `.codex/skills/`. If an external agent does not support skills, treat those files as concise ownership docs.
+- ESLint enforces `max-lines` on TypeScript files (target under 300, hard maximum 400). Files that predate the rule are baselined in `tools/eslint/max-lines-baseline.mjs`; after splitting a file, regenerate it with `node tools/eslint/generate-max-lines-baseline.mjs`. Never add new files to the baseline — the list must only shrink. A new file that genuinely cannot be split (for example a function serialized into another process) instead carries its own file-wide `/* eslint-disable max-lines -- <why> */`; the generator skips those files, so a justified exemption never lands in the baseline.
+- Repository-specific skills are committed under `.codex/skills/`. Claude Code only discovers skills under `.claude/skills/`, so `release-notes` and `release-cut` are mirrored there and the two copies must be kept in sync; every other entry in `.claude/skills/` is personal and stays gitignored. If an external agent does not support skills, treat those files as concise ownership docs.
 
 ## Documentation After Changes
 
@@ -32,6 +33,18 @@ This file provides guidance to coding agents working in this repository.
 - Do not let `CLAUDE.md` or `AGENTS.md` drift: a stale path or route in these files poisons the context of every future agent session. If you notice an outdated claim while working, fix it (or flag it in the final summary) even if it is unrelated to the current task.
 - Repo docs are canonical even when they were originally drafted by an LLM.
 - Final task summaries should state whether docs were updated and which doc changed.
+
+## Release Notes For User-Visible Changes
+
+- Any change a user could notice — new behavior, changed behavior, bug fix, performance win, breaking change — must add one note file under `.changes/` in the same PR. Format, field table, and writing rules: `.changes/README.md`.
+- Name it `<area>-<short-slug>.md`; `area` matches the conventional-commit scope. There is no version field — the release version is chosen at release time.
+- Write the body for a user, not a reviewer: "the player now remembers volume between episodes", not "hoist volume state into the session". Max 400 characters; depth belongs in the release blog post.
+- Skip the note for test-only changes, docs, CI/workflow plumbing, and pure refactors with no behavior change. When skipping on a PR that touches `apps/**` or `libs/**`, apply the `no-release-note` label.
+- CI enforces this: the "Release note gate" job in `.github/workflows/ci.yml` fails PRs that change runtime code without an added `.changes/*.md` or the label (policy in `tools/release/check-release-note-gate.mjs`; tests/e2e/website/mock-server/docs paths are auto-exempt).
+- The `release-notes` skill covers writing notes; the `release-cut` skill covers the full release sequence.
+- Validate before finishing: `pnpm run release:notes:validate`.
+- Release-post screenshots come only from the release capture script running against the mock servers. Never add a screenshot taken from a real playlist or account to `apps/website/public/blog/**` — real streams, logos, and metadata are copyrighted, and credentials must never reach a published image.
+- Final task summaries should state whether a release note was added or why it was skipped.
 
 ## Regression Prevention And Test Updates
 
@@ -72,16 +85,12 @@ IPTVNATOR_TRACE_STARTUP=1 nx serve electron-backend
     - `IPTVNATOR_TRACE_WINDOW=1` traces BrowserWindow lifecycle and unresponsive events
     - `IPTVNATOR_TRACE_PLAYER=1` traces external-player activity and bounded Embedded MPV runtime-probe stderr
     - `IPTVNATOR_TRACE_RENDERER_CONSOLE=1` mirrors renderer console output into the Electron terminal
+    - `IPTVNATOR_PERF_CAPTURE=1` enables development/test-only, redacted preload IPC phase markers for refresh/DB benchmark correlation; benchmark tooling sets it explicitly, and production launches must leave it unset
+    - `IPTVNATOR_PERF_WORKER_PROFILING=1` enables development/test-only, request-scoped worker timestamps, thread CPU, event-loop utilization, and event-loop delay metrics in database and playlist-refresh responses, plus the database worker's idle-only one-shot post-GC heap probe; overlapping database requests are explicitly invalidated instead of misattributed, the performance benchmark sets the flag automatically, and production launches must leave it unset
 
 - Settings, portal request/response, and trace payloads must use
   `@iptvnator/shared/logging` or the redacting portal logger before reaching
   `console.*`; never log raw credentials while debugging.
-
-- GPU/compositor debugging:
-
-```bash
-IPTVNATOR_DISABLE_HARDWARE_ACCELERATION=1 nx serve electron-backend
-```
 
 - If local Nx state gets weird before a rerun:
 
@@ -138,6 +147,13 @@ Key files:
   engine-neutral `PlayerController` contract, standalone
   `app-player-controls`, generic web-video adapter/helper, and component-scoped
   `WEB_PLAYER_SHARED_CONTROLS` rollout token.
+- In fullscreen, `app-player-controls` shows a pointer-transparent media-title
+  overlay at the top while controls are revealed (`mediaTitle` input:
+  movie/channel/series name, plus an `S01E03` second line for episodes). Series
+  names flow from the Xtream/Stalker detail views through
+  `PortalInlinePlayerComponent.seriesTitle` and `WebPlayerViewComponent.mediaTitle`;
+  movie and live hosts fall back to `playback.title`, skipping raw stream-URL
+  fallbacks. Outside fullscreen the overlay stays hidden.
 - Persisted `Settings.webPlayerSharedControls` is default-off, and its checkbox
   appears only when HTML5, Video.js, or ArtPlayer is selected.
   `WebPlayerViewComponent` snapshots the preference into
@@ -146,6 +162,26 @@ Key files:
   links, before this snapshot can occur. Saving applies to the next host without
   an application restart; an existing session never changes controls mode in
   place.
+- `Settings.showCaptions` is deliberately outside this rollout gate: it is
+  engine state, not controls UI. HTML5, Video.js, and ArtPlayer apply it in both
+  modes — shared controls through their controls bridge, the preference-off
+  paths through the same helpers without an adapter (`WebVideoSourceTracks` for
+  HTML5/ArtPlayer, `VjsLegacyTracks` for Video.js). Both re-apply the preference
+  as the engine adds or switches text tracks. `WebPlayerViewComponent` reads it
+  from `SettingsStore` rather than a host input, so the M3U player, the
+  Xtream/Stalker live layouts, and the portal detail inline player all inherit
+  it (#1155).
+- The modes differ in how long the preference is enforced. Shared controls are
+  authoritative for the session; user intent arrives through `setSubtitleTrack`
+  and wins until the source changes. Vendor chrome is source-default: the
+  preference seeds each new source and is released once the media element
+  reports `playing`, so the engine's own caption menu keeps working. The mode is
+  selected by the optional `playbackStarted` probe the legacy owners pass to all
+  three helpers (HLS, native text tracks, Shaka); in that mode the HLS helper
+  deselects the track (`subtitleTrack = -1`) instead of hiding it, because
+  `subtitleDisplay` would silently override whatever the vendor menu picks. For
+  DASH the seed happens in `ShakaVideoSession.start()` after the manifest loads,
+  so the helper only stops re-suppressing afterwards.
 - Embedded MPV ignores the web-player preference. Frame-copy always uses shared
   DOM controls through its component-scoped `EmbeddedMpvControlsAdapter`, while
   native-view retains the legacy compositor-safe dock and external MPV/VLC
@@ -159,10 +195,16 @@ Key files:
   commands are cancelled. Same-session IPC replies also yield to a broadcast
   snapshot received while the command was pending, preventing a successful
   recording acknowledgement from being rolled back by a stale reply.
+- DASH (`.mpd`) sources play through a lazily imported Shaka Player source
+  engine (`libs/ui/playback/src/lib/shaka-engine/`) inside the HTML5 and
+  ArtPlayer components; ClearKey keys come from KODIPROP-derived
+  `Channel.drm`, and the shared bridge exposes Shaka audio/text tracks via
+  source kind `shaka`. See the CLAUDE.md "Video Players" feature entry and
+  `docs/architecture/m3u-playlist-module.md` ("DASH + ClearKey Playback").
 - The built-in HTML5/hls.js player is the second guarded consumer.
   `HtmlVideoPlayerComponent` provides a component-scoped
   `WebVideoControlsAdapter`; its neutral `web-video-support` bridge is shared
-  with ArtPlayer and owns HLS/native tracks, MPEG-TS VOD duration correction,
+  with ArtPlayer and owns HLS/Shaka(DASH)/native tracks, MPEG-TS VOD duration correction,
   caption preference, and source cleanup.
   `HtmlVideoElementSession` owns native video-event lifecycle, persisted
   volume, start-time/time/ended propagation, and legacy post-play caption
@@ -185,10 +227,10 @@ Key files:
   path keeps the existing Video.js skin and legacy series navigation unchanged.
 - ArtPlayer is the fourth guarded consumer. `ArtPlayerComponent` provides a
   component-scoped `WebVideoControlsAdapter`; `ArtPlayerSourceSession` owns
-  HLS/MPEG-TS/native sources, the neutral web-video bridge, exact cleanup, and
+  HLS/DASH(Shaka)/MPEG-TS/native sources, the neutral web-video bridge, exact cleanup, and
   a destroyed-session guard for delayed `customType` callbacks, while
   `ArtPlayerVideoSession` owns native media/ArtPlayer events. Shared mode uses
-  authoritative live/VOD metadata, HLS/native tracks and caption preference,
+  authoritative live/VOD metadata, HLS/Shaka/native tracks and caption preference,
   MPEG-TS VOD duration correction, and reapplies app volume directly after
   ArtPlayer restores its own stored volume. Vendor chrome/hotkeys are disabled,
   and a transparent capture layer gives shared controls exclusive click and
