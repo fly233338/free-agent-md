@@ -1,8 +1,8 @@
 # firecrawl/firecrawl instruction files
 
-Upstream: [firecrawl/firecrawl](https://github.com/firecrawl/firecrawl) · License: `AGPL-3.0` · Commit: `ab033afd95b6e7865cf8d955fec359043389f227`
+Upstream: [firecrawl/firecrawl](https://github.com/firecrawl/firecrawl) · License: `AGPL-3.0` · Commit: `35d9146f93d8fe59cebe68bbbe18b5a523a0073a`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/firecrawl/firecrawl/AGENTS.md) | [Source](https://github.com/firecrawl/firecrawl/blob/ab033afd95b6e7865cf8d955fec359043389f227/AGENTS.md) | `33d2b6a209e95ac621f36457af18e2f06131de2329669146683e482685523e97` | 1,464 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/firecrawl/firecrawl/CLAUDE.md) | [Source](https://github.com/firecrawl/firecrawl/blob/ab033afd95b6e7865cf8d955fec359043389f227/CLAUDE.md) | `76a062241af43913073af36d6f3a7ae8e81145f32b35828f4867da1d00bd0fad` | 1,668 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/firecrawl/firecrawl/AGENTS.md) | [Source](https://github.com/firecrawl/firecrawl/blob/35d9146f93d8fe59cebe68bbbe18b5a523a0073a/AGENTS.md) | `33d2b6a209e95ac621f36457af18e2f06131de2329669146683e482685523e97` | 1,464 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/firecrawl/firecrawl/CLAUDE.md) | [Source](https://github.com/firecrawl/firecrawl/blob/35d9146f93d8fe59cebe68bbbe18b5a523a0073a/CLAUDE.md) | `76a062241af43913073af36d6f3a7ae8e81145f32b35828f4867da1d00bd0fad` | 1,668 B |
