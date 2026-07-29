@@ -1,7 +1,7 @@
 # excalidraw/excalidraw instruction files
 
-Upstream: [excalidraw/excalidraw](https://github.com/excalidraw/excalidraw) · License: `MIT` · Commit: `7c0b3295760d3492a980f2f6416a36c9ef592103`
+Upstream: [excalidraw/excalidraw](https://github.com/excalidraw/excalidraw) · License: `MIT` · Commit: `1acf66edabc2ac5bbd4aed0714aed7dca7cc2aab`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/excalidraw/excalidraw/CLAUDE.md) | [Source](https://github.com/excalidraw/excalidraw/blob/7c0b3295760d3492a980f2f6416a36c9ef592103/CLAUDE.md) | `2b4fdfbcc0ae5c87254afac235b02cf580df04fd3e21bbd0cfb6050f95f19b3c` | 1,295 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/excalidraw/excalidraw/CLAUDE.md) | [Source](https://github.com/excalidraw/excalidraw/blob/1acf66edabc2ac5bbd4aed0714aed7dca7cc2aab/CLAUDE.md) | `2b4fdfbcc0ae5c87254afac235b02cf580df04fd3e21bbd0cfb6050f95f19b3c` | 1,295 B |

@@ -1,7 +1,7 @@
 # Tencent/tmagic-editor instruction files
 
-Upstream: [Tencent/tmagic-editor](https://github.com/Tencent/tmagic-editor) · License: `NOASSERTION` · Commit: `4ffda3ddd5e5c9a447158c6f9c8fac0daf2eb37e`
+Upstream: [Tencent/tmagic-editor](https://github.com/Tencent/tmagic-editor) · License: `NOASSERTION` · Commit: `21baf58cdacb35f2fa61f17d31e93af534aa9766`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Tencent/tmagic-editor/AGENTS.md) | [Source](https://github.com/Tencent/tmagic-editor/blob/4ffda3ddd5e5c9a447158c6f9c8fac0daf2eb37e/AGENTS.md) | `3066aa1eaa58eeb76936e0579384875e17a7d8ac2ed454c3e379e1513fc52381` | 2,132 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Tencent/tmagic-editor/AGENTS.md) | [Source](https://github.com/Tencent/tmagic-editor/blob/21baf58cdacb35f2fa61f17d31e93af534aa9766/AGENTS.md) | `3066aa1eaa58eeb76936e0579384875e17a7d8ac2ed454c3e379e1513fc52381` | 2,132 B |

@@ -1,8 +1,8 @@
 # langflow-ai/langflow instruction files
 
-Upstream: [langflow-ai/langflow](https://github.com/langflow-ai/langflow) · License: `MIT` · Commit: `6beee6d87ad185b32bd90c1b4a7ceb33c480f34f`
+Upstream: [langflow-ai/langflow](https://github.com/langflow-ai/langflow) · License: `MIT` · Commit: `48aac68e99e436520e901a4e3e05e4d6d183bb9c`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/langflow-ai/langflow/AGENTS.md) | [Source](https://github.com/langflow-ai/langflow/blob/6beee6d87ad185b32bd90c1b4a7ceb33c480f34f/AGENTS.md) | `8fa09e3c85f1f99f10eea4556e1041f5346dd2e0eec2685739e9af8f63353f25` | 11,312 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/langflow-ai/langflow/CLAUDE.md) | [Source](https://github.com/langflow-ai/langflow/blob/6beee6d87ad185b32bd90c1b4a7ceb33c480f34f/CLAUDE.md) | `c2c1b706b236e9058a910b1c372c673dbaad9e2c91015883a71f984fca5b2e5c` | 427 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/langflow-ai/langflow/AGENTS.md) | [Source](https://github.com/langflow-ai/langflow/blob/48aac68e99e436520e901a4e3e05e4d6d183bb9c/AGENTS.md) | `8fa09e3c85f1f99f10eea4556e1041f5346dd2e0eec2685739e9af8f63353f25` | 11,312 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/langflow-ai/langflow/CLAUDE.md) | [Source](https://github.com/langflow-ai/langflow/blob/48aac68e99e436520e901a4e3e05e4d6d183bb9c/CLAUDE.md) | `c2c1b706b236e9058a910b1c372c673dbaad9e2c91015883a71f984fca5b2e5c` | 427 B |
