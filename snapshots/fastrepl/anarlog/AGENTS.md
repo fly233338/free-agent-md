@@ -2,25 +2,31 @@
 
 Tauri desktop note-taking app (`apps/desktop/`) with a web app (`apps/web/`).
 Uses pnpm workspaces.
-SQLite is the primary data store (schema and migrations in `crates/db-app/`, desktop transport in `plugins/db/`), Zustand is used for UI state, and TipTap powers the editor. Sessions are the core entity — all notes are backed by sessions.
+SQLite is the primary data store (schema and migrations in `crates/db-app/`, desktop transport in `plugins/db/`), Zustand is used for UI state, and ProseMirror powers the editor (`packages/editor`, via `@handlewithcare/react-prosemirror`); documents are stored as TipTap-dialect ProseMirror JSON (converters/validation in `crates/tiptap`). Sessions are the core entity — all notes are backed by sessions.
 
 ## Commands
 
 - Format: `pnpm exec dprint fmt`
 - Typecheck (TS): `pnpm -r typecheck`
 - Typecheck (Rust): `cargo check`
-- Desktop dev: `pnpm -F @hypr/desktop tauri:dev`
-- Web dev: `pnpm -F @hypr/web dev`
+- Desktop dev: `turbo dev:desktop`
+- Web dev: `pnpm -F @anlg/web dev`
 - Dev docs: https://docs.anarlog.so
+
+## Pre-commit verification
+
+- Before every commit, run the locally available checks from the CI workflows affected by the changed paths. Do not defer routine validation to CI.
+- Always run `pnpm exec dprint fmt`, then `pnpm fmt:check`.
+- For TypeScript changes, run the affected package's typecheck and tests. For desktop changes, run `pnpm -F desktop typecheck` and `pnpm -F desktop test`; use `pnpm -r typecheck` when changes span packages.
+- For desktop TypeScript changes, run the CI lint command: `pnpm exec oxlint --quiet --format=github apps/desktop/src/`.
+- When desktop translated copy, message extraction, or catalogs may change, run `pnpm -F desktop exec lingui extract --clean --workers 1` and `pnpm -F desktop exec lingui compile --strict --workers 1`, include all generated `apps/desktop/src/i18n/locales` changes, and rerun until generation is stable. When there is no intentional uncommitted catalog diff, run the exact CI check: `pnpm -F desktop i18n:check`.
+- For Rust changes, run `cargo check` and the affected package tests. Match stricter workflow commands such as `cargo clippy --locked ... -D warnings` when the changed paths trigger them.
+- Check the relevant `.github/workflows/*_ci.*`, `fmt.yaml`, and `lint.yaml` files for package-specific tests, generated-file checks, or build validation, and run the locally reproducible commands before committing.
+- If a required check fails, fix it before committing. If a check cannot run locally because of platform, secrets, or unavailable infrastructure, report the exact skipped command and reason; do not claim full validation.
 
 ## Guidelines
 
-- Format via dprint after making changes.
 - JavaScript/TypeScript formatting runs through `oxfmt` via dprint's exec plugin.
-- Run `pnpm -r typecheck` after TypeScript changes, `cargo check` after Rust changes.
-- After editing files, run the relevant verification commands before finishing.
-- For `apps/desktop/` TypeScript changes, prefer `pnpm -F desktop typecheck` to match CI.
-- After edits, run `pnpm exec dprint fmt`.
 - Use `useForm` (tanstack-form) and `useQuery`/`useMutation` (tanstack-query) for form/mutation state. Avoid manual state management (e.g. `setError`).
 - For `plugins/db` live queries, keep schema creation, migrations, and DB initialization on the Rust side; TypeScript should only consume `execute`/`subscribe` APIs.
 - Branch naming: `fix/`, `chore/`, `refactor/` prefixes.
@@ -29,7 +35,7 @@ SQLite is the primary data store (schema and migrations in `crates/db-app/`, des
 
 - Avoid creating types/interfaces unless shared. Inline function props.
 - Do not write comments unless code is non-obvious. Comments should explain "why", not "what".
-- Use `cn` from `@hypr/utils` for conditional classNames. Always pass an array, split by logical grouping.
+- Use `cn` from `@anlg/utils` for conditional classNames. Always pass an array, split by logical grouping.
 - Use `motion/react` instead of `framer-motion`.
 
 ## CLI TUI Command Architecture
