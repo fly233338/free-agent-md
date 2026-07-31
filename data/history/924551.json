@@ -1,0 +1,12 @@
+{
+  "full_name": "rabbitmq/rabbitmq-server",
+  "points": [
+    {
+      "checked_at": "2026-07-31T06:25:54Z",
+      "commit_sha": "0f5a4426d7666072eec44074e84d22537c1d9a22",
+      "pushed_at": "2026-07-31T06:23:50Z",
+      "stars": 13769
+    }
+  ],
+  "repo_id": 924551
+}

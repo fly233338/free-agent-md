@@ -163,7 +163,7 @@ No `UserProvider`/`AIProvider`/`SkillProvider` — auth lives in `CoreStateProvi
 
 ## Tauri shell (`app/src-tauri/`)
 
-Thin desktop host. Key modules: `core_process`, `core_rpc`, `cdp`, `cef_preflight`, `cef_profile`, `dictation_hotkeys`, `file_logging`, `mascot_native_window`, `screen_capture`, `window_state`, per-provider scanners (`discord_scanner`, `slack_scanner`, `telegram_scanner`, `whatsapp_scanner`, `wechat_scanner`, `gmessages_scanner`, `imessage_scanner`, `meet_scanner`), `meet_audio`/`meet_call`/`meet_video`, `fake_camera`, `webview_accounts`, `webview_apis`.
+Thin desktop host. Key modules: `core_process`, `core_rpc`, `cdp`, `cef_preflight`, `cef_profile`, `dictation_hotkeys`, `file_logging`, `mascot_native_window`, `window_state`, per-provider scanners (`discord_scanner`, `slack_scanner`, `telegram_scanner`, `whatsapp_scanner`, `wechat_scanner`, `gmessages_scanner`, `imessage_scanner`, `meet_scanner`), `meet_audio`/`meet_call`/`meet_video`, `fake_camera`, `webview_accounts`, `webview_apis`.
 
 IPC commands (authoritative list: `generate_handler!` in `app/src-tauri/src/lib.rs`): `core_rpc::relay_http_rpc`, `core_rpc_url`, `core_rpc_token`, `start_core_process`/`restart_core_process`, update commands (`check_app_update`, `apply_core_update`, …), window commands (`activate_main_window`, `mascot_window_*`, `notch_window_*`), `webview_accounts::*`, `workspace_paths::*`, `artifact_commands::*`, hotkeys (dictation/PTT/companion), `meet_call::*`, `native_notifications::*`, `mcp_commands::*`, `loopback_oauth::*`.
 
@@ -174,6 +174,37 @@ Embedded provider webviews **must not** grow new JS injection. No new `.js` unde
 ---
 
 ## Rust core (`src/`)
+
+### Backend API access — `src/api/` over `tinyhumans-sdk`
+
+Calls to the TinyHumans cloud backend go through the vendored
+[`tinyhumans-sdk`](https://github.com/tinyhumansai/sdk) crate at
+`vendor/tinyhumans-sdk` (git submodule, path dependency — the crate is not on
+crates.io, so unlike the other `vendor/` crates it has no `[patch.crates-io]`
+entry). **The SDK is the source of truth for backend routes.** A route missing
+from it belongs upstream in the SDK repo, not re-implemented in `src/api/`.
+
+The split:
+
+- **SDK** — routes, URL building, percent-encoding, credential headers,
+  `{success,data}` envelope handling, and the admin/webhook-receiver route gate.
+- **`src/api/`** — the OpenHuman-specific layer on top: session-token retrieval
+  (`jwt.rs`), base-URL/env resolution (`config.rs`), and the error
+  classification + Sentry policy in `rest.rs`.
+
+`BackendOAuthClient` owns a `TinyHumansClient` built with
+`with_http_client(...)` so the SDK inherits this crate's transport — platform
+TLS (schannel on Windows for corporate TLS-inspection proxies, rustls
+elsewhere), the 120s/15s timeouts, `http1_only`, and the `x-core-version` /
+`x-tauri-version` headers. Bind a session token with `sdk_for(bearer_jwt)`.
+
+**Every SDK-backed call must map its error through `classify_sdk_error`.** That
+function mirrors `authed_json`'s classification exactly (401 →
+`Unauthorized`/`SESSION_EXPIRED`, channel-message 404 → `MessageNotFound`,
+announcements 404 → `AnnouncementNotFound`, transient statuses logged not
+reported). Skipping it would change a route's Sentry and session-expiry
+behaviour purely by moving it onto a typed SDK method. `rest_tests.rs` pins the
+two paths' equivalence — keep that as call sites migrate.
 
 ### Domain layout (`src/openhuman/`)
 

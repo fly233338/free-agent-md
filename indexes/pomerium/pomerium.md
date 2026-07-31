@@ -1,7 +1,7 @@
 # pomerium/pomerium instruction files
 
-Upstream: [pomerium/pomerium](https://github.com/pomerium/pomerium) · License: `Apache-2.0` · Commit: `464d0c53db3aa71a031723b47bf6bab61459194f`
+Upstream: [pomerium/pomerium](https://github.com/pomerium/pomerium) · License: `Apache-2.0` · Commit: `c8e4e88021d505b2e526baf0afd58be95d89d6bc`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/pomerium/pomerium/AGENTS.md) | [Source](https://github.com/pomerium/pomerium/blob/464d0c53db3aa71a031723b47bf6bab61459194f/AGENTS.md) | `2162c22d975645f4e526921b0ffcab6886f04b91f1eb68259b4945140b430986` | 476 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/pomerium/pomerium/AGENTS.md) | [Source](https://github.com/pomerium/pomerium/blob/c8e4e88021d505b2e526baf0afd58be95d89d6bc/AGENTS.md) | `2162c22d975645f4e526921b0ffcab6886f04b91f1eb68259b4945140b430986` | 476 B |

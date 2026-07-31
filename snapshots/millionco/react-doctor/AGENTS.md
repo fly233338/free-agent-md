@@ -70,7 +70,6 @@ packages/
                                  `react-native-dependency-names.ts` (re-exported from
                                  core to break the rule-package ↔ core cycle)
   eslint-plugin-react-doctor/    PUBLISHED  ESLint mirror of the oxlint plugin
-  website/                       PRIVATE   docs site
 ```
 
 ## Effect v4 Conventions
@@ -357,6 +356,8 @@ pnpm smoke:json-report   # validates the built CLI's JSON output against the sch
 
 ## Release authorization
 
+- MUST: Discourage minor and major Changesets. Do not add one unless the user explicitly requests
+  that release level. Patch Changesets may be added without a separate request when appropriate.
 - MUST: Never merge a Changesets release PR, including any `changeset-release/*` branch, without
   fresh, explicit user confirmation for that exact PR and version immediately before the merge.
 - General instructions to merge, ship, land, or babysit green PRs do not authorize merging a
