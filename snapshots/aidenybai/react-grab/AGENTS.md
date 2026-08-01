@@ -1,0 +1,158 @@
+## General Rules
+
+- MUST: Use @antfu/ni. Use `ni` to install, `nr SCRIPT_NAME` to run. `nun` to uninstall.
+- MUST: Use TypeScript interfaces over types.
+- MUST: Keep all types in the global scope.
+- MUST: Use arrow functions over function declarations
+- MUST: Default to NO comments. Only add a comment when the user explicitly asks, or when the "why" is truly non-obvious - browser quirks, platform bugs, performance tradeoffs, fragile internal patching, or counter-intuitive design decisions. Never add comments that restate what the code does or what a well-named function/variable already conveys. When in doubt, leave the comment out.
+  - Do not delete descriptive comments >3 lines without confirming with the user
+- MUST: Use kebab-case for files
+- MUST: Use descriptive names for variables (avoid shorthands, or 1-2 character names).
+  - Example: for .map(), you can use `innerX` instead of `x`
+  - Example: instead of `moved` use `didPositionChange`
+- MUST: Frequently re-evaluate and refactor variable names to be more accurate and descriptive.
+- MUST: Do not type cast ("as") unless absolutely necessary
+- MUST: Remove unused code and don't repeat yourself.
+- MUST: Always search the codebase, think of many solutions, then implement the most _elegant_ solution.
+- MUST: Put all magic numbers in `constants.ts` using `SCREAMING_SNAKE_CASE` with unit suffixes (`_MS`, `_PX`).
+- MUST: Put small, focused utility functions in `utils/` with one utility per file.
+- MUST: Use Boolean over !!.
+- MUST: No dynamic imports (`import()`) unless strictly necessary (e.g. code-splitting a large optional dependency, breaking a circular dependency that cannot be refactored). Prefer static `import` at the top of the file.
+
+## V8 Hot-Path Rules
+
+For hot per-frame paths (pointer/scroll handlers, animation ticks, fiber walks):
+
+- MUST: Keep indirect call sites monomorphic. Do not pass different callbacks to a shared recursor/iterator that gets hot - split into one specialized helper per callback, or inline the loop.
+- MUST: Mutate object fields in place instead of replacing the field with a fresh object literal. `obj.target.x = ...` not `obj.target = { x, y, ... }`. Allocating per-frame literals churns the GC and cycles hidden classes.
+- MUST: Keep numeric helpers in a single number-type "lane". A function that early-returns a Smi (`return 8`) and otherwise returns a double (`labelWidth * 0.2`) will deopt every consumer with `not a Smi`. Pick one (e.g. `Math.round` the double).
+- SHOULD: Prefer closed-form arithmetic over loops that subtract/add a constant until a delta is in range (e.g. angle normalization with `Math.round(delta / 360)`, not `while delta > 180`).
+
+## SolidJS Rules
+
+### Mental Model
+
+- MUST: Treat components as setup functions that run ONCE, not render functions.
+- MUST: Place reactive work in primitives (`createMemo`, `createEffect`, `<Show>`, `<For>`), not component body.
+- MUST: Access signals only inside reactive contexts (JSX expressions, effects, memos).
+
+### Reactivity
+
+- MUST: Call signals as functions: `count()` not `count`.
+- MUST: Use functional updates when new state depends on old: `setCount((prev) => prev + 1)`.
+- MUST: Keep signals atomic (one per value) - one big state object loses granularity.
+- MUST: Use derived functions `() => count() * 2` for cheap/infrequent derivations.
+- MUST: Use `createMemo(() => ...)` for expensive/frequent derivations - caches result.
+- MUST: Use `createEffect` for side effects only (DOM, localStorage, subscriptions).
+- MUST: Call `onCleanup(() => ...)` inside effects for subscriptions/intervals/listeners.
+- MUST: Use path syntax for store updates: `setStore("users", 0, "name", "Jane")`.
+- MUST: Wrap store props in arrow for `on()`: `on(() => store.value, fn)` not `on(store.value, fn)`.
+- SHOULD: Use `{ equals: false }` for trigger signals that always notify.
+- SHOULD: Use `batch(() => { ... })` when updating multiple signals outside event handlers.
+- SHOULD: Use `on(dep, fn)` for explicit effect dependencies.
+- SHOULD: Use `untrack(() => value())` to read without subscribing.
+- SHOULD: Use `createStore({ ... })` for nested objects with fine-grained reactivity.
+- SHOULD: Use `produce(draft => { ... })` for complex store mutations.
+- NEVER: Derive state via `createEffect(() => setX(y()))` - use memo or derived function.
+- NEVER: Place side effects inside `createMemo` - causes infinite loops/crashes.
+
+### Effect Taxonomy
+
+Before writing `createEffect`, classify the work and pick the right primitive:
+
+- MUST: Use `createMemo` when the result is pure derived state from other signals/stores. If no external system is touched, it is not an effect.
+- MUST: Use event handlers and direct action calls when work happens because a user clicked, selected, or navigated. Do not watch a flag/token in an effect to trigger imperative logic.
+- MUST: Use `onMount`/`onCleanup` for one-time lifecycle setup and teardown (subscriptions, timers, imperative DOM wiring) that should not rerun for reactive changes.
+- MUST: Keep `createEffect` single-purpose - one effect, one external bridge. Split mixed-responsibility effects.
+- SHOULD: Use keyed ownership boundaries (keyed `<Show>`/`<For>`, or keyed `createRoot`) when local state should reset because an identity changed. Do not write a "watch key, clear state" effect.
+- SHOULD: Normalize state at the write boundary, not via a repair effect that rewrites after the fact.
+- NEVER: Use `createEffect` just to copy one store/signal into another - find the single source of truth.
+- NEVER: Use `createEffect` as an event bus (watching a trigger signal to run a command). Call the action directly from the event source.
+
+### Props
+
+- MUST: Access props via `props.title`, not destructuring.
+- SHOULD: Wrap in getter if needed: `const title = () => props.title`.
+- SHOULD: Use `splitProps(props, ["keys"])` to separate local from pass-through props.
+- SHOULD: Use `mergeProps(defaults, props)` for default values.
+- SHOULD: Use `children(() => props.children)` only when transforming, otherwise `{props.children}`.
+- NEVER: Destructure props `({ title })` - breaks reactivity.
+
+### Control Flow
+
+- MUST: Use `<For each={items()}>` for object arrays - item is value, index is signal.
+- MUST: Use `<Index each={items()}>` for primitives/inputs - item is signal, index is number.
+- MUST: Use `<Suspense fallback={...}>` for async, not `<Show when={!loading}>`.
+- MUST: Access resource states via `data()`, `data.loading`, `data.error`, `data.latest`.
+- SHOULD: Use `<Show when={cond()} fallback={...}>` for conditionals.
+- SHOULD: Use `<Show when={val}>` callback for type narrowing: `{(v) => <div>{v().name}</div>}`.
+- SHOULD: Use `<Switch>/<Match>` for multiple conditions.
+- SHOULD: Use `createResource(source, fetcher)` for reactive async data.
+- SHOULD: Use `<ErrorBoundary fallback={(err, reset) => ...}>` for render errors.
+- NEVER: Use `.map()` in JSX - use `<For>` or `<Index>`.
+- NEVER: Rely on ErrorBoundary for event handler or setTimeout errors - use try/catch.
+
+### JSX & DOM
+
+- MUST: Use `class` not `className`.
+- MUST: Combine static `class="btn"` with reactive `classList={{ active: isActive() }}`.
+- MUST: Use `onClick` for delegated events; `on:click` for native (element-level).
+- MUST: Condition inside handler since events are not reactive: `onClick={() => props.onClick?.()}`.
+- MUST: Read refs in `onMount` or effects - refs connect after render.
+- MUST: Call `onCleanup` inside directives for cleanup.
+- SHOULD: Use `on:click` for `stopPropagation`, capture, passive, or custom events.
+- SHOULD: Use `style={{ color: color(), "--css-var": value() }}` for inline styles.
+- SHOULD: Use the native `textContent` prop for dynamic content that is guaranteed to be text-only.
+- SHOULD: Type refs as `let el: HTMLElement | undefined` with guard.
+- SHOULD: Use `use:directiveName={accessor}` for reusable DOM behaviors.
+- NEVER: Mix reactive `class={x()}` with `classList`.
+
+## Testing
+
+Run dev `packages/cli` with:
+
+```bash
+npm_command=exec node packages/cli/dist/cli.js
+```
+
+Run checks always before committing with:
+
+```bash
+pnpm test # runs e2e tests
+pnpm lint
+pnpm typecheck # runs type checking
+pnpm format
+```
+
+## Development instructions
+
+This is a pnpm monorepo with `apps/` (playgrounds, sites, extensions) and `packages/` (libraries, tools). No external services (databases, Docker, etc.) are required.
+
+### Build before test
+
+`pnpm build` must complete before `pnpm test` or `pnpm lint`. After modifying source files, always rebuild before running tests.
+
+### Approved build scripts
+
+The root `package.json` has `pnpm.onlyBuiltDependencies` configured for `@parcel/watcher`, `esbuild`, `sharp`, `spawn-sync`, and `unrs-resolver`. Without this, `pnpm install` silently skips their native builds and downstream packages may fail.
+
+### Playwright
+
+E2E tests use a Vite Plus kitchen-sink fixture and a shared framework contract across stock Vite, Next.js, and TanStack Start in development and production. Set `E2E_ENVIRONMENT` to run one environment and start only its server: `vite-plus-development`, `vite-plus-production`, `vite-upstream-development`, `vite-upstream-production`, `next-development`, `next-production`, `tanstack-development`, or `tanstack-production`. Chromium must be installed: `npx --prefix packages/react-grab playwright install chromium --with-deps`.
+
+### Key commands reference
+
+See root `package.json` scripts and `CONTRIBUTING.md` for the full list. Quick reference:
+
+- **Install**: `ni` (or `pnpm install`)
+- **Build**: `nr build` (or `pnpm build`)
+- **Dev watch**: `nr dev` (or `pnpm dev`) - watches core packages
+- **Test**: `pnpm test` - runs Playwright E2E + Vitest CLI tests
+- **Lint**: `pnpm lint` - oxlint on react-grab package
+- **Typecheck**: `pnpm typecheck` - tsc on react-grab package
+- **Format**: `pnpm format` - oxfmt
+- **CLI dev**: `npm_command=exec node packages/cli/dist/cli.js`
+- **Test app (Vite Plus)**: `pnpm --filter @react-grab/e2e-app-vite dev` (port 5175, lives in `apps/e2e-app-vite`)
+- **Test app (stock Vite)**: `pnpm --filter @react-grab/e2e-app-vite-upstream dev` (port 5181, lives in `apps/e2e-app-vite-upstream`)
+- **Test app (Next)**: `pnpm --filter @react-grab/e2e-app-next dev` (port 5176, lives in `apps/e2e-app-next`)
+- **Test app (TanStack Start)**: `pnpm --filter @react-grab/e2e-app-tanstack-start dev` (port 5178, lives in `apps/e2e-app-tanstack-start`)

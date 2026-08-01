@@ -1,8 +1,8 @@
 # Expensify/App instruction files
 
-Upstream: [Expensify/App](https://github.com/Expensify/App) · License: `MIT` · Commit: `f1cb80b885171e128b435acb230fdf94ff1bad6f`
+Upstream: [Expensify/App](https://github.com/Expensify/App) · License: `MIT` · Commit: `adf7411a9109955331bc35ab39ab50be306de99c`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Expensify/App/AGENTS.md) | [Source](https://github.com/Expensify/App/blob/f1cb80b885171e128b435acb230fdf94ff1bad6f/AGENTS.md) | `4b8602b997dd411cf4f88feb34bda93dfa3ae03456a5f26177fdf7950c3d0217` | 221 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Expensify/App/CLAUDE.md) | [Source](https://github.com/Expensify/App/blob/f1cb80b885171e128b435acb230fdf94ff1bad6f/CLAUDE.md) | `287c6556d8397a76b4915b0fe6f31fee73f674d94652836fd10202c062e3e861` | 11,419 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Expensify/App/AGENTS.md) | [Source](https://github.com/Expensify/App/blob/adf7411a9109955331bc35ab39ab50be306de99c/AGENTS.md) | `4b8602b997dd411cf4f88feb34bda93dfa3ae03456a5f26177fdf7950c3d0217` | 221 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Expensify/App/CLAUDE.md) | [Source](https://github.com/Expensify/App/blob/adf7411a9109955331bc35ab39ab50be306de99c/CLAUDE.md) | `287c6556d8397a76b4915b0fe6f31fee73f674d94652836fd10202c062e3e861` | 11,419 B |

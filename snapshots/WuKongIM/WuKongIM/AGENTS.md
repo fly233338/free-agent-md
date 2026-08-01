@@ -159,14 +159,14 @@ app -> access/usecase/runtime/infra/pkg
   `docs/agents/domain.md`.
 - The serverless GitHub Issue Agent follows `docs/agents/issue-agent.md`.
   Its control code, Workflows, policy, schemas, prompts, and instruction files
-  are protected from automated changes. A Worker task freezes applicable
+  are protected from automated changes. Every Codex task freezes applicable
   `AGENTS.md` and `FLOW.md` digests from its exact source revision.
 
 ## GitHub Actions tools
 
 GitHub Actions are Agent-callable tools or explicit safety automations. Before
 invoking or changing one, read `.github/workflows/README.md` and follow its
-authorization, validation-plan, label, retry, and monitoring contracts.
+authorization, Review Agent evidence, retry, and monitoring contracts.
 
 ## Directory Guide
 
@@ -179,17 +179,19 @@ authorization, validation-plan, label, retry, and monitoring contracts.
 | `cmd/wkcli/`, `cmd/wkdb/` | Operations and local read-only storage diagnostics. |
 | `cmd/wkcloud*/`, `cmd/wkanalysis/` | Cloud simulation, deployment, validation, viewing, and analysis tools. |
 | `cmd/wkissueagent/` | JSON-only GitHub Actions entrypoint for the stateless Issue Agent. |
+| `cmd/wkreviewcheck/` | Frozen selector-only helper for composite Review Agent checks. |
 | `internal/access/` | HTTP, gateway, node RPC, manager, plugin, and cloud-analysis entry adapters. |
 | `internal/usecase/` | Reusable business use cases. |
 | `internal/runtime/` | Reusable node-local runtimes. |
 | `internal/infra/` | Cluster, delivery, backup, and cloud infrastructure adapters. |
 | `internal/app/` | Product composition root and lifecycle. |
 | `internal/config/`, `internal/contracts/` | Configuration loading and cross-layer contracts. |
-| `internal/**/issueagent*` | Issue Agent contracts, orchestration, sandbox runtime, provider/GitHub adapters, CLI boundary, and composition. |
+| `internal/**/*agent*` | Issue Agent and Review Agent contracts, orchestration, clean verification, GitHub adapters, CLI boundaries, and composition. |
 | `internal/bench/` | Benchmark planning, coordination, workers, workloads, and reporting. |
 | `pkg/` | Reusable storage, protocol, gateway, cluster, channel, controller, slot, transport, metrics, plugin, and work-queue libraries. |
 | `test/e2e/` | Real-process black-box E2E suites and shared harness. |
 | `docs/` | Architecture, development, ADR, specification, plan, report, and runbook documentation. |
+| `docs-site/` | Standalone Fumadocs application for the bilingual public v3 documentation. |
 | `scripts/` | Repository automation, E2E gates, and cloud-simulation helpers. |
 | `docker/` | Development clusters, simulation, and observability configurations. |
 | `web/` | Manager React/Vite source. |
