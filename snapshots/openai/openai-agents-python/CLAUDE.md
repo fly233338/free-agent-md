@@ -15,6 +15,8 @@ This guide helps new contributors get started with the OpenAI Agents Python repo
 
 ### Mandatory Skill Usage
 
+Repository skills are stored under `.agents/skills/`. A reference such as `$<skill-name>` in this file is a repository instruction reference, not a request for manual user invocation. When a rule requires a skill, read `.agents/skills/<skill-name>/SKILL.md` completely before taking task actions, follow its instructions, and resolve referenced files relative to that skill directory.
+
 #### `$code-change-verification`
 
 Run `$code-change-verification` before marking work complete when changes affect runtime code, tests, or build/test behavior.
@@ -203,6 +205,7 @@ Some tests rely on inline snapshots; see `tests/README.md` for details. Re-run `
 - Type hints must pass `make typecheck`.
 - Write comments as full sentences ending with a period.
 - Imports are managed by Ruff and should stay sorted.
+- Do not hard-wrap prose in Markdown or other non-code text files at a fixed column width. Keep each paragraph on one source line unless the file format or Markdown structure requires a line break, such as for lists, tables, blockquotes, or code fences.
 
 #### Mandatory local run order
 
