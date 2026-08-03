@@ -75,8 +75,9 @@ public class MyService {
 - Return empty collections (e.g., `List.of()`, `Collections.emptyList()`) for absent values
 - Use try-with-resources for resource management
 - Log errors before re-throwing: `log.error("message", exception)`
+- Write exception messages as plain, complete sentences that state the fact and the actionable detail — build them with `String.formatted()`/`String.format()`, not string concatenation or em dashes, e.g. `"Cannot acquire lock on asset '%s': already locked by '%s' until %s.".formatted(id, owner, until)`
 
-**DON'T**: Use generic `Exception`. Don't return null for collections.
+**DON'T**: Use generic `Exception`. Don't return null for collections. Don't write terse or telegraphic exception messages (e.g. dropping articles/verbs) or string-concatenate message parts.
 
 ### Java Language Features
 - Use java records for simple data carriers
@@ -98,7 +99,7 @@ public class MyService {
 **MANDATORY — never hand-roll Pebble delimiter detection.** Pebble has two block delimiter pairs — print blocks (`{{ ... }}`) and execute/statement blocks (`{% ... %}`) — and code that only checks for `{{`/`}}` silently misses `{%`/`%}` blocks. Use `io.kestra.core.utils.PebbleUtil` (`containsOpeningBlockDelimiter`, `startsWithOpeningBlockDelimiter`, `endsWithClosingBlockDelimiter`, `openingBlockDelimiters()`/`closingBlockDelimiters()`) instead of writing a new delimiter regex or literal — it derives the delimiter pairs from Pebble's own `Syntax.Builder` defaults, so it never drifts from what Pebble actually parses.
 
 ### Enums
-- Use enums for fixed sets of constants
+- Use enums for fixed sets of constants, including internal fields not exposed over the API — prefer a typed enum over a raw `String`/`int` whenever the value is drawn from a closed set of known cases, even if the set may only ever have a couple of members
 - Use `@JsonValue` for custom serialization if needed
 - Use `UNKNOWN` enum value for unknown cases in deserialization
 - Compare Constants From The Left (a.k.a., Yoda conditions)
@@ -150,7 +151,7 @@ public enum MyEnum {
 - Place tests in same package structure as source code
 - Simple unit test with mocks over complex integration tests when possible
 - Add // Given-When-Then comments for clarity
-- Always use naming conventions for test methods (e.g., `shouldPerformActionWhenCondition`)
+- Test method naming: `should<ExpectedBehavior>When<ConditionOrAction>` (also `...Given<Input>`, `...For<Condition>`, `...If<Condition>`), e.g. `shouldThrowExceptionWhenDividingByZero()`
 - Use `@MicronautTest` for tests that require Micronaut beans
 - Use `@KestraTest` for tests that require running Kestra services (e.g., Executor, Scheduler)
 -
@@ -384,17 +385,19 @@ Translation files live in `ui/src/translations/`. There is one JSON file per lan
 
 ### Checking for missing translations
 
-Run the check script from the translations directory:
+Run the check script from the `ui/` directory:
 
 ```bash
-cd ui/src/translations && node check.js
+cd ui && npm run translations:check
 ```
 
 A clean run reports `No missing keys. No extra keys.` for every language. Any listed missing keys must be added.
 
+> **Enterprise Edition:** EE-only keys live in `ui-ee/src/translations/ee_translations/en.json` and are checked separately — run `npm run translations:check` in `ui-ee` as well (see `kestra-ee/AGENTS.md` → "Frontend i18n").
+
 ### Adding missing translations
 
-1. Identify gaps by running `check.js` (or by diffing the flattened `en.json` keys against each language file).
+1. Identify gaps by running `npm run translations:check` (or by diffing the flattened `en.json` keys against each language file).
 2. Translate only the missing keys — do **not** re-translate keys that already have a value.
 3. Follow these translation rules (mirroring `generate_translations.ts`):
    - **Reserved English terms — never translate:** `kv store`, `namespace`, `flow`, `subflow`, `task`, `log`, `blueprint`, `id`, `trigger`, `label`, `key`, `value`, `input`, `output`, `port`, `worker`, `backfill`, `healthcheck`, `min`, `max`.
@@ -402,4 +405,4 @@ A clean run reports `No missing keys. No extra keys.` for every language. Any li
    - **Preserve `{{placeholder}}` variables** exactly — do not translate the word inside the braces.
    - **Use natural UI terminology** — avoid false friends or overly literal translations (e.g. German: Execution → Ausführung, Theme → Modus, State → Zustand).
 4. Insert the translated keys into the correct position in the target language JSON, keeping `sort_keys=True` order (alphabetical within each object).
-5. Re-run `node check.js` to confirm everything is clean before committing.
+5. Re-run `npm run translations:check` to confirm everything is clean before committing.

@@ -1,8 +1,8 @@
 # browser-use/browser-use instruction files
 
-Upstream: [browser-use/browser-use](https://github.com/browser-use/browser-use) · License: `MIT` · Commit: `f0aa3a8bb03779c71a5aa262d389e3bfe6b77cdc`
+Upstream: [browser-use/browser-use](https://github.com/browser-use/browser-use) · License: `MIT` · Commit: `7171413778a9a6947bb52c4f7ab3c3641d5322dc`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/browser-use/browser-use/AGENTS.md) | [Source](https://github.com/browser-use/browser-use/blob/f0aa3a8bb03779c71a5aa262d389e3bfe6b77cdc/AGENTS.md) | `1ac8ac94f625fab17657a270ff9b1ab23970ce65fb60891b068c4f1d0714d9a4` | 38,310 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/browser-use/browser-use/CLAUDE.md) | [Source](https://github.com/browser-use/browser-use/blob/f0aa3a8bb03779c71a5aa262d389e3bfe6b77cdc/CLAUDE.md) | `8d6a859035454f836706c53c4b89ddf2d03da6e44694242037b3683f34242b41` | 11,149 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/browser-use/browser-use/AGENTS.md) | [Source](https://github.com/browser-use/browser-use/blob/7171413778a9a6947bb52c4f7ab3c3641d5322dc/AGENTS.md) | `a88c42c6635b09b590108a5e1a161886f3dcedab824e69a080d5de8ccd575ab5` | 38,463 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/browser-use/browser-use/CLAUDE.md) | [Source](https://github.com/browser-use/browser-use/blob/7171413778a9a6947bb52c4f7ab3c3641d5322dc/CLAUDE.md) | `8d6a859035454f836706c53c4b89ddf2d03da6e44694242037b3683f34242b41` | 11,149 B |
