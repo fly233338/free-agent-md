@@ -2,13 +2,19 @@
 
 Binding for every AI agent (Claude, Codex, Cursor, review bots, …). CLAUDE.md is the full constitution; this is the operating contract. When they conflict, CLAUDE.md wins.
 
-## Token economy (owner directive, 2026-07-20)
+## Token economy (owner directive, 2026-07-20; tightened 2026-07-28)
+- **Default to the shortest response that fully answers.** Outlines and tables over prose; no preamble, no recap of what you just did, no re-explaining a fix the diff already shows. Applies to every response, not just status updates.
 - Lead with the outcome. No narration, no restating diffs, no filler praise, no plans you're about to execute anyway.
 - Status updates: one line. Final reports: only what changes the reader's next action.
 - Don't re-derive what CI, linters, or review bots already computed — read their output first (`gh pr checks`, bot comments via `gh api .../pulls/N/comments`).
 - Mechanical rules live in deterministic tests, never in agent effort: changelog style (`tests/test_changelog_style.py`), locale parity (`tests/test_locale_parity.py`), version lockstep (`tests/test_app_version.py`), CJK (`tests/test_no_hardcoded_cjk.py`).
 - Run targeted tests while iterating; full suites only before landing.
 - Tests and CI simulate CI honestly: `HF_HUB_OFFLINE=1` + empty `HF_HUB_CACHE` — a populated dev cache masks real failures.
+
+## Cross-platform parity: behaviour, not performance
+- The parity rule covers user-visible BEHAVIOUR. Hardware acceleration varies by host by design (CUDA/MPS/DirectML, Triton availability, `torch.compile`); skipping an optimization where it physically cannot work is not a parity violation.
+- Do not "fix" a parity finding by disabling a working optimization everywhere. That trades a real regression for a semantic one.
+- A feature the user can see and use on one OS but not another IS a violation. Judge by what the user can do, not by how fast it runs.
 
 ## Merge protocol (hard rules)
 1. Never merge without review. Harvest CodeRabbit + Greptile comments first; never merge with an unread Critical/P1.
