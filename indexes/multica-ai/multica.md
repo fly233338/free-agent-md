@@ -1,8 +1,8 @@
 # multica-ai/multica instruction files
 
-Upstream: [multica-ai/multica](https://github.com/multica-ai/multica) · License: `NOASSERTION` · Commit: `671a1a0c2199f16e4e4da16a16007dafde6b3c68`
+Upstream: [multica-ai/multica](https://github.com/multica-ai/multica) · License: `NOASSERTION` · Commit: `d8ae2005f1d11fff9a70a4fb327364f87ebb8c98`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/multica-ai/multica/AGENTS.md) | [Source](https://github.com/multica-ai/multica/blob/671a1a0c2199f16e4e4da16a16007dafde6b3c68/AGENTS.md) | `3893c1ff20196c5ee3ee0ea4a0e5ba5d7430cdca218c56278816fc0aed83e933` | 2,586 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/multica-ai/multica/CLAUDE.md) | [Source](https://github.com/multica-ai/multica/blob/671a1a0c2199f16e4e4da16a16007dafde6b3c68/CLAUDE.md) | `c817df1f86a369df8f3baf13f6133f543a4fcd82ca62c9879b584f134f89d849` | 15,463 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/multica-ai/multica/AGENTS.md) | [Source](https://github.com/multica-ai/multica/blob/d8ae2005f1d11fff9a70a4fb327364f87ebb8c98/AGENTS.md) | `2fd12bc91291655902572b4ee0c5da0da13d7d3b5bb3c4c65105e2def1d56e19` | 2,766 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/multica-ai/multica/CLAUDE.md) | [Source](https://github.com/multica-ai/multica/blob/d8ae2005f1d11fff9a70a4fb327364f87ebb8c98/CLAUDE.md) | `fdd6024cbdf7c7495b024add1ea88a53fa0e55010609d73ff8d457dae656c809` | 16,701 B |

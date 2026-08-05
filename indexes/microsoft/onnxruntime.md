@@ -1,7 +1,0 @@
-# microsoft/onnxruntime instruction files
-
-Upstream: [microsoft/onnxruntime](https://github.com/microsoft/onnxruntime) · License: `MIT` · Commit: `f6d5554e4adb53eed8eb422647eb8bdc2711ddfb`
-
-| Type | Path | Snapshot | Fixed source | SHA-256 | Size |
-|---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/microsoft/onnxruntime/AGENTS.md) | [Source](https://github.com/microsoft/onnxruntime/blob/f6d5554e4adb53eed8eb422647eb8bdc2711ddfb/AGENTS.md) | `1bc292bdea13ed1872ecbdaf0b0a66db82d77674b9837f5ae66506fa47d65143` | 6,586 B |

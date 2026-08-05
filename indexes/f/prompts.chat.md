@@ -1,8 +1,8 @@
 # f/prompts.chat instruction files
 
-Upstream: [f/prompts.chat](https://github.com/f/prompts.chat) · License: `NOASSERTION` · Commit: `a19217b7758c53eacf65846c217cac73c34e4375`
+Upstream: [f/prompts.chat](https://github.com/f/prompts.chat) · License: `NOASSERTION` · Commit: `f6812ad3c936f91c278dcc07a6bbe2beba587dea`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/f/prompts.chat/AGENTS.md) | [Source](https://github.com/f/prompts.chat/blob/a19217b7758c53eacf65846c217cac73c34e4375/AGENTS.md) | `eced2b78e590c1200d2225dee00ebfe9941647e47e13107f6952d544d5b7ba56` | 9,285 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/f/prompts.chat/CLAUDE.md) | [Source](https://github.com/f/prompts.chat/blob/a19217b7758c53eacf65846c217cac73c34e4375/CLAUDE.md) | `713171888d7edfecf270441279f3f86319a9a671b597509b6e1f6cd6cd361849` | 2,328 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/f/prompts.chat/AGENTS.md) | [Source](https://github.com/f/prompts.chat/blob/f6812ad3c936f91c278dcc07a6bbe2beba587dea/AGENTS.md) | `eced2b78e590c1200d2225dee00ebfe9941647e47e13107f6952d544d5b7ba56` | 9,285 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/f/prompts.chat/CLAUDE.md) | [Source](https://github.com/f/prompts.chat/blob/f6812ad3c936f91c278dcc07a6bbe2beba587dea/CLAUDE.md) | `713171888d7edfecf270441279f3f86319a9a671b597509b6e1f6cd6cd361849` | 2,328 B |

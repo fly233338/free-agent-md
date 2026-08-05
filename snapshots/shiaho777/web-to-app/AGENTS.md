@@ -16,11 +16,12 @@ Instructions for coding agents working in this repository.
 | `shell/` | Runtime template. Built to `app/src/main/assets/template/webview_shell.apk` via `:shell:assembleRelease` + `:app:syncShellTemplateApk`. |
 | `clone-host/` | Host-side APK clone / identity reshape support library (compiled to a DEX asset). |
 | `modules/` | Module Market catalog (`registry.json` + per-module folders). |
+| `docs/` | VitePress documentation site (guide / developer / extensions, EN + ZH), published to https://shiaho777.github.io/web-to-app/ by `.github/workflows/docs-deploy.yml`. Site URL paths map 1:1 to files under `docs/` (`/zh/...` → `docs/zh/...`). |
 | `scripts/` | Build helpers and gates (`check_config_field_drift.py`). |
 
 Runtime Kotlin is authored under `app/` and synced into `shell` by `syncShellRuntimeSources`. Edit the `app/` source once; do not permanently fork copies under shell.
 
-User-facing product docs: `README.md`, `.github/docs/README_CN.md`, `.github/CONTRIBUTING.md`, `modules/README.md`.
+User-facing product docs: `README.md`, `.github/docs/README_CN.md`, `.github/CONTRIBUTING.md`, `modules/README.md`. The published documentation site is https://shiaho777.github.io/web-to-app/ (source: `docs/`, deployed by `.github/workflows/docs-deploy.yml`).
 
 ## How the main pieces connect
 
@@ -137,6 +138,15 @@ Trace and update **all** of:
 3. Shell config types (`ShellModeManager` / shell config data classes) if runtime reads them
 4. Runtime use site in shell-synced code
 5. Unit tests for export wiring when flags change
+6. **Coverage test update (REQUIRED).** When adding a new Boolean field to
+   `WebViewConfig`, you MUST add it to `flipAllBooleans()` in
+   `WebViewConfigBooleanCoverageTest.kt`. The test
+   `flipAllBooleans covers every declared Boolean field` uses reflection to
+   verify that every declared Boolean field is listed — if you forget, CI
+   fails with a message naming the missing field. For non-Boolean fields, add
+   a spot-check to `key non-Boolean WebViewConfig fields survive the export
+   round-trip`. This is the safety net that catches "preview works, export
+   broken" before it ships.
 
 Missing any step usually yields: editor shows the switch, export ignores it, or export embeds config the runtime never reads.
 
@@ -193,6 +203,41 @@ Checklist in order:
 2. Go: ensure `injectGoExecLoaderNativeLib` embeds `libgo_exec_loader.so`.
 3. `NodeService` runs in a dedicated `:nodejs` OS process so V8 lifecycle is isolated from the host.
 
+### 11. Change a feature that has an Agent tool
+
+The in-app Agent exposes 40+ tools that wrap host service classes. When you change a feature, trace the tool chain:
+
+```text
+LLM response (tool_calls)
+  → AgentEngine.executeToolCall()
+  → PermissionPrompter (write tools ask user; read-only run silently)
+  → Tool.execute(args, ctx)
+  → Service class (ApkBuilder, AppExporter, PortManager, EngineManager, AdBlocker, …)
+  → ToolResult → back to LLM
+```
+
+Checklist when touching a feature that an Agent tool wraps:
+
+1. **API signature drift.** If the service class constructor, method signature, or return type changes, update the tool's `execute()` in `app/.../agent/tool/builtin/`. A stale call compiles only if the old overload still exists; otherwise it's a build break.
+2. **`parametersSchema` ↔ `execute()` alignment.** The JSON schema advertised to the LLM must match what `execute()` actually reads from `args`. Adding a parameter to the service call without exposing it in the schema means the LLM can never pass it.
+3. **`description` accuracy.** The LLM decides *when* and *how* to call a tool solely from `description` + `parametersSchema`. If the feature's behavior changed, update the description text — a misleading description causes silent misuse.
+4. **`isReadOnly()` correctness.** `true` → runs without user confirmation; `false` → triggers `PermissionPrompter` dialog. If a tool gains write side-effects, flip it to `false`.
+5. **Registration.** New tools must be added to `ToolRegistryFactory.baseTools()` (grouped by domain comment). Forgotten registration = tool invisible to the LLM.
+6. **Removed features.** If a feature is deleted, remove or disable its tool. A tool that calls a dead class crashes at runtime inside the agent loop.
+7. **Host-only.** Agent tools live under `core/agent/` and are never shell-synced. Do not add them to `syncShellRuntimeSources`.
+
+Key paths:
+
+| Concern | Path |
+|---------|------|
+| Tool interface | `app/.../agent/tool/Tool.kt` |
+| Tool registry | `app/.../agent/tool/ToolRegistryFactory.kt` |
+| Tool context (services access) | `app/.../agent/tool/ToolContext.kt` |
+| Built-in tools (by domain) | `app/.../agent/tool/builtin/*.kt` |
+| Agent loop / execution | `app/.../agent/engine/AgentEngine.kt` |
+| Permission prompt (Channel-based) | `app/.../agent/permission/PermissionPrompter.kt` |
+| LLM provider (SSE streaming) | `app/.../agent/llm/OpenAiCompatProvider.kt` |
+
 ---
 
 ## Easy-to-miss points
@@ -210,6 +255,7 @@ Checklist in order:
 - **Runtime permissions are feature-driven.** `RuntimePermissionSync` derives the permission list from enabled features; do not revert to a static template.
 - **Splash preview media path.** Preview reads splash media from the host filesystem (`splashMediaPath`); export packages it into assets. Do not hardcode `assets/splash_media.*` as the only source.
 - **Port conflict policy.** Local server runtimes must allocate through `PortManager` and clean up on stop; do not bind ports directly.
+- **Agent tool ↔ service drift.** When a service class API changes, the corresponding Agent tool in `core/agent/tool/builtin/` must be updated in the same PR. A stale tool either fails to compile or silently passes wrong arguments at runtime. Check `ToolRegistryFactory.baseTools()` for the full tool list.
 
 ---
 
@@ -264,3 +310,4 @@ Landed:
 - Config field drift detection (`checkConfigFieldDrift`)
 - Module Market: Chrome Web Store live search + GreasyFork browse
 - Code editor find-and-replace
+- Agent tool system: 40+ tools (app lifecycle, ports/engine, hosts/runtime, stats/modifier/import, build env/Play, modules, files) with Channel-based permission prompting, per-section SSE parse resilience, and plan mode

@@ -1,0 +1,175 @@
+# Jitsu — Agent Guidelines
+
+## Project Overview
+
+Jitsu is an open-source data pipeline platform (self-hosted Segment alternative). It
+collects events from websites/apps and routes them to data warehouses and other
+destinations.
+
+## Repository Structure
+
+This is a monorepo with two main technology stacks:
+
+### Go (`/bulker`)
+
+Data ingestion engine for streaming events to warehouses.
+
+- `bulkerapp/` — main Bulker service
+- `ingest/` — HTTP ingest endpoint
+- `sync-controller/` — connector sync orchestration
+- `bulkerlib/` — core ingestion library
+- `connectors/` — warehouse connectors (ClickHouse, BigQuery, Redshift, Snowflake, S3,
+  GCS, etc.)
+
+### Node.js / TypeScript
+
+**Services (`/services`)**
+- `rotor/` — event routing, transformation, and function execution
+
+**Web apps (`/webapps`)**
+- `console/` — admin UI (Next.js)
+
+> The enterprise-edition billing/admin API now lives in
+> [`jitsucom/jitsu-cloud-billing`](https://github.com/jitsucom/jitsu-cloud-billing)
+> (deployed at `billing.jitsu.com`).
+
+**Libraries (`/libs`)**
+- `jitsu-js/` — browser JS SDK (`@jitsu/js`)
+- `jitsu-react/` — React bindings (`@jitsu/jitsu-react`)
+- `functions/` — functions runtime (`@jitsu/functions-lib`)
+- `juava/` — shared utilities
+
+**CLI (`/cli`)**
+- `jitsu-cli/` — developer CLI (`jitsu-cli` on npm)
+
+**Types (`/types`)**
+- `protocols/` — shared TypeScript protocols (`@jitsu/protocols`)
+
+## Tooling
+
+- **Node.js:** pnpm ≥10 (workspace manager), Turbo (build orchestration), Node.js ≥22
+- **Go:** Go 1.26 with Go workspaces (`go.work` at repo root)
+- **Frontend:** Next.js, React 18, TypeScript, Tailwind CSS
+- **Testing:** Jest (unit), Playwright (E2E), Go's built-in `testing`
+- **CI:** GitHub Actions (`.github/workflows/`)
+
+## Common Commands
+
+```bash
+# Install JS dependencies
+pnpm install
+
+# Generate Prisma client + zod schemas (required once after a fresh checkout
+# or worktree). Skipping this leaves Turbopack panicking in
+# ModuleGraphImportTracer::get_traces because it can't render the missing-
+# module error for `prisma/schema`.
+pnpm codegen
+
+# Build all JS packages
+pnpm build:turbo
+
+# Type-check
+pnpm typecheck:turbo
+
+# Run tests. Console tests include an integration project that needs Docker
+# (testcontainers: Postgres + ClickHouse); run only the pure tests with
+# `pnpm exec vitest run --project unit` from webapps/console.
+# Details: CONTRIBUTING.md "Testing".
+pnpm test
+
+# Lint / format
+pnpm lint
+pnpm format
+
+# Start all dev services (hot-reload)
+pnpm dev
+
+# Start only the console
+pnpm console:dev
+```
+
+## Running the app for the user
+
+If the user asks you to run the app (console / dev stack), use:
+
+- `pnpm console:dev` — only console
+- `pnpm ui:dev` — equivalent (turbo)
+
+These go through [portless](https://portless.sh) and serve the app at
+`https://console.jitsu.localhost`.
+
+**Branch hosting.** The dev wrapper auto-detects the current git branch and
+suffixes the dev host with it: `https://console-$BRANCH.jitsu.localhost`. This
+avoids cookie / port collisions with whatever the user has running from another
+branch.
+
+- The repo's default branch (resolved via `git rev-parse origin/HEAD`) gets no
+  suffix.
+- The branch name is sanitized for DNS (lowercased, non-`[a-z0-9-]` → `-`,
+  collapsed, capped at 30 chars).
+- `pnpm console:dev --no-branch` disables the suffix (use the bare
+  `console.jitsu.localhost` host).
+
+If the user explicitly asks you not to use a branch suffix, pass `--no-branch`.
+
+> Implementation note: `dev-scripts/src/bin/run-app.ts` loads root `.env` /
+> `.env.local`, computes the slug, and runs portless from a non-git scratch dir
+> with `--name <slug>` and a `bash -c "cd <ws> && <cmd>"` wrapper — sidesteps
+> portless's hardcoded dot-style worktree prefix.
+
+`portless` is a workspace devDependency — `pnpm install` is enough, no global
+install. First-run on a machine prompts once for `sudo` to bind port 443 and
+trust the local CA.
+
+## Dev scripts
+
+The `dev-scripts` package (`./dev-scripts`) hosts repo-wide developer tooling.
+Invoke via `pnpm dev <subcommand>`:
+
+```bash
+pnpm dev                            # turbo run dev (start everything)
+pnpm dev copy-db --src URL --dst URL   # rsync-style postgres copy ($ENV_VAR placeholders)
+pnpm dev help
+```
+
+For Go (run inside `/bulker`):
+
+```bash
+go build ./...
+go test ./...
+```
+
+## Git Workflow
+
+When you need to create branches, make commits, or open pull requests, read
+[CONTRIBUTING.md](CONTRIBUTING.md) first. No need to read it for code exploration —
+only when interacting with git.
+
+### Referencing Linear issues
+
+When referencing a Linear issue in GitHub (PR descriptions, commit messages,
+comments), use the bare issue id — `` `JITSU-67` `` — not a Linear URL or a
+markdown link to one.
+
+Before opening a PR, try to work out which Linear issue the work relates to —
+check the branch name, search via the Linear MCP if it's available, or ask the
+user with the question tool. If the PR clearly relates to an issue, prefix the
+PR title with the issue id and put the id in the body. It's fine if there's no
+issue — but offer to create one (when the Linear MCP is available).
+
+## Deployments
+
+The console can be auto-deployed to **beta** on PR merge via the
+[`deploy-console-on-merge`](.github/workflows/deploy-console-on-merge.yml)
+workflow: any PR carrying the **`deploy:console`** label triggers a beta console
+deployment in `jitsu-cloud-infra` the moment it merges into `newjitsu`. This
+exists because the post-merge deploy step is easy to forget, so fixes sit
+undeployed for weeks (see JITSU-68). It's scoped to `console` only — its error
+tolerance is high (a brief outage doesn't drop data); `bulker` and `rotor` still
+deploy manually and deliberately.
+
+**When you open a PR (including a draft), explicitly ask the user whether they
+want the console to auto-deploy on merge.** If yes, add the `deploy:console`
+label to the PR (e.g. `gh pr edit <pr> --add-label deploy:console`). Only offer
+this for PRs that actually touch the console; never add the label to `bulker` /
+`rotor` changes.
