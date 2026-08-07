@@ -31,7 +31,7 @@
 
 ## Commit & Pull Request Guidelines
 - Conventional Commits (`feat|fix|chore|docs|test|refactor|build|ci|style|perf`); scope optional: `feat(cli): add capture retry`.
-- Use `./scripts/committer "type(scope): summary" <paths…>` to stage and create commits; avoid raw `git add`.
+- Use standard Git commands and stage only the intended paths for each commit.
 - Batch git network ops in groups: commit related repo changes first, then push/pull repos together so submodule gitlinks stay coherent.
 - PRs should summarize intent, list test commands executed, mention doc updates, and include screenshots or terminal snippets when behavior changes.
 - Never release or publish without an explicit release command.
