@@ -1,0 +1,11 @@
+# AGENTS
+
+- Read `design.md` before making code changes. It is the forward-looking design reference for checked modules, the post-check IR pipeline, LIR, ARC, backends, LirImage, and compiler invariants.
+- Workarounds are categorically forbidden in this code base.
+- Fallbacks are categorically forbidden in every stage of compilation other than specifically parsing and error reporting.
+- Heuristics are categorically forbidden in every stage of compilation other than specifically parsing and error reporting.
+- Every compiler stage other than specifically parsing and error reporting must consume explicit data produced by earlier stages rather than trying to recover, guess, reconstruct, approximate, or "best effort" its way to missing information.
+- Backends are categorically forbidden from thinking about reference counting in any way other than specifically dumbly following the explicit LIR `incref` and `decref` statements emitted by earlier compilation steps.
+- Fuzzers must generate small typed language constructs and compose them randomly. Do not add catalog-style fuzzers made from handwritten scenario emitters.
+- When `zig build minici` fails in one section, fix the issue and rerun that specific failing section until it passes. Only return to the full `zig build minici` after the targeted section passes, so the full run is used to find the next failing section rather than as the inner retry loop.
+- Never add a probe-then-mutate rewrite to the checker (a structural probe over solved types whose result gates a mutation of the solved graph or of stamped dispatch-plan metadata) without a rule declared in design.md's "Solver-Mutating Rewrites" section. Such a rewrite is indistinguishable at review time from a change to the language's typing rules, so the rule must be declared first, the rewrite named for it, and both its accepted and rejected sides pinned by tests. `Store.dangerousSetVarRedirect` enforces this by signature: every call site cites a `RedirectRule` member, and new members require a design.md declaration. Review checklist: a diff that adds a `RedirectRule` member, calls `setVarContent`/`dangerousSetVarDesc` outside the inventoried sites, or restamps CIR plan metadata must update the design.md Rewrite Inventory in the same change.
