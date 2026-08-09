@@ -1,8 +1,0 @@
-# rorkai/App-Store-Connect-CLI instruction files
-
-Upstream: [rorkai/App-Store-Connect-CLI](https://github.com/rorkai/App-Store-Connect-CLI) · License: `MIT` · Commit: `71ead8ce22668edeef8e4c2be4292e9d99f0edf3`
-
-| Type | Path | Snapshot | Fixed source | SHA-256 | Size |
-|---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/rorkai/App-Store-Connect-CLI/AGENTS.md) | [Source](https://github.com/rorkai/App-Store-Connect-CLI/blob/71ead8ce22668edeef8e4c2be4292e9d99f0edf3/AGENTS.md) | `d9c85dc27600abcb9b065fe7758fcdd45406b66634b9c12cf5826bc051eeec85` | 6,281 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/rorkai/App-Store-Connect-CLI/CLAUDE.md) | [Source](https://github.com/rorkai/App-Store-Connect-CLI/blob/71ead8ce22668edeef8e4c2be4292e9d99f0edf3/CLAUDE.md) | `342ed01f9479b3e8da8db778e2f450c3825f384abb9dc53005ec67952b845c14` | 11 B |
