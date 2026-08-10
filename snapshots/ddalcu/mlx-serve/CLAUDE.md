@@ -1,0 +1,357 @@
+# mlx-serve — project context for AI
+
+Native Zig server running MLX-format LMs on Apple Silicon; OpenAI/Anthropic/Ollama-compatible HTTP APIs + native media generation. No Python. This file is the COMPRESSED layer — telegraphic on purpose; detail lives one hop away.
+
+## Detail map (read on demand)
+
+- `docs/reference.md` — verbatim deep detail: per-file contracts, media-gen request schemas, API surfaces, LAN design, observability, embedded engines, architectures (incl. dsv4/inkling/H3 numerics, Kokoro, runtime LoRA), the website + LLM tier list, licensing/NOTICE. Read the relevant section BEFORE deep work on a subsystem.
+- `docs/gotchas/{tool-calling,server-http,engine-mlx,models-media,app}.md` — full war stories (live failures, measurements, diagnosis ladders) behind every rule in `## Rules` below. When a rule here is too terse, the story is there.
+- `tests/CLAUDE.md` — the full integration-test matrix (what each script pins). Auto-loads when working in tests/.
+- `app/CLAUDE.md` — Swift app layout + rules. Auto-loads when working in app/.
+- Skills: `/release` (pre-release validation checklist, CalVer, CHANGELOG style), `/bench` (llmprobe bench methodology + comparison-trap rules).
+- `containers/agent-shell-mlxserve/` — Agent Sandbox guest OCI image source (`make push` publishes, `make export` builds the MAS rootfs tarball). Ships dropbear — the sandbox terminal's ssh transport (cross-pinned by `SandboxSSHTests`).
+- `containers/guest-kernel/` — Agent Sandbox guest kernel (6.6 + fuse owner-read clamp — Apple's virtiofs makes owner-read-less inodes guest-unreachable; broke apt + tar dangling symlinks, issue #150). `build.sh` → release asset `kernel-arm64.gz` on THIS repo; tag pinned by `AgentSandbox.kernelTag` + `scripts/fetch-guest-rootfs.sh` (bump together).
+- `website/` — GitHub Pages marketing site + `llm-tier-list/` interactive page (quant playground, roofline fit, voting). Full design + invariants: `docs/reference.md` "Website & LLM tier list". Guards: `tests/test_website_pages.sh`, `tests/website_tier_list_logic.mjs`.
+- **Growth policy (ENFORCED)**: root CLAUDE.md must stay under the cap of 100k. New gotcha = 1–3-line rule in `## Rules` + full story appended to the matching `docs/gotchas/*.md`. New subsystem = one Layout row + a `docs/reference.md` section. App-side content → `app/CLAUDE.md`. Never paste war stories or measurements here — link them.
+
+## Stack
+
+Zig 0.17 (pinned nightly via `scripts/fetch-zig.sh` — brew's 0.16.0 no longer builds; see build.zig's version-gate comptime block); mlx + mlx-c PINNED SUBMODULES (`lib/mlx-src` v0.32.0, `lib/mlxc-src` fba4470) self-built NAX-enabled by `scripts/build-mlx.sh` into `lib/mlx/` (FFI `src/mlx.zig`); jinja.cpp (wangzhaode, Apache-2.0 — NOT llama.cpp's; + nlohmann/json) pre-compiled as `lib/jinja_cpp/libjinja.a`; stb_image + libwebp (vision); safetensors; BPE tokenizers. Embedded engines: ds4 (`lib/ds4`, DSV4-Flash GGUF) + libllama (`lib/llama`, generic GGUF).
+
+## Layout (`src/`)
+
+| File | Role |
+|---|---|
+| `main.zig` | Entry, CLI flags + subcommands (`run/pull/list/serve`) |
+| `cli.zig` | Ollama-grade CLI: alias table → HF repo, resumable pull into `~/.mlx-serve/models/<org>/<repo>`, `list`, `run` REPL |
+| `mlx.zig` | mlx-c FFI |
+| `model.zig` | Config parse + safetensors loading |
+| `tokenizer.zig` | BPE; single special-token splitter (first-byte-bucketed); per-model `digit_group` |
+| `transformer.zig` | Forward pass, arch dispatch (attention/MLP/MoE/GatedDeltaNet), quant param resolution, custom kernels (`msv_attn_p256`, `verifyQmm` lanes incl. NAX) |
+| `generate.zig` | Autoregressive generation, sampling, PLD/drafter/MTP orchestration, `StallClock`, prefill chunking, loop-stop tiers |
+| `chat.zig` | Chat templates (ChatML/Gemma/Llama-3/Jinja2), thinking tags, tool-call parsing/repair/coercion |
+| `vision.zig` / `qwen_vision.zig` + `mrope.zig` | Gemma SigLIP / Qwen3-VL ViT + M-RoPE |
+| `server.zig` | All HTTP: `/v1/*` (chat/completions/messages/responses/embeddings/load/unload, `models/rescan` absorbs post-boot downloads), media endpoints, `/metrics(.json)`, WS, Ollama glue, `--api-key` gate, built-in console at `GET /` (`src/html/`: skeleton + `app.css`/`app.js`/`metrics.js` injected as runtime `{s}` args, renders with NO model). Embeddings: BERT + bidirectional EmbeddingGemma + per-checkpoint pooling (mean|cls|last_token) + `--embedding-max-length`; full contract in `docs/reference.md` server.zig row |
+| `lan.zig` | LAN sharing v1: Bonjour advertise/browse, `SharedSet` + `routeClass` allowlist, `<id>@<peer>` mirroring, streaming proxy tunnel. Pure transport |
+| `metrics.zig` | Lock-free zero-when-off observability (`--metrics`): `vllm:`+`mlx_serve:` Prometheus + JSON |
+| `ollama.zig` | `/api/*` translation: request→OpenAI shape, SSE→NDJSON `Sink`, tags/show/ps, `resolveName` |
+| `gen.zig` | Unified media gen: modality-named engine slots (Image/Audio/Video/Mesh unions), `detectModality`/`peekModelType`, per-request handlers, img2img/edit/LoRA plumbing, residency estimators |
+| `krea.zig` / `flux.zig` | Image backends (Krea-2-Turbo MMDiT / FLUX.2 klein 4B+9B); `MixedLinear` infers quant geometry |
+| `multipart.zig` | RFC 7578 form parsing, zero-copy `Part` slices (only non-JSON request shape: `POST /v1/images/edits`) |
+| `mage_flow.zig` | MageFlow Turbo/Edit: flow DiT + DiCo VAE + Qwen3-VL TE + DeepStack ViT; txt2img + multi-reference edit; `MfLinear` (dense bf16 OR quantized) shared with H3; DiT/TE bf16, VAE f32 (load-bearing) |
+| `hunyuan3d.zig` / `hunyuan3d_paint*.zig` | 3D shape + P2 texture paint; converted layouts BAKE OUT per-head QKV interleaves — never "fix" it |
+| `acestep.zig` | ACE-Step music (Qwen3 encoder, AdaLN DiT, Euler flow-match, Oobleck VAE 48 kHz; Snake/encode f32) |
+| `ltx_video.zig` / `ltx_audio.zig` | LTX video pipelines (one/two-stage/HQ, i2v, a2vid) + audio VAE/BigVGAN vocoder |
+| `minimax_h3*.zig` | MiniMax-H3 text-to-audio-video: joint video+audio DiT, transformer visual VAE, single-frame encoder, BigVGAN audio VAE; AdaLN precompute, staged residency, fast recipe, Turbo LoRA, chained windows — numerics + envs in `docs/reference.md` |
+| `tts.zig` | Qwen3-TTS incl. ECAPA-TDNN voice clone |
+| `kokoro.zig` / `kokoro_g2p.zig` | Kokoro-82M TTS (non-autoregressive StyleTTS2 + iSTFTNet) + text→IPA G2P (no espeak — GPLv3). Pipeline detail: `docs/reference.md` |
+| `marching_cubes.zig` / `glb.zig` / `uvwrap.zig` / `rasterize.zig` / `texinpaint.zig` | Pure-Zig mesh/GLB/xatlas/rasterizer/inpaint (zero MLX, hermetic tests) |
+| `responses.zig` | Responses API pure data: parser, envelope, `ResponseStore`, compaction |
+| `ws.zig` | RFC 6455 framing (server-side) |
+| `pld_index.zig` | PLD n-gram index (`findMatch`, `ngramRepeatScore`) |
+| `prefix_cache.zig` / `kv_disk_cache.zig` | Hot prefix cache + SSD tier (`--prefix-cache-disk`, default OFF) |
+| `drafter.zig` | Gemma 4 assistant drafter (cross-attention spec-decode) |
+| `mtp.zig` | Qwen 3.5/3.6 native MTP head (sidecar OR in-checkpoint `mtp.*` via `resolveMtpSource`; per-weight quant re-solve; committed-history cache) |
+| `diffusion.zig` | DiffusionGemma block-diffusion canvas loop |
+| `deepseek_v4.zig` | DeepSeek-V4-Flash NATIVE arch (module-owned decode state on `Dsv4Model.dec_state`, NOT the KVCache shell). Arch detail: `docs/reference.md` |
+| `scheduler.zig` | Slots, inference thread (sole MLX caller), queues, batching, loop-stop guard, spec wiring, single-flight admission |
+| `model_discovery.zig` / `model_registry.zig` | Discovery (two-level org/name, multi-root, GGUF classification, stub meta), multi-model registry |
+| `arch/ds4.zig` / `arch/llama.zig` (+ `*_ffi.zig`, `lib/llama_shim`) | Embedded-engine bridges |
+| `lora.zig` | Runtime unfused STACKED LoRA (8 files max, summed never merged) across QLinear/MixedLinear/MfLinear; `parseKey`/`canonicalize`/`validatePath`/`fileAlphaScale`. Detail: `docs/reference.md` |
+| `status.zig` / `log.zig` | TUI status bar; leveled logging + file sink (`~/.mlx-serve/logs/mlx-serve-<port>.log`, 32 MB rotation) |
+| `format_corpus_test.zig` / `tool_traffic_replay_test.zig` | Hermetic format corpus + real-traffic replay harness (`src/fixtures/tool_traffic.jsonl`) |
+
+CLI flags: `--model --serve --host --port --prompt --max-tokens --temp --top-p --top-k --ctx-size --embedding-max-length --timeout --reasoning-budget --no-vision --pld --pld-draft-len --pld-key-len --drafter --draft-block-size --no-mtp --mtp --mtp-depth --mtp-history-window --dspark --decode-attn-quant --no-decode-attn-quant --kv-quant --kv-attn-mode --prefix-cache-entries --prefix-cache-mem --prefix-cache-disk --max-concurrent --skip-mem-preflight --metrics --api-key --lan-share --lan-discover --lan-name --no-tool-autocorrect --ssd-streaming --no-ds4-mtp --model-dir --log-level --log-file --version --help`
+
+Sampling defaults for omitted request fields: body > launch flags > model `generation_config.json` > hardcoded (1.0/1.0/off). A missing generation_config = wild-sampling signature.
+
+## Building
+
+- **First-time**: `./scripts/fetch-zig.sh` stages the pinned Zig nightly at `.zig-toolchain/` (PATH it or invoke directly; CI runs the same script). Retire once 0.17.0 ships stable in brew.
+- **Zig caches configure-time subprocess output in `.zig-cache`**: after a toolchain/SDK change the link references the GHOST path until `rm -rf .zig-cache`.
+- **ALWAYS `zig build -Doptimize=ReleaseFast` — never bare `zig build`** (Debug 2–4× slower ⇒ fake regressions). Rebuild the exe before any live perf A/B — `zig build test` does NOT refresh `zig-out/bin/mlx-serve`.
+- Swift app: `bash app/build.sh` (see app/CLAUDE.md). The two bundle binaries move together.
+- mlx + mlx-c are NOT brew deps: submodules built by `scripts/build-mlx.sh` (deployment target 26.2 → NAX kernels compiled in; script + `tests/test_mlx_staged_nax.sh` ASSERT the metallib contains `*_nax`). Effective min macOS 26.2 everywhere. Bump = checkout tag → rerun script → re-diff `src/mlx.zig` externs. Brew floor: webp ≥ 1.6.0.
+- Rebuild Jinja after `lib/jinja_cpp/*.cpp` changes: `cd lib/jinja_cpp && for f in jinja_wrapper caps lexer parser runtime jinja_string value; do clang++ -std=c++17 -O2 -DNDEBUG -I . -c $f.cpp -o obj/$f.o; done && ar rcs libjinja.a obj/*.o`
+
+## Testing — TDD is mandatory for every change
+
+Order is fixed: (1) failing test FIRST, failing for the right reason; (2) minimum code to green; (3) full suite (`zig build test` 6/6 steps 0 fail + `cd app && swift test`/`build` + relevant `tests/*.sh`); (4) refactor under the tripwire. A live curl is a sanity check, NOT a test.
+
+Per change class: feature = unit test that fails without it (+ integration script if HTTP-observable). Bug fix = regression test red→fix→green, verified red-on-revert. Cross-arch work = cover every touched arch. Refactor = characterization test first if coverage is missing. UI/build scripts = factor a pure helper and test that.
+
+**Class bugs get class guards — no whack-a-mole.** A live failure revealing a CLASS ships THREE things: the instance regression test; a corpus entry or universal invariant in `src/format_corpus_test.zig`; and a 1–3-line rule here + full story in `docs/gotchas/`.
+
+Key hermetic suites: `zig build test -Dtest-filter="format corpus"`, `-Dtest-filter="tool traffic"`. Full script matrix: `tests/CLAUDE.md`.
+
+## Releases & benchmarking
+
+- Process, CalVer, CHANGELOG style: `/release` skill. Per-release perf gate = `./tests/bench.sh --family all` diffed vs `docs/perf-csvs/probe-<prev>.csv`; each release ships ONE CSV + TWO charts from ONE run on the FINAL tree.
+- Methodology + traps: `/bench` skill. llmprobe is the measurement layer; `tests/bench_csv.py` folds reports into ONE `probe-<tag>.csv`. Hard rules: **diff only same-methodology CSVs** (`probe-*.csv`; `all-*`/`mtp-ladder-*` are frozen history); "reproducible ≠ not variance" for spec cells — sample across runs/boot-orders; **never quote a win without naming the engine it is over**; same-session ratios only (thermal soak lies); a bench's port wait-list must equal its kill-list; **an A/B arm is proven by ENGAGEMENT lines in its own log, never its launch env** (zsh doesn't word-split `env $VAR`). The record IS the artifacts: CSVs → `docs/perf-csvs/`, charts → `docs/perf-pngs/`.
+
+## Conventions
+
+- Minimal DRY Zig; tests at the bottom of each source file; shell integration tests in `tests/`.
+- Inference thread is the SOLE mlx caller (even array frees) — media gen posts to `gen_queue`, never a gpu mutex. A long gen blocks chat decode (accepted; single GPU).
+- Concurrent requests batch-decode on pure-attention archs; `--max-concurrent` sizes the submit queue, not a decode gate. Slots entering a batch mid-generation drain lazy pipeline state first.
+- KV reuse via prompt-prefix matching; invalidated after tool calls + pad-only gens; hot cache spills to SSD tier; RAM invalidation propagates to disk.
+- Chat templates live in model dirs; Jinja renders with fallback formatting.
+
+## Supported architectures
+
+Dispatch on `config.json` `model_type` (model.zig config/weights, transformer.zig forward). GGUF files bypass MLX dispatch → embedded engine by header (`gguf_meta.preferredEngine`: antirez DSV4-Flash → ds4, else llama.cpp).
+
+| model_type | Notes |
+|---|---|
+| `gemma4`, `gemma4_text` | `language_model.model` prefix; SigLIP vision; clipped linears, PLE |
+| `diffusion_gemma` | Gemma 4 26B-A4B trunk, BLOCK-DIFFUSION (diffusion.zig): ≤48-step canvas denoise, entropy-bound acceptance; PLD/drafter/MTP/batching/prefix-cache never apply; instruct-only |
+| `gemma3`, `gemma3_text` | + flat text-only sibling; EmbeddingGemma encoder when `use_bidirectional_attention` |
+| `qwen3` | QK norm |
+| `qwen3_5`, `qwen3_5_moe(_text)` | GatedDeltaNet + optional MoE, shared expert; Qwen3-VL vision |
+| `qwen3_next` | DeltaNet |
+| `nemotron_h` | Hybrid transformer + Mamba2 (`backbone` prefix) |
+| `lfm2` | Hybrid gated conv + full attention |
+| `hy_v3` | Hunyuan 3 MoE (expert container probed — varies by converter) |
+| `laguna` | poolside Laguna S 2.1 (117.6B-A8.5B coder): nvfp4 experts, softplus attn output gate, YaRN + sliding, sigmoid MoE routing, UNGATED shared expert. Serial. Detail: `docs/reference.md` |
+| `inkling_mm_model` | Thinking Machines Inkling Small (276B-A12B MoE, REAP-prunable). NO RoPE (RelativeLogits bias + 4 causal short-convs/layer on ssm-entry slots); role-less message markers; serial, spec off. Full arch: `docs/reference.md` addenda |
+| `llama`, `mistral` | Standard |
+| `deepseek_v4` | DeepSeek-V4-Flash NATIVE (284B-A13B, 1M ctx; safetensors only). Serial, spec hard-off, prefix cache OFF, single-flight admission; DSML tools on OUR byte-pinned template; checkpoint 0731+ only (preview rejected); only our converter's layout loads; mirror `ddalcu/…mixed-2-3-8bit`. DSpark spec decode. Full arch + perf: `docs/reference.md` addenda |
+| `*.gguf` | ds4/llama.cpp; dirs discoverable + cold-loadable (GGUF presence WINS over stray config.json). ds4 DSpark: `--dspark` arms when a `-DSpark-` support GGUF sits beside the model (sidecar-classified; engage gate keys on `mtpDraftTokens()>1` NOT `hasMtp()`); measured parity with upstream CLI, DSpark ~0 net on 0731 |
+| `minimax_h3` | MiniMax-H3 text-to-audio-video: joint video+audio denoise, 17k+5 frame ladder, 24 fps, two partitions (fl2va/ref2va — `tasks` is the ONLY discriminator), Turbo LoRA, chained windows, fast recipe default-on. Numerics + request surface: `docs/reference.md` |
+| media types | `flux2*`/`krea*`/`mage_flow*`/`qwen3_tts`/`acestep`/`AudioVideo`/`hunyuan3d*` → gen.zig modality slots (`mage_flow` has NO root config.json — classified from `model_index.json` by BOTH `gen.peekModelType` and `model_discovery.peekMageFlowIndex`, kept in sync) |
+
+TODO: `lfm2-vl`, `phi/phi3`, `command-r`. Models with `vision_config` but no vision weights gracefully disable vision. Embedded-engine detail: `docs/reference.md`.
+
+## Unified media generation
+
+One server, one registry — image/audio/video/3D coexist with chat. Engine slots are MODALITY-named unions on `LoadedModel`; adding a backend = one union arm + impl file. Gen runs on the inference thread via `gen_queue`; default app flow load→generate→unload; headless boot starts idle, loads on demand. `model_discovery.isMediaModelType` and `gen.modalityFromType` are documented duplication — keep in sync. Downloads ride `DownloadManager` → `~/.mlx-serve/models` (SINGLE source of truth in both Swift and Zig resolvers).
+
+- **`POST /v1/images/edits`** is the OpenAI multipart shape translated by `gen.openaiEditFormToJson` into the `mode:"edit"` JSON body — pure translation, no second inference route; everything we can't honor is a NAMED 400. Detail: `docs/reference.md`.
+- **LoRAs are STACKED, ONE grammar** across image/LTX/H3: `lora_paths`+`lora_scales` (cap 8, `gen.parseLoraFields`), summed at forward time — never merged (quantized bases would requantize the delta away). Resident backends reconcile via `setLoras`; H3 pre-validates paths (`lora.validatePath`) and builds the stack per request with Turbo as file 0.
+- Endpoint/request-field/backend detail (img2img/edit/multi-ref/LoRA, LTX pipelines, 3D texture stage, music, TTS voice clone): `docs/reference.md`. Guards: `tests/test_unified_gen.sh` + per-modality scripts; parity via env-gated cos oracles (`tests/dump_*_fixtures.py`).
+
+## HTTP APIs
+
+- **OpenAI chat/completions + Responses**: usage ALWAYS carries `prompt_tokens_details.cached_tokens` (ONE `formatChatUsage` helper — black-box tooling reads only this); thinking opt-ins = `reasoning_effort` OR `enable_thinking` (explicit `reasoning_budget_tokens` outranks); `n>1` honestly 400s. `/v1/responses`: envelope echoes request fields, every SSE event gets `sequence_number`, `background:true` → 400, stateful chains via `ResponseStore`, WS = same endpoint via Upgrade, NO `[DONE]` on WS success.
+- **Context-overflow 400s name BOTH counts** (`contextOverflowMessage`; legacy sentence stays the prefix). The app renders it as a card.
+- **Anthropic `/v1/messages`** (Claude Code): typed blocks, `input_schema`→`parameters`, stop-reason map incl. `stop_sequence` echo (`anthropicStopReason`), full SSE content-block lifecycle. Launcher env: `ANTHROPIC_BASE_URL` + dummy keys + `ANTHROPIC_DEFAULT_*_MODEL=mlx-serve`.
+- **Ollama `/api/*`**: pure translation (ollama.zig), NO duplicated inference; no-model endpoints answered pre-scheduler; `resolveName` handles `name:tag`. Discovery is two-level; one path must never register under TWO ids (`registry.peekByPath` — double-residency OOM class).
+- **LAN sharing**: proxy is a TRANSPORT; keyless gate = `routeClass` × `SharedSet`; `<id>@<peer>` mirroring; loops impossible by construction (self-token + tunnel marker, one-hop bound). Full design: `docs/reference.md`.
+- **Observability** (`--metrics`): zero cost when off; TTFT at prefill completion; live tok/s via ONE atomic per decode tick. `--api-key`: loopback exempt; `/health`+OPTIONS open; `constTimeEql`. No admin surface (deliberate).
+
+## Tool calling (server pipeline)
+
+With `tools` present, tokens buffer for detection (all tag families + raw JSON); thinking buffered separately. Parse chain: strict → tolerant repairs → truncation salvage; then the per-request chokepoint `server.parseToolCallsForRequest` = parse → inferred-name filter → parallel clamp → buried-param hoist → schema coercion (hoist+coercion gated by `--no-tool-autocorrect`; final safety net guarantees emitted `arguments` are ALWAYS valid JSON). Serialization (`chat.serializeMessagesJson`): role "tool" native, args as JSON STRINGS, every arbitrary-byte string through `appendJsonString`. Streaming: full args in ONE SSE delta; thinking buffered until close → `reasoning_content`. Fallback (`fallbackFormatChat`): ChatML, Llama ipython, Gemma "Tool result:". Client side: `app/CLAUDE.md`.
+
+## Prompt-based skills / downloads / debugging
+
+- Product skills: `~/.mlx-serve/skills/*.md` (frontmatter trigger substring match → body into system prompt; `SkillManager` rescans on mtime; Finder-managed).
+- `DownloadManager`: streams to `.partial`, Range resume, 3 retries, cancel preserves partial, size-matching files skipped.
+- Server log: `~/.mlx-serve/logs/mlx-serve-<port>.log` — THE post-mortem file. `--log-level debug` for verbose. Grep patterns: `jinja error:`, `[cache] reusing/invalidated`, `<- N+M tokens`, `tool_msgs=`, `[spec-stats] mode=`, `spec-gate:`, `[loop-stop]`, `[lan] proxy`, `[disk-cache] restored`, `[hot-cache]`. Tool-traffic capture: `MLX_SERVE_RAW_DUMP_FILE=<abs path>` + debug → `tests/harvest_tool_traffic.py`. Reproduce tool bugs `stream:false` first; `pkill -f mlx-serve` between KV-poison tests; render Jinja offline via python jinja2. Never run mlx-serve and Python `mlx_lm.load` concurrently on big checkpoints (double-load OOM).
+
+## Rules (distilled gotchas — full stories in docs/gotchas/)
+
+### Tool calling & formats (→ docs/gotchas/tool-calling.md)
+
+- **Control bytes**: ONE raw byte <0x20 in history kills the strict render → SILENT downgrade to `fallbackFormatChat` (model loses its stop token). Everything through `appendJsonString`; wrong-family tags in output ⇒ suspect silent fallback before the model.
+- **Model-mangled arg JSON**: strict parse fails → `looseRepairToolCallJson` (re-escape, strict re-parse); never drop the whole call.
+- **Truncated opener**: recover NAME + `{}` — NEVER ship partial content values.
+- **Delimiter-drop tolerance (hy3 class)**: a tag parser never bails a call on ONE missing delimiter; plural-wrapper recovery keys strictly on the SUFFIXED `<tool_calls:` form (bare form is DSV4's).
+- **A `</think>` inside a tool ARGUMENT is payload, not a block close** (`chat.thinkCloseIsToolCallPayload`): decline a close whose nearest preceding tool opener is still OPEN there AND whose block closes afterwards — BOTH halves load-bearing.
+- **Near-repeat loop tier** (`generate.isNearRepeatTailLoop`): a rephrasing loop has no exact cycle — judge a 1024-token window on THREE ratios that must ALL be low (distinct ≤ 0.12, 4-grams ≤ 0.35, novelty ≤ 0.10); any two alone convict honest output.
+- **The third ratio is PROGRESS** (`near_repeat_max_novelty`): vocabulary ratios can't tell a loop from procedural code; novelty = fraction of second-half 4-grams the first half never had. Bar errs toward acquittal — a false cut destroys good work; a missed loop just hits max_tokens.
+- **Loop-stop cuts are truncations**: `finish_reason "length"` (`scheduler.loopStopReason`), `[loop-stop]` logged, salvage ships NO fragment values; only the loop knows `maxTokensHit`.
+- **A loop cut says WHY and does not hand the loop back**: `finish_details:{"type":"repetition_loop"}` on chat+completions (never invented inside Anthropic's schema); non-streaming responses trimmed to the degenerate span start (`loopTrimmedIds`, `MLX_SERVE_LOOP_TRIM=0`); streaming keeps the tail — a delta cannot be retracted. Guard: `tests/test_loop_stop_signal.sh`.
+- **Types come from the SCHEMA, never the value's spelling** (`coerceToolArgsToSchema`, both directions; undecidable → untouched). ONE chokepoint `server.parseToolCallsForRequest` — never call `chat.parseToolCalls` from a handler.
+- **Buried required params**: `hoistMisplacedRequiredParams` lifts only on all-schema-read unanimity; ambiguity → untouched. Pristine args are the tell that the parse layer is innocent.
+- **Heuristic raw-JSON inference must name a DECLARED tool** (`filterInferredBySchema`); explicit tag calls never filtered; new heuristics set `.inferred`; deliberately not autocorrect-gated.
+- **Hard invariants (replay-pinned)**: emitted args ALWAYS valid JSON; every converter escapes + dedups; coercion never worsens conformance; genuinely-broken output stays honest. Harness: `src/tool_traffic_replay_test.zig`. KNOWN GAP: `parseHermesToolCall` trims param whitespace.
+- **Gemma dropped `<|"|>`**: rich bare values run to the CONFIRMED closing delimiter or top-level final `}`, never the first `,`/`}` inside markup.
+- **Think-tag leaks**: strip pos-0 unclosed openers; `trimTrailingThinkClosers`; universal no-tag-leak corpus invariant auto-covers new entries.
+- **Unparsed tool markup never rides out as reasoning OR content** (`chat.trimLeakedToolMarkup`): one cut at the first wrapper opener, applied ONCE in the split/strip wrapper; `/v1/messages` cuts at emission; streaming end-flush concatenates BEFORE cutting (markers split across tokens).
+- **Streaming + tools + thinking**: buffer until pattern resolution; reasoning streams INCREMENTALLY on the tools path (`.hold_thinking` + `chat.unstreamedReasoning` — never a resend; a reasoning BUDGET keeps buffering). Pinned by corpus streaming replay + `tests/test_messages_stream_thinking_tools.sh`.
+- **The streaming think gate scans with a CURSOR** (`chat.ThinkScan`, O(total bytes) not O(n²)); the close tag cannot be latched once a `tool_call` substring is seen (payload lookahead) — that case falls back to the exact full scan.
+- **Pythonic tool calls (lfm2/LFM2.5)**: call-expression grammar; value TYPES live in the SPELLING (`True`, single-quoted lists) and are parsed at parse time; marker-gated ⇒ additive; truncation ships NAME + `{}`.
+- **A template can open `<think>` unconditionally** (LFM2.5): whether a prompt ends inside a think block is a property of the RENDERED BYTES (`server.promptOpensThink`), never ANDed with `enable_thinking`; thinking-off + prompt-opened ⇒ a stream arm DROPS the block. New template ⇒ check if its opener is conditional.
+- **`in_think_block` starts from the PROMPT, not the request flag**: the end-of-stream flush demands POSITIVE evidence a block was open (`saw_think_open` or prompt opener) — Gemma decides per turn.
+- **An integration assertion that a MODEL must think/answer/call is a checkpoint expectation**: assert the INVARIANT, branch on the model's choice; a skipped arm reads as a pass.
+- **A contract COMMENT is read as a spec** — pin it with a test or it gets filed as a bug (issue #94).
+- **Assistant-history reasoning round-trips** (`Message.reasoning_content`, key OMITTED when absent): reasoning-persisting templates (laguna, inkling) otherwise render nothink signatures from turn 2.
+- **A template can raise_exception on OUR extra-context values** (Inkling): `serializeExtraContext` sniffs the family; tool-call `arguments` stay OBJECTS; history tool_calls carry `"id"`; hermetic render test pins it.
+- **A transcribed chat template is worth what it is PINNED against, and whitespace is a token-level contract** (`tests/dsv4_template_ab.py`, byte equality over the shapes the server emits; convert INPUT shapes to each side's contract).
+- **Inkling channel markers are single special tokens, but marker filtering alone does not cover tool turns**: `streamShouldBufferForTools` buffers on the invoke marker and HOLDS bare-identifier segments after boundary markers.
+- **An error echo teaches the model the error** (Inkling name salvage): NAME = trailing identifier run; body = BALANCED JSON, never scan-to-end-tag; a parsed NAME must never contain `<|` (corpus invariant); bare-JSON inference never runs on invoke-marker text; `applyFamilySamplingDefaults` fills top_p 0.95 when a checkpoint ships no generation_config.
+
+### Server, HTTP, lifecycle (→ docs/gotchas/server-http.md)
+
+- **Logprobs are the MODEL's distribution, ids travel WITH values, and the entry belongs to the RETURNED token**: pre-temperature logits; ids via argpartition+gather (`mlx_topk` is NOT descending); one-token delay (`Generator.pending_logprob`). Bar: temp-0 rank 1 == chosen token. Scan: `last_logprob` only assigned from `pending_logprob`. A broken instrument is worse than none.
+- **Streaming logprobs ship on BOTH surfaces**: `logprobs` is a SIBLING of `delta`/`text` (`ChunkExtras`, null never absent); ONE collector `StreamLogprobs`; entries drain against a HIGH-WATER MARK, ship EXACTLY once; `text_offset` runs whole-completion; token+entry publish in ONE critical section (`Slot.pushTokenWithLogprob`). Guards: `tests/test_logprobs.sh` [4][5] + emitter scan. Honest gaps: `logit_bias` unparsed, `/v1/responses` no logprobs.
+- **`logprobs.content` describes `message.content`** — slice by `contentTokenRange` (unlocatable content keeps FULL range); streaming is structural (reasoning emitters never drain; content chunks `skipToContent` first; the empty-content arm is `dropPending` at all four sites). Guard: [6] + two-sided emitter scan.
+- **A logprobs token string is a BPE FRAGMENT, not necessarily valid UTF-8**: `jsonEscapeLossy` (U+FFFD, maximal subpart) at the four token-string sites, `bytes` keeps exact bytes; do NOT widen to `jsonEscape`/`appendJsonString`. Guard: [7].
+- **`/v1/completions` logprobs is an INTEGER and a different shape** (four parallel arrays, text-keyed map that can collide — OpenAI's own shape); measure over the CHAT surface.
+- **Liveness is a property of the SOCKET**: `beatStreamKeepalive` at the bottom of every streaming loop; emit on 5 s byte-silence. `StreamHeartbeat` (client, bytes) mirrors `StallClock` (server, tokens). GAP: Ollama sink drops SSE comments.
+- **A load failure crosses the inference-thread boundary by NAME** (`req.error_name` → `ModelRegistry.loadErrorFromName`, also on both `.error_state` arms): memory-preflight refusals surface as `error.InsufficientMemory` → their own named 503 + entry reset to `.unloaded` (the 503 says "retry" — sticky error_state made that a lie); everything else ships `Model load failed: <stored name>` (#144).
+- **Teardown**: drain conn threads (`active_conn_threads` + `cancelAllInFlight`) BEFORE `scheduler.deinit`.
+- **Serial ≠ exclusive**: module-owned decode state needs admission-level single-flight — `scheduler.admitPendingTick` keyed on `modelExclusiveDecode` (NEVER `!modelBatchable`); held slots stay in `pending` so keepalives flow.
+- **`--model-dir` is REPEATABLE**: `discoverModelsMany` merges N roots FIRST-WINS (un-deduped merge fails registry init); app `ModelRoots` is the ONE answer to downloads + scan; DevID-gated (MAS helper can't inherit scoped grants). Second bite (2026-08-08): `modelsDir` alone hid the pre-move library from the app while the server kept serving it. Third bite (2026-08-09): `ownedRoots` (destination + built-in) skipped the LM Studio + custom scan folders, so a pack there got a Download bar over a copy already being served — app-side READS (picker, `existingModelDir`, `resolveModelDir`, `componentReady`, drafters) now go through `readRoots` = EVERY served folder (`ModelRoots.readRoots` ≡ scanRoots, first-wins); writes + cancel cleanup + DELETE scoping stay on `ownedRoots`/destination (other tools' trees), test-pinned roots stay alone. Guards: `tests/test_multi_model_dir.sh`, `ModelRootsTests`, `OwnedRootDiscoveryTests`.
+- **A gate that runs BEFORE the estimator that knows better is the estimator** (#126): eviction gate + preflight + COMMIT all read ONE estimator (`gen.estimatePeakResidentBytes` → `gateEstimateBytes`); refusals log estimate/cap/resident and name `--max-resident-mem`.
+- **A refusal quotes the number it COMPARED, and keeps its own error out to the client** (live 2026-08-08): "peaks at ~4.3 GB but only 5.4 GB is free" reads as "this should have worked" — it was refused for the ~1.5 GB warmup headroom the sentence never named, so `scheduler.loadRequirementBytes` is the ONE number the comparison uses AND the message states (context-overflow-400 class). `ensureLoaded` FREED `req.error_name` and collapsed everything to `LoadFailed`, so `ModelRegistry.loadErrorFromName` keeps BOTH spellings (InsufficientMemory/OutOfMemory) as a memory error — 503 with a message that must fit BOTH gates, cap and preflight, since the client can't tell them apart; everything else stays honestly generic. (It was `scheduler.loadErrorFor`; the refactor that replaced it kept the first name and dropped the second, so an allocator OOM went back to a generic 500 — a merge is where a two-case function quietly becomes a one-case one.) App twin: a gen pane's "Show log" showed the SERVICE log, empty for a model that failed to LOAD — all four panes fall back to the server log tail.
+- **A staged bill is per-STAGE**: transient allowance belongs to the stage that allocates it; a stage's weights are what it KEEPS (`h3DitResidentBytes` reads the SAME predicate generate branches on); `gateEstimateBytes` adds no 10% to media peaks (reserve == commit).
+- **A residency bill is a PLAN** (`stagedPeakBytes`): sum-of-directory is only right for hold-everything backends; LTX = sum − spare variant + out-of-dir TE stage (`ltxPeakBytes`). A new backend declares its plan or gets the sum.
+- **A long job's abort must not depend on the RESPONSE SHAPE** (`gen_sse.StreamCtx.stream`): the probe is `Conn.peerClosed` (write failure is seconds late); `stream:false` no-ops the event cb; cancel arms report `error.Cancelled`, never "generation failed".
+- **Non-text model on a text surface must 400 BEFORE prefill** (`textGenRejectReason`, TWICE: arch_hint peek + post-load). New surface → `isTextGenRoute`; new modality → `modalityFromType`.
+- **An arg loop with no else branch is a silent flag eater** (`cli.classifyUnparsedArg` rejects unconsumed args). Flag cross-check: every `--flag` any script or `ServerOptions.toCLIArgs` passes must appear in main.zig's match list.
+- **A serve path that hand-rolls its ServerConfig eats CLI flags**: related settings travel as ONE value (`server.PldDefaults`). Guard: `tests/test_headless_spec_flags.sh`.
+- **A client-supplied PATH is proven on OUR side of the mlx boundary** (`lora.loadFile` stat → 400; an MLX error KILLS the process).
+- **Hand-written error text is not JSON**: escape at the SINK (`gen_sse.jsonEscapeMessage`), truncate on a UTF-8 boundary rather than send no body.
+- **Endpoint EXISTENCE must not depend on model state**: `!routeExists(path)` → 404 even with no default model; `ROUTE_PATHS` pinned against the dispatch chain by source scan.
+- **A page that must render on an EMPTY server can't render FROM a model**: `GET /` renders above resolution, fetches `/v1/models` client-side. `index.html` is a std.fmt FORMAT string — CSS/JS live in separate files injected as runtime `{s}`, never inlined. API reference pinned to `ROUTE_PATHS`. Guards: `tests/test_index_page.sh`, `tests/html_console_test.mjs`.
+- **Console voice mode**: mic ONLY in `listening` (else it answers its own voice); replies via `speakableChunks` (markdown STRIPPED, synthesized one chunk ahead).
+- **Console layout**: one composer element in two layouts; Recents = localStorage with `storableTurns` stripping image payloads; replies render markdown from ESCAPED input; no sampling knobs.
+- **A client cannot time our own stream** (tools buffering flushes at once): use the final chunk's server `timings`, summed across rounds; `stream_options.include_usage` gates that chunk.
+- **Console media is ASKED for, not a form**: ONE media generation per user turn (budget, refusal must be a SENTENCE); tool `model` enum == resolution list (`editableIds`); rank candidates by usability; the system prompt is OURS, built from `/v1/models` + the API tab's own markup.
+- **A field DISPATCH reads must be readable from every body SHAPE**: `parseModelFromRequest(body, content_type)` feeds dispatch AND `lanShareDenial` (the multipart `model` field class); a guard for it needs a server with NO default model.
+- **A header PARAMETER lookup keys on the parameter at a boundary, never a substring** (`name=` also matches inside `filename=`).
+- **A body log that was fine for JSON is not fine for BINARY**: text bodies whole, non-text a bounded sanitized preview (`bodyIsText`/`bodyPreview`).
+- **Auto-context is PINNED at load** (`pinAutoContext`); 85% margin applies to the MEMORY ceiling only; ask `getEffectiveContextLength`, never `server_config.max_context_size`; app budgets derive verbatim.
+- **GPU memory ceiling must see EXTERNAL pressure** (`currentGpuMemoryCeiling`); Metal OOM is UNCATCHABLE (backtrace shows libllama frames — red herring); embedded-engine requests are EXEMPT from MLX memory guards (`mlxMemoryGuardApplies`).
+- **The prefill guard bills what the ARCH reads**: `prefillAttnKeys(seq)` for sparse bounds, `prefillFfnWidth` from the DECLARED config (MoE = top_k × moe_intermediate + shared), chunk term arch-owned (`server.dsv4PrefillMemoryNeeded` reads live `prefillSub()`); all call-site scan-pinned.
+- **Metal at the working-set edge returns ZEROS before it aborts**: all-zero logits from healthy inputs across independent chains = MEMORY symptom, not math.
+- **A weight outside every warmup forward is still LAZY at serve time**: force-eval module weights at init (`appendWeightArrays`), budget-gate on LOGICAL bytes (`dsparkFitsBudget`); DSpark is opt-in `--dspark`.
+- **`--timeout` is a STALL timeout** (seconds without a NEW token); `toolCallFinishReason` preserves "length" through tool parse on all four surfaces; `outputBudgetGuidance` only when tight (<12288).
+- **Ownership by PROVENANCE, never content** (sentinel-by-content leak): use `{slice, owned}` returns, never free-unless-equals-literal.
+- **LAN robustness**: per-INTERFACE dns_sd callbacks, loopback-first fetches (macOS Local Network privacy blackholes LAN SYNs), eviction only via `attemptKnown` after `PEER_DROP_FAILS`, dead dns_sd refs revived by the browser loop, raw-body id compares canonicalize `\/` first, failure modes stay DISTINCT.
+- **@peer proxying is bounded by the TUNNEL MARKER, never loopback-ness**: any direct client gets ONE hop; `X-MLX-LAN` requests never proxy again (`isTunneledRequest` at gate AND dispatch).
+- **Peer-visible surfaces must not depend on WHERE the peer connects from**: list filters key on the discovery fetch's marker; entries carrying `lan_peer` never re-export; `X-MLX-LAN-Token` self-fetch → `error.SelfFetch`.
+- **A READY model never advertises LESS capability than its stub** (`readyHasChat` counts embedded engines; app `lanAdvertises` tolerates empty-caps peers).
+- **The default bind is 0.0.0.0 and serve mode WARNS about it** (`server.shouldWarnOpenBind`: no explicit `--host`, no `--lan-share`, non-loopback → boot warning); the default flips to 127.0.0.1 in a future release — the helper's host check then self-silences. The app always passes `--host` explicitly (Agent Sandbox needs the vmnet-reachable bind).
+
+### Engine: KV, spec-decode, kernels, MLX (→ docs/gotchas/engine-mlx.md)
+
+- **The prefill-chunk cap reads the width the SCORE is CONTRACTED at** (`ModelConfig.prefillScoreHeadDim`) — the `<=128` fused-SDPA early-out otherwise exempts exactly the arch with the biggest composed score tensors; the two hd-256 policy branches stay keyed on 256 EXACTLY.
+- **Fused decode QK-norm+RoPE** (`fusedQkNormRope`, laguna, default ON, `MLX_SERVE_QK_NORM_ROPE_FUSED=0`): bit-identical; cos/sin extracted via probe rows (`ropeAngleRow`), never re-derived; live paired A/B is the bar, not the µbench.
+- **Decode-only dense-attention requant** (`--decode-attn-quant`, default ON, LOSSY by design): side copies served at decode AND spec-verify (must see the SAME weights); prefill keeps dense; tail layers real nvfp4-g16 (`attnDqFor` per-layer geometry). A/B quality per newly-adopted dense arch.
+- **MoE decode down-path tail is ONE dispatch** (`gatherQmvDownReduce`, default ON, bit-identical, `MLX_SERVE_MOE_DOWN_REDUCE_FUSED=0`); scores must share the activation dtype.
+- **Certified lm_head prune is OPT-IN** (`MLX_SERVE_LMHEAD_PRUNE=1`; µbench win, live +0.84%): argmax-only requests via `ForwardCtx.argmax_only` (logprobs must ride `InitOptions`). Interleaved A/B trick: flip a per-request lever with a no-op field (`presence_penalty: 1e-9`) so both arms share one boot.
+- **Every qwen3.5/3.6 checkpoint is hd 256** — read the CHECKPOINT before porting an hd-128 kernel to "qwen"; the wiring waits dormant.
+- **A reference probe with SYNTHETIC dtypes proves the reference's SEMANTICS, not the checkpoint** (Inkling global_scale); dtype-gate any `mlx_array_data_float32` load-time read (wrong dtype = silent no-op).
+- **KV invalidation**: after tool calls + pad-only gens. Sliding-window layers keep the full buffer; decode views slice to last `sw`.
+- **Hot-cache restore ALWAYS clamps**: unconditional `truncate(final_len)` — restored offset = MATCHED length, never the snapshot's.
+- **Slice-born weights into gather_qmm/quantized_matmul are `mlx_contiguous`-materialized at load** (`splitPackedGateUp` pattern) — lazy views compute silently wrong at real scale.
+- **SSM/hybrid**: init checks `ssm_state.ctx == null` NOT `!initialized`; param-free RMS norm passes `ones()`; Nemotron dt clip = only the `time_step_limit` array; PLD snapshots need per-FIELD null guards.
+- **Spec verify invariant** (PLD/drafter/MTP): `cache.step = prompt_len + emitted`, t1 NOT in cache on entry; verify input `[t1, draft…]`; partial-accept correction from ORIGINAL `verify_logits[accepted]`.
+- **Spec dispatch discipline**: all four surfaces × stream/non-stream wire `use_*`; MTP default = `server.defaultEnableMtp` ONLY (MoE targets OFF, `--mtp` flips); engagement COUNTS in tests, never output equality; priority MTP > drafter > PLD; logprobs>0 + grammar disable spec; tools disable NOTHING.
+- **A per-arch exclusion written as a hand-rolled conjunct is a list of ONE**: both sides read `Transformer.ownsModuleDecodeState()` + `scheduler.specInitWiring`; class scan pins every `?*<x>_mod.<Y>` field into the list.
+- **The exclusion is per-arch CAPABILITY** (`Transformer.moduleStateSpecRollback`): spec is earned by per-position capture + rewind, pinned at EVERY accepted count via error RATIO (never bit equality — MLX picks GEMMs by M).
+- **A module-owned forward that ignores `ctx.capture_hidden` hands spec an EMPTY hidden**: publish last-row + all-rows via the `skip_lm_head` seam.
+- **A guard that shapes INIT options does not bind DISPATCH**: tick dispatch through `scheduler.specTickMode` (slot flag AND generator state), and `nextPld` self-declines on `!pld_enabled` permanently.
+- **A host read inside a layer loop is a GPU BARRIER, and the barrier is the cost**: defer non-consumed reads into ONE batched eval after the loop (`chunkCrossesBoundary` decides pure-arithmetically).
+- **A spec rollback that re-forwards the accepted prefix is a SECOND forward**: capture only what verify overwrites in place (`DsparkAnchors`), truncate the rest by offset; pinned bit-identical at every acceptance count.
+- **A lever's DEFAULT belongs to the engine that MEASURED it** (DSpark confidence gate negative here → OFF behind env); allocator-cache clears tuned for prefill are wrong for repeating spec widths; profile laps are honest only where the un-profiled path already syncs.
+- **DSpark serves SAMPLED requests via the MTP one-hot acceptance** (default ON, `MLX_SERVE_DSV4_DSPARK_STOCH=0`); penalties/grammar/logprobs stay serial; greedy keeps argmax equality, byte-pinned.
+- **MTP head**: delta-encoded norms AUTO-FOLD at load (acceptance-floor check is the guard); every weight re-solves quant params PER WEIGHT; drafts greedy through a 3-bit draft-only head (verification uses the trunk head); ONE bounded sync per stochastic round; prefill history FULL by default.
+- **No KV snapshots across verify** (copy-on-write): rollback = scalar anchors + per-position SSM capture + offset-only `truncate`. Symptom: round time grows with context faster than the verify forward.
+- **A multi-token forward is not a prefill**: `prefillEvalCadenceApplies` (seq ≥ 32) exempts verify/canvas/batched-head forwards.
+- **INT4 long-greedy divergence is legit** (qmv-vs-qmm near-tie argmax); byte-stable greedy ⇒ no spec + `--kv-quant off/8`.
+- **A prefix-cache HIT is not bit-identical on a HYBRID** (recurrence re-runs in a different block size; up to 0.047 nats): run-1-vs-rest divergence with `--no-pld` unchanged = this, not a spec bug. Byte-stable greedy on a hybrid ⇒ `--prefix-cache-entries 0`.
+- **Quantized-KV fused reads** (`--kv-attn-mode auto`): packed in-place decode reads at ≥8K under kv-quant; engagement ASSERTED in `tests/test_kv_quant_fused_equivalence.sh` (the flag was a silent no-op for months).
+- **A parity loop asserts FINITENESS before it diffs** (`NaN > max_err` is false — all-NaN scores 0); additive masks via `mlx_where`, never indicator × -inf.
+- **A threadgroup-memory footprint is an OCCUPANCY decision**: size block length so tg bytes stay ≤ ~10 KiB (`qkvDecBlockFor`), not merely under Metal's 32 KiB.
+- **kv-quant contract**: attention always reads `KVCache.denseView` on EVERY forward path (batched decode included — guard in `tests/test_batched_equivalence.sh`); schemes extend via enum + the two switch arms; `HotEntry` records its scheme; quant snapshots carry 6 handles.
+- **Hybrid-SSM prefix cache retains ~3.4× what it reports**: the reliable lever is ENTRY COUNT (`ramCappedPrefixCacheEntries`).
+- **SSM-checkpoint stride never sub-divides the prefill chunk** (`effectiveSsmCheckpointStride`); dense hd-256 fused-causal chunk cap 8192, MoE 4096; dense-27B 8K+ prefill is GEMM-roofline-bound — don't chase >5% there.
+- **The always-on SSM snapshot sits `SSM_SNAPSHOT_BACKOFF` (30) tokens BEFORE prompt end** (a snapshot AT the end is unreachable next turn — the llmprobe cache-hit mechanism); tail rides the final logits forward.
+- **hd-256 prefill kernel (`msv_attn_p256`)**: band always fused; plain causal default-on via kv-chunk budget; q_len < 16 ALWAYS declined; K/V enter as strided views; guards bill through `prefillHeadDimFused`.
+- **A load-time constant table in the WRONG DTYPE silently widens every read downstream** (Laguna mscale f32 = 3.03x): `constTableAs` hands tables back in the activation dtype; bf16 IS the reference on a bf16-calibrated checkpoint; invisible to op counts — bisect forward and let the reconstruction disagree (`diagProjBench`). Scan-guarded.
+- **Every forward path carries a `[dtype-trace]`**; 1-D f16 tables are residual promoters — narrowed at load (`narrowsLoadedF16`, kill `MLX_SERVE_F16_NARROW_1D=0`); multi-D dense f16 stays (matmul operand). Big models need a ~45 s settle between boots; a rejected diagnostic must still speak (`projLadderFits`).
+- **A 3x forward fix invalidates every ratio calibrated against the slow forward**: re-measure KV dtype, gather policies, spec warmups (`SPEC_YIELD_WARMUP` 8) — and sweep against spec's WIN case, not just its losses.
+- **A one-run baseline makes every later diff a coin flip**: per-cell MEDIANS; attribute before believing (reachability is faster than a re-run); `MLX_SERVE_DECODE_PROFILE` is NOT a sizing tool; ladder guards use the ladder's own geometry.
+- **A weight-layout fusion is not automatically output-preserving**: concatenating pre-transposed weights changes which KERNEL runs (join on the OUTPUT axis); a reduction-order parity test needs a contraction dim near the real one. Fused QKV measured null → opt-in.
+- **A decode fusion pays only if it removes launches the GPU was NOT overlapping AND real work** (`fusedAddRmsNorm` negative: one 4 KB read saved, metallib kernel lost).
+- **A fusion must shorten the DEPENDENCY CHAIN** (`MLX_SERVE_DISPATCH_PROBE=N` prices a dispatch ~1.5–1.7 µs, an UPPER bound): `moeRouterTopK` + `fusedSwiGLU` pay; off-chain gates don't. A fused kernel inherits the launch shape you give it.
+- **Reproducing an MLX op means reproducing its REDUCTION TREE and ACCUMULATOR** (virtual-thread butterfly, input-dtype sums, reciprocal-multiply softmax); `mlx_compile` on the same math is NOT output-preserving.
+- **A JIT custom kernel and MLX's metallib disagree on transcendentals; a 16-bit domain is swept ENTIRELY** (`swigluSigTable` — exact by construction; one bf16 pattern in 65536 diverged); f32 is DECLINED.
+- **Fusing gate+up flipped `gatherQmv` into the decode default** (`gatherQmvGateUp`): eligibility = the FUSED KERNEL'S OWN conditions (`useGatherQmvDecode`), never a model_type list.
+- **A `metal_kernel` config rebuilt per call is CPU tax that reads as kernel cost — cache it keyed by the FULL SHAPE** (`ShapeKey`; an element-count key collided across layouts and killed the server).
+- **A bandwidth bench whose working set is smaller than a real step's measures CACHE**: distinct per-layer weights or don't quote it.
+- **A lever that pays in another engine's harness may pay for a constraint we don't have** (intra-step async-eval ladder: negative here, default OFF). Port, measure, let the number pick the default.
+- **"Duplicate a component and read the marginal cost" is unsound for anything that MUTATES state** (double KV writes; freed copies never evaluate).
+- **Prefill perf kernels A/B PER ARCH before default-on** (`gdnBlockedEligible`, `prefillDqGemm`); fused-causal hd-256 archs cap auto chunk at `min(base, 4096)` with no score-formula shrink.
+- **MTP spec levers all kill-switched, each bit-identical to off**: greedy drafts; early dispatch + pre-draft (timing only, PRNG binds at build); oQ raw-HF head norms get the `+1` anchor repair; EV gates fed by REALIZED rates.
+- **verifyQmm lanes** (`vqmmLaneFor`): split-K M 2–7 / wide tile N≥100K / NAX m16 M 8–16 (G17 + macOS≥26.2). Codegen NAMED SCALARS with literal indices (array-indexed stack-spills 10×); M=8 is the plain-SIMD register cliff; auto MTP depth 8 needs the full fingerprint.
+- **Reproducing an upstream NO-OP faithfully means NOT doing it** (Kokoro SineGen): measure the reference's OWN seed-to-seed self-similarity before accepting a loose threshold — stochastic excuses thousandths, not halves.
+- **Kokoro load/layout traps**: safetensors READ on the CPU stream (no GPU `Load`); depthwise `ConvTranspose1d` transposes `{0,2,1}`; complex arrays via `mlx_array_new_complex`; `AdaIN1d` is pure instance norm — read the CHECKPOINT, not the reference source.
+- **Kokoro vocab includes uppercase ASCII as diphthongs**; the real invariant is every emitted symbol IN the vocab (`Vocab.encode` silently DROPS unknowns).
+- **Kernel testing rules**: GPU parity = no-worse-than fp32 ground truth, never kernel-vs-kernel; µbench wins can lose live — same-boot A/Bs are the bar; eligibility predicates adopt every matching shape — A/B each; never fit spec constants without checking realized `m_avg`.
+- **A sparse-attention PATTERN that isolates a spatial neighbourhood cannot be tuned into correctness** (H3, DEAD): metrics flag, CLIPS decide; the H3 DiT is at roofline — wall clock moves only by FEWER forwards. A gate whose windows scale with the schedule needs a test at the SHORT end.
+- **MoE PREFILL without the global sort re-reads each expert bank once per TOKEN**: any new MoE arch's prefill uses the `_gather_sort` pattern (decode C==1 stays unsorted). Measure before attributing (the barrier theory was wrong).
+- **dsv4 decode glue is FUSED** (`dsv4_emit_win`, `dsv4_dec_chain` +8.6%; exact `frexp`/`ldexp` sims — no transcendental class); MoE gate+up and sink-softmax measured against → opt-in.
+- **A cache that hands out BORROWED handles evicts LRU, never a fixed slot** (`vqmmScalarEvictIndex`; slot-0 eviction freed a handle the caller held — SIGBUS, one request killed the server). Symptom signature: whole conformance surfaces 0/N = DEAD PROCESS, not a bad model.
+- **A `metal_kernel` helper owes its own `streamIsGpu` guard; a per-token-varying TEMPLATE value is a fresh Metal JIT per value** — ramping values ride INPUTS, only stable geometry is templated.
+- **When an A/B's arms fork greedy CONTENT, per-prompt spec cells are variance**: sample across prompts before believing a regression.
+- **dsv4 comp_in int8 requant is EXPLICIT-opt-in** (`decodeAttnQuantExplicit`) — its characterization moved an answer; a shared lossy flag's default is not transferable between archs.
+- **MoE decode `gather_qmm` costs O(EXPERT-BANK SIZE), not O(work)** — superseded: stock gather is the default on EVERY arch since the mscale fix; env levers remain for A/Bs.
+- **A kernel's dtype and its threadgroup BLOCK SIZE are ONE decision** (`gdnBlockTFor`; read dtypes off the ARRAY; store type is the OUTPUT's — Metal has no implicit float→bfloat).
+- **A custom kernel's signature comes from each input's ACTUAL dtype; <8-element arrays land in `constant`**: index raw buffer names; every new kernel ships a one-shot "engaged" log + parity on the LIVE dtype.
+- **A helper that materializes a VIEW owns the view** (slice-and-contig leaks pin the PARENT): route through ONE owning helper per file (`sliceContig`). RSS is blind to Metal — measure `/props` `active_bytes` + vmmap.
+- **A weights MAP outliving the model pins every buffer the model frees**: scope it inside a block ending at `Model.load`; staged loaders log residency.
+- **mlx-c iterator refs**: `iterator_next` hands a +1 you transfer or free — dropping it makes immortal buffers.
+- **Allocator-cache growth**: loops freeing never-repeating sizes grow phys unbounded — `mlx_clear_cache()` once per CHUNK and per emitted block; repro must VARY the size-driving shape.
+- **The pool is unbounded, so the clear must be un-skippable** (#110): `server.applyMlxCacheLimit` ONCE at top of `main()`; cadence is INTERVAL-based (`step -| last_clear >= 256`, never `%` — spec strides walk over multiples); `Generator.advanceStep` is the one place step moves (scan-pinned); `finishSlot` clears the tail.
+- **KV growth is PROPORTIONAL** (`nextCapacity` +25%, floored one chunk, capped 8192) — fixed +256 stranded ~5.6 GB per 256 tokens at long ctx; truncate/snapshot/restore stay capacity-agnostic.
+- **`active` flat while phys climbs = the POOL, and it must be nameable from outside**: `/props` `memory.cache_bytes`, `mlx_serve:mlx_cache_bytes`, the tray's `(+N GB cache)`.
+- **Special-token splitting**: only `Tokenizer.encode` (first-byte buckets) — a per-special rescan is O(specials×text) and this class shipped TWICE. Any per-position loop over a vocab-derived collection needs an index.
+- **mlx `Copy`/`contiguous` are VIEW ops**: a slice OUTLIVING its parent goes through `materializedOwnedCopy` + eval. `mlx_save_safetensors` silently appends ".safetensors".
+- **A raw data-pointer read must PROVE row-major contiguity** (post-eval strides; materialize via FLAT RESHAPE — add-scalar-zero propagates broadcast strides).
+- **mlx-c upgrades**: diff `lib/mlxc-src/mlx/c/*.h` vs `src/mlx.zig` externs; the pin must be a brew-proven pair. ds4 bumps: re-sync `ds4_ffi.zig` EngineOptions (layout test) + mirror upstream CORE_OBJS in build.zig.
+- **NAX presence is asserted, never assumed**: `build-mlx.sh` + `tests/test_mlx_staged_nax.sh` grep the metallib for `*_nax` (the CMake gate fails silently).
+- **`mlx_array_new_data` COPIES shape-worth of bytes**: a smaller buffer is latent UB that passes until stack layout shifts.
+- **A model whose per-request state lives OUTSIDE the KVCache is excluded from prefix-cache/snapshot reuse AND owed a `Transformer.deinit` arm** (dsv4 leaked 108 GB on unload until it got one).
+- **`openDirAbsolute` on an empty/non-absolute path is ReleaseFast UB that miscompiles the CALLER**: guard every call site; when Debug and ReleaseFast disagree on control flow, suspect unreachable-class UB and bisect in Debug.
+
+### Model loading, configs, converters, media parity (→ docs/gotchas/models-media.md)
+
+- **An adapter's alpha lives wherever its exporter put it** (`lora.fileAlphaScale`: nested-PEFT-JSON > flat > `ss_*` > none; per-module tensor WINS; non-finite → DECLINED; scale logged per file). A LoRA test that only compares BYTES cannot tell a working adapter from noise — pair with `tests/lora_noise.py` + `tests/test_real_loras.sh` (a guard that LOOKS).
+- **A condition stream is assembled in SEGMENT order, and ONE resolver decides it** (H3 `resolveRefs`; `refBlockFor` DERIVED from it; ordinals are a checkpoint contract; audio cond rows ride in clean at timestep 1.0). Guards: derivation test + round-trip + log-counted assertions.
+- **Two partitions shipping IDENTICAL files need a DECLARED discriminator** (H3 `tasks` → `h3ConfigDeclaresRef2va`): server 400s by name; the app gates the FIELDS, not just the controls; the integration script branches on the same list.
+- **A tiled decoder's tiles are not slices of an untiled pass when positions normalize over the EXTENT**: `fitsSingleTile` → `error.TilingUnsupported` rather than off-distribution output; temporal chunking is semantic too (trained on 17-frame clips).
+- **A COSINE parity test cannot see a SCALE error**: anything CONCATENATED into a stream asserts `rms_ratio` beside the cosine. A faithful port can make the checkpoint WORSE when it competes with an existing path (H3 `<Picture i>` splice: default-off fl2va, on ref2va) — a reference impl is a spec for what to build, not a promise it helps.
+- **An oracle that cannot execute the reference must say so**: transcription fixtures state it in their header; executable references run directly with import stubs that RAISE.
+- **A permutation-invariant checksum cannot see a permutation**: pair column checksums with a row-index-WEIGHTED one (`pos_weighted`).
+- **A distilled FEW-STEP diffusion model can REQUIRE bf16 — f32 washes** (MageFlow Turbo): RoPE rotates f32 then casts; timestep + freq table are bf16-ROUNDED (`roundBf16`); scalars dtype-match (`scalarLike`); only the sensitive component needs bf16. Debug the LOOP per-step in the native dtype, not the single forward.
+- **A reference-image editor must not change its input's geometry**: `resolveEditTargetSize` = `fitAspect` → `fitWithinCap` (proportional into `maxDim()` — independent clamps re-square); `encodeEdit` asserts pad count == merged vision rows; edit prompts capped (dense O(L²) host mask).
+- **Quantize only what a MATMUL reads**: gather-read tables (embeddings, pos_embed) on an explicit `NEVER_QUANTIZE` list — shape cannot decide.
+- **Calibrated quantization**: channel weights are PER-INPUT-CHANNEL and PER-EXPERT (imatrix value IS the weight, no sqrt); bit width beats group granularity at ≤3 bits; round (s,b) to the STORED dtype before deriving q; self-test against a weight-BLIND arm; the corpus shapes what survives — quality gates must not hang on knife-edge cells.
+- **A sampler must never draw a RESERVED special, and the legit-output set is DERIVED** (`tokenizer.reservedOutputIds` → `generate.installSuppressMask`, `MLX_SERVE_SUPPRESS_RESERVED=0`); logprobs stay the RAW distribution (the field reports the model; the mask is policy).
+- **A hand-rolled pretokenizer is calibrated to ONE tokenizer.json — digit GROUPING is per-model** (`Tokenizer.digit_group` from the Split rule): mis-grouping presents as a MODEL-QUALITY bug; config-invariant quality ⇒ suspect the PROMPT; cross-check `/tokenize` vs HF tokenizers at bring-up.
+- **The degenerate-tail loop guard needs a LONG-period tier**: periods 9..64 at 10 exact reps (`isDegenerateTailLoopRange`).
+- **An imatrix is only valid for the WEIGHTS it was collected on** (preview stats don't transfer to a retrain; collection is cheap on a same-weights donor); byte-identical shard reuse is enforced by COPYING, never re-converting.
+- **Uniform ≤2-bit experts to the LAST layer cause TURN-LEVEL agent loops** (token-level batteries are blind): low-bit quality gates need an AGENT-LOOP cell (max consecutive identical tool calls); 4-bit tail experts fix it.
+- **A configless repo SHAPE must be taught to every "is this a model?" answer**: ONE exported predicate (`model_discovery.peekMageFlowIndex`; klein keyed on a WEIGHT NAME via bounded prefix read); `gen.peekModelType` DELEGATES; ready markers must not require files the repo doesn't ship.
+- **A directory-entry filter that skips `.sym_link` measures an HF-cache model at ZERO** (preflight waved a 121 GB hub-cache snapshot — all symlinks into `../../blobs` — into 34 GB of swap): every size sum accepts symlinks and stats THROUGH them (`statFile` follows; post-stat `.file` check so a link-to-dir isn't summed). Sites: `scheduler.modelDiskBytes`, discovery's `bytes_on_disk` loops, `gen.sumSafetensorsIn`, cli list/GGUF.
+- **An incomplete media pack is invisible until its marker lands** (`model_discovery.requiredMediaMarker` — the ONE table, `gen.requiredMarkerFor` delegates): every H3/LTX download holds a valid config.json while its weights are still `.partial`, and a registered marker-less dir shadows complete copies in later roots (first-wins) while its load falls through to the TEXT loader and dies `unreachable` on the first missing weight (live 2026-08-08: a turbo-lora fragment killed the server on a plain Generate). Discovery skips them, `probeModelDir` refuses `error.IncompleteMediaPack` (named 400), the scheduler preload refuses by name; app side: the Turbo-adapter fetch downloads INTO the pack's own dir and its cancel is surgical. Guards: model_discovery/gen tests, `tests/test_model_rescan.sh`, `TurboLoraFetchTargetTests`.
+- **A family's geometry comes from the CHECKPOINT the moment a second size exists** (FLUX.2 klein 4B/9B): derive from weight SHAPES; TE heads from `q_proj` ROWS; fused gate+up = rows÷2; a zero probe leaves the field alone.
+- **When an arch's reference deliberately IGNORES a config field, that field is not the source of truth** (laguna YaRN mscale is COMPUTED; XS ships `attention_factor: 1.0`).
+- **A config field HF allows in two SHAPES must be read as both** (`chat_template` string OR list of `{name,template}` — pick `"default"` > first > null-to-fallback); `.string` on an unchecked `std.json.Value` is a process-killing panic.
+- **Read `text_config` FIRST, then root, PER FIELD** (both readers); fields a minimal `text_config` omits need explicit per-arch defaults.
+- **The WEIGHT PREFIX is a property of the checkpoint, not the config keys** (`model.resolveWeightPrefix` probes the loaded map; never re-points archs with their own prefix).
+- **A layer-init path that DEMANDS `.scales` can't load a DENSE checkpoint of its own arch**: scales absence is PER-TENSOR (`getLayerScaleOpt` everywhere); every dense contracted weight owes `maybeTransposeForBf16` — never depthwise conv or SSM state. Source scan rejects the mandatory getter.
+- **`*_text` siblings**: accept the tag, collapse to base type, prefix by `text_config` presence, force `tie_word_embeddings` for Gemma, add to BOTH visibility allowlists.
+- **Multi-converter MoE containers resolve by probe** (`hy3ExpertContainer`), never one hardcoded name.
+- **Gemma terminators merge ADDITIVELY** (`ensureGemmaTerminators`, idempotent) — never gated on "config provided no eos".
+- **Quant modes resolve PER WEIGHT** (`computeQuantParams`; scales dtype decides fp8 vs affine; `.biases` mandatory under affine, OPTIONAL under non-affine).
+- **A per-tensor quant override can live INSIDE the fp family where scales dtype can't see it** (`fpParamsFromGeometry`): solve (bits, gs) from packed geometry; each fp format DEFINES its block size; null when the solve agrees with the declaration or maps to nothing we serve.
+- **Affine bits outside {2,3,4,5,6,8} are rejected at config PARSE** (`UnsupportedQuantBits` — warmup death is uncatchable); extend together with `affineParamsFromGeometry` on an mlx bump.
+- **A GGUF folder is a SHELF of models**: one `LocalModel` per quant (`id#<file>`), per-quant delete/cancel, sidecar classifiers in sync in BOTH Swift and Zig.
+- **DiffusionGemma parity = converged-canvas self-consistency**, never random-canvas logit compare; sliding prefill takes the `"causal"` fast path when `total_kv ≤ sw`. Trace: `MLX_SERVE_DIFFUSION_TRACE=1`.
+- **Optional per-token modulation gates entirely on the mask** (`nv_pt==0` → the EXACT unchanged scalar path); pin with uniform-mask self-equivalence.
+- **Parity fixtures for deep ViTs/DiTs: dump fp32 on CPU** (MPS fp16 quietly decorrelates); transformers ≥5.x zeroes custom-model rotary buffers — dump scripts assert them non-zero; an oracle that IMPROVES when you remove a transform had that transform silently disabled.
+- **TTS**: `TimeDelayNetBlock` = conv + IMPLICIT ReLU; embedding lookups reshape to the TABLE's native width (`getShape`), never a config dim; voice clone = ECAPA embedding as one codec-prefix position, `ref_text` ignored.
+
+### Licensing & third-party code
+
+Ported kernels + vendored code are enumerated in `NOTICE` (the ONE place — no marker comments in source); `LICENSE`/`LICENSE-APACHE-2.0`/`NOTICE` ride every packaging path (tarball, .app, brew), pinned by `tests/test_release_workflow_gates.sh`. To enumerate ports, grep comments for `mlxfast|oMLX|MTPLX|mlx-lm|port` — not a keyword window. Full story + what's genuinely ours: `docs/reference.md` "Licensing".
+
+### App (Swift)
+
+All app-side rules: `app/CLAUDE.md` (auto-loads in app/); stories: `docs/gotchas/app.md`. Server-relevant crossovers: agent budgets derive from advertised `context_length` (never hardcode); the app ALWAYS emits memory-critical launch flags (`ServerOptions` defaults mirror Zig defaults — change both sides together); the two bundle binaries move together.

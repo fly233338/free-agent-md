@@ -1,0 +1,390 @@
+# HyperDX Development Guide
+
+## What is HyperDX?
+
+HyperDX is an observability platform that helps engineers search, visualize, and
+monitor logs, metrics, traces, and session replays. It's built on ClickHouse for
+blazing-fast queries and supports OpenTelemetry natively.
+
+**Core value**: Unified observability with ClickHouse performance,
+schema-agnostic design, and correlation across all telemetry types in one place.
+
+## Architecture (WHAT)
+
+This is a **monorepo** with six packages:
+
+- `packages/app` - Next.js frontend (TypeScript, Mantine UI, TanStack Query)
+- `packages/api` - Express backend (Node.js 22+, MongoDB for metadata,
+  ClickHouse for telemetry). Also hosts the **MCP server**, **External API v2**,
+  and **OpAMP server** as sub-applications.
+- `packages/common-utils` - Shared TypeScript utilities for query parsing and
+  validation
+- `packages/cli` - Terminal CLI and interactive TUI (`hdx`) for searching,
+  tailing, and inspecting logs and traces (Ink/React). Has its own
+  [`AGENTS.md`](packages/cli/AGENTS.md) with detailed architecture and
+  keybindings.
+- `packages/otel-collector` - Custom-built OpenTelemetry Collector (Go, OCB).
+  See its [`README.md`](packages/otel-collector/README.md) for architecture,
+  included components, and upgrade procedures.
+- `packages/hdx-eval` - AI eval framework for benchmarking MCP servers against
+  observability scenarios. Generates deterministic synthetic telemetry, spawns
+  agents, and grades with programmatic checks + LLM-as-judge. See its
+  [`README.md`](packages/hdx-eval/README.md) for setup and usage, and
+  [`agent_docs/evals.md`](agent_docs/evals.md) for the dual-slot A/B
+  comparison workflow.
+
+**Data flow**: Apps → OpenTelemetry Collector → ClickHouse (telemetry data) /
+MongoDB (configuration/metadata)
+
+## Development Setup (HOW)
+
+```bash
+yarn setup          # Install dependencies
+yarn dev            # Start full stack with worktree-isolated ports
+```
+
+The project uses **Yarn 4.13.0** workspaces. Docker Compose manages ClickHouse,
+MongoDB, and the OTel Collector.
+
+**This repo is multi-agent friendly.** `yarn dev`, `make dev-int`, and
+`make dev-e2e` all use slot-based port isolation so multiple worktrees can run
+dev servers, integration tests, and E2E tests simultaneously without conflicts.
+A dev portal at http://localhost:9900 auto-starts and shows all running stacks.
+See [`agent_docs/development.md`](agent_docs/development.md) for the full
+multi-worktree setup, port allocation tables, and available commands.
+
+## Working on the Codebase (HOW)
+
+**Before starting a task**, read relevant documentation from the `agent_docs/`
+directory:
+
+- `agent_docs/architecture.md` - Detailed architecture patterns and data models
+- `agent_docs/tech_stack.md` - Technology stack details and component patterns
+- `agent_docs/development.md` - Development workflows, testing, and common tasks
+- `agent_docs/code_style.md` - Code patterns and best practices (read only when
+  actively coding)
+- `agent_docs/observability.md` - Instrumentation standards (tracing, metrics,
+  context) and the shared helpers (read when adding or changing a feature)
+
+**Package-specific guides** (read when working on that package):
+
+- `packages/cli/AGENTS.md` - CLI/TUI architecture, keybindings, web frontend
+  alignment, key patterns
+- `packages/otel-collector/README.md` - Collector build process, included
+  components, upgrade procedures, adding custom components
+- `MCP.md` - MCP server setup and available tools (user-facing)
+
+**After finishing all code edits**, run `yarn lint:fix` to auto-fix formatting
+and lint issues across all packages. Pre-commit hooks handle this when
+committing, but if you finish edits without committing, run `yarn lint:fix`
+before stopping.
+
+## Key Principles
+
+1. **Multi-tenancy**: All data is scoped to `Team` - ensure proper filtering
+2. **Type safety**: Use TypeScript strictly; Zod schemas for validation
+3. **Existing patterns**: Follow established patterns in the codebase - explore
+   similar files before implementing
+4. **Component size**: Keep files under 300 lines; break down large components
+5. **UI Components**: Use custom Button/ActionIcon variants (`primary`,
+   `secondary`, `danger`) - see `agent_docs/code_style.md` for required patterns
+6. **Testing**: Tests live in `__tests__/` directories; use Jest for
+   unit/integration tests
+7. **Observability**: This is an observability product - instrument new code as
+   you write it. Every team-scoped operation must carry team/user context
+   (`setBusinessContext`), and countable log events should also emit a metric.
+   For our own instrumentation we favor wide events — enrich the unit-of-work
+   span with rich, high-cardinality attributes and keep only span _names_ and
+   _metric_ attributes low-cardinality — while metrics stay first-class
+   (counters/histograms feed alerts and SLOs, and many deployments rely on
+   them). Use the shared helpers in
+   `packages/api/src/utils/instrumentation.ts`. See
+   [`agent_docs/observability.md`](agent_docs/observability.md).
+
+## Running Tests
+
+Each package has different test commands available:
+
+**packages/app** (unit tests only):
+
+```bash
+cd packages/app
+yarn ci:unit           # Run unit tests
+yarn dev:unit          # Watch mode for unit tests
+```
+
+**packages/api** (unit and integration tests):
+
+```bash
+cd packages/api
+yarn ci:unit                        # Run unit tests (no services needed)
+
+make dev-int-build                  # Build dependencies (run once before integration tests)
+make dev-int FILE=<TEST_FILE_NAME>  # Spins up Docker services and runs integration tests.
+                                    # Ctrl-C to stop and wait for all services to tear down.
+```
+
+**packages/common-utils** (both unit and integration tests):
+
+```bash
+cd packages/common-utils
+yarn ci:unit           # Run unit tests
+yarn dev:unit          # Watch mode for unit tests
+yarn ci:int            # Run integration tests
+yarn dev:int           # Watch mode for integration tests
+```
+
+To run a specific test file or pattern:
+
+```bash
+yarn ci:unit <path/to/test.ts>                           # Run specific test file
+yarn ci:unit --testNamePattern="test name pattern"       # Run tests matching pattern
+```
+
+**packages/cli** (type check only, no test suite):
+
+```bash
+cd packages/cli
+npx tsc --noEmit        # Type check
+```
+
+**Lint & type check across all packages:**
+
+```bash
+make ci-lint        # Lint + TypeScript check across all packages
+make ci-unit        # Unit tests across all packages
+```
+
+**E2E tests (Playwright):**
+
+```bash
+# First-time setup (install Chromium browser):
+cd packages/app && yarn playwright install chromium
+
+# Run all E2E tests:
+make e2e
+
+# Run a specific test file (dev mode: hot reload):
+make dev-e2e FILE=navigation                    # Match files containing "navigation"
+make dev-e2e FILE=navigation GREP="help menu"   # Also filter by test name
+make dev-e2e GREP="should navigate"             # Filter by test name across all files
+make dev-e2e FILE=navigation REPORT=1           # Open HTML report after run
+make dev-e2e-clean                               # Remove test artifacts
+```
+
+## Important Context
+
+- **Authentication**: Passport.js with team-based access control
+- **State management**: Jotai (client), TanStack Query (server), URL params
+  (filters)
+- **UI library**: Mantine components are the standard (not custom UI)
+- **Database patterns**: MongoDB for metadata with Mongoose, ClickHouse for
+  telemetry queries
+
+## PR Hygiene for Agent-Generated Code
+
+When using agentic tools to generate PRs, follow these practices to keep reviews
+efficient and accurate:
+
+1. **Scope PRs to a single logical change**, even if the agent can produce more
+   in one session. Smaller, focused PRs move through the review pipeline faster
+   and are easier to classify accurately.
+
+2. **Write the PR description to explain intent (the "why"), not just what
+   changed.** Reviewers need to understand the goal to catch cases where the
+   agent solved the wrong problem or made a plausible-but-wrong trade-off.
+
+3. **Name agent-generated branches with a `claude/`, `agent/`, or `ai/` prefix**
+   (e.g., `claude/add-rate-limiting`) so reviewers can calibrate their attention.
+   This is a convention for humans: the PR triage classifier deliberately ignores
+   branch names and tiers every PR on what the diff touches and how big it is.
+
+4. **Write or update tests alongside the implementation**, not after. Configure
+   your agent to produce tests before writing implementation code. See the
+   Testing section below for the commands to use.
+
+5. **Ensure a changeset exists before pushing a PR.** Any change to a published
+   package (`@hyperdx/app`, `@hyperdx/api`, `@hyperdx/otel-collector`, etc.) that
+   is user-facing or affects behavior must include a changeset in `.changeset/`.
+   Add one with `yarn changeset` (or create the markdown file by hand following
+   the format of existing entries), choosing the appropriate semver bump, before
+   pushing the branch. Skip only for changes that don't warrant a release (docs,
+   internal tooling, tests, CI).
+
+6. **The root `CHANGELOG.md` is generated at release time.** During each
+   release, CI writes an AI-generated cross-package summary section into the
+   root `CHANGELOG.md` on the "Release HyperDX" PR. Review and edit it there
+   like any other file — but keep the `<!-- hyperdx-release-notes … -->` comment
+   marker intact; it is how your edits are recognised when the release branch is
+   rebuilt. Use `###` or deeper for any heading you add — a `##` marks a release
+   boundary, and the next release refuses to splice rather than risk deleting
+   whatever ended up below it. Your edits are regenerated away when new
+   changesets land on `main` (the previous text is passed to the generator, so
+   phrasing is preserved best-effort, not guaranteed). They can also be lost
+   outright if a second push to `main` lands while a changelog run is still in
+   flight — the edit is held only in that run's artifact. If an edit matters,
+   re-check it on the release PR before merging. Don't edit the root
+   `CHANGELOG.md` in feature PRs; the only exception is the one-time seed that
+   introduced the file.
+
+### How the root changelog is generated
+
+Defined in `.github/workflows/release.yml`; the splicing logic lives in
+`.github/scripts/release-notes.mjs`.
+
+```
+push to main
+    |
+    v
+check_changesets
+    |  1. capture the branch's current CHANGELOG.md -> artifact
+    |     (must happen BEFORE the next step destroys it)
+    |  2. changesets/action force-rebuilds changeset-release/main from main
+    |     and opens/updates the "Release HyperDX" PR
+    v
+release_changelog_draft            contents: read - no push token
+    |
+    |  app version unchanged?  --yes-->  skip (CLI/common-utils-only release)
+    |  changeset hash matches?  --yes-->  reuse previous section verbatim
+    |                           --no-->  Claude writes a fresh body, given
+    |                                    the old section as context
+    v
+  body artifact                    the model's only output
+    |
+    v
+release_changelog_publish          contents: write - the model never ran here
+    |
+    |  branch moved since drafting?  --yes-->  skip, the newer run republishes
+    |  validate (no headings/markers/images/off-site links)
+    |  append the package list, splice into CHANGELOG.md
+    v
+push to changeset-release/main  ->  appears as a diff in the release PR,
+    |                               where a maintainer can edit it
+    v
+merge the release PR  ->  CHANGELOG.md lands on main  ->  served in "What's new"
+```
+
+The job split is a security boundary, not tidiness: the model reads changeset
+bodies, commit messages and PR bodies, which anyone opening a PR controls. Its
+job holds `ANTHROPIC_API_KEY` and a `contents: read` token, but no push
+credential and no ability to alter the script that does the splicing. Because
+the API key shares that process, the generator gets `--tools "Read" "Write"` and
+nothing else: no `Bash`, and no `Grep` or `Glob` either, since those read files
+without consulting a `Read` path rule. It may write exactly one file, granted by
+an `Edit(<path>)` rule, and `/proc`, `/sys`, `/home` and `/etc` are denied
+outright — `/proc/self/environ` carries the whole environment, and the output
+is published to a public branch.
+
+Three flags with three different jobs, which is worth keeping straight when
+editing this: `--tools` restricts what exists, `--allowedTools` only
+pre-approves (it is what stops a `-p` run stalling on a prompt it cannot
+answer), and `--disallowedTools` denies. A path rule attached to `Write` is
+accepted and then never consulted — file permissions are checked against
+`Edit` and `Read` rules — so write confinement is spelled `Edit(<path>)`.
+
+Because the generator has no way to list a directory, every input is
+materialised for it at a known path by trusted shell, including all the
+changesets concatenated into one file. Left to discover
+`.changeset/gentle-boats-serve.md` by name it cannot, and it writes a changelog
+that quietly omits whatever it could not find.
+
+The generator calls the Claude Code CLI, not
+`anthropics/claude-code-action`: that action accepts only GitHub entity events
+and rejects `push`, and everything it adds on top of the CLI — a token, entity
+context, PR comments — is what this job deliberately does without.
+
+## GitHub Action Workflow (when invoked via @claude)
+
+When working on issues or PRs through the GitHub Action:
+
+1. **Before writing any code**, post a comment outlining your implementation
+   plan — which files you'll change, what approach you'll take, and any
+   trade-offs or risks. Use `gh issue comment` for issues or `gh pr comment` for
+   PRs.
+
+2. **After making any code changes**, always run these in order and fix any
+   failures before opening a PR:
+
+   - `make ci-lint` — lint + TypeScript type check
+   - `make ci-unit` — unit tests
+
+3. Write a clear PR description explaining what changed and why.
+
+## Git Commits
+
+When committing code, use the git author's default profile (name and email from
+git config). Do not add `Co-Authored-By` trailers.
+
+**Pre-commit hooks must pass before committing.** Do not use `--no-verify` to
+skip hooks. If the pre-commit hook fails (e.g. due to husky not being set up in
+a worktree), run `npx lint-staged` manually before committing to ensure lint and
+formatting checks pass. Fix any issues before creating the commit.
+
+## Merge Conflict Resolution
+
+1. **Never blindly pick a side.** Read both sides of every conflict to
+   understand the intent of each change before choosing a resolution.
+
+2. **Refactor/move conflicts require extra verification.** When one side
+   refactored, moved, or extracted code (e.g., inline components to separate
+   files), always diff the discarded side against the destination files before
+   declaring the conflict resolved. Code can diverge after extraction — the
+   other branch may have made fixes or additions that the extracting branch
+   never picked up. A naive "keep ours" resolution silently drops those changes.
+
+3. **Verify the result compiles.** After resolving, check for missing imports,
+   broken references, or type errors introduced by the resolution — especially
+   when discarding a side that added new dependencies or exports.
+
+4. **Ask for help when uncertain.** If you are not 100% confident about which
+   side to keep, or whether a change can be safely discarded, stop and ask for
+   manual intervention rather than guessing. A wrong guess silently breaks
+   things; asking is always cheaper than debugging later.
+
+## Cursor Cloud specific instructions
+
+### Docker requirement
+
+Docker must be installed and running before starting the dev stack or running
+integration/E2E tests. The VM update script handles `yarn install` and
+`yarn build:common-utils`, but Docker daemon startup is a prerequisite that must
+already be available.
+
+### Starting the dev stack
+
+`yarn dev` uses `sh -c` to source `scripts/dev-env.sh`, which contains
+bash-specific syntax (`BASH_SOURCE`). On systems where `/bin/sh` is `dash`
+(e.g. Ubuntu), this fails with "Bad substitution". Work around it by running
+with bash directly:
+
+```bash
+bash -c 'export PATH="/workspace/node_modules/.bin:$PATH" && source ./scripts/dev-env.sh && yarn build:common-utils && dotenvx run --convention=nextjs -- docker compose -p "$HDX_DEV_PROJECT" -f docker-compose.dev.yml up -d && yarn app:dev'
+```
+
+Port isolation assigns a slot based on the worktree directory name. In the
+default `/workspace` directory, the slot is **76**, so services are at:
+
+- **App**: http://localhost:30276
+- **API**: http://localhost:30176
+- **ClickHouse**: http://localhost:30576
+- **MongoDB**: localhost:30476
+
+### Key commands reference
+
+See `AGENTS.md` above and `agent_docs/development.md` for the full command
+reference. Quick summary:
+
+- `make ci-lint` — lint + TypeScript type check
+- `make ci-unit` — unit tests (all packages)
+- `make dev-int FILE=<name>` — integration tests (spins up Docker services)
+- `make dev-e2e FILE=<name>` — E2E tests (Playwright)
+
+### First-time registration
+
+When the dev stack starts fresh (empty MongoDB), the app shows a registration
+page. Create any account to get started — no external auth provider is needed.
+
+---
+
+_Need more details? Check the `agent_docs/` directory or ask which documentation
+to read._

@@ -70,7 +70,7 @@ When the correct behavior is ambiguous, check the iOS Swift implementation first
 
 Cross-platform on-device AI SDK monorepo. A single C/C++ core (`runanywhere-commons`, ~118K first-party LOC plus ~420K generated proto bindings) implements all AI business logic behind a pure C ABI (`rac_*` prefix). Five platform SDKs are thin bridges that supply platform services (file I/O, HTTP, Keychain, audio) via an inversion-of-control struct and call into the C core for all inference. Protobuf IDL schemas generate type-safe bindings for every language.
 
-**Current version**: `0.20.11` (canonical source: `sdk/runanywhere-commons/VERSION`)
+**Current version**: `0.20.14` (canonical source: `sdk/runanywhere-commons/VERSION`)
 
 ### SDK Implementations
 | SDK | Path | Bridge Mechanism | Platforms |
@@ -85,7 +85,7 @@ Cross-platform on-device AI SDK monorepo. A single C/C++ core (`runanywhere-comm
 | Directory | Contents |
 |-----------|----------|
 | `sdk/runanywhere-commons/` | C/C++ core library — all AI logic, plugin registry, event system |
-| `engines/` | 6 backend plugins: llamacpp, sherpa, onnx, cloud, qhexrt, coreml |
+| `engines/` | 7 backend plugins: llamacpp, sherpa, onnx, cloud, mlx, qhexrt, neurt |
 | `runtimes/` | 3 runtime adapters: cpu (always), onnxrt, coreml |
 | `idl/` | 23 Protobuf schemas + per-language codegen scripts |
 
@@ -131,11 +131,11 @@ Platform SDKs (thin bridges — supply platform services, call C ABI)
                     │  Service Layer (dispatch)      │
                     │  Plugin Registry               │
                     └───────────────┬───────────────┘
-                                    │ rac_engine_vtable_t (v4)
+                                    │ rac_engine_vtable_t (v8)
           ┌─────────────┬───────────┼───────────┬─────────────┐
           ▼             ▼           ▼           ▼             ▼
-      llamacpp      sherpa-onnx  qhexrt     coreml/cloud    onnx
-     (LLM,VLM)    (STT,TTS,VAD) (HNPU)     (Apple/HTTP)   (Embed)
+      llamacpp      sherpa-onnx  qhexrt      neurt/cloud       onnx
+     (LLM,VLM)    (STT,TTS,VAD) (HNPU)     (ANE/HTTP)     (Embed,Segment)
 ```
 
 ### Key Architectural Patterns
@@ -144,7 +144,7 @@ Platform SDKs (thin bridges — supply platform services, call C ABI)
 
 **Two-Phase SDK Initialization**: All SDKs follow the same pattern: Phase 1 (synchronous — register platform adapter, load native libs, configure logging) then Phase 2 (async — authenticate, register device, fetch model assignments, discover downloaded models).
 
-**Plugin ABI v4**: Every backend publishes a `rac_engine_vtable_t` with 7 primitive slots (`llm_ops`, `stt_ops`, `tts_ops`, `vad_ops`, `embedding_ops`, `vlm_ops`, `diffusion_ops`). NULL slot = not supported. `RAC_PLUGIN_API_VERSION = 4u` — version mismatch causes immediate rejection. (Wire value 6, formerly `rerank_ops`/`RAC_PRIMITIVE_RERANK`, is retired.)
+**Plugin ABI v8**: Every backend publishes a `rac_engine_vtable_t` with 10 active primitive slots (`llm_ops`, `stt_ops`, `tts_ops`, `vad_ops`, `embedding_ops`, `vlm_ops`, `diffusion_ops`, `diarization_ops`, `segmentation_ops`, `rerank_ops`) plus 7 reserved slots. NULL slot = not supported. `RAC_PLUGIN_API_VERSION = 8u` — version mismatch causes immediate rejection. (`rerank_ops`/`RAC_PRIMITIVE_RERANK` was revived as a first-class cross-encoder reranking primitive in ABI v8 at **wire value 11**, promoted from `reserved_slot_2` at the same binary offset; the original wire value 6 — retired in ABI v4 — stays permanently retired.)
 
 **Static vs Dynamic Plugins**: iOS and WASM force `RAC_STATIC_PLUGINS=ON` (no `dlopen`). Android/Linux/macOS default to dynamic loading via `rac_registry_load_plugin()`. Static registration uses `RAC_STATIC_PLUGIN_REGISTER(name)` macro with `-force_load` / `--whole-archive` linker flags.
 
