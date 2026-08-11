@@ -1,8 +1,8 @@
 # Homebrew/homebrew-core instruction files
 
-Upstream: [Homebrew/homebrew-core](https://github.com/Homebrew/homebrew-core) · License: `BSD-2-Clause` · Commit: `dbdc1fc73f35cc0d78dbd64cafe088ef5d460cf2`
+Upstream: [Homebrew/homebrew-core](https://github.com/Homebrew/homebrew-core) · License: `BSD-2-Clause` · Commit: `4af9175ca609761014c22a568cc3e0b2d12f3d81`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Homebrew/homebrew-core/AGENTS.md) | [Source](https://github.com/Homebrew/homebrew-core/blob/dbdc1fc73f35cc0d78dbd64cafe088ef5d460cf2/AGENTS.md) | `d7e18e206b501a589c10104a575fd12932d16c240fe17c081a2857ab5aa1f2de` | 7,961 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Homebrew/homebrew-core/CLAUDE.md) | [Source](https://github.com/Homebrew/homebrew-core/blob/dbdc1fc73f35cc0d78dbd64cafe088ef5d460cf2/CLAUDE.md) | `336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49` | 11 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Homebrew/homebrew-core/AGENTS.md) | [Source](https://github.com/Homebrew/homebrew-core/blob/4af9175ca609761014c22a568cc3e0b2d12f3d81/AGENTS.md) | `d7e18e206b501a589c10104a575fd12932d16c240fe17c081a2857ab5aa1f2de` | 7,961 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Homebrew/homebrew-core/CLAUDE.md) | [Source](https://github.com/Homebrew/homebrew-core/blob/4af9175ca609761014c22a568cc3e0b2d12f3d81/CLAUDE.md) | `336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49` | 11 B |
