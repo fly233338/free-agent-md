@@ -1,8 +1,8 @@
 # Repository Agent Guidance
 
 Durable rules only. Perishable lane state — branch, milestone, known flakes,
-closed investigations — lives in `docs/ops/CURRENT.md`; read it, don't trust
-memory of it.
+closed investigations — lives in the private `codewhale-ops` repo, not here.
+Read it there; don't trust memory of it.
 
 ## Intent is the artifact
 
@@ -27,7 +27,9 @@ published history, retag a shipped release, or force-push a shared ref);
 contributor credit carries onto the rewrite; the do-not-delete guardrail below
 still binds; and don't rewrite to avoid understanding.
 
-Longer form: `docs/AGENT_ETHOS.md`.
+The four bullets above are the authoritative statement of this rule. Don't
+restate them elsewhere — link here. (`docs/AGENT_ETHOS.md` is about stewardship
+and workflow, not about this; it is not a longer form of this section.)
 
 ## Build and test
 
@@ -58,9 +60,13 @@ These are actively imported and have been repeatedly misflagged as dead code;
 deleting them broke the build. Verify consumers with `rg` before believing any
 dead-code audit:
 
-`tui/src/memory.rs`, `tui/src/context_budget.rs`, `tui/src/model_registry.rs`,
+`tui/src/context_budget.rs`, `tui/src/model_registry.rs`,
 `tui/src/prompt_zones.rs`, `tui/src/tools/remember.rs`, and the entire
 `config/src/route/` directory.
+
+(`tui/src/memory.rs` was deliberately deleted in v0.9.4 — the native memory
+store in `tui/src/native_memory.rs` is the surviving system; `tools/remember.rs`
+is its capture path and stays.)
 
 ## Surfaces that exist today
 
@@ -87,6 +93,6 @@ and every model/provider first-class — none privileged.
 - Keep gates warm and dry-run unless Hunter explicitly approves enforcement.
 - Leave unrelated edits by other people or agents intact.
 
-Full ethos: `docs/AGENT_ETHOS.md`. Issue triage standard:
-`docs/AGENT_READY_ISSUES.md`. Release queue and harvest procedure:
-`docs/RELEASE_QUEUE.md`.
+Full ethos: `docs/AGENT_ETHOS.md`. Issue-triage standard, release queue, and
+harvest procedure live in the private `codewhale-ops` repo — they are
+maintainer process, not contributor-facing contract.

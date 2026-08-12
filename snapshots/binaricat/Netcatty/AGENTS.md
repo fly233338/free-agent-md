@@ -142,6 +142,14 @@ smoke coverage. Packaged-resource changes must also pass `npm run pack:dir`.
 - Seed data: `config/defaultData.ts`; terminal themes: `config/terminalThemes.ts`.
 - **Temporary files**: All temporary files (e.g., SFTP downloaded files for external editing) must be written to Netcatty's dedicated temp directory via `tempDirBridge.getTempFilePath(fileName)`. Do not write directly to `os.tmpdir()`. This ensures proper cleanup and user visibility in Settings > System.
 
+## Terminal Side Panel Splits
+
+- `domain/sidePanelLayout.ts` owns the pure pane/split tree operations, including focus, unique tools, close collapse, resize, and the pane limit.
+- `application/state/useTerminalSidePanelLayoutState.ts` owns per-terminal layouts and keeps the legacy focused-tool map compatible with external open paths.
+- `TerminalLayerSidePanelSection.tsx` renders one shared toolbar plus the nested pane chrome. Each pane content host must remain `overflow-hidden` and layout-contained.
+- Mounted tool panels use a stable portal node that moves between their pane host and the hidden parking host. Never fall back to an `absolute inset-0` side-panel root when a pane host is not ready.
+- Closing the whole side panel clears that terminal's split tree. Switching terminal tabs must not reuse another tab's layout.
+
 ## Testing & Safety
 - Favor unit tests for domain helpers (e.g., `workspace.ts`, `host.ts`) and hook-level tests for application state.
 - When changing storage keys or schema, provide migration or backward-compat handling.

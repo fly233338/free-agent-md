@@ -22,15 +22,19 @@ TablePro is a native macOS database client (SwiftUI + AppKit) — a fast, lightw
 
 - **Source**: `TablePro/` — `Core/` (business logic, services), `Views/` (UI), `Models/` (data structures), `ViewModels/`, `Extensions/`, `Theme/`
 - **Plugins**: `Plugins/` — `.tableplugin` bundles + `TableProPluginKit` shared framework.
-    - **Bundled in app**: MySQL, PostgreSQL, SQLite, ClickHouse, Redis, CSV, JSON, SQL export, XLSX export, MQL export, SQL import. Shipped only inside the app bundle. **Never publish bundled plugins to the registry.** Updates ride with the next app release.
-    - **Registry-only**: MongoDB, Oracle, DuckDB, MSSQL, Cassandra, Etcd, CloudflareD1, DynamoDB, BigQuery, LibSQL, Snowflake, Elasticsearch. Distributed via [TableProApp/plugins](https://github.com/TableProApp/plugins) `plugins.json`, installed into the user plugins directory.
+    - **Bundled in app** (the 14 targets in the app's copy-to-PlugIns phase in `project.yml`): MySQL, PostgreSQL, SQLite, ClickHouse, Redis, CSV export, JSON export, SQL export, XLSX export, MQL export, SQL import, JSON import, CSV import, CSV inspector. Shipped only inside the app bundle. **Never publish bundled plugins to the registry.** Updates ride with the next app release.
+    - **Registry-only** (the other 16): MongoDB, Oracle, DuckDB, MSSQL, Cassandra, Etcd, CloudflareD1, DynamoDB, BigQuery, LibSQL, Snowflake, Elasticsearch, Beancount, SurrealDB, Teradata, Trino. Distributed via [TableProApp/plugins](https://github.com/TableProApp/plugins) `plugins.json`, installed into the user plugins directory.
 - **C bridges**: Each plugin contains its own C bridge module (e.g., `Plugins/MySQLDriverPlugin/CMariaDB/`, `Plugins/PostgreSQLDriverPlugin/CLibPQ/`)
 - **Static libs**: `Libs/` — pre-built `.a` files. `Libs/ios/` — xcframeworks for iOS. Both downloaded via `scripts/download-libs.sh` (not in git)
-- **SPM deps**: CodeEditSourceEditor (`main` branch, tree-sitter editor), Sparkle (2.8.1, auto-update), OracleNIO. Managed via Xcode, no `Package.swift`.
+- **SPM deps**: declared in `project.yml`. Vendored local packages under `LocalPackages/` (CodeEditSourceEditor, CodeEditTextView, CodeEditLanguages) and `Packages/` (TableProCore, TableProOracle); remote packages are Sparkle, swift-certificates and Yams. Revisions are pinned by the tracked `Package.resolved` inside each generated `.xcodeproj`.
 
 ## Build & Development Commands
 
 ```bash
+# First-time setup (and after any project.yml / Configs change, or adding a source file)
+scripts/download-libs.sh          # static libraries, not in git
+scripts/generate-project.sh       # generates both .xcodeproj bundles from project.yml
+
 # Build (development) — -skipPackagePluginValidation required for SwiftLint plugin in CodeEditSourceEditor
 xcodebuild -project TablePro.xcodeproj -scheme TablePro -configuration Debug build -skipPackagePluginValidation
 
@@ -57,8 +61,7 @@ xcodebuild -project TablePro.xcodeproj -scheme TablePro test -skipPackagePluginV
 # DMG
 scripts/create-dmg.sh
 
-# Static libraries (first-time setup or after lib updates)
-scripts/download-libs.sh          # Download from GitHub Releases (skips if already present)
+# Static libraries (after lib updates)
 scripts/download-libs.sh --force  # Re-download and overwrite
 ```
 
@@ -86,6 +89,19 @@ gh release upload libs-v1 /tmp/tablepro-libs-ios-v1.tar.gz --clobber --repo Tabl
 
 ## Architecture
 
+### Project Generation
+
+`TablePro.xcodeproj` and `TableProMobile/TableProMobile.xcodeproj` are **generated artifacts**. They are gitignored and must never be hand-edited or committed. The source of truth is:
+
+- `project.yml` / `TableProMobile/project.yml`: targets, sources, dependencies, schemes, and per-target build settings
+- `Configs/*.xcconfig`: project-wide and per-configuration build settings, shared by both projects
+- `Configs/Version.xcconfig`: the app's `MARKETING_VERSION` and `CURRENT_PROJECT_VERSION`, read by the release skill and by `build-plugin.yml`
+- `Configs/Secrets.xcconfig`: gitignored, pulled in with `#include?`, holds `ANALYTICS_HMAC_SECRET` and per-developer signing overrides. `Configs/Secrets.xcconfig.example` is the template.
+
+Run `scripts/generate-project.sh` after editing any of those, and after adding, moving, or deleting a source file: XcodeGen globs sources at generation time, so a new file is not in the project until you regenerate. Changing signing in the Xcode UI is pointless, because the next generate discards it; set `TABLEPRO_DEVELOPMENT_TEAM` and `TABLEPRO_APP_BUNDLE_IDENTIFIER` in `Configs/Secrets.xcconfig` instead.
+
+The 30 plugin bundles share one `DriverPlugin` target template; a plugin declares only its folder, principal class, and any C-library link flags. Every target gets a shared scheme named after it, which is what `scripts/build-plugin.sh -scheme <PluginTarget>` builds. The `AllPlugins` aggregate target compile-checks all 30, including the registry-only ones the app does not embed.
+
 ### Plugin System
 
 All database drivers are `.tableplugin` bundles loaded at runtime by `PluginManager` (`Core/Plugins/`):
@@ -96,7 +112,7 @@ All database drivers are `.tableplugin` bundles loaded at runtime by `PluginMana
 - **DatabaseManager** (`Core/Database/DatabaseManager.swift`) — connection pool, lifecycle, primary interface for views/coordinators
 - **ConnectionHealthMonitor** — 30s ping, auto-reconnect with exponential backoff
 
-When adding a new driver: create a new plugin bundle under `Plugins/`, implement `DriverPlugin` + `PluginDatabaseDriver`, add target to pbxproj, add `DatabaseType` static constant, add case to `resolve_plugin_info()` in `.github/workflows/build-plugin.yml`, add row to `docs/index.mdx` supported databases table, and add CHANGELOG entry. See `docs/development/plugin-system/` for details.
+When adding a new driver: create a new plugin bundle under `Plugins/`, implement `DriverPlugin` + `PluginDatabaseDriver`, add the target to `project.yml`, add `DatabaseType` static constant, add case to `resolve_plugin_info()` in `.github/workflows/build-plugin.yml`, add row to `docs/index.mdx` supported databases table, and add CHANGELOG entry. See `docs/development/plugin-system/` for details.
 
 When adding a new method to the driver protocol: add to `PluginDatabaseDriver` (with default implementation), then update `PluginDriverAdapter` to bridge it to `DatabaseDriver`. This is an additive, ABI-safe change (see below) and needs no version bump.
 
@@ -110,7 +126,7 @@ When adding a new method to the driver protocol: add to `PluginDatabaseDriver` (
 
 **Bump `currentPluginKitVersion` (in `PluginManager.swift`) and `TableProPluginKitVersion` in every plugin `Info.plist` ONLY for a breaking change**: changing or removing an existing requirement's signature, adding a requirement without a default, adding a case to a `@frozen` enum, or changing a frozen type's layout. Mark a public enum `@frozen` only when an exhaustive switch over it forces it (the compiler flags the switch) and its case set is genuinely closed; leave the rest non-frozen so they can gain cases. `PluginCapability` stays non-frozen with `@unknown default` because it is a growing capability set, not a closed vocabulary. The driver protocols and transfer structs stay non-frozen so they can grow. The strict version gate in `validateBundleVersions` still rejects a stale plugin cleanly after a breaking bump (no `EXC_BAD_INSTRUCTION`).
 
-**ABI check** (manual): `scripts/check-pluginkit-abi.sh [base-ref]` builds TableProPluginKit at the current tree and at the base ref with the same toolchain, then diffs their public interfaces. There is no committed baseline, so a Swift version difference between machines never produces a false diff. Run it before merging any change under `Plugins/TableProPluginKit/**`, comparing against the merge base. A reported diff is a real ABI change: additive needs no bump; breaking needs the version bump above plus `release-all-plugins.sh`. (Until Library Evolution is on the base too, the base emits no interface and the check passes as a bootstrap.)
+**ABI check** (manual): `scripts/check-pluginkit-abi.sh [base-ref]` generates the project from `project.yml` on both sides, builds TableProPluginKit at the current tree and at the base ref with the same toolchain, then diffs their public interfaces. A base ref that predates `project.yml` cannot be compared. There is no committed baseline, so a Swift version difference between machines never produces a false diff. Run it before merging any change under `Plugins/TableProPluginKit/**`, comparing against the merge base. A reported diff is a real ABI change: additive needs no bump; breaking needs the version bump above plus `release-all-plugins.sh`. (Until Library Evolution is on the base too, the base emits no interface and the check passes as a bootstrap.)
 
 **Post-ABI-bump checklist (mandatory, breaking bumps only)**: Bumps are now rare (only the breaking changes listed above). After one, every registry-published plugin must be rebuilt against the new ABI. Run `release-all-plugins.sh` for the new version BEFORE or WITH the app release, never after, or users on the new app hit `noCompatibleBinary` until the registry catches up. App auto-update reconciliation handles the user-facing recovery, but the registry has to carry binaries for the new PluginKit version first.
 
@@ -171,7 +187,7 @@ These have caused real bugs when violated:
 
 **A connection window's content is a function of its own `ConnectionWindowPhase`, never of `activeSessions` membership**: the global session dictionary can only say *present* or *absent*, and that vocabulary cannot tell "never started" from "connecting" from "failed" from "the user cancelled" from "the window is closing". Deriving the pane from it shipped a window that painted a live spinner forever after a failed launch restore, could not be repainted by a later successful connect, and left no route back to the connection list except the Dock icon's context menu. `MainSplitViewController` owns a `phase`, `ConnectionWindowPhaseMachine` owns the transitions (pure, exhaustive, `.closing` absorbing), and `ConnectionWindowPaneResolver` owns the pane choice (pure); the controller is only an adapter. Three rules follow. First, every phase must have an exit: the old `closingSessionId` latch was set once and never cleared, so the controller went permanently deaf to `connectionStatusChanged`. Second, a cancel updates the UI synchronously with the button press and never waits on the driver, because `Task.cancel()` is cooperative and may have no observable effect; the attempt is fenced by a per-window `attemptToken` plus `DatabaseManager.invalidateConnectionAttempt` so a late failure cannot write into a window that moved on. Third, a failure is presented inline through `ConnectionUnavailableView`, never as an alert, per the HIG's rule against alerts at startup and its one-alert-at-a-time rule (N restored connections would mean N modals). Only one presenter per failure: `LaunchIntentRouter.presentError` stays silent when a window for that connection exists.
 
-**The Welcome window is closed, never ordered out**: it is a SwiftUI `Window(id:)` scene, so `orderOut` leaves it invisible but still open, and a later `openWindow(id:)` has nothing to do. It also desynchronises `applicationShouldHandleReopen(_:hasVisibleWindows:)`, whose documented gate counts visible windows, which is why clicking the Dock icon did nothing either. Hide it only through `WindowOpener.closeWelcome()`, and present it only through `WindowOpener.openWelcome()` (which also calls `NSApp.activate()`, since `openWindow` does not).
+**The app runs the AppKit lifecycle, and AppKit owns the menu bar**: `main.swift` assigns the delegate before `NSApplicationMain`, and `MainMenuBuilder.install` runs in `applicationWillFinishLaunching`. Do not reintroduce a SwiftUI `App`. SwiftUI reconciles `NSApp.mainMenu` once shortly after launch and removes every item it did not build itself, and no hook can undo it: `NSApp.mainMenu` is not KVO-compliant, `didUpdateNotification`, `didBecomeKeyNotification` and the `applicationDidUpdate(_:)` delegate method never fire under `@NSApplicationDelegateAdaptor`, and `applicationDidBecomeActive` fires before the reconciliation. Only a wall-clock delay worked, which is why #2057 shipped a menu bar that vanished half a second after launch and had to be reverted (#2071). Every window is an `NSWindowController`; the Welcome window is one too, so closing it is an ordinary `close()` and the old "closed, never ordered out" rule no longer applies.
 
 **An emptied tab manager is not the same as "the user closed every tab"**: `saveOrClearAggregatedSync()` is the one persistence path where an empty aggregate means *clear*, so it deletes the connection's saved tabs from disk. A coordinator torn down by a lost session has already emptied `tabManager.tabs`, so letting the window-close path run afterwards wipes tabs the user never closed. `handleWindowWillClose` guards on `isTearingDown` for that reason.
 
@@ -182,6 +198,10 @@ These have caused real bugs when violated:
 **A SwiftUI-hosted split view needs an explicit divider cursor**: `NSSplitView` shows the resize cursor over its dividers through AppKit's cursor-rects system, which does not fire once the split view is mounted inside an `NSHostingController` (every tab-content split is, several SwiftUI layers deep under `MainSplitViewController.detailHosting`). The divider still drags because drag hit-testing is independent of cursor rects, but the pointer never changes. Every SwiftUI-hosted split-view controller must subclass `ResizeCursorSplitViewController`, which adds a key-window tracking area to its own split view and sets `NSCursor.columnResize`/`rowResize` (falling back to `resizeLeftRight`/`resizeUpDown` before macOS 15) in `mouseMoved`, the same hand-rolled approach `SortableHeaderView` uses for column resize. It attaches the tracking area to the framework's split view in `viewDidLoad` rather than replacing the split view, so `NSSplitViewController`'s own layout and divider orientation stay intact; replacing the split view through a `loadView` override that skips `super` leaves the controller half-initialized and its panes stack instead of laying out side by side. Do not swap the controller back to a plain `NSSplitViewController` expecting the stock cursor to work; the window's own sidebar and inspector dividers only get the cursor for free because `MainSplitViewController` is the window's `contentViewController` directly, with no SwiftUI host in between. This shipped as Users & Roles, Structure, Server Dashboard, and query editor dividers that dragged but never showed the resize cursor (#1905).
 
 **The data grid header owns all of its own chrome, so nothing may ask AppKit to paint any of it**: `NSTableHeaderCell` and `NSTableHeaderView` both paint a fixed 28pt band that they centre vertically in whatever frame they are given, a 16pt column divider on `midY` and a 1pt rule at `midY + 13`. The data grid grows its header to 42pt for a column comment, so that band lands mid-cell: the rule crosses the comment's descenders and sits 8pt above the real bottom edge. `SortableHeaderChrome` is therefore the single owner of header geometry and colours, `SortableHeaderCell.draw(withFrame:in:)` never calls `super`, and `SortableHeaderView.draw(_:)` fills the background and rules the bottom edge itself. The trap is that the header view paints a second copy of that same band for `NSTableView.highlightedTableColumn`, driven by *state* rather than by a drawing call, so no cell override can reach it: setting it gives the sorted column a stray divider and a rule no other column has. TablePro already draws the sorted-column affordance itself (bold title, chevron, priority number, with `drawSortIndicator` overridden to nothing), so `highlightedTableColumn` is a redundant second channel and must stay unset. All sorted-column presentation goes through `SortableHeaderView.applySortState(_:schema:)`, which publishes the order natively through `tableView.sortDescriptors` (for accessibility; it paints nothing) and updates the cells. `SortableHeaderRenderingTests` rasterises the header and guards this. This shipped as a rule through the comment line and a stray divider on the sorted column (#2017).
+
+**Decoding a MongoDB binary UUID is a per-column decision, and the column's type name is load-bearing**: BSON binary subtype 3 is the legacy UUID format, and the Java, C# and Python drivers each wrote it with a different byte order with nothing in the stored bytes to say which. `MongoDBUuidCodec` therefore decodes subtype 3 only when the connection names one (`mongoUuidRepresentation`); subtype 4 is unambiguous and always decodes. The choice is made once per column from `BsonDocumentFlattener.columnKinds`' majority vote, never per value, because a decoded cell is `.text` and an undecoded one is `.bytes`, and `CellDisplayFormatter` runs blob formatting over a `.text` cell whenever its column type is BLOB. One UUID decoded inside a column the app still types `BLOB` renders as `0x4c65676163...`. For the same reason `BsonDocumentFlattener.typeName` must keep `BLOB` as the base name for undecoded binary: `ColumnTypeClassifier` splits a type name at the first `(` and looks the base up, so `BLOB` and `BLOB(3)` both classify as `.blob`, and that classification is the only thing keeping a binary cell out of the inline editor. The parenthesised part carries the BSON subtype so MQL export can write it back; `MongoDBUuidCodec.columnTypeName(forSubtype:)` and `binarySubtype(fromColumnTypeName:)` are the only two places that spelling is produced or read, and MQL export is `supportedDatabaseTypeIds = ["MongoDB"]`, so it never sees another driver's `BLOB`. Once a column does decode, both edit guards (`isBlobType` and `asBytes != nil`) fall together, so every write path must parse the wrapper back to `$binary`: `MongoDBStatementGenerator.jsonValue` and `idValueJson`, `MongoDBQueryBuilder.jsonValue` plus its `=`, `!=` and `IN` arms (a case-insensitive regex can never match a binary field), and `MQLExportHelpers.mqlJsonValue`. An `_id` filter left as wrapper text matches zero documents while the UI reports the save succeeded. (#2086)
+
+**A MongoDB update or delete is anchored on `_id` or it does not run**: `generateDelete` used to fall back to a filter built from the remaining columns, which silently dropped every value it could not stringify (all binary) and then `deleteOne`d the first partial match, so a document with a binary `_id` could delete a different document. Both paths now skip with a logged warning instead, matching what `generateUpdate` already did.
 
 ### Main Coordinator Pattern
 
@@ -222,7 +242,7 @@ private static let logger = Logger(subsystem: "com.TablePro", category: "Compone
 
 - **No comments** — code must be self-explanatory through naming and structure. Never add comments that describe what code does, reference tasks/tickets, or explain callers.
 - **Early returns** — use `guard` and early `return` instead of nested `if/else` blocks. Flatten control flow.
-- **4 spaces** indentation (never tabs except Makefile/pbxproj)
+- **4 spaces** indentation (never tabs)
 - **120 char** target line length (SwiftFormat); SwiftLint warns at 180, errors at 300
 - **K&R braces**, LF line endings, no semicolons, no trailing commas
 - **Imports**: system frameworks alphabetically → third-party → local, blank line after imports

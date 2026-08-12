@@ -1,8 +1,8 @@
 # openclaw/Peekaboo instruction files
 
-Upstream: [openclaw/Peekaboo](https://github.com/openclaw/Peekaboo) · License: `MIT` · Commit: `7478610d44c6759648f164881d9c067e7224de52`
+Upstream: [openclaw/Peekaboo](https://github.com/openclaw/Peekaboo) · License: `MIT` · Commit: `425203ab6b1d4209faff33262f1b382bde24d2b2`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/openclaw/Peekaboo/AGENTS.md) | [Source](https://github.com/openclaw/Peekaboo/blob/7478610d44c6759648f164881d9c067e7224de52/AGENTS.md) | `8b2d16d3f56d44fa243b7adb38a174884c95ffb4ab829995499db7f5c4886aa6` | 4,383 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/openclaw/Peekaboo/CLAUDE.md) | [Source](https://github.com/openclaw/Peekaboo/blob/7478610d44c6759648f164881d9c067e7224de52/CLAUDE.md) | `8b2d16d3f56d44fa243b7adb38a174884c95ffb4ab829995499db7f5c4886aa6` | 4,383 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/openclaw/Peekaboo/AGENTS.md) | [Source](https://github.com/openclaw/Peekaboo/blob/425203ab6b1d4209faff33262f1b382bde24d2b2/AGENTS.md) | `bc672c6ad5a44376c23f1ffb67a0cc152e13c3b1a9cc1e949db521e769e57349` | 4,428 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/openclaw/Peekaboo/CLAUDE.md) | [Source](https://github.com/openclaw/Peekaboo/blob/425203ab6b1d4209faff33262f1b382bde24d2b2/CLAUDE.md) | `bc672c6ad5a44376c23f1ffb67a0cc152e13c3b1a9cc1e949db521e769e57349` | 4,428 B |
