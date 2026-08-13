@@ -38,6 +38,8 @@ Generation commands (`generate:contributions`, `generate:commandTypes`, `build:i
 
 For commit message format and workflow, use `/commit`. For CHANGELOG format and entry guidelines, use `/audit-commits`. For code reviewing, use `/review` or `/deep-review`. For debugging methodology and common misdiagnosis patterns, use `/investigate`. Additional workflow skills live in `.claude/skills/`.
 
+Skill artifacts (goals, plans, reviews, live-exercise findings) all live under a single gitignored `.work/` root in the **primary** worktree — never in the feature worktree you happen to be sitting in, since `.work/` is not shared between worktrees. See [Output Files](docs/triage-dev-skills.md#output-files) for the layout.
+
 ### Branching Guidelines
 
 - Feature branches from `main` or from another feature branch if stacking
@@ -96,6 +98,8 @@ The repo enforces its own rules from `scripts/eslint-rules/`. Write conforming c
 >
 > For webview accessibility requirements: see `docs/accessibility.md`
 >
+> For webview architecture — the two communication layers (legacy IPC vs Supertalk RPC + signals), which surface uses which, state ownership, resources, persistence, and lifecycle: see `docs/webview-architecture.md`
+>
 > For the Commit Graph keyboard architecture — focus scopes, the Esc overlay stack, the chord vocabulary, and how to add a binding: see `docs/graph-keyboard.md`
 
 ### Decorator System
@@ -140,4 +144,4 @@ When implementing something new, look at these files first:
 - Run `pnpm run generate:contributions` after editing (or let the watcher handle it)
 - Run `pnpm run generate:commandTypes` after adding commands (or let the watcher handle it)
 
-**IPC** — see `docs/architecture.md` for the webview IPC protocol (`IpcCommand` / `IpcRequest` / `IpcNotification`)
+**Webview communication** — two layers coexist: legacy IPC (`IpcCommand` / `IpcRequest` / `IpcNotification`) and Supertalk RPC + signals. Check which one your surface uses before adding a channel — see `docs/webview-architecture.md`

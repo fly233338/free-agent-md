@@ -1,5 +1,5 @@
 {
-  "full_name": "debpalash/OmniVoice-Studio",
+  "full_name": "debpalash/VoiceStudio",
   "points": [
     {
       "checked_at": "2026-07-20T06:28:02Z",
@@ -12,6 +12,12 @@
       "commit_sha": "e60c5364eaec4d7faec65b3d9ef6191200ff08d5",
       "pushed_at": "2026-08-04T05:57:56Z",
       "stars": 9495
+    },
+    {
+      "checked_at": "2026-08-13T05:09:58Z",
+      "commit_sha": "cd541131734c5f584d38c42d398e41314e94b1a2",
+      "pushed_at": "2026-08-13T05:04:29Z",
+      "stars": 9893
     }
   ],
   "repo_id": 1206390571
