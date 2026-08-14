@@ -35,11 +35,25 @@
 - Safety gates are a final fallback. If a visible watermark is skipped, first ask whether the selected position/size/alpha candidate is wrong or incomplete.
 - Do not generalize from a single image when the user supplied a sample set. Cluster samples by size, anchor, background, and residual behavior, then make the smallest algorithm change supported by that cluster.
 - When residual artifacts remain after mathematically valid inverse alpha removal, do not assume stronger inpaint, preview-only priors, or subpixel sweeps are safe production fixes. First verify whether the real alpha edge profile / antialiasing model differs from the current template, and keep any visual cleanup evidence-gated.
+- Do not treat a restoration score measured only with the candidate's own selected alpha map and geometry as independent cleanliness or damage evidence. A wrong candidate can erase the pattern it scores against while leaving an obvious hole, shifted star, or larger residual outside that ROI. Use those self-consistent scores for candidate ranking only; promotion evidence should come from frozen cross-profile/decoy signals and blind visual review.
+- Preserve signed source polarity when a rescue assumes a white alpha template. A localized gradient or edge witness can be strong even when the spatial template polarity is inverted; the fresh exact-48 R96 case 77 passed the decoy/edge gates but inverse removal turned it into a dark star. Keep the exact-48 R96 white source-witness gate constrained to `spatialSignedTarget > 0`; do not replace this with an absolute/max score or generalize it to other polarity models without independent validation.
+- Issue #123 independently confirmed the same collision class at exact-96 R192: a near-zero negative spatial witness with highly localized unsigned edges can be structured dark content, and applying the white `20260520` rescue creates a visible black hole. Require positive signed spatial evidence for the normal white rescue. Only retain the established structured-content exception when a drifted dark-polarity selection independently exists and the exact anchor has sufficiently strong, localized spatial evidence; a gradient/edge witness alone is not enough.
+- Treat `texture.hardReject`, `visibleDarkHole`, and selection-stage damage warnings as noisy review signals, not independent cleanliness truth. Confirmed clean exact-48 rescues can trigger them, while visible dark residuals can still retain a top-level `clean` status. Do not directly map these signals to `qualityStatus`, candidate ranking, blocking, or retry behavior without frozen independent validation.
+- Background-endpoint consistency is not by itself a safe gate for row/patch inpainting. A discovery-only endpoint threshold improved one dark-hole sample but later triggered on a clean fresh exact-48 rescue and introduced visible horizontal banding. Keep such repair offline until a preregistered temporal holdout demonstrates both useful recall and no clean-output damage.
 
 ## Deployment Note
 
 - The active local/debugging build surface is the generated `dist/` directory.
 - Keep deployment assumptions aligned with the current repo contents.
+
+### Website SDK Release Sync
+
+- `https://geminiwatermarkremover.io/` is deployed from the separate local `geminiwatermarkremover.io` repository; resolve its checkout from local configuration instead of committing a machine-specific absolute path.
+- Publishing this repository to npm, GitHub Releases, or the Chrome Web Store does **not** update the website's image-processing Worker. The website pins `@pilio/gemini-watermark-remover` in both `package.json` and `pnpm-lock.yaml` and must be upgraded, rebuilt, tested, and deployed separately.
+- After every core package release, compare the website's pinned SDK version with npm `latest` before treating the website as current. A current website userscript or extension download does not prove that the website Worker uses the current SDK.
+- Verify the deployed Worker itself with a real sample and inspect its selected candidate / strategy metadata or other version-specific behavior. Do not rely only on CDN asset timestamps, package release status, userscript `@version`, or successful HTTP responses.
+- Known failure mode from issue #115: the public site still bundled SDK `1.0.31` after `1.0.33` was published. Upgrading exposed a second path mismatch: the browser engine loaded the real `36-v2` template while the sync image-data SDK interpolated size 36, allowing local validation to select `48x48` while the deployed Worker skipped. Keep runtime alpha-map catalogs and candidate orchestration aligned across SDK entry points.
+- Treat the website as a separate release surface. If its main worktree contains unrelated user changes, prepare and validate the dependency upgrade in an isolated worktree so those changes are not overwritten or accidentally deployed.
 
 ### Gemini Image Size / Watermark Catalog
 

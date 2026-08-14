@@ -23,6 +23,11 @@ Core components:
 - **metric-module/**, **uristat/**, **realtime/**, **otlpmetric/**, **otlptrace/**, **exceptiontrace/**, **inspector-module/** — Feature modules
 - **commons/**, **commons-buffer/**, **commons-config/**, **commons-profiler/**, **commons-hbase/**, **commons-server/**, **commons-mybatis/**, **commons-timeseries/** — Shared libraries
 
+## Coding Style
+
+- Do NOT use Java `var`. Always declare explicit types, and replace `var` in IDE-generated code as well.
+- Always use curly braces for `if` statements, even single-line bodies.
+
 ## Commit Message Convention
 
 Format: `[#issue_number] Description` or `[#noissue] Description`
