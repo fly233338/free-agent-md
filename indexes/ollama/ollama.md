@@ -1,8 +1,8 @@
 # ollama/ollama instruction files
 
-Upstream: [ollama/ollama](https://github.com/ollama/ollama) · License: `MIT` · Commit: `e5a81899d014a847a08d47393351908b53d74008`
+Upstream: [ollama/ollama](https://github.com/ollama/ollama) · License: `MIT` · Commit: `d67ad83426633195089509347ffd4fe795120198`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/ollama/ollama/AGENTS.md) | [Source](https://github.com/ollama/ollama/blob/e5a81899d014a847a08d47393351908b53d74008/AGENTS.md) | `9cd30b469bc637faee8a9cdaf8879e13db60c52c9b82b2f9f5bd8314e7512144` | 358 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/ollama/ollama/CLAUDE.md) | [Source](https://github.com/ollama/ollama/blob/e5a81899d014a847a08d47393351908b53d74008/CLAUDE.md) | `a24ffa1e08f9b3c3c12a00464bd00054c4892f00a9039f5ee7e395aba86883d6` | 84 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/ollama/ollama/AGENTS.md) | [Source](https://github.com/ollama/ollama/blob/d67ad83426633195089509347ffd4fe795120198/AGENTS.md) | `9cd30b469bc637faee8a9cdaf8879e13db60c52c9b82b2f9f5bd8314e7512144` | 358 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/ollama/ollama/CLAUDE.md) | [Source](https://github.com/ollama/ollama/blob/d67ad83426633195089509347ffd4fe795120198/CLAUDE.md) | `a24ffa1e08f9b3c3c12a00464bd00054c4892f00a9039f5ee7e395aba86883d6` | 84 B |

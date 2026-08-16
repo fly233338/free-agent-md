@@ -56,6 +56,7 @@ Mental model:
 ## Android and packaging constraints
 
 - Generated apps keep a low `targetSdk` (28) on the shell path because they rely on on-device fork+exec runtimes. Do not raise shell targetSdk casually.
+- The host app targets SDK 35 (antivirus reputation); SELinux W^X therefore blocks host-side exec of downloaded runtimes. `RuntimeExecPolicy` (`core/linux`) gates those previews by probing the installed targetSdk — generated APKs (always 28) pass unconditionally. Node preview (JNI via native libs) is unaffected.
 - Avoid new third-party dependencies unless strongly justified (`app/build.gradle.kts` / `shell/build.gradle.kts`). Prefer platform APIs and existing modules.
 - Notification push channels: Web Notification polyfill, polling, WebSocket, FCM (developer-owned Firebase config). Do not add OEM vendor push SDKs by default.
 - Foreground services and notification helpers must use `SafeNotificationChannels` (or equivalent fail-soft create). Channel creation failures must not crash FGS startup.
@@ -207,7 +208,7 @@ Checklist in order:
 
 ### 11. Change a feature that has an Agent tool
 
-The in-app Agent exposes 40+ tools that wrap host service classes. When you change a feature, trace the tool chain:
+The in-app Agent exposes 53 tools that wrap host service classes. When you change a feature, trace the tool chain:
 
 ```text
 LLM response (tool_calls)
@@ -312,4 +313,4 @@ Landed:
 - Config field drift detection (`checkConfigFieldDrift`)
 - Module Market: Chrome Web Store live search + GreasyFork browse
 - Code editor find-and-replace
-- Agent tool system: 40+ tools (app lifecycle, ports/engine, hosts/runtime, stats/modifier/import, build env/Play, modules, files) with Channel-based permission prompting, per-section SSE parse resilience, and plan mode
+- Agent tool system: 53 tools (app lifecycle, config templates, ports/engine, hosts/runtime, stats/modifier/import, build env/Play, modules, files, imagery) with Channel-based permission prompting, per-section SSE parse resilience, and plan mode; runtime/build-env tools surface `localExecAllowed` so the LLM knows targetSdk>=29 hosts cannot exec app-storage binaries
