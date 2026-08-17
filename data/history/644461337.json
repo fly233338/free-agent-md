@@ -2,12 +2,6 @@
   "full_name": "vercel/ai",
   "points": [
     {
-      "checked_at": "2026-07-17T15:50:44Z",
-      "commit_sha": "8b5250363f5901d8dd90278fd82e21562a840bd4",
-      "pushed_at": "2026-07-17T15:43:33Z",
-      "stars": 25611
-    },
-    {
       "checked_at": "2026-08-11T04:42:27Z",
       "commit_sha": "8a2482d39b5d3db280581b76f126578053152d58",
       "pushed_at": "2026-08-11T04:40:40Z",

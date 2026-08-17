@@ -2,12 +2,6 @@
   "full_name": "apache/datafusion",
   "points": [
     {
-      "checked_at": "2026-07-17T15:50:44Z",
-      "commit_sha": "b16bd3d874a9e11877d7aa4e59e8845ff576c430",
-      "pushed_at": "2026-07-17T15:50:11Z",
-      "stars": 8988
-    },
-    {
       "checked_at": "2026-07-21T06:08:00Z",
       "commit_sha": "02a902c7ff061b574fbf64e504812235558ff161",
       "pushed_at": "2026-07-21T05:58:00Z",
@@ -36,6 +30,12 @@
       "commit_sha": "e0a05a693da6c56f97f001e0d5b3df1329b11ac2",
       "pushed_at": "2026-08-08T04:22:41Z",
       "stars": 9101
+    },
+    {
+      "checked_at": "2026-08-17T04:05:28Z",
+      "commit_sha": "9a83691aadaadbf72bf4c8b7d87bd28af9dc68dd",
+      "pushed_at": "2026-08-17T04:03:27Z",
+      "stars": 9149
     }
   ],
   "repo_id": 358917318
