@@ -1,9 +1,9 @@
 # nexu-io/open-design instruction files
 
-Upstream: [nexu-io/open-design](https://github.com/nexu-io/open-design) · License: `Apache-2.0` · Commit: `eee03776fbffc24e40f8278b38ef6e95c011f870`
+Upstream: [nexu-io/open-design](https://github.com/nexu-io/open-design) · License: `Apache-2.0` · Commit: `f0270aff10f5e84bcc5e0586f3e854f98892cf11`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/nexu-io/open-design/AGENTS.md) | [Source](https://github.com/nexu-io/open-design/blob/eee03776fbffc24e40f8278b38ef6e95c011f870/AGENTS.md) | `dd1f286c00377b40bfe8c781da8e48fcdbeabce6a377867c1dc72cdc1a71fbf2` | 38,307 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/nexu-io/open-design/CLAUDE.md) | [Source](https://github.com/nexu-io/open-design/blob/eee03776fbffc24e40f8278b38ef6e95c011f870/CLAUDE.md) | `336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49` | 11 B |
-| `AGENTS.md` | `.github/AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/nexu-io/open-design/.github/AGENTS.md) | [Source](https://github.com/nexu-io/open-design/blob/eee03776fbffc24e40f8278b38ef6e95c011f870/.github/AGENTS.md) | `6f663c579e2dd2d4c01616bcd6e64647bafc8e359596fd6fa48f57684b4f2c92` | 10,548 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/nexu-io/open-design/AGENTS.md) | [Source](https://github.com/nexu-io/open-design/blob/f0270aff10f5e84bcc5e0586f3e854f98892cf11/AGENTS.md) | `dd1f286c00377b40bfe8c781da8e48fcdbeabce6a377867c1dc72cdc1a71fbf2` | 38,307 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/nexu-io/open-design/CLAUDE.md) | [Source](https://github.com/nexu-io/open-design/blob/f0270aff10f5e84bcc5e0586f3e854f98892cf11/CLAUDE.md) | `336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49` | 11 B |
+| `AGENTS.md` | `.github/AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/nexu-io/open-design/.github/AGENTS.md) | [Source](https://github.com/nexu-io/open-design/blob/f0270aff10f5e84bcc5e0586f3e854f98892cf11/.github/AGENTS.md) | `6f663c579e2dd2d4c01616bcd6e64647bafc8e359596fd6fa48f57684b4f2c92` | 10,548 B |

@@ -6,6 +6,12 @@ Assume that Visual Studio command-line tools are available in the PATH environme
 
 Our code is in src/ directory. External dependencies are in ext/ directory
 
+`ext/mupdf` is vendored and we edit it in place. Every change we make there must
+also be recorded as a patch in `ext/patches/` (one logical change per `.patch`,
+against the mupdf revision in `ext/versions.txt`) in the **same commit** — see
+`ext/patches/README.md`. A change that only lives in the vendored tree is one
+the next mupdf update silently drops.
+
 To build run: `bun cmd/build.ts -debug` (or `-release`, `-asan`, and the other modes shown by `bun cmd/build.ts -help`). Called with no options it prints usage and exits; unknown options print an error plus usage and exit unsuccessfully.
 
 Keep `cmd/build.ts` as the single build entry point. Build-mode implementation modules live under `cmd/helper/` and are not invoked directly, except for internal delegation such as the WSL launcher.
@@ -24,7 +30,7 @@ When launching SumatraPDF.exe for ad-hoc testing, always pass the `-for-testing`
 
 After making a change to a .cpp, .c or .h file under `src/` (and before running build.ts), run clang-format on those files to reformat them in place. Do **not** clang-format third-party / vendored code (`ext/`, etc.) — keep edits there minimal and match the existing local style.
 
-For .ts / .js / .json / .md files, the equivalent is `bunx prettier --write <files>`. Settings live in `.prettierrc.json` (`printWidth` 120, `endOfLine` lf) and `.prettierignore` (vendored code, build output, and the generated `docs/md/Advanced-options-settings.md`). Format only the files you touched: most of `cmd/` and `tests/` predates the config and would produce large unrelated diffs.
+After changing a .ts file under `cmd/` or `tests/`, run `bun cmd/format.ts` — it runs prettier over `cmd/**/*.ts` and `tests/**/*.ts` and then clang-formats the C/C++ sources. Use `bun cmd/format.ts -ts` to run only the prettier pass (no Visual Studio / clang-format needed). Prettier settings live in `.prettierrc.json` (`printWidth` 120, `endOfLine` lf) and `.prettierignore` (vendored code, build output, scratch `tmp/` dirs, and the generated `docs/md/Advanced-options-settings.md`). For other prettier-owned files (.js / .json / .md) run `bunx prettier --write <files>` on the files you touched.
 
 Never commit changes automatically. Always wait for explicit command to commit changes.
 
@@ -159,10 +165,10 @@ the temp arena and returns a `TempStr`, so call sites read `fmt("page %d", n)`.
 For a `%s` fed a **string literal**, wrap it with `StrL(...)` (see next section)
 so the length is computed at compile time: `fmt("%s", StrL("done"))`.
 
-`logf` / `logfa` are macros in `base/Base.h` that format via `::fmt(...)` and
-route the result through `log()` / `loga()`, so they follow the same type-safe
-rules. Base only declares those two; the app implements them (`SumatraLog.cpp`,
-declared in `SumatraLog.h`).
+`logf` is a variadic function template in `base/Base.h` that formats via
+`str::FormatTemp(...)` and routes the result through `log()`, so it follows the
+same type-safe rules. Base only declares `log()`; the app implements it
+(`SumatraLog.cpp`, declared in `SumatraLog.h`).
 
 Functions that take an already-formatted `Str` (so the caller formats with
 `fmt(...)`): `str::Builder::Append`, `dbglayout`, `MaybeDelayedWarningNotification`.
@@ -315,6 +321,10 @@ Structure of each test (so they compose in tests/run-almost-all.ts / tests/run-a
   `runStandalone` (from `tests/util.ts`) builds the app (unless `--no-build`), runs `testit()`, and exits 0 on pass / 1 on failure.
 - shared helpers (`EXE` path, `buildApp`, `runStandalone`) live in `tests/util.ts` — use them instead of re-implementing per file.
 - register every new test in `tests/run-almost-all.ts` (import its `testit` and add it to the `tests` array). If the test cannot be made faster (print-to-PDF, LaTeX, a measured wait, high-zoom tile settle, a huge fixture, copying the exe next to restrict.ini), add it to `slowTests` in `tests/run-all.ts` instead. `bun tests/run-almost-all.ts` is the fast suite; `bun tests/run-all.ts` runs that then the slow tests, stopping at the first failure.
+- the daily GitHub Actions job (`.github/workflows/windows-daily.yml`) builds the debug ASan target and runs `bun tests/run-github-ci.ts`. That runner takes the `run-all.ts` list minus `excludedTests` (each with the reason it can't run on a hosted runner), runs **all** of them instead of stopping at the first failure, prints the failures at the end and exits non-zero. It doesn't build: the workflow does, and points `SUMATRA_TEST_EXE` at `out/dbg64_asan/SumatraPDF-static.exe` (`tests/util.ts` `EXE` reads that env var at import time). If a test can't work on a runner, add it to `excludedTests` with the reason rather than deleting it.
+- the runner picks the window layout with `setTestWindowLayout()` (`tests/winapi.ts`): `"quarter"` (the default, what `run-almost-all.ts` asks for) keeps the window out of a developer's way and renders/captures fewer pixels; `"workArea"` (what `run-github-ci.ts` asks for) uses the whole work area, because a runner's screen is small and nobody is looking at it. Every launch path (`launchSumatra`, `launchControlled`, `withControlledSumatra`) takes its geometry from `testWindowPos()`, so that one call covers all of them.
+- an ASan build is 2-3x slower, so a test that sleeps a fixed number of ms for a repaint or a layout passes locally and fails in CI. Poll for the condition (see `sampleStableChrome` / `waitForChromeRestored` in `tests/issue-5866.ts`) instead of sleeping longer.
+- a test that reads pixels off the document should call `client.setNotificationsEnabled(false)` (`-dbg-control`) first: notifications are drawn over the page and linger ~2s, so otherwise the test waits them out. Disabling also takes down any already on screen (e.g. the `Zoom: N%` one that `-zoom` shows). It was 8 of the 15 seconds `tests/issue-1195.ts` used to take.
 
 ### Ad-hoc tests
 

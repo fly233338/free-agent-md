@@ -2,12 +2,6 @@
   "full_name": "spantaleev/matrix-docker-ansible-deploy",
   "points": [
     {
-      "checked_at": "2026-07-18T05:37:53Z",
-      "commit_sha": "72833abf385fbe3c40d9cae965d6a3e1a1575d5d",
-      "pushed_at": "2026-07-18T05:24:49Z",
-      "stars": 6431
-    },
-    {
       "checked_at": "2026-08-13T05:09:58Z",
       "commit_sha": "aef0fad8b51a6b2a0a6ca708fe437a093915544f",
       "pushed_at": "2026-08-13T05:03:17Z",

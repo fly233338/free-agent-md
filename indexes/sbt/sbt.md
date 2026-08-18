@@ -1,7 +1,7 @@
 # sbt/sbt instruction files
 
-Upstream: [sbt/sbt](https://github.com/sbt/sbt) · License: `Apache-2.0` · Commit: `c0ffc9dc604ace659d44816593d55904adee1800`
+Upstream: [sbt/sbt](https://github.com/sbt/sbt) · License: `Apache-2.0` · Commit: `27c3f035e55307fc9ca30365175ad8092528d7ad`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/sbt/sbt/AGENTS.md) | [Source](https://github.com/sbt/sbt/blob/c0ffc9dc604ace659d44816593d55904adee1800/AGENTS.md) | `d90336ead08667e7b9aef1d745a9bfb6dc5547ccf4fb69d3fcf862a10847b8de` | 1,683 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/sbt/sbt/AGENTS.md) | [Source](https://github.com/sbt/sbt/blob/27c3f035e55307fc9ca30365175ad8092528d7ad/AGENTS.md) | `d90336ead08667e7b9aef1d745a9bfb6dc5547ccf4fb69d3fcf862a10847b8de` | 1,683 B |

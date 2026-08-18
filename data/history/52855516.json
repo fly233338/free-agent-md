@@ -2,12 +2,6 @@
   "full_name": "Homebrew/homebrew-core",
   "points": [
     {
-      "checked_at": "2026-07-18T05:37:53Z",
-      "commit_sha": "44e6ddc0b9b874e7849b7f6ae27b1bb524610b79",
-      "pushed_at": "2026-07-18T05:34:17Z",
-      "stars": 15452
-    },
-    {
       "checked_at": "2026-07-21T06:08:00Z",
       "commit_sha": "38446a5f0575467e5bb9978756f55e47dc17fb41",
       "pushed_at": "2026-07-21T06:05:46Z",
@@ -114,6 +108,12 @@
       "commit_sha": "8182d8f0d5437f247260595bc04715bf8d3455df",
       "pushed_at": "2026-08-17T04:03:03Z",
       "stars": 15505
+    },
+    {
+      "checked_at": "2026-08-18T04:00:27Z",
+      "commit_sha": "ef3841a30526c04c9be45c3fcba45beb362fc9c8",
+      "pushed_at": "2026-08-18T03:53:59Z",
+      "stars": 15507
     }
   ],
   "repo_id": 52855516

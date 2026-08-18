@@ -2,12 +2,6 @@
   "full_name": "redpanda-data/redpanda",
   "points": [
     {
-      "checked_at": "2026-07-18T05:37:53Z",
-      "commit_sha": "70bc43eeed46406cb5eaa215785c0425e1dc4dc5",
-      "pushed_at": "2026-07-18T05:32:26Z",
-      "stars": 12347
-    },
-    {
       "checked_at": "2026-07-30T06:01:01Z",
       "commit_sha": "72f3f4678b55a481d98fb758b0ad074c44dac809",
       "pushed_at": "2026-07-30T05:54:38Z",

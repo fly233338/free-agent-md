@@ -2,12 +2,6 @@
   "full_name": "open-gsd/gsd-core",
   "points": [
     {
-      "checked_at": "2026-07-18T05:37:53Z",
-      "commit_sha": "863a54ec828c5f2ad0da4bdf7d00d81c5406b884",
-      "pushed_at": "2026-07-18T05:14:47Z",
-      "stars": 6788
-    },
-    {
       "checked_at": "2026-07-25T05:58:19Z",
       "commit_sha": "e4dd0cbdd5ccbfb2f553dc3f161c810ced370da4",
       "pushed_at": "2026-07-25T05:50:38Z",

@@ -2,12 +2,6 @@
   "full_name": "microsoft/TypeScript",
   "points": [
     {
-      "checked_at": "2026-07-18T05:37:53Z",
-      "commit_sha": "637d5746b70257028fb95aad32ddec6b26ab0a14",
-      "pushed_at": "2026-07-08T15:45:40Z",
-      "stars": 109852
-    },
-    {
       "checked_at": "2026-07-19T06:09:46Z",
       "commit_sha": "637d5746b70257028fb95aad32ddec6b26ab0a14",
       "pushed_at": "2026-07-08T15:45:40Z",
@@ -186,6 +180,12 @@
       "commit_sha": "b465fdbfe175304d9b977da137b2c178ae1091d3",
       "pushed_at": "2026-08-14T19:07:48Z",
       "stars": 110186
+    },
+    {
+      "checked_at": "2026-08-18T04:00:27Z",
+      "commit_sha": "b465fdbfe175304d9b977da137b2c178ae1091d3",
+      "pushed_at": "2026-08-14T19:07:48Z",
+      "stars": 110183
     }
   ],
   "repo_id": 20929025
