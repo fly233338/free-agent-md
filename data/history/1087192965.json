@@ -2,12 +2,6 @@
   "full_name": "shanraisshan/claude-code-best-practice",
   "points": [
     {
-      "checked_at": "2026-07-19T06:09:46Z",
-      "commit_sha": "754e824383e90500f17d55f62d70c77a4f7a96e8",
-      "pushed_at": "2026-07-19T06:08:28Z",
-      "stars": 63065
-    },
-    {
       "checked_at": "2026-07-20T06:28:02Z",
       "commit_sha": "2c8941bbc2ad615995a118d15a2fa156da720a64",
       "pushed_at": "2026-07-20T06:12:55Z",
@@ -72,6 +66,12 @@
       "commit_sha": "5c8ebd5f7f52a19506ffba83e7c546d8eaefe481",
       "pushed_at": "2026-08-16T03:45:09Z",
       "stars": 64539
+    },
+    {
+      "checked_at": "2026-08-19T04:01:55Z",
+      "commit_sha": "6c0ddcabf35a2c670bcf82dfd01583483f266874",
+      "pushed_at": "2026-08-19T03:45:52Z",
+      "stars": 64680
     }
   ],
   "repo_id": 1087192965

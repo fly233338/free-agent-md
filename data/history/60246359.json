@@ -2,12 +2,6 @@
   "full_name": "ClickHouse/ClickHouse",
   "points": [
     {
-      "checked_at": "2026-07-19T06:09:46Z",
-      "commit_sha": "cca0b66bbc49fb363d4e8a08c7529286aa2747b8",
-      "pushed_at": "2026-07-19T05:54:29Z",
-      "stars": 48717
-    },
-    {
       "checked_at": "2026-07-26T06:17:10Z",
       "commit_sha": "36940a01789a3355009efe2a603c114bd08c76ac",
       "pushed_at": "2026-07-26T06:15:59Z",
@@ -60,6 +54,12 @@
       "commit_sha": "fb748969f9ea4d9f175f5881041b68837e3fb7a7",
       "pushed_at": "2026-08-18T03:56:15Z",
       "stars": 49300
+    },
+    {
+      "checked_at": "2026-08-19T04:01:55Z",
+      "commit_sha": "071c010efa409a36e5fbfec83891a378a87d6e88",
+      "pushed_at": "2026-08-19T03:59:43Z",
+      "stars": 49319
     }
   ],
   "repo_id": 60246359

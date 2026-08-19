@@ -2,12 +2,6 @@
   "full_name": "Q00/ouroboros",
   "points": [
     {
-      "checked_at": "2026-07-19T06:09:46Z",
-      "commit_sha": "65768e616094dd7ab4a16d5354e73286163cdcde",
-      "pushed_at": "2026-07-19T06:07:53Z",
-      "stars": 4978
-    },
-    {
       "checked_at": "2026-07-27T06:44:39Z",
       "commit_sha": "2dec0dbd01bb5b2243ea138af9d91f3583b92c5d",
       "pushed_at": "2026-07-27T06:39:01Z",

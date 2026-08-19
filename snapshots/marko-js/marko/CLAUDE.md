@@ -16,6 +16,7 @@ All from repo root. Tests and tooling run directly from TS source (native Node t
 
 ```sh
 pnpm test -- --grep "runtime-tags/translator <fixture> "  # scoped test run; bail: stops at first failure
+pnpm exec mocha <file.test.ts>                            # one file; `pnpm test -- <file>` still unions with the suite glob
 pnpm run test:parallel                                    # whole suite fanned across CPU cores (~3x faster than a serial pnpm test)
 pnpm run test:update -- --grep "..."                      # regenerate snapshots (review the diff!)
 pnpm run compile -- -o dom -d foo.marko                   # compiled output -> foo.marko.js (-o html for SSR; omit -d for optimized)
@@ -47,4 +48,4 @@ Marko language reference: <https://markojs.com/llms.txt> lists every docs page; 
 
 ## Agent feedback
 
-Anything actionable but out of scope for the current task — a suspected bug, cleanup, a perf/size win, tooling friction, or code that was confusing — must be recorded in [`agent-feedback/`](agent-feedback/README.md) before finishing. Don't silently drop it, and don't fix it inside an unrelated diff.
+Anything actionable but out of scope for the current task (suspected bug, cleanup, perf or size win, tooling friction, confusing code) must be filed in [`agent-feedback/`](agent-feedback/README.md) before finishing. Never drop it silently. Never fix it inside an unrelated diff.

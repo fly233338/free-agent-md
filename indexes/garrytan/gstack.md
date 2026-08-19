@@ -1,8 +1,8 @@
 # garrytan/gstack instruction files
 
-Upstream: [garrytan/gstack](https://github.com/garrytan/gstack) · License: `MIT` · Commit: `c86e6472eb7f1fbb4ef8ae28b130a3cf8cdf0883`
+Upstream: [garrytan/gstack](https://github.com/garrytan/gstack) · License: `MIT` · Commit: `60e51342b54553cf4347ce7a786cae508125053e`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/garrytan/gstack/AGENTS.md) | [Source](https://github.com/garrytan/gstack/blob/c86e6472eb7f1fbb4ef8ae28b130a3cf8cdf0883/AGENTS.md) | `4219d467f18767fb3879ce72b8cd911606bbf100f0027a4a9d826585ecb01cff` | 7,763 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/garrytan/gstack/CLAUDE.md) | [Source](https://github.com/garrytan/gstack/blob/c86e6472eb7f1fbb4ef8ae28b130a3cf8cdf0883/CLAUDE.md) | `22d9c42e01e2e103b1898f1241efea12cfa2f9c40a7754fdb7d6da12603eb267` | 65,694 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/garrytan/gstack/AGENTS.md) | [Source](https://github.com/garrytan/gstack/blob/60e51342b54553cf4347ce7a786cae508125053e/AGENTS.md) | `4219d467f18767fb3879ce72b8cd911606bbf100f0027a4a9d826585ecb01cff` | 7,763 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/garrytan/gstack/CLAUDE.md) | [Source](https://github.com/garrytan/gstack/blob/60e51342b54553cf4347ce7a786cae508125053e/CLAUDE.md) | `152ba03b60cecb7e3a5aec66f4d6f79b322c4b18c62c6d7d03bbfc0174ddc71d` | 66,423 B |

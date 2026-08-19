@@ -2,12 +2,6 @@
   "full_name": "PeonPing/peon-ping",
   "points": [
     {
-      "checked_at": "2026-07-19T06:09:46Z",
-      "commit_sha": "02ad79c9229166497a69deccd38e98c3f3afbe27",
-      "pushed_at": "2026-07-19T06:09:48Z",
-      "stars": 4950
-    },
-    {
       "checked_at": "2026-07-20T06:28:02Z",
       "commit_sha": "02ad79c9229166497a69deccd38e98c3f3afbe27",
       "pushed_at": "2026-07-19T06:09:48Z",
@@ -174,6 +168,12 @@
       "commit_sha": "f42241cc3b07ae36baff98bc1a04c62737cf5897",
       "pushed_at": "2026-08-10T01:08:32Z",
       "stars": 4993
+    },
+    {
+      "checked_at": "2026-08-19T04:01:55Z",
+      "commit_sha": "f42241cc3b07ae36baff98bc1a04c62737cf5897",
+      "pushed_at": "2026-08-10T01:08:32Z",
+      "stars": 4996
     }
   ],
   "repo_id": 1154009261

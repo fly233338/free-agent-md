@@ -2,12 +2,6 @@
   "full_name": "mattpocock/skills",
   "points": [
     {
-      "checked_at": "2026-07-19T06:09:46Z",
-      "commit_sha": "9603c1cc8118d08bc1b3bf34cf714f62178dea3b",
-      "pushed_at": "2026-07-17T09:51:15Z",
-      "stars": 176764
-    },
-    {
       "checked_at": "2026-07-20T06:28:02Z",
       "commit_sha": "9603c1cc8118d08bc1b3bf34cf714f62178dea3b",
       "pushed_at": "2026-07-17T09:51:15Z",
@@ -186,6 +180,12 @@
       "commit_sha": "9c9f36ccd3995266cd675468af71639c8dde1ec5",
       "pushed_at": "2026-08-17T07:54:42Z",
       "stars": 220517
+    },
+    {
+      "checked_at": "2026-08-19T04:01:55Z",
+      "commit_sha": "9c9f36ccd3995266cd675468af71639c8dde1ec5",
+      "pushed_at": "2026-08-17T07:54:42Z",
+      "stars": 221805
     }
   ],
   "repo_id": 1148788086

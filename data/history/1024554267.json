@@ -2,12 +2,6 @@
   "full_name": "NousResearch/hermes-agent",
   "points": [
     {
-      "checked_at": "2026-07-19T06:09:46Z",
-      "commit_sha": "e598cef87465981fcea1c0339edfcf5d9716c917",
-      "pushed_at": "2026-07-19T04:32:14Z",
-      "stars": 216932
-    },
-    {
       "checked_at": "2026-07-20T06:28:02Z",
       "commit_sha": "3c72177061b12a3c6d62750b5fd4667acb7ac582",
       "pushed_at": "2026-07-20T06:23:11Z",
@@ -186,6 +180,12 @@
       "commit_sha": "bdc9a810f3990597b3f26203348e849e5128afb6",
       "pushed_at": "2026-08-18T03:51:38Z",
       "stars": 232119
+    },
+    {
+      "checked_at": "2026-08-19T04:01:55Z",
+      "commit_sha": "0b879298a7885b62425e65500c85c584d7c516d5",
+      "pushed_at": "2026-08-19T03:56:24Z",
+      "stars": 232640
     }
   ],
   "repo_id": 1024554267
