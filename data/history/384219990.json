@@ -2,12 +2,6 @@
   "full_name": "warpdotdev/warp",
   "points": [
     {
-      "checked_at": "2026-07-20T06:28:02Z",
-      "commit_sha": "1388531b18eb09a75563ed0c32a3bbe35fd70c97",
-      "pushed_at": "2026-07-20T06:19:19Z",
-      "stars": 63434
-    },
-    {
       "checked_at": "2026-07-21T06:08:00Z",
       "commit_sha": "a6ebba40e65510c237cfff1d1f69542d704fa891",
       "pushed_at": "2026-07-21T06:03:24Z",
@@ -60,6 +54,12 @@
       "commit_sha": "e72fd7aacbbb2236d9b3be2aad7e7178fe94b4bc",
       "pushed_at": "2026-08-16T03:47:17Z",
       "stars": 64241
+    },
+    {
+      "checked_at": "2026-08-20T04:01:46Z",
+      "commit_sha": "8b88df9874d8d632eba3bcfdd330acc9dabd23b0",
+      "pushed_at": "2026-08-20T03:58:09Z",
+      "stars": 64371
     }
   ],
   "repo_id": 384219990

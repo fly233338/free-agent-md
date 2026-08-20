@@ -2,12 +2,6 @@
   "full_name": "Expensify/App",
   "points": [
     {
-      "checked_at": "2026-07-20T06:28:02Z",
-      "commit_sha": "44f89b024b6605fa42b1cab5b3a6b9eb276765bf",
-      "pushed_at": "2026-07-20T06:27:58Z",
-      "stars": 4968
-    },
-    {
       "checked_at": "2026-07-21T06:08:00Z",
       "commit_sha": "f1e82a3e52c98b125319dc4fd3b22cb0bef10392",
       "pushed_at": "2026-07-21T05:23:42Z",
@@ -156,6 +150,12 @@
       "commit_sha": "53dc9cd8a4429b22fc748c88c279bcc0053844d1",
       "pushed_at": "2026-08-14T05:04:48Z",
       "stars": 5002
+    },
+    {
+      "checked_at": "2026-08-20T04:01:46Z",
+      "commit_sha": "c156d5f334a5840a577812693f17455f94615d6d",
+      "pushed_at": "2026-08-20T04:00:45Z",
+      "stars": 5007
     }
   ],
   "repo_id": 285902689

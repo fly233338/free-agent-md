@@ -2,12 +2,6 @@
   "full_name": "Significant-Gravitas/AutoGPT",
   "points": [
     {
-      "checked_at": "2026-07-20T06:28:02Z",
-      "commit_sha": "f244390da74f4087ad94f34de3b938639b31d6c3",
-      "pushed_at": "2026-07-20T06:04:29Z",
-      "stars": 185618
-    },
-    {
       "checked_at": "2026-07-21T06:08:00Z",
       "commit_sha": "f244390da74f4087ad94f34de3b938639b31d6c3",
       "pushed_at": "2026-07-21T05:31:48Z",
@@ -186,6 +180,12 @@
       "commit_sha": "601093ddfe23a3d58a9c8f4a208bd49b203ee612",
       "pushed_at": "2026-08-19T02:23:33Z",
       "stars": 186680
+    },
+    {
+      "checked_at": "2026-08-20T04:01:46Z",
+      "commit_sha": "601093ddfe23a3d58a9c8f4a208bd49b203ee612",
+      "pushed_at": "2026-08-20T03:15:20Z",
+      "stars": 186691
     }
   ],
   "repo_id": 614765452

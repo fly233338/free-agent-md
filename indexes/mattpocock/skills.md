@@ -1,8 +1,8 @@
 # mattpocock/skills instruction files
 
-Upstream: [mattpocock/skills](https://github.com/mattpocock/skills) · License: `MIT` · Commit: `9c9f36ccd3995266cd675468af71639c8dde1ec5`
+Upstream: [mattpocock/skills](https://github.com/mattpocock/skills) · License: `MIT` · Commit: `885e2ca4d842d139e9aef4e48d366c63cb1b8013`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/mattpocock/skills/AGENTS.md) | [Source](https://github.com/mattpocock/skills/blob/9c9f36ccd3995266cd675468af71639c8dde1ec5/AGENTS.md) | `04a6a0320558633f337a0e938d240511b267777165c0c81908daea6d122c43a0` | 3,407 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/mattpocock/skills/CLAUDE.md) | [Source](https://github.com/mattpocock/skills/blob/9c9f36ccd3995266cd675468af71639c8dde1ec5/CLAUDE.md) | `04a6a0320558633f337a0e938d240511b267777165c0c81908daea6d122c43a0` | 3,407 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/mattpocock/skills/AGENTS.md) | [Source](https://github.com/mattpocock/skills/blob/885e2ca4d842d139e9aef4e48d366c63cb1b8013/AGENTS.md) | `fa8a2aaf79ca544e92c76401fe2a862aba0583fe62c3a4908af6f20ebadeb89e` | 3,703 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/mattpocock/skills/CLAUDE.md) | [Source](https://github.com/mattpocock/skills/blob/885e2ca4d842d139e9aef4e48d366c63cb1b8013/CLAUDE.md) | `fa8a2aaf79ca544e92c76401fe2a862aba0583fe62c3a4908af6f20ebadeb89e` | 3,703 B |

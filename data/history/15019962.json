@@ -2,12 +2,6 @@
   "full_name": "tldr-pages/tldr",
   "points": [
     {
-      "checked_at": "2026-07-20T06:28:02Z",
-      "commit_sha": "f92a4d1dd264dae6eae4cf0b6b46239db16943bd",
-      "pushed_at": "2026-07-20T06:22:54Z",
-      "stars": 63149
-    },
-    {
       "checked_at": "2026-08-12T05:06:54Z",
       "commit_sha": "1ac82ed9ba7307a04175a6a123fbd35e21f406b0",
       "pushed_at": "2026-08-12T05:00:37Z",

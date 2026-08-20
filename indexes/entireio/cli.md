@@ -1,8 +1,8 @@
 # entireio/cli instruction files
 
-Upstream: [entireio/cli](https://github.com/entireio/cli) · License: `MIT` · Commit: `f3c9f1428762ac034e404d20d28f57994441bc09`
+Upstream: [entireio/cli](https://github.com/entireio/cli) · License: `MIT` · Commit: `91a7fd7fcb3d6990537d5a8f9235d05b8e6fad10`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/entireio/cli/AGENTS.md) | [Source](https://github.com/entireio/cli/blob/f3c9f1428762ac034e404d20d28f57994441bc09/AGENTS.md) | `f64e8046869739da7c23e8c5d1e9afa7254a49e9999ba9e8c46e5c6e907e9a37` | 55,986 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/entireio/cli/CLAUDE.md) | [Source](https://github.com/entireio/cli/blob/f3c9f1428762ac034e404d20d28f57994441bc09/CLAUDE.md) | `f64e8046869739da7c23e8c5d1e9afa7254a49e9999ba9e8c46e5c6e907e9a37` | 55,986 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/entireio/cli/AGENTS.md) | [Source](https://github.com/entireio/cli/blob/91a7fd7fcb3d6990537d5a8f9235d05b8e6fad10/AGENTS.md) | `72bd9c8bff474aea420d8ae7470643e9edfab4f226f4e35e81af10ecaae59bac` | 59,869 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/entireio/cli/CLAUDE.md) | [Source](https://github.com/entireio/cli/blob/91a7fd7fcb3d6990537d5a8f9235d05b8e6fad10/CLAUDE.md) | `72bd9c8bff474aea420d8ae7470643e9edfab4f226f4e35e81af10ecaae59bac` | 59,869 B |

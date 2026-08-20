@@ -1,7 +1,7 @@
 # huangruiteng/loopx instruction files
 
-Upstream: [huangruiteng/loopx](https://github.com/huangruiteng/loopx) · License: `Apache-2.0` · Commit: `bd106d507b61b18ecb4175e47c8d3df356bd0786`
+Upstream: [huangruiteng/loopx](https://github.com/huangruiteng/loopx) · License: `Apache-2.0` · Commit: `db5d9e9f7afec3914c75c2d1d0207df42a8d4095`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/huangruiteng/loopx/AGENTS.md) | [Source](https://github.com/huangruiteng/loopx/blob/bd106d507b61b18ecb4175e47c8d3df356bd0786/AGENTS.md) | `9288645e9057cd9e82fb85e257bf9e4c424ea937bcb9da3f5f87ffd77dc5de8e` | 22,468 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/huangruiteng/loopx/AGENTS.md) | [Source](https://github.com/huangruiteng/loopx/blob/db5d9e9f7afec3914c75c2d1d0207df42a8d4095/AGENTS.md) | `cc3b1d36bece27ceb6a5eb2dc2e592a18daf00013d82910a966ff2ab0ef4e6d7` | 22,750 B |

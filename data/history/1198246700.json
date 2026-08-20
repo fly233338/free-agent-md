@@ -2,12 +2,6 @@
   "full_name": "emdash-cms/emdash",
   "points": [
     {
-      "checked_at": "2026-07-20T06:28:02Z",
-      "commit_sha": "c37750c2c57048eaa88dcb785d14940f1307c07e",
-      "pushed_at": "2026-07-20T06:25:26Z",
-      "stars": 11308
-    },
-    {
       "checked_at": "2026-07-21T06:08:00Z",
       "commit_sha": "813e5c4fb52444ab3e4871a70d3d4266016f3669",
       "pushed_at": "2026-07-21T06:05:57Z",

@@ -2,12 +2,6 @@
   "full_name": "triton-lang/triton",
   "points": [
     {
-      "checked_at": "2026-07-20T06:28:02Z",
-      "commit_sha": "96bc7e783a19958182794f477d5f72f9a77d5924",
-      "pushed_at": "2026-07-20T06:21:09Z",
-      "stars": 19736
-    },
-    {
       "checked_at": "2026-08-12T05:06:54Z",
       "commit_sha": "6ce7883c1d38cda64a481de2c055e1db3a6f7496",
       "pushed_at": "2026-08-12T05:06:27Z",
@@ -18,6 +12,12 @@
       "commit_sha": "63068fcc274cd152fb34abe1bcab10e5078b0df5",
       "pushed_at": "2026-08-19T03:52:12Z",
       "stars": 19976
+    },
+    {
+      "checked_at": "2026-08-20T04:01:46Z",
+      "commit_sha": "f893845b9b91599ebd3b7a9c7f28164f39c7ed94",
+      "pushed_at": "2026-08-20T03:48:35Z",
+      "stars": 19982
     }
   ],
   "repo_id": 23496542
