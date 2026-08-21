@@ -1,0 +1,178 @@
+# AGENTS.md
+
+本文件为 Agent 在本仓库中工作时提供指导说明。
+
+## 项目概述
+
+FastGPT 是一个 AI Agent 构建平台,通过 Flow 提供开箱即用的数据处理、模型调用能力和可视化工作流编排。这是一个基于 NextJS 构建的全栈 TypeScript 应用,后端使用 MongoDB/PostgreSQL。
+
+**技术栈**: NextJS + TypeScript + ChakraUI + MongoDB + VectorDB(PG, Milvus, Zilliz, OceanBase, SeekDB, OpenGauss......)
+
+## 设计文档
+
+你可以参考 [项目设计文档](./.agents/design/) 来了解 FastGPT 已有的设计方案。
+
+## 架构
+
+这是一个使用 pnpm workspaces 的 monorepo,主要结构如下:
+
+### Packages (库代码)
+- `packages/global/` - 所有项目共享的类型、常量、工具函数
+- `packages/service/` - 后端服务、数据库模型、API 控制器、工作流引擎
+- `packages/web/` - 共享的前端组件、hooks、样式、国际化
+
+### Projects (应用程序)
+- `projects/app/` - 主 NextJS Web 应用(前端 + API 路由)
+- `projects/code-sandbox/` - Bun + Hono 代码执行沙箱服务
+- `projects/mcp_server/` - Model Context Protocol 服务器实现
+
+### 关键目录
+- `document/` - 文档站点(NextJS 应用及内容)
+- `plugins/` - 外部插件(模型、爬虫等)
+- `deploy/` - Docker 和 Helm 部署配置
+- `test/` - 集中的测试文件和工具
+
+## 开发命令
+
+常用开发命令见 [FastGPT 开发命令](./.agents/code/commands.md)。
+
+## 测试
+
+项目使用 Vitest 进行测试并生成覆盖率报告。主要测试命令:
+- `pnpm test` - 运行所有测试
+- `pnpm test {file-path}` - 使用 Vitest 运行指定测试文件的指定测试
+- 测试文件位于 `test/` 目录和 `projects/{{name}}/test/`，代表这`packages`和`单个 project`的测试文件目录。
+- 覆盖率报告生成在 `coverage/` 目录
+
+## 代码组织模式
+
+### Monorepo 结构
+- 共享代码存放在 `packages/` 中,通过 workspace 引用导入
+- `projects/` 中的每个项目都是独立的应用程序
+- 使用 `@fastgpt/global`、`@fastgpt/service`、`@fastgpt/web` 导入共享包
+
+### API 结构
+- NextJS API 路由在 `projects/app/src/pages/api/`
+- API 路由合约定义在`packages/global/openapi/`, 对应的
+- 通用服务端业务逻辑在 `packages/service/`和`projects/app/src/service`
+- 数据库模型在 `packages/service/` 中,使用 MongoDB/Mongoose
+
+### 前端架构
+- React 组件在 `projects/app/src/components/` 和 `packages/web/components/`
+- 使用 Chakra UI 进行样式设计,自定义主题在 `packages/web/styles/theme.ts`
+- 国际化支持文件在 `packages/web/i18n/`
+- 使用 React Context 和 Zustand 进行状态管理
+
+## 开发注意事项
+
+- **包管理器**: 使用 pnpm 及 workspace 配置
+- **Node 版本**: 需要 Node.js >=20.x, pnpm =10.x
+- **数据库**: 支持 MongoDB、带 pgvector 的 PostgreSQL 或 Milvus 向量存储
+- **AI 集成**: 通过统一接口支持多个 AI 提供商
+- **国际化**: 完整支持中文、英文和日文
+
+## 关键文件模式
+
+- `.ts` 和 `.tsx` 文件全部使用 TypeScript
+- 数据库模型使用 Mongoose 配合 TypeScript
+- API 路由遵循 NextJS 约定
+- 组件文件使用 React 函数式组件和 hooks
+- 共享类型定义在 `packages/global/`中
+
+## 环境配置
+
+- 配置文件在 `projects/app/data/config.json`
+- 支持特定环境配置
+- 模型配置在 `packages/service/core/ai/config/`
+
+## 代码规范
+
+- 所有代码编写、修改、重构和测试调整都必须遵守 [FastGPT 代码规范](./.agents/code/syntax.md)。开始改动前先查看相关规范；如果规范与当前实现习惯冲突，优先按规范执行，并只在有明确业务或兼容性理由时说明例外。
+
+### MongoDB Schema 与索引维护
+
+- 所有由 FastGPT 管理的当前索引和废弃索引都必须通过 `defineIndex(schema, { key, options, deprecated })` 声明：`deprecated` 默认是 `false`，当前索引省略该字段；只有废弃索引显式使用 `deprecated: true`。不要直接调用 `schema.index()`，也不要在字段定义中使用 `index: true` 或 `unique: true` 隐式创建索引。
+- 每当新增、修改、删除或重命名 MongoDB/Mongoose Schema 字段、索引定义、唯一约束、TTL、partialFilterExpression、collation 等索引相关配置时，必须同步检查是否有 FastGPT 旧版本创建的索引不再被当前 Schema 使用。
+- 如果历史索引可能继续影响写入约束、查询计划或存储成本，应在所属 Schema 文件中通过 `defineIndex(schema, { key, options, deprecated: true })` 紧邻当前索引声明登记删除定义，并补充/调整 `packages/service/test/common/mongo/indexManager.test.ts` 的清理行为覆盖。索引名默认由 key 推导，也可通过 `options.name` 显式指定；删除前按 name 定位，再精确匹配 key（text 索引兼容 `_fts/_ftsx` 与 weights）；options 不参与匹配。
+- 不要登记客户自建索引、无法确认来源的索引，或仅凭当前 Schema 未声明就推断为废弃的索引。主动同步只允许删除 FastGPT 明确创建过、明确废弃且与 Schema 本地声明精确匹配的历史索引。
+
+### API 入参校验
+
+- 编写或修改 NextJS API 路由时，如果需要校验接口入参（`req.body`、`req.query`、`req.params`），必须使用 `parseApiInput`，不要直接写 `SomeSchema.parse(req.body)`、`SomeSchema.parse(req.query)` 或 `SomeSchema.parse(req.params)`。
+- `parseApiInput` 从 `@fastgpt/service/common/zod/requestParseError` 导入，用法示例：
+
+```ts
+import { parseApiInput } from '@fastgpt/service/common/zod/requestParseError';
+
+const { body, query } = parseApiInput({
+  req,
+  bodySchema: CreateSomethingBodySchema,
+  querySchema: GetSomethingQuerySchema
+});
+```
+
+- 这个 helper 只用于 API 边界的请求入参校验。内部业务数据、数据库记录、模型返回、工具调用参数等 schema 校验仍使用普通 `Schema.parse(...)`，因为这些错误应按内部 bug 上报。
+- 相关设计见 [Zod 请求入参错误降噪设计](./.agents/design/api/zod-request-parse-error-handling.md)。
+
+### 函数注释
+
+- 编写或拆分函数时，必须关注函数注释。对导出函数、核心业务函数、hook、复杂工具函数、跨模块复用函数，优先使用 `/** ... */` 形式补充函数级注释。
+- 函数注释应说明函数职责、输入输出约定、关键分支、边界行为和设计原因，尤其是容易误解的计费、权限、requestId、错误处理、流式响应、缓存、并发、兼容逻辑。
+- 避免写无意义注释，例如只复述“设置变量”“返回结果”。如果函数逻辑简单且语义已经完全由命名表达，可以不写冗余注释。
+- 对复杂函数内部的关键判断，也应补充简短中文注释，说明为什么这样处理，而不是逐行解释代码。
+
+### 子函数位置
+
+- 拆分子函数时，优先把只被单个函数使用的 helper 放在该函数内部，减少模块级私有函数的暴露范围和阅读负担。
+- 只有跨函数复用、需要单独导出测试、或语义上属于模块公共能力的 helper，才放到模块级；放到模块级时应补充函数级注释说明职责和边界。
+- 对于递归、错误处理、权限校验、路径处理、计费/requestId 等容易误解的局部 helper，应在局部函数或关键分支旁补充简短中文注释说明设计原因。
+
+## 运行要求
+
+### 性格
+
+1. 保持怀疑态度，要深入思考和分析现有代码，提出问题，并让用户确认。
+2. 编写单个需求时，运行测试命令，中途不要运行全量测试，只需局部测试即可，只需最后运行全量测试，确保没有问题。
+
+### 工作流程
+
+对于简单任务，可以直接进行编写实现，对于复杂任务，遵循以下流程：
+
+function agent_loop(用户需求){
+   // 1. 需求文档编写
+   while(需求文档编写未完成){
+      用户需求分析
+      编写需求分析文档;
+      提出问题，让用户提供答案;
+      调整需求文档;
+   }
+
+   // 2. 开发文档编写
+   while(开发文档编写未完成){
+      编写开发文档;
+      提出问题，让用户提供答案;
+      调整开发文档;
+   }
+
+   // 3. 列出 TODO
+   while(TODO 列表编写未完成){
+      编写 TODO 列表; // 包含写代码，运行测试等，需要与开发文档对应
+      提出问题，让用户提供答案;
+      调整 TODO 列表;
+   }
+
+   // 4. 执行 TODO List
+   while(TODO List 执行未完成){
+      执行 TODO List;
+      更新 TODO List 状态;
+   }
+}
+
+### 输出规范
+
+1. 输出文档位置:
+   1.1. 设计文档: [.agents/design](.agents/design)，todo 跟在设计文档后面。
+   1.2. 问题分析文档: [.agents/issue](.agents/issue)
+2. 相同需求文档，尽量写在一起（内容超过 500 行，可以分批写入），或者创建要给目录一起管理，不要随意平铺一堆不同版本的相同问题的文档。
+3. 文件输出，使用正确的编码格式，例如UTF-8。
+4. 除非用户指明，否则不要编写总结报告。

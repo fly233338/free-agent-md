@@ -1,9 +1,9 @@
 # code-yeongyu/oh-my-openagent instruction files
 
-Upstream: [code-yeongyu/oh-my-openagent](https://github.com/code-yeongyu/oh-my-openagent) · License: `NOASSERTION` · Commit: `e676fef9d8728434b06b8b6bb6b282e8af1246a8`
+Upstream: [code-yeongyu/oh-my-openagent](https://github.com/code-yeongyu/oh-my-openagent) · License: `NOASSERTION` · Commit: `f68ff9a125560d8f7cd85f2568474e2a1f3cf1d2`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/code-yeongyu/oh-my-openagent/AGENTS.md) | [Source](https://github.com/code-yeongyu/oh-my-openagent/blob/e676fef9d8728434b06b8b6bb6b282e8af1246a8/AGENTS.md) | `a6678f45c88f2a40e4de4913f52273aba5612ad2f83cfea4526a82c3c8d2c4f5` | 56,438 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/code-yeongyu/oh-my-openagent/CLAUDE.md) | [Source](https://github.com/code-yeongyu/oh-my-openagent/blob/e676fef9d8728434b06b8b6bb6b282e8af1246a8/CLAUDE.md) | `a6678f45c88f2a40e4de4913f52273aba5612ad2f83cfea4526a82c3c8d2c4f5` | 56,438 B |
-| `AGENTS.md` | `.agents/AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/code-yeongyu/oh-my-openagent/.agents/AGENTS.md) | [Source](https://github.com/code-yeongyu/oh-my-openagent/blob/e676fef9d8728434b06b8b6bb6b282e8af1246a8/.agents/AGENTS.md) | `5e1d9bab57fe84fbeae1806071d3777782d7cc17246048bc2cd40fe757950994` | 4,220 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/code-yeongyu/oh-my-openagent/AGENTS.md) | [Source](https://github.com/code-yeongyu/oh-my-openagent/blob/f68ff9a125560d8f7cd85f2568474e2a1f3cf1d2/AGENTS.md) | `b6113bdf3ce6771988e7f2e64c23a8366d0ce165ede17124919f187f136f178c` | 58,213 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/code-yeongyu/oh-my-openagent/CLAUDE.md) | [Source](https://github.com/code-yeongyu/oh-my-openagent/blob/f68ff9a125560d8f7cd85f2568474e2a1f3cf1d2/CLAUDE.md) | `b6113bdf3ce6771988e7f2e64c23a8366d0ce165ede17124919f187f136f178c` | 58,213 B |
+| `AGENTS.md` | `.agents/AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/code-yeongyu/oh-my-openagent/.agents/AGENTS.md) | [Source](https://github.com/code-yeongyu/oh-my-openagent/blob/f68ff9a125560d8f7cd85f2568474e2a1f3cf1d2/.agents/AGENTS.md) | `17d8ffac92fcfd488f149f6ba7d3938f8e8594d6abe72369d07fea5342429156` | 4,464 B |

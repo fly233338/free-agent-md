@@ -1,7 +1,7 @@
 # withcoral/coral instruction files
 
-Upstream: [withcoral/coral](https://github.com/withcoral/coral) · License: `Apache-2.0` · Commit: `4fd964a89c0286231e39a957fcd5a932055bb5b9`
+Upstream: [withcoral/coral](https://github.com/withcoral/coral) · License: `Apache-2.0` · Commit: `8326462c6747ad30642f1a386faa475e394c51b2`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/withcoral/coral/AGENTS.md) | [Source](https://github.com/withcoral/coral/blob/4fd964a89c0286231e39a957fcd5a932055bb5b9/AGENTS.md) | `f39423b8124218fe6cbdcc4bf912dee6978b496227ed7e467911d68aba2cfa09` | 19,346 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/withcoral/coral/AGENTS.md) | [Source](https://github.com/withcoral/coral/blob/8326462c6747ad30642f1a386faa475e394c51b2/AGENTS.md) | `9cb866b5da5fdb9b0fe7268b2abda14be81ea746ee8b7d1d87251f404b4b81b5` | 19,829 B |

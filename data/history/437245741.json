@@ -2,12 +2,6 @@
   "full_name": "dragonflydb/dragonfly",
   "points": [
     {
-      "checked_at": "2026-07-21T06:08:00Z",
-      "commit_sha": "a30ec90c89fa41b0b7a07dd6913b2a319637e332",
-      "pushed_at": "2026-07-21T05:59:52Z",
-      "stars": 30901
-    },
-    {
       "checked_at": "2026-08-02T06:13:59Z",
       "commit_sha": "90a7040d17fcc76f5b9ce3b7d979b20f2a710155",
       "pushed_at": "2026-08-02T06:04:03Z",

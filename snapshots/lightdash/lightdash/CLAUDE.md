@@ -27,6 +27,28 @@ again and prevents a final response that omits the URL.
 Leave the Okteto namespace and sync process running so the user can test the
 changes.
 
+## Opt-in Agent exe.dev Development Environment
+
+This workflow is enabled only when `LIGHTDASH_EXEDEV_SSH_KEY` is set. If it is
+not set, skip this section. It is mutually exclusive with the Okteto workflow
+above; only one is configured per session.
+
+When it is set, the `SessionStart` hook (`agent-exedev-dev.sh hook-start`)
+clones a per-session exe.dev VM from a prepared template, syncs the working
+tree, and launches the preview stack in the background; the app may still be
+booting while you work. Do not start it yourself or replace it with a local
+Docker environment. Edits are mirrored to the VM automatically by a
+`PostToolUse` hook. Use `./scripts/agent-exedev-dev.sh ssh '<cmd>'` to inspect
+the server directly (bootstrap log, pm2, docker, psql). Run
+`./scripts/agent-exedev-dev.sh wait` after validating changes and include the
+URL from its `READY:` line in the final response. The `Stop` hook verifies
+health and prevents a final response that omits the URL.
+
+If setup fails, do not make code changes. Follow the reported error and
+`docs/agent-exedev.md`, then resume the session after fixing the setup.
+
+Leave the VM running so the user can test the changes at the public URL.
+
 ## Formula Package Development
 
 The `packages/formula/` package contains a Peggy-based parser that compiles Google Sheets-like formulas to SQL for each warehouse dialect (Postgres, BigQuery, Snowflake, DuckDB).
@@ -84,7 +106,7 @@ aliases.
 
 ## Common Development Commands
 
--   Assume the dev-server is always running. PM2 watches backend source files and restarts the API, and a separate `api-routes-watch` process regenerates TSOA routes when controllers change; backend and generated-route changes reload the API automatically.
+-   Assume the dev-server is always running and watching source files; a separate `api-routes-watch` process regenerates TSOA routes when controllers change, so backend and generated-route changes reload the API automatically.
 -   Always use package-specific commands for faster linting/typechecking/testing.
 
 **Code Quality:**
@@ -125,13 +147,7 @@ local generated routes are stale:
 pnpm generate-api
 ```
 
-The generated files (`packages/backend/src/generated/*`) are regenerated on main per build, so the committed `routes.ts` may be stale after you pull or rebase main — it can still import controllers that main has already deleted. If the backend crash-loops with `MODULE_NOT_FOUND` pointing at `generated/routes.ts`, regenerate and restart:
-
-```bash
-pnpm generate-api
-# processes are named <LD_INSTANCE_ID>-api / -scheduler (LD_INSTANCE_ID defaults to "lightdash")
-pm2 restart "${LD_INSTANCE_ID:-lightdash}-api" "${LD_INSTANCE_ID:-lightdash}-scheduler"
-```
+The generated files (`packages/backend/src/generated/*`) are regenerated on main per build, so the committed `routes.ts` may be stale after you pull or rebase main — it can still import controllers that main has already deleted. If the backend crash-loops with `MODULE_NOT_FOUND` pointing at `generated/routes.ts`, run `pnpm generate-api` and restart the dev-server.
 
 Chart-as-code JSON schema is generated from backend OpenAPI:
 
@@ -159,6 +175,19 @@ pnpm -F backend rollback-last
 2. **Database**: Uses Knex.js for migrations and query building
 3. **API**: TSOA generates OpenAPI specs from TypeScript controllers
 4. **Authentication**: CASL-based authorization with multiple auth providers
+
+## Release-safety declarations
+
+`Release-safety preview` is a required check on `main`. It protects self-hosted upgrades: `unknown` means we could not confirm the change is safe, while `breaking` means we know it is incompatible. Both hold the upgrade, for different reasons.
+
+- For migration breaks, follow the detailed [migration release-safety declarations](packages/backend/src/database/migrations/CLAUDE.md#release-safety-declarations).
+- For API or type breaks, add a stable ID to `release-safety.declarations.json` with `reason` and `requiredStop`. The reason must be at least 24 characters, use more than one word, describe what breaks and for whom, and not use placeholder text. Omit `migration` for these entries.
+
+A declaration is active only for a Git range that adds its ID. The release generator compares the last release tag with the target ref. The pull request preview compares the merge base with the head. This makes the declaration expire after the release that first contains it. Do not remove it after release.
+
+The registry is append-only. Never edit, remove, rename, or reuse an existing ID. Add a new ID for every new break, even when it affects the same file or has similar reason text. A release may add `releasedIn` for documentation, but that value never controls activation.
+
+Never declare a break merely to make CI pass. Declaring a break advises every self-hosted customer to use the Recreate strategy. A release that ships as `breaking` or `unknown` stops the internal analytics instance upgrading. The declaration does not reactivate in later Git ranges.
 
 ## Merge Freeze — Holding `main` While a Release Is Cut
 

@@ -2,12 +2,6 @@
   "full_name": "apache/doris",
   "points": [
     {
-      "checked_at": "2026-07-21T06:08:00Z",
-      "commit_sha": "6f4134cbe426f2385cf2515c3e409b3c2706c8d7",
-      "pushed_at": "2026-07-21T06:07:27Z",
-      "stars": 15646
-    },
-    {
       "checked_at": "2026-08-06T06:06:46Z",
       "commit_sha": "051b9aca6ed256573608a8457b42f58b0b432fdf",
       "pushed_at": "2026-08-06T05:54:03Z",

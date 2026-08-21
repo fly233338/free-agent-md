@@ -2,12 +2,6 @@
   "full_name": "apache/kafka",
   "points": [
     {
-      "checked_at": "2026-07-21T06:08:00Z",
-      "commit_sha": "eac5d5716e3a901d5607d5fbe18d64c098918e7c",
-      "pushed_at": "2026-07-21T06:06:30Z",
-      "stars": 33297
-    },
-    {
       "checked_at": "2026-08-11T04:42:27Z",
       "commit_sha": "0250cec4e2b8277db4654bd4fb50757d982779f6",
       "pushed_at": "2026-08-11T04:41:25Z",

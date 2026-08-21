@@ -2,12 +2,6 @@
   "full_name": "code-yeongyu/oh-my-openagent",
   "points": [
     {
-      "checked_at": "2026-07-21T06:08:00Z",
-      "commit_sha": "9b45c0d30d628c7cae0e9f37ede6a33a9699327c",
-      "pushed_at": "2026-07-21T06:06:13Z",
-      "stars": 66280
-    },
-    {
       "checked_at": "2026-07-27T06:44:39Z",
       "commit_sha": "a0026d75d389600de9f7b8db95786f6a7cb45abc",
       "pushed_at": "2026-07-27T06:37:04Z",
@@ -42,6 +36,12 @@
       "commit_sha": "e676fef9d8728434b06b8b6bb6b282e8af1246a8",
       "pushed_at": "2026-08-20T03:56:38Z",
       "stars": 68134
+    },
+    {
+      "checked_at": "2026-08-21T04:04:13Z",
+      "commit_sha": "f68ff9a125560d8f7cd85f2568474e2a1f3cf1d2",
+      "pushed_at": "2026-08-21T03:49:51Z",
+      "stars": 68180
     }
   ],
   "repo_id": 1108837393

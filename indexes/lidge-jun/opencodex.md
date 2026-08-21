@@ -1,8 +1,8 @@
 # lidge-jun/opencodex instruction files
 
-Upstream: [lidge-jun/opencodex](https://github.com/lidge-jun/opencodex) · License: `MIT` · Commit: `8e01dd4e82844e579f5d5d387791b00504438562`
+Upstream: [lidge-jun/opencodex](https://github.com/lidge-jun/opencodex) · License: `MIT` · Commit: `5840591322117f3ee9568b35b135a6d4339f7711`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/lidge-jun/opencodex/AGENTS.md) | [Source](https://github.com/lidge-jun/opencodex/blob/8e01dd4e82844e579f5d5d387791b00504438562/AGENTS.md) | `465fa2cfdeb8862058108870a97bce30895ca2e636bdcbd7efd510dc5ceba3d8` | 15,262 B |
-| `AGENTS.md` | `.github/AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/lidge-jun/opencodex/.github/AGENTS.md) | [Source](https://github.com/lidge-jun/opencodex/blob/8e01dd4e82844e579f5d5d387791b00504438562/.github/AGENTS.md) | `4f8a00b4a0f9987958488b964175d40ecd717d2a456720e2d7d9de679a1e91dc` | 1,486 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/lidge-jun/opencodex/AGENTS.md) | [Source](https://github.com/lidge-jun/opencodex/blob/5840591322117f3ee9568b35b135a6d4339f7711/AGENTS.md) | `465fa2cfdeb8862058108870a97bce30895ca2e636bdcbd7efd510dc5ceba3d8` | 15,262 B |
+| `AGENTS.md` | `.github/AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/lidge-jun/opencodex/.github/AGENTS.md) | [Source](https://github.com/lidge-jun/opencodex/blob/5840591322117f3ee9568b35b135a6d4339f7711/.github/AGENTS.md) | `4f8a00b4a0f9987958488b964175d40ecd717d2a456720e2d7d9de679a1e91dc` | 1,486 B |
