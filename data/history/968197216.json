@@ -2,12 +2,6 @@
   "full_name": "google-gemini/gemini-cli",
   "points": [
     {
-      "checked_at": "2026-07-22T06:06:36Z",
-      "commit_sha": "c776c665b00a39d55c470beb788a2b9a77a2feb7",
-      "pushed_at": "2026-07-22T01:26:44Z",
-      "stars": 106116
-    },
-    {
       "checked_at": "2026-07-23T06:11:44Z",
       "commit_sha": "9681621c6ba365e255bdd74413cf2bba07c385c9",
       "pushed_at": "2026-07-23T02:55:06Z",
@@ -186,6 +180,12 @@
       "commit_sha": "30573d2e4d85bdc2c0ae8218c377cd410336da77",
       "pushed_at": "2026-08-21T01:08:09Z",
       "stars": 106598
+    },
+    {
+      "checked_at": "2026-08-22T03:58:42Z",
+      "commit_sha": "5411f113cafae26161b4969b0237b8e1e024e2c2",
+      "pushed_at": "2026-08-22T01:10:05Z",
+      "stars": 106608
     }
   ],
   "repo_id": 968197216

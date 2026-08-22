@@ -2,12 +2,6 @@
   "full_name": "meshery/meshery",
   "points": [
     {
-      "checked_at": "2026-07-22T06:06:36Z",
-      "commit_sha": "82a93b2d11ae6b2c2a0c10434de4d02922b70fc1",
-      "pushed_at": "2026-07-22T05:58:27Z",
-      "stars": 11387
-    },
-    {
       "checked_at": "2026-07-25T05:58:19Z",
       "commit_sha": "ab95441b02fb40e62faf168c7192a39677f42a9a",
       "pushed_at": "2026-07-25T05:54:58Z",

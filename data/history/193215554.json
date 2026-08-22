@@ -2,12 +2,6 @@
   "full_name": "n8n-io/n8n",
   "points": [
     {
-      "checked_at": "2026-07-22T06:06:36Z",
-      "commit_sha": "cc4dbf9439239d586bf54967294dc52da441e2f9",
-      "pushed_at": "2026-07-22T04:45:04Z",
-      "stars": 197409
-    },
-    {
       "checked_at": "2026-07-23T06:11:44Z",
       "commit_sha": "3f63b73d38a068a7a8fcd9cb8934b66e9bbb8640",
       "pushed_at": "2026-07-23T06:10:23Z",
@@ -186,6 +180,12 @@
       "commit_sha": "2c5db29175abb7abb6663ab7957c9a5d1124f39f",
       "pushed_at": "2026-08-21T03:27:36Z",
       "stars": 201415
+    },
+    {
+      "checked_at": "2026-08-22T03:58:42Z",
+      "commit_sha": "fbd9449c26004797dbc036cfa441f3eeb416cf6d",
+      "pushed_at": "2026-08-22T03:15:52Z",
+      "stars": 201558
     }
   ],
   "repo_id": 193215554

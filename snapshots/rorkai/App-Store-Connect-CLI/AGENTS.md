@@ -26,6 +26,7 @@ Use these skills for their matching workflows instead of expanding this always-l
 - Use `--paginate` when callers request every page.
 - Write data to stdout and errors or diagnostics to stderr.
 - Never accept and silently ignore an unsupported flag or value.
+- JSON output shape is part of the command contract: reads of ASC collections/resources print Apple's envelope unmodified; mutation receipts and computed results use exported camelCase structs in internal/asc/output_*.go with a registered renderer; added fields are additive and removals follow the stability ladder.
 
 ## Discover current behavior
 

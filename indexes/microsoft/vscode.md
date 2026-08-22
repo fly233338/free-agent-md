@@ -1,7 +1,7 @@
 # microsoft/vscode instruction files
 
-Upstream: [microsoft/vscode](https://github.com/microsoft/vscode) · License: `MIT` · Commit: `07c20d96cf3f2cbc8142ac7079ba9048cf7f6134`
+Upstream: [microsoft/vscode](https://github.com/microsoft/vscode) · License: `MIT` · Commit: `62ecd558f23ec5e30d1ffa7eb673313abebf65b0`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/microsoft/vscode/AGENTS.md) | [Source](https://github.com/microsoft/vscode/blob/07c20d96cf3f2cbc8142ac7079ba9048cf7f6134/AGENTS.md) | `aa9b8989ec534e850e743e89bd345eaf9d88c522e86e98239e2ddcda435db45f` | 271 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/microsoft/vscode/AGENTS.md) | [Source](https://github.com/microsoft/vscode/blob/62ecd558f23ec5e30d1ffa7eb673313abebf65b0/AGENTS.md) | `aa9b8989ec534e850e743e89bd345eaf9d88c522e86e98239e2ddcda435db45f` | 271 B |

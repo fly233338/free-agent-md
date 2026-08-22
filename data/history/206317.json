@@ -2,12 +2,6 @@
   "full_name": "apache/camel",
   "points": [
     {
-      "checked_at": "2026-07-22T06:06:36Z",
-      "commit_sha": "85b160636e3a379dbbb418355c56ab8bd17b82e4",
-      "pushed_at": "2026-07-22T06:03:41Z",
-      "stars": 6269
-    },
-    {
       "checked_at": "2026-07-25T05:58:19Z",
       "commit_sha": "c07b7f912a92841b62ae4c146d55723faf0f2a28",
       "pushed_at": "2026-07-25T05:53:13Z",

@@ -2,12 +2,6 @@
   "full_name": "yugabyte/yugabyte-db",
   "points": [
     {
-      "checked_at": "2026-07-22T06:06:36Z",
-      "commit_sha": "7dca81c13c14f06f19b4b911a6df17976b016f2a",
-      "pushed_at": "2026-07-22T06:00:38Z",
-      "stars": 10423
-    },
-    {
       "checked_at": "2026-07-29T06:09:27Z",
       "commit_sha": "436bf0f018d4d5395720e0f467435b0177a563e1",
       "pushed_at": "2026-07-29T06:04:18Z",
@@ -30,6 +24,12 @@
       "commit_sha": "3fd29c0cd6946993b37df0971bdae870e49d7dc3",
       "pushed_at": "2026-08-20T03:55:12Z",
       "stars": 10483
+    },
+    {
+      "checked_at": "2026-08-22T03:58:42Z",
+      "commit_sha": "453d3127ca4a322111f31d76a968349ae4a6e506",
+      "pushed_at": "2026-08-22T03:56:55Z",
+      "stars": 10490
     }
   ],
   "repo_id": 105944401

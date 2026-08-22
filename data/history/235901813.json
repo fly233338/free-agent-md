@@ -2,12 +2,6 @@
   "full_name": "PostHog/posthog",
   "points": [
     {
-      "checked_at": "2026-07-22T06:06:36Z",
-      "commit_sha": "18e296b3ebceb0eb036f47d4dfba18d2eec71115",
-      "pushed_at": "2026-07-22T06:05:30Z",
-      "stars": 37214
-    },
-    {
       "checked_at": "2026-07-23T06:11:44Z",
       "commit_sha": "4ca82e7484e3536f618a6d19b648d274d8c72939",
       "pushed_at": "2026-07-23T06:03:01Z",
@@ -96,6 +90,12 @@
       "commit_sha": "6bc0bf2a1b4019771296528cc8e1766b6648fa85",
       "pushed_at": "2026-08-20T03:56:47Z",
       "stars": 37790
+    },
+    {
+      "checked_at": "2026-08-22T03:58:42Z",
+      "commit_sha": "669f5363311c121cbf7ad0e9f7c9a716fdd8f349",
+      "pushed_at": "2026-08-22T03:52:56Z",
+      "stars": 38327
     }
   ],
   "repo_id": 235901813

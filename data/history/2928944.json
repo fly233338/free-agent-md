@@ -2,12 +2,6 @@
   "full_name": "Azure/azure-sdk-for-net",
   "points": [
     {
-      "checked_at": "2026-07-22T06:06:36Z",
-      "commit_sha": "eea889443c9e8a7a90104afeb45b6e9d235b5440",
-      "pushed_at": "2026-07-22T05:59:55Z",
-      "stars": 6029
-    },
-    {
       "checked_at": "2026-07-25T05:58:19Z",
       "commit_sha": "c2ef7c4c7c012ed55ddbf16ef868445a7a0fc712",
       "pushed_at": "2026-07-25T05:56:55Z",

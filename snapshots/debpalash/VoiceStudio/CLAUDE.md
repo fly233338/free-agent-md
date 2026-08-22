@@ -66,7 +66,10 @@ Architecture not yet mapped. Follow existing patterns found in the codebase.
 <!-- GSD:skills-start source:skills/ -->
 ## Project Skills
 
-No project skills found. Add skills to any of: `.claude/skills/`, `.agents/skills/`, `.cursor/skills/`, `.github/skills/`, or `.codex/skills/` with a `SKILL.md` index file.
+- `vite` — Vite configuration, assets, HMR, builds, and Vitest guidance.
+- `fastapi-python` — FastAPI and Pydantic implementation patterns.
+
+Canonical copies live under `.agents/skills/`; `skills-lock.json` pins their sources and hashes. Claude should follow these paths directly, avoiding cross-platform symlinks.
 <!-- GSD:skills-end -->
 
 <!-- GSD:workflow-start source:GSD defaults -->

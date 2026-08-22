@@ -22,38 +22,49 @@ WiFiAnalyzer is an Android application for analyzing WiFi networks. It helps use
 | Code Style | ktlint |
 | License | GNU General Public License v3.0 (GPLv3) |
 
-clearAdditional repository-specific versions and toolchain (source-of-truth files shown):
+Additional repository-specific versions and toolchain (source-of-truth files shown):
 
-- Kotlin: root `build.gradle` (look for `kotlin_version`)
-- Android Gradle Plugin (AGP): root `build.gradle` (look for the `com.android.tools.build:gradle` classpath)
+The build uses the Gradle Kotlin DSL (`*.gradle.kts`) with a **version catalog**. Every dependency, plugin,
+and tool version lives in `gradle/libs.versions.toml` — the build scripts only reference it via
+`libs.*` accessors and `alias(libs.plugins.*)`, so they contain no version literals.
+
+- All library, plugin, and tool versions (Kotlin, AGP, ktlint, Robolectric, ...): `gradle/libs.versions.toml`
 - Gradle wrapper: `gradle/wrapper/gradle-wrapper.properties` (check `distributionUrl`)
 - JDK used in CI: `.github/actions/common-setup/action.yml` and `.github/workflows/*` (search for `java-version` or `setup-java` usage)
-- Kotlin JVM target, compileSdk, minSdk: `app/build.gradle` (`kotlinOptions.jvmTarget`, `compileSdk`, `minSdkVersion` / `minSdk`)
-- ktlint plugin version: `app/build.gradle` (plugin `org.jlleitschuh.gradle.ktlint` and its `version`)
+- compileSdk, minSdk, targetSdk, Java source/target compatibility: `app/build.gradle.kts`
+- Version numbers and release signing: `app/gradle/version.gradle.kts` (values in `app/build.properties`)
+- JaCoCo tasks and coverage thresholds: `app/gradle/jacoco.gradle.kts`
+- Android lint rules: `app/lint.xml`; formatting rules: `.editorconfig`
+
+Do not use apply(from = ...). Prefer precompiled (convention) plugins or a `build-logic` module; this repository does not use Gradle `extra` properties.
 
 To extract these values quickly from a bash shell you can run (from the repository root):
 
 ```bash
-# Kotlin version
-grep -n "kotlin_version" build.gradle.kts
+# All versions at a glance
+cat gradle/libs.versions.toml
 
-# AGP classpath
-grep -n "com.android.tools.build:gradle" build.gradle.kts
+# A specific version (Kotlin, AGP, ktlint, Robolectric, ...)
+grep -nE "^(agp|kotlin|ktlint|robolectric) = " gradle/libs.versions.toml
+
+# Which plugins are applied, and where
+grep -nE "alias\(libs\.plugins" build.gradle.kts app/build.gradle.kts
 
 # Gradle wrapper distribution
 grep -n "distributionUrl" gradle/wrapper/gradle-wrapper.properties
 
 # JDK in CI workflows
-grep -R "java-version" .github
+grep -Rn "java-version" .github
 
-# compileSdk / minSdk / jvmTarget / ktlint plugin
-grep -nE "compileSdk|minSdk|kotlinOptions.jvmTarget|org.jlleitschuh.gradle.ktlint" app/build.gradle.kts
-
+# compileSdk / minSdk / targetSdk / Java compatibility
+grep -nE "compileSdk|minSdk|targetSdk|JavaVersion" app/build.gradle.kts
 ```
 
 ## Project Structure
 
 ```
+app/build.gradle.kts         # Module build script
+app/gradle/                  # Applied build scripts (version, jacoco)
 app/src/main/kotlin/         # Main application source code
 app/src/test/kotlin/         # Unit tests
 app/src/androidTest/kotlin/  # Android instrumentation tests
@@ -95,10 +106,11 @@ All source files must include the GPLv3 license header:
 Use ktlint for code formatting:
 - Check: `./gradlew ktlintCheck`
 - Format: `./gradlew ktlintFormat`
- 
+
 Repository-specific ktlint notes:
-- Plugin configured in `app/build.gradle` as `org.jlleitschuh.gradle.ktlint` (version `14.2.0`).
-- Baseline and rules: see `app/config/ktlint/baseline.xml` and project `.editorconfig` for formatting rules.
+- Plugin applied in `app/build.gradle.kts` as `alias(libs.plugins.ktlint)`; the version is the `ktlint` entry in `gradle/libs.versions.toml`.
+- Formatting rules: project `.editorconfig`. There is no ktlint baseline file — the codebase is expected to be clean.
+- `app/gradle/*.gradle.kts` is checked via `kotlinScriptAdditionalPaths`; ktlint otherwise sees only top-level `*.kts`.
 
 ## Communication Philosophy
 

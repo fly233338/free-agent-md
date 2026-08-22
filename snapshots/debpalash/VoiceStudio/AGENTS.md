@@ -35,6 +35,10 @@ Binding for every AI agent (Claude, Codex, Cursor, review bots, …). CLAUDE.md 
 
 ## Agent skills
 
+Project development skills are pinned in `skills-lock.json` and installed under
+`.agents/skills/`: Vite and FastAPI.
+Repository rules and tracker mappings override generic skill guidance.
+
 ### Issue tracker
 
 GitHub Issues on `debpalash/VoiceStudio`, via the `gh` CLI. See `docs/agents/issue-tracker.md`.
