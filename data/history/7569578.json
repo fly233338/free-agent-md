@@ -2,12 +2,6 @@
   "full_name": "discourse/discourse",
   "points": [
     {
-      "checked_at": "2026-07-23T06:11:44Z",
-      "commit_sha": "8e7f778102a8b9fcd362210621e6f1b20281c9bd",
-      "pushed_at": "2026-07-23T06:11:13Z",
-      "stars": 47497
-    },
-    {
       "checked_at": "2026-08-03T06:39:09Z",
       "commit_sha": "d96f09c9b013f9ca7203a342db532c379bd5aa8a",
       "pushed_at": "2026-08-03T06:38:37Z",

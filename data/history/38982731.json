@@ -2,12 +2,6 @@
   "full_name": "home-assistant/frontend",
   "points": [
     {
-      "checked_at": "2026-07-23T06:11:44Z",
-      "commit_sha": "1f14f8689c62729c6d67d08a28d2ed5990f41083",
-      "pushed_at": "2026-07-23T06:09:04Z",
-      "stars": 5568
-    },
-    {
       "checked_at": "2026-08-04T06:06:17Z",
       "commit_sha": "b36361ca34303b35570513e3320c485f5126d297",
       "pushed_at": "2026-08-04T06:06:14Z",

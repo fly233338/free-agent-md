@@ -1,7 +1,7 @@
 # openai/codex instruction files
 
-Upstream: [openai/codex](https://github.com/openai/codex) · License: `Apache-2.0` · Commit: `4f39251a010a8bd7d692d25fb33832ff06f1635a`
+Upstream: [openai/codex](https://github.com/openai/codex) · License: `Apache-2.0` · Commit: `422239eb4b1e0d0f85fac7256a079a1befe78472`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/openai/codex/AGENTS.md) | [Source](https://github.com/openai/codex/blob/4f39251a010a8bd7d692d25fb33832ff06f1635a/AGENTS.md) | `c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480` | 22,519 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/openai/codex/AGENTS.md) | [Source](https://github.com/openai/codex/blob/422239eb4b1e0d0f85fac7256a079a1befe78472/AGENTS.md) | `c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480` | 22,519 B |

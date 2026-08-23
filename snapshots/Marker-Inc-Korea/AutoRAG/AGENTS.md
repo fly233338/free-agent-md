@@ -1,5 +1,25 @@
 # AutoRAG — Pi-Powered Librarian Agent
 
+## Developer Commands
+
+The repository root includes a `Makefile` for AutoRAG 2.0 validation:
+
+- `make test` / `make test-all` — run the complete test suite.
+- `make test-macos` — run the complete suite and require a macOS host.
+- `make test-windows` — run the complete suite on a Windows host.
+- `make test-linux` — run lint, typecheck, the complete suite, and build in a Docker container.
+- `make lint`, `make typecheck`, `make build` — run individual checks.
+- `make ci` — run the normal local lint, typecheck, complete test, and build sequence.
+
+Docker can reproduce the Linux job on macOS, Linux, or Windows hosts. The
+`test-linux` target uses an isolated container volume for `node_modules`, so it
+does not replace host-native dependencies, and pins `linux/amd64` to match
+GitHub's Ubuntu runner and the available Tantivy native binding. Windows
+containers require a Windows kernel, so Windows compatibility is run natively
+from Git Bash/MSYS2 with `make test-windows` (or directly with
+`bun run test:windows`) and verified by the `windows-latest` GitHub-hosted
+runner.
+
 ## Purpose
 
 AutoRAG is an **over-powered librarian agent** for **document collections** — PDFs, wikis, notes, research papers, knowledge bases, and any unstructured text corpus. It is a customized [Pi](https://github.com/earendil-works/pi-mono) agent: the Pi agent loop configured into a librarian, used through one library/programmatic API (and a thin CLI).
@@ -71,9 +91,9 @@ Jikji is intentionally not a retrieval method. It is an optional **find-first lo
 
 Datasource skills are retrieval-method factories plus indexing hooks for external, server-configured data sources. They remain inside the same pipeline — `RetrievalMethodRegistry` → `ParallelRetriever` → `DatasourceResultFilter` → `ResultMerger`. Datasource access is default-deny and server-bound: LLM tool arguments cannot grant `allowedTags` or `allowedScopes`, and `search_datasource_documents` exposes only `{ query, topK?, scope? }` where `scope` can only narrow trusted access. Results are not redacted — traceability is preferred over opacity, so pair AutoRAG with a local LLM when privacy matters.
 
-The first concrete datasource is KakaoTalk through the external `katok` CLI. AutoRAG never reads KakaoTalk databases directly; failures surface as diagnostics, and remote embedding egress settings are rejected before the CLI is spawned.
+CLI-backed datasources own their archive, lexical index, and vectors: KakaoTalk through the external `katok` CLI, and **Discord** through the external [`discrawl`](https://github.com/openclaw/discrawl) CLI. AutoRAG only spawns them and maps results. AutoRAG never reads KakaoTalk databases directly; failures surface as diagnostics, and remote embedding egress settings are rejected before the CLI is spawned.
 
-Ten connector-backed datasource skills ship built-in on a shared framework (`src/datasource/connector.ts`, `chunk-store.ts`, `connector-skill.ts`): **Slack** (workspace/channel history), **Discord** (guild/channel messages), **Notion** (workspace/database/page block trees), **GitHub** (owner/repo issues/PRs), **Google Drive** (Docs/Sheets/text exports), **Gmail** (account/label messages), **local mail export** (mbox/eml archives), **Obsidian** (vault/folder/tag markdown notes), **RSS/news** (feed/category polling with a dedupe window), and **Spotlight** (macOS-only local file search via the built-in `mdfind` CLI; requires Spotlight indexing enabled and Full Disk Access for protected locations). Each skill wraps a trusted `DatasourceConnector` that never throws — auth/permission/rate-limit/availability failures map to traceable `datasource-*` diagnostics — and persists bounded chunks under `<workspace>/.autorag/datasources/<skill>/<instance>/` for lexical retrieval through the shared pipeline. Results and metadata carry real file paths and account identifiers so hits stay traceable; AutoRAG does not redact them. **Security is the operator's responsibility: run AutoRAG with a local LLM (e.g. Ollama) if retrieval content or paths must not leave the machine.** Skills are configured via the trusted `datasources` + `datasourceAccess` config sections (`buildDatasourceSkills` factory); tokens are referenced by environment variable name only. Manual QA harnesses live in `scripts/manual-qa/` (see `docs/manual-qa-datasources.md`).
+External crawler-backed skills cover **WhatsApp** (wacrawl), **Telegram** (telecrawl), **Slack** (slacrawl), and **Notion** (notcrawl); each crawler owns its archive, sync, credentials, and FTS search while AutoRAG provides bounded process execution, diagnostics, and retrieval mapping. The remaining connector-backed datasource skills use the shared framework (`src/datasource/connector.ts`, `chunk-store.ts`, `connector-skill.ts`): **GitHub**, **Google Drive**, **Gmail**, **local mail export**, **Obsidian** (vault via external `qmd` CLI: incremental + BM25 + semantic), **RSS/news**, and **Spotlight**. Results remain traceable and datasource access stays default-deny. Manual QA harnesses live in `scripts/manual-qa/` (see `docs/manual-qa-datasources.md`).
 
 ## Directory Access
 
@@ -88,7 +108,7 @@ Subagent role separation, dispatch inputs, explorer handoff metadata, and the ma
 - **Tool surface** — explorer tasks run with read-only `read`, `grep`, `find`, and `ls`; the parent orchestrator owns `check_memory`, `jikji_find` (when configured), the `search_*` retrieval seed tools, `load_datasource_skill`, and `emit_autorag_results`, then delegates source reading through `pi-subagents`.
 - **Parsed mirrors** — `AutoRAGAgent.refresh()` parses supported files from configured source directories into `.autorag/parsed`; BM25 and MinSync index those parsed mirrors.
 - **Jikji find-first** — when Jikji is configured, `jikji_find` runs `jikji find ROOT "query" --json` as the first local-discovery action and enforces the returned `handoff_action` / `tool_call_policy` / `agent_should_not_rerank`; explorer `read`/`grep`/`find`/`ls` discovery is the fallback only when the pack permits raw fallback or Jikji is unavailable. `prepare`/`refresh` remain for indexing only; AutoRAG-managed prepare runs with `--no-agent-rules` by default so it never rewrites the consumer repo's `AGENTS.md`/`CLAUDE.md`/`.cursorrules`. An explicit `writeAgentRules: true` opt-in re-enables upstream routing-block injection.
-- **External tool auto-install** — MinSync and Jikji binaries are cached under `<workspace>/.autorag/bin`. MinSync auto-installs from verified GitHub release assets by default (`minSync.autoInstall: false` opts out). Jikji auto-installs the `jikji-cli` crate from crates.io via cargo by default (`jikji.autoInstall: false` opts out; requires the Rust toolchain). New `autorag init` configs enable Jikji by default (`jikji: {}`). The KakaoTalk `katok` CLI remains a manual, optional install. All three degrade gracefully when missing.
+- **External tool auto-install** — MinSync and Jikji binaries are cached under `<workspace>/.autorag/bin`. MinSync auto-installs from verified GitHub release assets by default (`minSync.autoInstall: false` opts out). Jikji auto-installs the `jikji-cli` crate from crates.io via cargo by default (`jikji.autoInstall: false` opts out; requires the Rust toolchain). New `autorag init` configs enable Jikji by default (`jikji: {}`). The KakaoTalk `katok` and Discord `discrawl` CLIs remain manual, optional installs (`brew install openclaw/tap/discrawl`). All three degrade gracefully when missing.
 - **Datasource skills** — `AutoRAGAgent` can register `datasourceSkills`; their retrieval methods are merged with the normal retrieval pipeline, filtered before merging by trusted datasource access, and indexed during `refresh()`.
 
 ## Usage
@@ -151,5 +171,5 @@ AutoRAG remembers past search outcomes across sessions:
 | `src/datasource/connector.ts` | Connector contract + opaque-text/id sanitizers for connector-backed skills |
 | `src/datasource/chunk-store.ts` | Persistent chunk store with BM25-style lexical search per skill instance |
 | `src/datasource/connector-skill.ts` | Shared DatasourceSkill base composing a connector with the chunk store |
-| `src/datasource/skills/` | Built-in skills: katok, slack, discord, notion, github, gdrive, gmail, mail-export, obsidian, rss, spotlight (+ config factory) |
+| `src/datasource/skills/` | Built-in skills: katok, discrawl (Discord), slack, notion, github, gdrive, gmail, mail-export, obsidian, rss, spotlight (+ config factory) |
 | `src/agent/search-datasource-tool.ts` | `search_datasource_documents` tool with model-safe `{ query, topK?, scope? }` parameters |

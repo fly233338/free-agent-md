@@ -2,12 +2,6 @@
   "full_name": "excalidraw/excalidraw",
   "points": [
     {
-      "checked_at": "2026-07-23T06:11:44Z",
-      "commit_sha": "e6ae6bf05755eb3845d9635953bd6477e948a8f6",
-      "pushed_at": "2026-07-22T20:39:18Z",
-      "stars": 128162
-    },
-    {
       "checked_at": "2026-07-24T06:05:56Z",
       "commit_sha": "f179f7ffd23cd47a8f013c3fd0051cb07a83d1d6",
       "pushed_at": "2026-07-23T21:22:58Z",
@@ -186,6 +180,12 @@
       "commit_sha": "e160ff7ba0641fba729c528482de5277ffb19c58",
       "pushed_at": "2026-08-16T15:30:04Z",
       "stars": 130172
+    },
+    {
+      "checked_at": "2026-08-23T04:03:45Z",
+      "commit_sha": "e160ff7ba0641fba729c528482de5277ffb19c58",
+      "pushed_at": "2026-08-22T21:27:32Z",
+      "stars": 130240
     }
   ],
   "repo_id": 231283452

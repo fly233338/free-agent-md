@@ -2,12 +2,6 @@
   "full_name": "anomalyco/opencode",
   "points": [
     {
-      "checked_at": "2026-07-23T06:11:44Z",
-      "commit_sha": "92cede0541305a99579b0575b79297089d37e6da",
-      "pushed_at": "2026-07-23T06:04:03Z",
-      "stars": 188756
-    },
-    {
       "checked_at": "2026-07-24T06:05:56Z",
       "commit_sha": "589ef16128b0d787e389ee9b2544b53089ef5b0a",
       "pushed_at": "2026-07-24T06:05:42Z",
@@ -186,6 +180,12 @@
       "commit_sha": "e00890c67261a435cee6409366a68999a93393fd",
       "pushed_at": "2026-08-22T03:55:55Z",
       "stars": 200025
+    },
+    {
+      "checked_at": "2026-08-23T04:03:45Z",
+      "commit_sha": "3a31c4ea801915c0b050df4b3842997ea62b6e93",
+      "pushed_at": "2026-08-23T03:51:44Z",
+      "stars": 200392
     }
   ],
   "repo_id": 975734319

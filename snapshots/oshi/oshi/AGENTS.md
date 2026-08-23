@@ -185,10 +185,35 @@ confirm it runs, and delete it.
 
 ## Hard rules that CI enforces
 
-**Language level.** `oshi-common` and `oshi-core` compile with `release 8`. No `var`, no `List.of`,
-no records, no switch expressions, no text blocks, no `Stream.toList()`. Only `oshi-core-ffm`
-(25), `oshi-metrics` (17), and `oshi-benchmark` (25) get modern Java. Agents get this wrong
-constantly.
+**Language level.** `oshi-common` and `oshi-core` compile **main** sources with `release 8`. No
+`var`, no `List.of`, no records, no switch expressions, no text blocks, no `Stream.toList()`. Only
+`oshi-core-ffm` (25), `oshi-metrics` (17), and `oshi-benchmark` (25) get modern Java in main
+sources. Agents get this wrong constantly.
+
+**Their `src/test` compiles at `release 17`**, set by `maven.compiler.testRelease` in the root
+`pom.xml`. Test classes are never published, so the Java 8 guarantee to consumers does not reach
+them. Use text blocks for captured command or file output, `Files.writeString` over
+`Files.write(path, s.getBytes(UTF_8))`, and `Stream.toList()`; `var` is fine and is already the
+house style in `oshi-core-ffm`. Two cautions:
+
+- **NullAway checks test sources too**, at ERROR, the same as main. Compiling tests at 17 put them
+  on the module path, which brings `module-info.java`'s `@NullMarked` into scope for test packages.
+  A stub override must repeat the parent's `@Nullable`; a `Map.get()` needs a local plus
+  `assertNotNull`, which narrows where Hamcrest's `is(notNullValue())` does not.
+- **17 is pinned from both directions.** JUnit 6 requires 17+, so it is also a floor. The ceiling is
+  Solaris SPARC on the GCC compile farm, the lowest JDK running tests in CI: it runs Oracle's JDK 17
+  for Solaris 11.4, a build made specifically for that platform, with no 21 or 25 successor. It does
+  not move while that platform is tested. Every other job is 21 or newer.
+- **Do not sweep `Arrays.asList` to `List.of`.** `List.of` rejects nulls and is immutable, and
+  fixtures here model real-world output where a null is sometimes deliberate. Prefer `List.of` in
+  new code; leave working call sites alone.
+
+Text blocks strip incidental leading and trailing whitespace, and spotless applies
+`trimTrailingWhitespace` to Java sources, so a fixture whose real output carries trailing spaces or
+tab alignment needs explicit `\s` or `\t` escapes. Converting a fixture is a judgment call, never a
+find-and-replace — and not every fixture wants one. `FileUtilTest.testReadProcIo` deliberately keeps
+generating its file body from the map it asserts against, because a text block there would duplicate
+the data.
 
 **Banned APIs** (`config/forbidden-apis.txt` and friends, enforced by `forbiddenapis:check`):
 

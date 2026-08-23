@@ -2,12 +2,6 @@
   "full_name": "openemr/openemr",
   "points": [
     {
-      "checked_at": "2026-07-23T06:11:44Z",
-      "commit_sha": "7df9bc690149f7dab3e1eb9d92c840e131935fe5",
-      "pushed_at": "2026-07-23T06:00:15Z",
-      "stars": 5309
-    },
-    {
       "checked_at": "2026-07-24T06:05:56Z",
       "commit_sha": "6c39c2990a236d89fef6d3a27ed14e792a3d8333",
       "pushed_at": "2026-07-24T05:55:11Z",
@@ -42,6 +36,12 @@
       "commit_sha": "d50fe21c819e92f60295d0a412050a66fce0c968",
       "pushed_at": "2026-08-05T05:53:18Z",
       "stars": 5342
+    },
+    {
+      "checked_at": "2026-08-23T04:03:45Z",
+      "commit_sha": "3e2a7f2f2ceca6972411e766d95826baa1c777a4",
+      "pushed_at": "2026-08-23T03:55:44Z",
+      "stars": 5383
     }
   ],
   "repo_id": 679584

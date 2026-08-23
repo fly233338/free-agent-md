@@ -2,12 +2,6 @@
   "full_name": "opf/openproject",
   "points": [
     {
-      "checked_at": "2026-07-23T06:11:44Z",
-      "commit_sha": "31eacc324cfd978d617525c0d95c67ce557e0dc9",
-      "pushed_at": "2026-07-23T06:10:43Z",
-      "stars": 15634
-    },
-    {
       "checked_at": "2026-07-27T06:44:39Z",
       "commit_sha": "22de6310546f9ef3f88ef7cae4d9e895645b5de3",
       "pushed_at": "2026-07-27T06:41:14Z",

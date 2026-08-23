@@ -7,6 +7,7 @@ cargo run -- hook pre-merge --yes   # all tests + lints (runs automatically in w
 ```
 
 Claude Code web: run `task setup-web` first. Test commands, isolation, and coverage investigation: `tests/CLAUDE.md`.
+Codex Cloud: use the setup in `dev/codex.sh`.
 
 ## Project Status
 
@@ -43,7 +44,7 @@ Load relevant skills before starting; reload when scope changes mid-session. Pro
 
 ## Documentation
 
-Behavior changes require doc updates. `src/cli/mod.rs` (`after_long_help` plus clap attributes) is the PRIMARY SOURCE for command pages; their rendered mirrors in `docs/content/` and `skills/worktrunk/reference/` are generated, as is all of `plugins/worktrunk/skills/` — but both directories also hold hand-edited primaries (non-command docs in `docs/content/`, skill-only pages like `shell-integration.md` in the reference dir), so check which file is primary in the sync taxonomy before editing. Ask: "does `--help` still describe what the code does?" `cargo test --test integration test_docs_are_in_sync` checks doc sync; editing help text (`after_long_help`, `about`, arg docs) also changes the rendered `--help` snapshots, which that test leaves untouched — `cargo insta test --accept --test integration -- test_help` regenerates them (the pre-merge hook runs both). Sync taxonomy, help-text authoring (three render contexts, link text, config-TOML blocks): `docs/CLAUDE.md`.
+Behavior changes require doc updates. `src/cli/mod.rs` (`after_long_help` plus clap attributes) is the PRIMARY SOURCE for command pages; their rendered mirrors in `docs/src/content/docs/` and `skills/worktrunk/reference/` are generated, as is all of `plugins/worktrunk/skills/` — but both directories also hold hand-edited primaries (non-command docs in `docs/src/content/docs/`, skill-only pages like `shell-integration.md` in the reference dir), so check which file is primary in the sync taxonomy before editing. Ask: "does `--help` still describe what the code does?" `cargo test --test integration test_docs_are_in_sync` checks doc sync; editing help text (`after_long_help`, `about`, arg docs) also changes the rendered `--help` snapshots, which that test leaves untouched — `cargo insta test --accept --test integration -- test_help` regenerates them (the pre-merge hook runs both). Sync taxonomy, help-text authoring (three render contexts, link text, config-TOML blocks): `docs/CLAUDE.md`.
 
 ## Plugin Layout
 
@@ -65,7 +66,7 @@ These stop where git's own protections stop, and matching git is deliberate in e
 - `wt merge` and `wt step push` overwrite an ignored file in the destination worktree whose path the incoming commits track, exactly as a `git merge` run there would (`src/commands/worktree/push.rs`).
 - Removal's final dirty-worktree gate is answered by the fsmonitor daemon under `core.fsmonitor`, exactly as `git worktree remove`'s own gate is (`src/git/remove.rs`).
 
-Full inventory: FAQ [What files does Worktrunk create?](docs/content/faq.md#what-files-does-worktrunk-create) and [What can Worktrunk delete?](docs/content/faq.md#what-can-worktrunk-delete). Review new code that changes this surface against those sections.
+Full inventory: FAQ [What files does Worktrunk create?](docs/src/content/docs/faq.md#what-files-does-worktrunk-create) and [What can Worktrunk delete?](docs/src/content/docs/faq.md#what-can-worktrunk-delete). Review new code that changes this surface against those sections.
 
 ## Command Execution Principles
 
@@ -117,7 +118,7 @@ Why: silent "lookup" paths that walk to the wire (alias dispatch, hook context b
 
 What currently reaches the wire:
 
-- `wt list --full`, `wt list statusline` — CI status; also plain `wt list` (any format) when `[list] columns` names `ci`, which forces the column (and its fetch) on without `--full`
+- `wt list --full`, `wt list statusline` — CI status; also plain `wt list` (table) when `[list] columns` names `ci`, which forces the column (and its fetch) on without `--full`. `--format json` plans off `--full` alone, so a display setting can't send a machine-readable call to a forge
 - `wt switch` (interactive picker, no target) — per-row CI status, primed from the local cache then fetched live and streamed into the rows; once a row's CI fetch surfaces an open PR/MR, a per-row background `gh pr view <n> --json comments` (`glab api …/notes` on GitLab) fills that row's `comments` preview tab — the same fetch a `--prs` row makes, spawned once per row from `progressive_handler` (see `picker::prs::spawn_comments_fetch`). The `comments` tab is the only PR data fetched lazily here; `pr` rides the CI call and `log` is the local `git log`
 - generating a branch summary with a `commit.generation` command
 - generating a commit message with a `commit.generation` command
