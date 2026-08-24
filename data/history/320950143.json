@@ -2,12 +2,6 @@
   "full_name": "certd/certd",
   "points": [
     {
-      "checked_at": "2026-07-24T06:05:56Z",
-      "commit_sha": "4662e45e5843eb9479fe630c0fa4f5edb19f9bcc",
-      "pushed_at": "2026-07-23T10:35:20Z",
-      "stars": 4897
-    },
-    {
       "checked_at": "2026-07-25T05:58:19Z",
       "commit_sha": "4662e45e5843eb9479fe630c0fa4f5edb19f9bcc",
       "pushed_at": "2026-07-23T10:35:20Z",
@@ -186,6 +180,12 @@
       "commit_sha": "f8e492d6cb49257e56bbd06b28fd6eb32c923c28",
       "pushed_at": "2026-08-22T14:14:46Z",
       "stars": 4965
+    },
+    {
+      "checked_at": "2026-08-24T04:08:25Z",
+      "commit_sha": "f8e492d6cb49257e56bbd06b28fd6eb32c923c28",
+      "pushed_at": "2026-08-23T15:38:59Z",
+      "stars": 4967
     }
   ],
   "repo_id": 320950143

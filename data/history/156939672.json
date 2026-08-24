@@ -2,12 +2,6 @@
   "full_name": "microsoft/onnxruntime",
   "points": [
     {
-      "checked_at": "2026-07-24T06:05:56Z",
-      "commit_sha": "60b4dd6a4ce590ac275e0f12d8911aefb7ecf779",
-      "pushed_at": "2026-07-24T06:05:02Z",
-      "stars": 21175
-    },
-    {
       "checked_at": "2026-07-28T06:05:17Z",
       "commit_sha": "47faa11b035d53c49f3f93e815d004e616d360ca",
       "pushed_at": "2026-07-28T06:02:23Z",

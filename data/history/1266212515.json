@@ -2,12 +2,6 @@
   "full_name": "omnigent-ai/omnigent",
   "points": [
     {
-      "checked_at": "2026-07-24T06:05:56Z",
-      "commit_sha": "a28643e6d8088ba46b0a55d4d9567b610b7bc18d",
-      "pushed_at": "2026-07-24T06:02:00Z",
-      "stars": 7694
-    },
-    {
       "checked_at": "2026-07-27T06:44:39Z",
       "commit_sha": "a7ef194c4f6846476b8925968c58a2315b3ce85d",
       "pushed_at": "2026-07-27T06:44:36Z",

@@ -2,12 +2,6 @@
   "full_name": "home-assistant/core",
   "points": [
     {
-      "checked_at": "2026-07-24T06:05:56Z",
-      "commit_sha": "ef04b3776995ed9736c70c7763f1a13fcd443479",
-      "pushed_at": "2026-07-24T06:03:13Z",
-      "stars": 89405
-    },
-    {
       "checked_at": "2026-07-28T06:05:17Z",
       "commit_sha": "53e171d2c190f12b51910c0fe8833b644a303e38",
       "pushed_at": "2026-07-28T06:05:19Z",

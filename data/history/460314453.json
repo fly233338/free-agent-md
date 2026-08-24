@@ -2,12 +2,6 @@
   "full_name": "Tencent/tmagic-editor",
   "points": [
     {
-      "checked_at": "2026-07-24T06:05:56Z",
-      "commit_sha": "a37e0487c685b7f232a5371f6d9041799e7a3857",
-      "pushed_at": "2026-07-23T14:18:23Z",
-      "stars": 4928
-    },
-    {
       "checked_at": "2026-07-25T05:58:19Z",
       "commit_sha": "b564c9e4aacd215dd46c4b839cf0033ceedc8047",
       "pushed_at": "2026-07-24T09:40:26Z",
@@ -186,6 +180,12 @@
       "commit_sha": "4247cfdaf586a665d6b4e3392a61250457935d84",
       "pushed_at": "2026-08-17T04:00:48Z",
       "stars": 4932
+    },
+    {
+      "checked_at": "2026-08-24T04:08:25Z",
+      "commit_sha": "4247cfdaf586a665d6b4e3392a61250457935d84",
+      "pushed_at": "2026-08-17T04:00:48Z",
+      "stars": 4933
     }
   ],
   "repo_id": 460314453

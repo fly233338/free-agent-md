@@ -2,12 +2,6 @@
   "full_name": "newton-physics/newton",
   "points": [
     {
-      "checked_at": "2026-07-24T06:05:56Z",
-      "commit_sha": "d9139fe2546a07dbddd5ba1c3163f83b03044a0c",
-      "pushed_at": "2026-07-24T06:05:21Z",
-      "stars": 5233
-    },
-    {
       "checked_at": "2026-07-25T05:58:19Z",
       "commit_sha": "402d8eac02c42243a5c9ae7e4b8f223ca8bf0394",
       "pushed_at": "2026-07-25T05:50:20Z",
