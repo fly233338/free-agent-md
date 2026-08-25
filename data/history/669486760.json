@@ -2,12 +2,6 @@
   "full_name": "lxc/incus",
   "points": [
     {
-      "checked_at": "2026-07-25T05:58:19Z",
-      "commit_sha": "5268d14f5a584f4d099a39fb69d6ea1b99c26adc",
-      "pushed_at": "2026-07-25T05:45:21Z",
-      "stars": 5795
-    },
-    {
       "checked_at": "2026-08-14T05:06:13Z",
       "commit_sha": "f216a6d46655f4a4fb34a19f8405b33960cb6bfb",
       "pushed_at": "2026-08-14T05:00:32Z",

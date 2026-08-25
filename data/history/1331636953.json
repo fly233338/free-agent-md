@@ -1,11 +1,17 @@
 {
-  "full_name": "zhu1090093659/dsh-web-ui",
+  "full_name": "zhu1090093659/dsh-web",
   "points": [
     {
       "checked_at": "2026-08-20T04:01:46Z",
       "commit_sha": "85862966f14996d0046c3286ee5e02c677b469ca",
       "pushed_at": "2026-08-20T04:01:35Z",
       "stars": 4951
+    },
+    {
+      "checked_at": "2026-08-25T04:02:47Z",
+      "commit_sha": "720a71f30610d3c7f91cd1a7ca87f9166ca5c15f",
+      "pushed_at": "2026-08-25T03:54:54Z",
+      "stars": 5958
     }
   ],
   "repo_id": 1331636953

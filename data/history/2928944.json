@@ -2,12 +2,6 @@
   "full_name": "Azure/azure-sdk-for-net",
   "points": [
     {
-      "checked_at": "2026-07-25T05:58:19Z",
-      "commit_sha": "c2ef7c4c7c012ed55ddbf16ef868445a7a0fc712",
-      "pushed_at": "2026-07-25T05:56:55Z",
-      "stars": 6030
-    },
-    {
       "checked_at": "2026-07-27T06:44:39Z",
       "commit_sha": "960d12d0759385ba2c8c733a89bfd79d96f110ea",
       "pushed_at": "2026-07-27T06:34:24Z",
@@ -24,6 +18,12 @@
       "commit_sha": "79215980aee88177e954757b3ddb9294b8935ae8",
       "pushed_at": "2026-08-21T03:55:41Z",
       "stars": 6037
+    },
+    {
+      "checked_at": "2026-08-25T04:02:47Z",
+      "commit_sha": "5cc20bc35b292a0aa2886e4d228d14e74cadb6e4",
+      "pushed_at": "2026-08-25T04:01:46Z",
+      "stars": 6041
     }
   ],
   "repo_id": 2928944

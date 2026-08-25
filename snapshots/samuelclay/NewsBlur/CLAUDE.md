@@ -1,0 +1,382 @@
+# NewsBlur Development Guidelines
+
+## Planning & Clarification
+**IMPORTANT: Before starting any implementation or creating a plan, ask clarifying questions using the AskUserQuestion tool (not plain text).** Always use the AskUserQuestion tool in Claude Code when you have questions to ask after a prompt. Use it to understand:
+- The specific goals and desired outcomes
+- Edge cases and error handling preferences
+- UI/UX preferences (if applicable)
+- Performance or scalability requirements
+- Integration points with existing code
+- Testing expectations
+- Any constraints or preferences I might have
+
+**Codex: Use the `request_user_input` tool frequently throughout development - not just during planning.**
+**Claude Code: Always use the AskUserQuestion tool (not plain text questions) when you need to ask the user something - during planning, implementation, and any other time.**
+
+Actively interview the user at any point (especially during planning). Prefer multiple rounds of short questions.
+
+Asking questions is encouraged and appreciated because it:
+- Helps both of us think through problems more clearly
+- Surfaces edge cases and requirements that might be missed
+- Leads to better solutions through collaborative dialogue
+- Catches misunderstandings early before code is written
+
+Ask about:
+- Clarifying requirements and desired behavior
+- UI/UX preferences and design decisions
+- Trade-offs between different approaches
+- Edge cases and error handling
+- Whether a proposed solution matches expectations
+- Anything you're uncertain about
+
+Don't assume - ask. Multiple rounds of questions are better than one large batch. Even mid-implementation, if something feels unclear or you're choosing between options, ask. The interactive back-and-forth is valuable.
+
+## Debugging
+
+For debugging sessions: always take a screenshot first, reproduce the issue, then form a hypothesis before changing code. Do not start editing until the root cause is identified.
+
+## Bug Fixing Workflow
+When I report a bug, don't start by trying to fix it. Instead, start by writing a test that reproduces the bug. Then, have subagents try to fix the bug and prove it with a passing test.
+
+## Git Branching
+- **Do not automatically create branches**: Work on the current branch unless I explicitly ask you to create or switch to a branch. If you think a branch would help, ask first.
+
+## Platform-Specific Guidelines
+- **iOS**: See `clients/ios/CLAUDE.md` for iOS simulator testing and development
+  - **Reuse the existing booted simulator**: before any iOS build/install/launch/screenshot flow, run `python3 clients/ios/run_ios.py list` and use the already booted simulator UDID. Build, install, and launch onto that same simulator. Do not create, clone, boot, or switch to a new simulator unless no usable simulator is booted or a clean device state is explicitly needed.
+  - **All new iOS files must be written in Swift** (not Objective-C)
+- **Android**: Use the adb/emulator workflow below for emulator testing and screenshots
+  - **Reuse the existing running emulator**: before any Android build/install/launch/screenshot flow, run `adb devices -l` and use the already attached emulator/device. Install and launch onto that same target. Do not start a new emulator unless no usable emulator/device is attached or a clean device state is explicitly needed.
+  - **Commit early and often for Android work**: make frequent commits throughout implementation so there is a clear trail of changes; commit freely rather than batching large edits.
+  - **Theme coverage is required for Android UI work**: any Android UI change must be checked against all supported NewsBlur themes, not just the current device theme.
+  - Current required Android theme coverage: `light`, `dark`, and `black`.
+  - Upcoming theme requirement: account for `Sapia` in any new Android UI work so theme-specific colors are centralized and easy to extend when that theme lands.
+  - **Tag every Android version bump commit**: whenever a commit changes `versionName` or `versionCode` in `clients/android/NewsBlur/app/build.gradle.kts`, tag that exact commit as `Android_<versionName>` (e.g. `Android_14.2.2`) and push the tag. This keeps the `Android_*` tag series consistent so each released build can be traced back to its source.
+
+## Android Emulator Testing
+- Prefer reusing an already running emulator instead of booting a new one
+- Check attached devices with `adb devices -l`
+- If no emulator is attached, start one from the repo root with `make android-emulator`
+- The current app package is `com.newsblur`
+- The launcher activity resolves to `com.newsblur/.activity.InitActivity`
+- Do not rely on `emulator -list-avds` being available on `PATH`; in this repo it was not
+
+### Build and Install
+- Run Android Gradle commands from `clients/android/NewsBlur`
+- Set `JAVA_HOME` explicitly before Gradle commands or the build may pick the wrong JDK and fail with `invalid source release: 21`
+- Working command: `env JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:installDebug`
+- Fast compile-only verification: `env JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:compileDebugJavaWithJavac --rerun-tasks`
+- Reinstalling with `installDebug` preserves the existing logged-in emulator app state
+- Do **not** run `connectedDebugAndroidTest` on a shared or logged-in emulator unless explicitly asked. It installs the instrumentation APK and can replace the app in a way that costs the current login/session state. Use `:app:installDebug` for normal build/install work, and only run instrumentation tests on a disposable emulator.
+
+### Launch and App State
+- Launch the app with `adb -s emulator-5554 shell monkey -p com.newsblur -c android.intent.category.LAUNCHER 1`
+- Do not try `adb shell am start -n com.newsblur/com.newsblur.activity.Main`; `Main` is not exported and throws a `SecurityException`
+- Check the current foreground screen with `adb -s emulator-5554 shell dumpsys window | rg "mCurrentFocus|mFocusedApp"`
+- Check whether the app process is alive with `adb -s emulator-5554 shell pidof com.newsblur`
+- Resolve the launcher activity with `adb -s emulator-5554 shell cmd package resolve-activity --brief com.newsblur`
+
+### Screenshots and Manual Verification
+- Save emulator screenshots with `adb -s emulator-5554 exec-out screencap -p > /tmp/newsblur-screenshot.png`
+- View the screenshot from `/tmp/newsblur-screenshot.png`
+- For cold-launch capture, force stop and relaunch, then capture multiple frames:
+```bash
+adb -s emulator-5554 shell am force-stop com.newsblur
+adb -s emulator-5554 shell monkey -p com.newsblur -c android.intent.category.LAUNCHER 1
+sleep 0.2
+adb -s emulator-5554 exec-out screencap -p > /tmp/newsblur-launch-02.png
+```
+
+### Useful Emulator Inputs
+- Pull to refresh from the feed list on the current 1080x2400 AVD with `adb -s emulator-5554 shell input swipe 540 600 540 1800 500`
+- Sanity check animation timing before UI verification:
+  - `adb -s emulator-5554 shell settings get global animator_duration_scale`
+  - `adb -s emulator-5554 shell settings get global transition_animation_scale`
+  - `adb -s emulator-5554 shell settings get global window_animation_scale`
+  - Expected value for real-speed verification is `1.0`
+- If sync UI is too fast to catch, throttle the emulator network:
+  - `adb -s emulator-5554 emu network speed gsm`
+  - `adb -s emulator-5554 emu network delay gprs`
+- Restore normal network speed afterward:
+  - `adb -s emulator-5554 emu network speed full`
+  - `adb -s emulator-5554 emu network delay none`
+- Disable network to test offline behavior:
+  - `adb -s emulator-5554 shell svc wifi disable`
+  - `adb -s emulator-5554 shell svc data disable`
+- Re-enable network afterward:
+  - `adb -s emulator-5554 shell svc wifi enable`
+  - `adb -s emulator-5554 shell svc data enable`
+
+## Git Worktree Development
+- **Use git worktrees for parallel development**: Run `make worktree` in a worktree to start workspace-specific services
+- Main repo uses standard ports (80/443), worktrees get unique ports based on directory name hash
+- Run `./worktree-dev.sh` to see your workspace's assigned ports (output shows all URLs)
+- Close worktree: `make worktree-close` stops containers and removes worktree if clean (no uncommitted changes)
+- All worktrees share the same database services (postgres, mongo, redis, elasticsearch)
+
+### Container Names
+- **Main repo containers**: `newsblur_web`, `newsblur_celery`, `newsblur_node`, `newsblur_nginx`, `newsblur_haproxy`
+- **Worktree containers**: `newsblur_web_<worktree-name>`, `newsblur_celery_<worktree-name>`, `newsblur_node_<worktree-name>`, `newsblur_nginx_<worktree-name>`, `newsblur_haproxy_<worktree-name>`
+- **Find worktree containers**: `docker ps --format '{{.Names}}' | grep <worktree-name>`
+- The worktree name is the directory name (e.g., `search-by-phrase` → `newsblur_web_search-by-phrase`)
+
+## Build & Test Commands
+- `make` - Smart default: starts/updates NewsBlur, applies migrations (safe to run after git pull)
+- `make rebuild` - Full rebuild with all images (for Docker config changes)
+- `make nb` - Fast startup without rebuild (legacy, use `make` instead)
+- `make bounce` - Restart all containers with new images
+- `make shell` - Django shell inside container
+- `make debug` - Debug mode for pdb
+- `make log` - View logs
+- `make lint` - Run linting (isort, black, flake8)
+- `make test` - Run all tests (defaults: SCOPE=apps, ARGS="--noinput -v 1 --failfast")
+- `make test SCOPE=apps.rss_feeds ARGS="-v 2"`
+
+**IMPORTANT: Do NOT run `make rebuild` or `make nb` during development!**
+- Web and Node servers restart automatically when code changes
+- Task/Celery server must be manually restarted when modifying **any** code that runs inside a Celery task — this includes the task file itself and any module it calls (e.g., scoring, summary, models). Without a restart, the worker keeps running the old code. Restart with: `docker restart newsblur_celery` (or `newsblur_celery_<worktree-name>` in worktrees)
+- Use `make` to apply migrations after git pull
+- Running `make rebuild` unnecessarily rebuilds everything and wastes time
+
+Note: All docker commands must use `-t` instead of `-it` to avoid interactive mode issues when running through Claude.
+
+## Python Environment
+- **Always run Python code and Django management commands inside the Docker container**
+- Do NOT use `uv run` or local Python environment - always use the Docker container
+- **Main repo**: `docker exec -t newsblur_web python manage.py <command>`
+- **Worktree**: `docker exec -t newsblur_web_<worktree-name> python manage.py <command>`
+- Example (main): `docker exec -t newsblur_web python manage.py shell -c "<python code>"`
+- Example (worktree): `docker exec -t newsblur_web_search-by-phrase python manage.py test apps`
+
+## Deployment Commands
+**Standard code deploys (use these):**
+- `make deploy` - Deploy to the web/app servers. Runs `ansible-playbook ansible/deploy.yml -l app`. This is the command for regular web code changes (views, models, settings served by web).
+- `make celery` - Deploy to the task/Celery servers. Runs `ansible-playbook ansible/deploy.yml -l task`. Required whenever the change touches code that runs inside a Celery task (tasks, models called by tasks, scoring, etc.).
+- A change spanning both web and task code needs **both** `make deploy` and `make celery`.
+
+**Do NOT run the full `apd`/`ansible-playbook ansible/deploy.yml` (no `-l`) for routine deploys.** A full apd can strand prod web servers in HAProxy MAINT if the hstaging disable step fails. Prefer the scoped `make deploy` / `make celery` targets above.
+
+**Reference (rarely needed directly):**
+- `aps` - Alias for `ansible-playbook ansible/setup.yml` - Used only for setting up new servers or making global config changes (e.g., installing new packages).
+- `apd` - Alias for `ansible-playbook ansible/deploy.yml` - The full unscoped deploy; see the HAProxy caveat above.
+- Grafana dashboard changes deploy separately via `aps -l hdb-metrics -t prometheus,grafana`.
+
+Unless asked, don't run any of these. Assume I will deploy or ask you to deploy when ready.
+
+## SSH Access to Servers
+To SSH into NewsBlur servers non-interactively:
+```bash
+./utils/ssh_hz.sh -n <server-name> "<command>"
+```
+
+Example:
+```bash
+./utils/ssh_hz.sh -n happ-web-01 "hostname"
+./utils/ssh_hz.sh -n hdb-redis-story-1 "redis-cli info stats"
+```
+
+Server names are defined in `ansible/inventories/hetzner.ini`. Common server prefixes:
+- `happ-` - Application servers (web, refresh, count, push)
+- `hdb-` - Database servers (redis, mongo, postgres, elasticsearch)
+- `htask-` - Task/Celery workers
+- `hnode-` - Node.js services (page, favicons, text, socket, images)
+- `hwww` - Main web server
+- `hstaging` - Staging server
+
+## Code Style
+- **Python**: 
+  - Black formatter with line-length 110
+  - Use isort with Black profile for imports
+  - Classes use CamelCase, functions/variables use snake_case
+  - Use explicit exception handling
+  - Follow Django conventions for models/views
+
+- **JavaScript**: 
+  - Use snake_case for methods and variables (not camelCase)
+  - Framework: Backbone.js with jQuery/Underscore.js
+
+- **Tests**:
+  - Classes prefixed with `Test_`
+  - Methods prefixed with `test_`
+
+- **Icons**: When you need new SVG icons, check `media/img/icons/phosphor-fill/` and `media/img/icons/remix-fill/` for existing icons before sourcing externally. Copy to `media/img/icons/nouns/` with `fill="#95968e"` to match the UI icon color.
+
+- **Prioritize readability over performance**
+- **Leave no TODOs or placeholders**
+- **Always reference file names in comments**
+
+## Blog
+- Posts live in `blog/_posts/`, drafts in `blog/_drafts/`
+- `blog/_site/` contains generated output and **must be committed** — it's how the blog gets deployed
+
+## API Testing
+- Test API endpoints: `make api URL=/reader/feeds`
+- With POST data: `make api URL=/reader/river_stories ARGS="-X POST -d 'feeds[]=1&feeds[]=2&feeds[]=3'"`
+
+## Ask AI Development
+- **Restart Celery after changes**: Ask AI questions are processed asynchronously via Celery tasks. After modifying `apps/ask_ai/` (providers, tasks, models), restart celery: `docker restart newsblur_celery` (or `newsblur_celery_<worktree-name>` in worktrees)
+- Provider implementations are in `apps/ask_ai/providers.py`
+- **Frontend model selectors**: Search for `data-model="gemini` to find all dropdown locations
+- **CSS for model pills**: Search for `NB-provider-` to find pill styles
+
+## Sentry
+- **Projects**: `web`, `task`, `node`, `monitor` (auth token in `~/.sentryclirc`)
+- **Always use sentry-cli** when given a Sentry issue URL
+- Extract issue ID from URL: `https://sentry.newsblur.com/organizations/newsblur/issues/1037/` → issue ID is `1037`
+
+### Sentry CLI Commands
+```bash
+# List unresolved issues
+sentry-cli --url https://sentry.newsblur.com issues list -o newsblur -p web --status unresolved
+
+# Get specific issue with full details (use --log-level debug to see JSON with file/function info)
+sentry-cli --url https://sentry.newsblur.com issues list -o newsblur -p web --query "issue.id:1037" --log-level debug 2>&1 | grep "body:"
+
+# The JSON body contains: culprit (endpoint), metadata.filename, metadata.function
+# Example output: "culprit":"/profile/save_ios_receipt/","metadata":{"filename":"apps/profile/models.py","function":"setup_premium_history",...}
+
+# List issues for other projects (task, node, monitor)
+sentry-cli --url https://sentry.newsblur.com issues list -o newsblur -p task --status unresolved
+
+# Resolve an issue after fixing (use issue ID from URL)
+sentry-cli --url https://sentry.newsblur.com issues resolve -o newsblur -p web -i 1037
+```
+
+### Sentry Workflow
+1. Extract issue ID from URL (e.g., `.../issues/1037/` → `1037`)
+2. Get issue details with `--log-level debug` to find the file and function
+3. Fix the issue in code
+4. Commit the fix
+5. **Always resolve the issue on Sentry** with `sentry-cli issues resolve -i <issue_id>` — do not skip this step
+
+## Android Crash Data (Google Play)
+- **API**: Google Play Developer Reporting API (`playdeveloperreporting.googleapis.com`, v1beta1)
+- **Service account**: `newsblur@appspot.gserviceaccount.com` — key at `/srv/secrets-newsblur/keys/google-play-service-account.json`
+- **Scope**: `https://www.googleapis.com/auth/playdeveloperreporting`
+- **Parent**: `apps/com.newsblur`
+- **Important**: do NOT use `settings.GOOGLE_PLAY_SERVICE_ACCOUNT_INFO` — that's the billing service account (`newsblur-play-billing@newsblur-premium`) and does not have Play Console reporting access
+
+### Query crash issues and reports
+Copy the key into the container and run a one-shot Python script (or a Django management command):
+```bash
+docker cp /srv/secrets-newsblur/keys/google-play-service-account.json newsblur_web:/tmp/gplay.json
+docker exec -t newsblur_web python -c "
+from googleapiclient.discovery import build
+from google.oauth2 import service_account
+creds = service_account.Credentials.from_service_account_file(
+    '/tmp/gplay.json',
+    scopes=['https://www.googleapis.com/auth/playdeveloperreporting'],
+)
+service = build('playdeveloperreporting', 'v1beta1', credentials=creds)
+# List top crash issues (sorted by errorReportCount desc by default)
+issues = service.vitals().errors().issues().search(parent='apps/com.newsblur', pageSize=20).execute()
+# Fetch a sample report (with full stack trace) for a specific issue
+reports = service.vitals().errors().reports().search(
+    parent='apps/com.newsblur',
+    filter='errorIssueId = \"<issue-id-hex>\"',
+    pageSize=1,
+).execute()
+"
+```
+Issue fields include `type` (CRASH / APPLICATION_NOT_RESPONDING), `cause`, `location`, `errorReportCount`, `distinctUsers`, `lastErrorReportTime`, `lastAppVersion.versionCode`. Report `reportText` contains the full stack trace.
+
+Other useful endpoints: `vitals.crashrate`, `vitals.anrrate`, `vitals.errors.counts`.
+
+## Browser Testing
+- **Do NOT use the Chrome DevTools MCP server unless explicitly asked** — the user will verify manually
+- Local dev: `https://localhost` for main repo. In a worktree, run `make worktree` first, then `./worktree-dev.sh` to get the assigned ports/URLs.
+- **Screenshots**: Save to `/tmp/newsblur-screenshot.png`, then use Read tool to view
+
+### Dev Auto-Login (DEBUG mode only)
+- `https://localhost/reader/dev/autologin/` - Login as default dev user (configured in `DEV_AUTOLOGIN_USERNAME`)
+- `https://localhost/reader/dev/autologin/<username>/` - Login as specific user
+- Add `?next=/path` to redirect after login
+- Returns 403 Forbidden in production (DEBUG=False)
+
+### Test Query Parameters
+- `?test=growth` - Test growth prompts (bypasses premium check and cooldowns)
+- `?test=growth1` - Test feed_added growth prompt
+- `?test=growth2` - Test stories_read growth prompt
+- `?test=faq` - Open the FAQ dialog on load (also works as `?next=faq`)
+- `?test=feedchooser` - Open the feed chooser modal on load (also works as `?next=feedchooser`)
+- `?test=premium` - Open the premium upgrade modal on load (also works as `?next=premium`)
+
+### Theme Switching
+- `NEWSBLUR.reader.switch_theme('dark')` - Switch to dark mode
+- `NEWSBLUR.reader.switch_theme('light')` - Switch to light mode
+- `NEWSBLUR.reader.switch_theme('auto')` - Switch to auto/system theme
+
+### Opening Modals
+- `NEWSBLUR.reader.open_premium_upgrade_modal()` - Premium upgrade dialog
+- `NEWSBLUR.reader.open_feedchooser_modal()` - Feed chooser (mute sites)
+- `NEWSBLUR.reader.open_account_modal()` - Account settings
+- `NEWSBLUR.reader.open_preferences_modal()` - Preferences
+- `NEWSBLUR.reader.open_keyboard_shortcuts_modal()` - Keyboard shortcuts
+- `NEWSBLUR.reader.open_goodies_modal()` - Goodies & apps
+- `NEWSBLUR.reader.open_notifications_modal(feed_id)` - Notifications for feed
+- `NEWSBLUR.reader.open_newsletters_modal()` - Email newsletters
+- `NEWSBLUR.reader.open_organizer_modal()` - Organize feeds
+- `NEWSBLUR.reader.open_trainer_modal()` - Intelligence trainer
+- `NEWSBLUR.reader.open_add_feed_modal()` - Add new feed
+- `NEWSBLUR.reader.open_friends_modal()` - Find friends
+- `NEWSBLUR.reader.open_intro_modal()` - Intro/tutorial
+- `NEWSBLUR.reader.open_feed_statistics_modal(feed_id)` - Feed statistics
+- `NEWSBLUR.reader.open_feed_exception_modal(feed_id)` - Feed exceptions
+- `NEWSBLUR.reader.open_mark_read_modal()` - Mark as read options
+- `NEWSBLUR.reader.open_social_profile_modal(user_id)` - Social profile
+- `$.modal.close()` - Close any open modal
+
+### Feed & Story Operations
+- `NEWSBLUR.reader.open_river_stories()` - Open All Site Stories
+- `NEWSBLUR.reader.open_feed(feed_id)` - Open a specific feed
+- `NEWSBLUR.assets.feeds.find(f => f.get('nt') > 0)` - Get feed with unread stories
+- `NEWSBLUR.assets.feeds` - Backbone.js collection of all feeds
+
+### Element Interactions
+- `.NB-feed-story` - Select first story
+- `.NB-feed-story-train` - Open story intelligence trainer
+- `.NB-feedbar-options` - Open feed options popover
+- `.folder .folder_title` - Open folder
+
+### User State (via Django shell)
+To test different subscription states, modify user profile in Django shell:
+```python
+docker exec -t newsblur_web_<worktree> python manage.py shell -c "
+from apps.profile.models import Profile
+p = Profile.objects.get(user__username='<username>')
+p.is_premium = True       # Enable premium
+p.is_premium_trial = True # Set as trial (False = paid)
+p.is_archive = False      # Archive tier
+p.is_pro = False          # Pro tier
+p.premium_renewal = True  # Has active renewal
+p.save()
+"
+```
+
+## Server Maintenance
+- **DNS/Service Discovery**: Docker containers resolve services via dnsmasq → Consul (e.g., `redis-story.service.consul`)
+- **Container Names by Server Type**:
+  - Web (`happ-web-*`): `newsblur_web`, `haproxy`
+  - Task (`htask-celery-*`): `task-celery`, `autoheal`
+  - Task (`htask-work-*`): `task-work`, `autoheal`
+  - Node (`hnode-page/text/socket/favicons-*`): `node`
+  - Node (`hnode-images-*`): `imageproxy`
+  - Redis (`hdb-redis-{story,user,session,pubsub}-*`): `redis-story`, `redis-user`, `redis-session`, `redis-pubsub`
+  - Mongo (`hdb-mongo-*`): `mongo`
+  - Postgres (`hdb-postgres-*`): `postgres`
+  - Nginx (`hwww`): `nginx`, `haproxy`
+
+## Downtime Investigation
+When the user reports downtime, read `DOWNTIME.md` for the full investigation playbook, then run `./utils/check_health.sh`.
+
+## Slow Load Times Investigation
+When load times are elevated but the site isn't down, read `SLOW_LOAD_TIMES.md` for the full investigation playbook. Start with the Quick Assessment commands to check per-minute and hourly load times.
+
+## Writing Emails
+- Never use em dashes or hyphens as punctuation. Restructure the sentence instead.
+- Sign off with just "Sam" (no "Best," "Thanks," or other closings before it)
+- Keep it concise and direct
+
+## Writing Forum Replies
+- Keep replies free of AI slop: no em dashes, no hyphens as punctuation, no overly polished language. Restructure sentences instead.
+- Be concise and direct, matching a natural conversational tone

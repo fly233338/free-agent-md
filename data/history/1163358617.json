@@ -2,12 +2,6 @@
   "full_name": "agentscope-ai/AgentTeams",
   "points": [
     {
-      "checked_at": "2026-07-25T05:58:19Z",
-      "commit_sha": "37c31b77d4e88ca87a1270c61a1e6f659e8023e1",
-      "pushed_at": "2026-07-25T05:54:12Z",
-      "stars": 5166
-    },
-    {
       "checked_at": "2026-08-06T06:06:46Z",
       "commit_sha": "062f1c8d7edd54ceaa2141862dd98a75c36c6980",
       "pushed_at": "2026-08-06T06:01:38Z",

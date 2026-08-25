@@ -1,7 +1,0 @@
-# citrolabs/ego-lite instruction files
-
-Upstream: [citrolabs/ego-lite](https://github.com/citrolabs/ego-lite) · License: `MIT` · Commit: `689f71a7bad8b78e22664ca8708a41ceaf263e93`
-
-| Type | Path | Snapshot | Fixed source | SHA-256 | Size |
-|---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/citrolabs/ego-lite/AGENTS.md) | [Source](https://github.com/citrolabs/ego-lite/blob/689f71a7bad8b78e22664ca8708a41ceaf263e93/AGENTS.md) | `73d8d7a1d03e790761df6a413ffd9b874f0d531f00c657c3eba5cad627d6d421` | 6,338 B |

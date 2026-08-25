@@ -2,12 +2,6 @@
   "full_name": "apache/groovy",
   "points": [
     {
-      "checked_at": "2026-07-25T05:58:19Z",
-      "commit_sha": "c92f1c926a62af3c30d79db9a0028c7dd0bb1f9a",
-      "pushed_at": "2026-07-25T05:36:17Z",
-      "stars": 5457
-    },
-    {
       "checked_at": "2026-08-12T05:06:54Z",
       "commit_sha": "22023073dccc58f028d72eeb2209dc6417bb5e04",
       "pushed_at": "2026-08-12T04:53:43Z",

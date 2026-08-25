@@ -2,12 +2,6 @@
   "full_name": "datahub-project/datahub",
   "points": [
     {
-      "checked_at": "2026-07-25T05:58:19Z",
-      "commit_sha": "bfd13f2dcc55e7dbe48e90bbe7591902c8c2daae",
-      "pushed_at": "2026-07-25T05:51:01Z",
-      "stars": 12340
-    },
-    {
       "checked_at": "2026-07-29T06:09:27Z",
       "commit_sha": "ccd3cc2e65085c4d9ba520d0217187fd1cc8f6f8",
       "pushed_at": "2026-07-29T06:02:12Z",

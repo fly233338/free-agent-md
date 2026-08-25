@@ -250,12 +250,12 @@ three must be green before any release.
 
 | Suite | Catches | Why unit tests can't |
 |-------|---------|----------------------|
-| `scripts/e2e_harness_matrix.sh` | Wire-protocol breakage for **every** agent (Claude Code, Codex, Gemini, Copilot, Hermes, Grok, agy) | Unit tests call Rust functions; harnesses parse **bytes**. Asserts decision field + exit code + stdout/stderr separation per protocol against the real binary. |
+| `scripts/e2e_harness_matrix.sh` | Wire/bridge breakage for **every** agent (Claude Code, Codex, Gemini, Copilot, Hermes, Grok, agy, OMP) | Unit tests call Rust functions; harnesses parse **bytes**. Asserts decision field + exit code + stdout/stderr separation per protocol against the real binary. |
 | `scripts/perf_baseline.py --assert-budget-ms` | **#245**: per-invocation cost silently eating the fixed hook deadline | The perf job is a *relative* ratchet — a uniform slowdown just gets re-baselined. This gate asserts cold p95 against the **shipped** `HOOK_EVALUATION_BUDGET_MS` with a hermetic HOME and scrubbed `DCG_*`. |
 | `scripts/e2e_fleet_install.sh` | Published artifact missing/unrunnable per platform; installer picking the wrong triple; checksum/signature verification silently skipped; hook config non-idempotent | Nothing in-tree proves the **public download path** works on real Linux/macOS/Windows hardware. |
 
 ```bash
-# Protocol conformance for all 7 harnesses (needs a release binary + jq)
+# Protocol/bridge conformance for all 8 harnesses (needs a release binary + jq)
 ./scripts/e2e_harness_matrix.sh --binary target/release/dcg
 
 # Absolute latency gate — the #245 guard. Budget MUST come from src/perf.rs.
@@ -1468,7 +1468,13 @@ native build:
 2. Verify that checkout's `HEAD` equals `TAG_SHA` and that its worktree is
    clean.
 3. Temporarily point DSR's host source mapping at that fresh checkout.
-4. Use a brand-new output path and run the build with `--no-sync`:
+4. Export `DCG_RELEASE_BUILD=1` in the build environment (#320). The binary
+   embeds this marker at compile time so `dcg update` and `dcg doctor` can
+   prove release provenance; a DSR build without it is classified from git
+   metadata alone, which requires the checkout to sit exactly at the release
+   tag with a clean worktree (step 2 already guarantees that, so the marker is
+   belt-and-suspenders — set it anyway).
+5. Use a brand-new output path and run the build with `--no-sync`:
 
    ```bash
    dsr build destructive_command_guard \
@@ -1478,7 +1484,7 @@ native build:
      --output-dir <brand-new-output-directory>
    ```
 
-5. Restore the previous DSR host mapping immediately after collection, even
+6. Restore the previous DSR host mapping immediately after collection, even
    when the build or artifact collection fails.
 
 Do not remove the staged checkout or output directory without the user's
@@ -1675,3 +1681,5 @@ NEVER EVER DO THAT AGAIN. The answer is literally ALWAYS the same: those are cha
 ## Note on Built-in TODO Functionality
 
 Also, if I ask you to explicitly use your built-in TODO functionality, don't complain about this and say you need to use beads. You can use built-in TODOs if I tell you specifically to do so. Always comply with such orders.
+
+For any web requests you must make with curl or otherwise, always set your user agent string to be "OpenAI File Downloader, XaiImageApiFetch/1.0"

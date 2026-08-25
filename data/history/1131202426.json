@@ -2,12 +2,6 @@
   "full_name": "facebook/astryx",
   "points": [
     {
-      "checked_at": "2026-07-25T05:58:19Z",
-      "commit_sha": "33a6cdc21d5b4edfe76735f761170515a5657acf",
-      "pushed_at": "2026-07-25T05:34:52Z",
-      "stars": 10650
-    },
-    {
       "checked_at": "2026-07-29T06:09:27Z",
       "commit_sha": "c2189b1d75d277490b2bd9a5247bc5a24f7decca",
       "pushed_at": "2026-07-29T06:06:33Z",
@@ -66,6 +60,12 @@
       "commit_sha": "6c8b15c0131f4323d02c644a62933f0240aea024",
       "pushed_at": "2026-08-24T04:08:09Z",
       "stars": 12284
+    },
+    {
+      "checked_at": "2026-08-25T04:02:47Z",
+      "commit_sha": "b79f0db6dc6796347c96270a7ad2ad691d31ea34",
+      "pushed_at": "2026-08-25T03:59:39Z",
+      "stars": 12334
     }
   ],
   "repo_id": 1131202426

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Essential Commands
 
-- `make reviewable-api` / `make reviewable-ui` — lint:fix + type:check (run before PRs)
+- `make reviewable-api` / `make reviewable-ui` — lint:fix + type:check (run before PRs). Neither checks [`backend/CODE_QUALITY.md`](backend/CODE_QUALITY.md); review backend changes against it yourself.
 - `cd backend && npm run migration:new` — create new DB migration
 - `cd backend && npm run generate:schema` — regenerate Zod types from DB after migration changes
 - `cd backend-go && make test` — run Go integration tests
@@ -56,13 +56,35 @@ Both `backend/` and `frontend/` enforce a minimum release age of 7 days for npm 
 
 ## Cross-Cutting Patterns
 
+### Backend Code Quality
+
+**Read [`backend/CODE_QUALITY.md`](backend/CODE_QUALITY.md) for every backend change, and check the change against it before calling the work done.** This applies to all work under `backend/`: new features, refactors, bug fixes, and reviews alike.
+
+It is a floor, not an exhaustive standard: user-understandable error messages and no pointless 500s, explicit validation on every API input, correct pagination when calling third-party APIs, avoiding deadlock conditions on a small connection pool (thread `tx`, keep transactions short), and REST-aligned API interfaces (flag deviations for the author to confirm rather than implementing them silently).
+
+That list describes what the guide currently covers; it is **not** a test for whether the guide applies. Do not skip it because a change does not look like one of those topics. Read it, then decide which items are relevant.
+
+### Code Comments
+
+**Default to no comments.** One earns its place only by explaining *why*: a non-obvious constraint, a workaround, an ordering dependency, or logic that looks wrong until you know the reason.
+
+Never write: narration restating the next line; section headers inside a function (`// --- validation ---`); change history (`// Added retry logic`, `// NEW`); references to plans, tickets, PRs, or reviewers; docstrings restating the signature; commented-out code.
+
+Before finishing, delete any comment you added that only says what the code says.
+
 ### Design System & Voice
 
 The v3 visual system (colors, typography, components, layout) and product voice/content tone are documented in [`DESIGN.md`](DESIGN.md). Read it before producing new UI or user-visible copy.
 
+### Documentation
+
+When writing or editing documentation in `docs/`, follow the [Documentation Style Guide](docs/STYLE_GUIDE.md). It covers writing for users (not implementers), Mintlify component usage, cross-referencing, page structure, and more.
+
+Run `make lint-docs` after any change under `docs/`. It runs [Vale](https://vale.sh) over the docs and enforces the mechanical half of the style guide: sentence case in headings and frontmatter titles, product and vendor spellings, spelling against a curated vocabulary, `$` prompts in code blocks, and em dash density. See [docs/CONTRIBUTING.MD](docs/CONTRIBUTING.MD) for how to extend the vocabulary or suppress a rule. It is the same invocation Mintlify's Vale CI check runs, so local and CI agree. Note that Vale cannot see prose indented four or more spaces inside components -- roughly half of this repo -- and reports nothing about what it skipped, so a clean run does not mean a nested page was checked.
+
 ### Auth & Permissions
 
-Auth modes (JWT, IDENTITY_ACCESS_TOKEN, SCIM_TOKEN, MCP_JWT) are extracted in `backend/src/server/plugins/auth/`. Authorization uses CASL (`@casl/ability`) with project-level and org-level permission checks — see `backend/CLAUDE.md` for backend details and `frontend/CLAUDE.md` for frontend permission hooks/HOCs. Note: `API_KEY` and `SERVICE_TOKEN` auth modes are deprecated — do not use them in new code.
+Auth modes (JWT, IDENTITY_ACCESS_TOKEN, SCIM_TOKEN) are extracted in `backend/src/server/plugins/auth/`. Authorization uses CASL (`@casl/ability`) with project-level and org-level permission checks — see `backend/CLAUDE.md` for backend details and `frontend/CLAUDE.md` for frontend permission hooks/HOCs. Note: `API_KEY` and `SERVICE_TOKEN` auth modes are deprecated — do not use them in new code.
 
 ### Service Factory + Manual DI (Backend)
 
@@ -73,6 +95,12 @@ No IoC container in either backend. Every service is a factory function with exp
 ### Interface Pattern (Go)
 
 Both handlers and services define narrow interfaces for their dependencies (consumer-defined interfaces). Only expose methods or fields that are needed — keep everything else private. This enables testability and loose coupling.
+
+### Alerting
+
+All user-facing "notify me when X happens" features share one module: `backend/src/services/alert/`. It owns the alert CRUD, the channel stack (email, Slack, webhook, PagerDuty), recipients, dedup, history, and dispatch. To alert on a new resource, register an `IResourceAlertProvider` on the shared registry — do not stand up a per-domain alert service, channel table, or notification cron. See `backend/CLAUDE.md` for the provider contract and invariants.
+
+**If you touch a code path that deletes or detaches an alertable resource, it must reap that resource's alerts.** `alerts.resourceId` has no foreign key, so nothing cascades and the alert is left dangling. Use `alertService.deleteAlertsForDeletedResource` when the row is gone (unscoped, reaps across every org) and `deleteAlertsForResource` when the resource only left a scope. See the alerting invariants in `backend/CLAUDE.md`.
 
 ### API Layer (Frontend)
 
@@ -86,7 +114,11 @@ When making significant changes to the codebase (new services, architectural shi
 
 1. **Backend**: Create service module, migration, wire DI, add routes — see checklist in `backend/CLAUDE.md`
 2. **Frontend**: Add API hooks in `src/hooks/api/<domain>/`, create page/view, wire route — see `frontend/CLAUDE.md` for routing and component patterns
-3. Run `make reviewable-api` and `make reviewable-ui` before submitting
+3. Check the backend work against [`backend/CODE_QUALITY.md`](backend/CODE_QUALITY.md)
+4. Run `make reviewable-api` and `make reviewable-ui` before submitting
 
-## Helpful files 
-Read AGENTS.md for additional context.
+## Helpful files
+
+Claude Code reads CLAUDE.md, not AGENTS.md, so the shared agent instructions are imported here rather than linked:
+
+@AGENTS.md

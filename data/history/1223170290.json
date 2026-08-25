@@ -2,12 +2,6 @@
   "full_name": "nexu-io/open-design",
   "points": [
     {
-      "checked_at": "2026-07-25T05:58:19Z",
-      "commit_sha": "99c13e083e070f44aaa0009b2fc96589118c2a9a",
-      "pushed_at": "2026-07-25T05:39:38Z",
-      "stars": 81382
-    },
-    {
       "checked_at": "2026-07-27T06:44:39Z",
       "commit_sha": "fac10139c0138a5700c128079e23c3e7a622516c",
       "pushed_at": "2026-07-27T06:44:15Z",
@@ -102,6 +96,12 @@
       "commit_sha": "e13a4c385faffe5c84896a0f7d501a03d90f0cc6",
       "pushed_at": "2026-08-24T03:57:41Z",
       "stars": 90805
+    },
+    {
+      "checked_at": "2026-08-25T04:02:47Z",
+      "commit_sha": "7bdf9978aaae6cc4704108c45559a4f17676d51a",
+      "pushed_at": "2026-08-25T03:57:34Z",
+      "stars": 91158
     }
   ],
   "repo_id": 1223170290

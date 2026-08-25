@@ -1,8 +1,8 @@
 # rust-lang/rust instruction files
 
-Upstream: [rust-lang/rust](https://github.com/rust-lang/rust) · License: `Apache-2.0` · Commit: `da5114692c9ebe46b869488c5f34f92eb10b98c1`
+Upstream: [rust-lang/rust](https://github.com/rust-lang/rust) · License: `Apache-2.0` · Commit: `9bb55c8c865411b7d9dea6ff743e583d510d89f5`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/rust-lang/rust/AGENTS.md) | [Source](https://github.com/rust-lang/rust/blob/da5114692c9ebe46b869488c5f34f92eb10b98c1/AGENTS.md) | `9001523dd6f1051f03a4c50f390cef5df9d62ba7347db3b222e2c9f72044231b` | 12,719 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/rust-lang/rust/CLAUDE.md) | [Source](https://github.com/rust-lang/rust/blob/da5114692c9ebe46b869488c5f34f92eb10b98c1/CLAUDE.md) | `336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49` | 11 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/rust-lang/rust/AGENTS.md) | [Source](https://github.com/rust-lang/rust/blob/9bb55c8c865411b7d9dea6ff743e583d510d89f5/AGENTS.md) | `9001523dd6f1051f03a4c50f390cef5df9d62ba7347db3b222e2c9f72044231b` | 12,719 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/rust-lang/rust/CLAUDE.md) | [Source](https://github.com/rust-lang/rust/blob/9bb55c8c865411b7d9dea6ff743e583d510d89f5/CLAUDE.md) | `336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49` | 11 B |
