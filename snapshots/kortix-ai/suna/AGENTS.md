@@ -193,11 +193,14 @@ non-trivial change through this full lifecycle:
    real inputs and outputs.
 3. Push the branch, open a PR against `main`, wait for required checks, and merge
    it. Do not leave finished work only on a branch or stop after opening the PR.
-4. Follow the resulting **Deploy Dev** workflow through completion. Confirm the
-   deployed artifact contains the merged SHA; a successful `/health` response
-   alone is not deployment proof. If a newer push cancels or supersedes the run,
-   verify its path filters still rebuild every affected artifact. Manually
-   dispatch the workflow when necessary to avoid a skipped component.
+4. Dev **auto-deploys on merge to `main`** — every push builds the surfaces that
+   changed vs dev's live SHA and cancels any superseded in-flight deploy. Follow
+   the resulting **Deploy Dev** run through completion. Confirm the deployed
+   artifact contains the merged SHA; a successful `/health` response alone is not
+   deployment proof. A newer push cancels an older run by design — if yours was
+   cancelled before it deployed, the next push re-picks-up your still-stale
+   surface, or force it with `gh workflow run deploy-dev.yml -f surface=all`.
+   Full procedure, surfaces, and verification: `docs/runbooks/deploy-dev.md`.
 5. Re-run the user-visible behavior against `https://dev.kortix.com` and/or
    `https://dev-api.kortix.com`. Prefer the real Kortix CLI configured for the
    dev API for CLI/project/session flows, and direct authenticated HTTP calls for
@@ -221,13 +224,13 @@ these as standing rules whenever you touch the data/runtime layer:
 > **Editing `packages/sdk` itself? Read `packages/sdk/PROGRESS.md` (current state,
 > claim your task) and `packages/sdk/AGENTS.md` (the rules) first.** It is a
 > **published npm package** with its own hard rules that have no analogue
-> elsewhere in this repo: **TDD is mandatory** (failing test first — invoke the
-> `tdd` skill — and every turn ends with the gates run, the real output pasted,
-> and an explicit shippable YES/NO/NOT YET); exported names (including *types*)
-> are a public API contract and renaming one is a breaking change; the `version`
-> field is inert and must never be bumped by hand; adding an export requires
-> three synchronized edits; and the framework-free core is enforced by a static
-> import-graph tripwire.
+> elsewhere in this repo: **TDD is mandatory** (failing test first, run it, watch
+> it fail, then implement — and every turn ends with the gates run, the real
+> output pasted, and an explicit shippable YES/NO/NOT YET); exported names
+> (including *types*) are a public API contract and renaming one is a breaking
+> change; the `version` field is inert and must never be bumped by hand; adding
+> an export requires three synchronized edits; and the framework-free core is
+> enforced by a static import-graph tripwire.
 
 - **Logic lives in the SDK, never in a host.** No raw `fetch` to the Kortix API,
   no `@opencode-ai/sdk` imports, no transport / runtime / data-state code written
@@ -249,8 +252,9 @@ these as standing rules whenever you touch the data/runtime layer:
   The sandbox provider is a server-side concern. Every session uses the
   OpenCode REST runtime. Host code must not implement a second transport.
 - **`apps/web` data modules are shims.** Files such as
-  `apps/web/src/stores/server-store`, `lib/projects-client`, and
-  `hooks/opencode/use-*` are thin re-exports (`export * from '@kortix/sdk/...'`).
+  `apps/web/src/ui/index.ts`, `apps/web/src/lib/iam-client.ts`, and
+  `apps/web/src/hooks/admin/use-*.ts` are thin re-exports
+  (`export * from '@kortix/sdk/...'`).
   Keep them as shims; put the real logic in the SDK. When a merge conflict lands
   on one of these, **keep the shim (`--ours`) and port any new host-side logic
   into the SDK** — do not revert to a host-local implementation.
@@ -340,7 +344,7 @@ Mint a real JWT against local Supabase, then call the API with it:
    `localhost:8008/v1` (e.g. `/accounts`, `/projects/provision`,
    `/projects/:id/sessions`, `/p/<ext>/8000/...`).
 
-See `tests/e2e/helpers/auth.ts` for the exact calls.
+See `tests/e2e/helpers/session-auth.ts` for the exact calls.
 
 ### One local testing system
 
@@ -365,17 +369,17 @@ See `tests/e2e/helpers/auth.ts` for the exact calls.
   test profile. Stop an ordinary development stack before either command.
 - Every root run writes lane and total timings to
   `tests/test-results/local/benchmark-<timestamp>.json`.
-- GitHub Actions runs core, browser, and package modes in three disposable warm
-  sandboxes through `.github/workflows/tests.yml`. The slowest lane defines the
-  gate duration. Set `provider` to `platinum`, `daytona`, or `auto`. Auto tries
-  Platinum first. It uses Daytona only when Platinum infrastructure throws. A
-  non-zero test exit does not trigger fallback.
-- Platinum warm restore readiness is capped at 2 minutes. A missing marker or
-  unreachable guest after that cap triggers Daytona in `auto` mode. Cold
-  template creation retains its separate 45-minute budget.
-- Both providers fetch and verify the exact SHA, upload `tests/test-results`,
-  and delete the sandbox. The sandbox worker is infrastructure only. Do not add
-  CI-only test logic.
+- Every Linux CI job runs on Blacksmith through `runs-on: ${{ vars.CI_RUNNER_<tier>
+  || '<label>' }}`. Tiers, the kill switch back to GitHub-hosted runners, and
+  the Docker layer cache: `docs/runbooks/ci-runners.md`.
+- GitHub Actions runs four lanes — `core`, `browser-1`, `browser-2`, `packages` —
+  natively, one Blacksmith runner each (`CI_RUNNER_L`), through
+  `.github/workflows/tests.yml`. The two browser lanes are halves of one sharded
+  run (`--browser-shard=1/2` and `2/2`). The slowest lane defines the gate
+  duration. Each lane is the unchanged root command at the exact PR head SHA;
+  browser lanes install Chromium and prestart Supabase first. Do not add
+  CI-only test logic. (The Platinum/Daytona sandbox-worker path was removed on
+  2026-08-26; only `deploy-preview.yml` still uses a cloud sandbox.)
 - Release tests run `pnpm test -- --target-full` against deployed staging. They block
   production when API or gateway health reports a SHA other than
   `RELEASE_SOURCE_SHA`, when any API flow is excluded, or when a configured
@@ -476,7 +480,7 @@ gate, not polish:
   dense-but-legible UI, black/white plus one earned accent, token-driven spacing,
   and no decorative color, glow, or one-off rounded boxes.
 - Use recent product surfaces as references before editing: `/design-system`,
-  `apps/web/src/features/co-worker/project-layout/project-home.tsx`,
+  `apps/web/src/features/workspace/project-layout/project-home.tsx`,
   `apps/web/src/components/ui/wallpaper-background.tsx`, and the account/IAM
   screens called out by the design-system skill.
 - Verify visual work in the browser and include the exact lint/typecheck commands

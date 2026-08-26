@@ -2,12 +2,6 @@
   "full_name": "vllm-project/vllm",
   "points": [
     {
-      "checked_at": "2026-07-26T06:17:10Z",
-      "commit_sha": "30b0714031ae24f77832099cf120576dae28b17c",
-      "pushed_at": "2026-07-26T05:53:06Z",
-      "stars": 87167
-    },
-    {
       "checked_at": "2026-07-28T06:05:17Z",
       "commit_sha": "f472ab0a4c0987d2badc2f2aeecd38fee4180a4c",
       "pushed_at": "2026-07-28T05:53:47Z",
@@ -90,6 +84,12 @@
       "commit_sha": "702e1d718646b5290f17533c04932d58bf03dad6",
       "pushed_at": "2026-08-24T03:57:58Z",
       "stars": 89822
+    },
+    {
+      "checked_at": "2026-08-26T04:05:28Z",
+      "commit_sha": "044b05220ee9eb42ae3b90b984d0c7e9eb442f0e",
+      "pushed_at": "2026-08-26T04:02:26Z",
+      "stars": 90056
     }
   ],
   "repo_id": 599547518

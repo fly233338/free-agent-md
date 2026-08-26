@@ -2,12 +2,6 @@
   "full_name": "microsoft/agent-governance-toolkit",
   "points": [
     {
-      "checked_at": "2026-07-26T06:17:10Z",
-      "commit_sha": "179843b16eadd48bc9666c05f33a38f009542be1",
-      "pushed_at": "2026-07-25T10:55:01Z",
-      "stars": 4917
-    },
-    {
       "checked_at": "2026-07-27T06:44:39Z",
       "commit_sha": "179843b16eadd48bc9666c05f33a38f009542be1",
       "pushed_at": "2026-07-26T08:52:42Z",

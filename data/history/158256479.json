@@ -2,12 +2,6 @@
   "full_name": "apache/iceberg",
   "points": [
     {
-      "checked_at": "2026-07-26T06:17:10Z",
-      "commit_sha": "6da85ee70e80e728a6858a4b573289ec76804391",
-      "pushed_at": "2026-07-26T06:14:31Z",
-      "stars": 9080
-    },
-    {
       "checked_at": "2026-08-11T04:42:27Z",
       "commit_sha": "089adca502693f62e88f6137461a91ff06156be2",
       "pushed_at": "2026-08-11T04:40:53Z",

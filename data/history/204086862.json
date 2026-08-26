@@ -2,12 +2,6 @@
   "full_name": "streamlit/streamlit",
   "points": [
     {
-      "checked_at": "2026-07-26T06:17:10Z",
-      "commit_sha": "8647f80ac99aabf1c5715fdb76f113aab656cf97",
-      "pushed_at": "2026-07-26T06:01:42Z",
-      "stars": 45351
-    },
-    {
       "checked_at": "2026-07-27T06:44:39Z",
       "commit_sha": "034e71ac3dae9ea34e02bb912e3502bd96a60fad",
       "pushed_at": "2026-07-27T06:40:18Z",

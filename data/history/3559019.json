@@ -2,12 +2,6 @@
   "full_name": "WeblateOrg/weblate",
   "points": [
     {
-      "checked_at": "2026-07-26T06:17:10Z",
-      "commit_sha": "49b8b88cd916e5b31cf2c986ad70a106d5e4440d",
-      "pushed_at": "2026-07-26T06:06:33Z",
-      "stars": 6000
-    },
-    {
       "checked_at": "2026-07-27T06:44:39Z",
       "commit_sha": "d48dde9e7b7a5e5ea66f1136f696a6ed7c8fcf16",
       "pushed_at": "2026-07-27T06:41:20Z",

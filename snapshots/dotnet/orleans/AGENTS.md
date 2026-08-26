@@ -1,19 +1,10 @@
 # Repository workflow
 
-- Open pull requests against `dotnet/orleans`.
-- Unless otherwise specified, create new branches from `main` in the upstream `dotnet/orleans` repository (`upstream/main`).
-- Do not push feature branches directly to `dotnet/orleans` or the `upstream` remote.
-- Push feature branches to your personal fork, which is configured as `origin`.
-- Create PRs using `dotnet/orleans` as the base repository and `origin`/personal fork branches as the head.
-- Use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) for commit messages from now on.
-- PR titles must also follow Conventional Commits naming conventions because squash merges use the PR title as the resulting commit message.
-- When creating PRs, keep the PR description simple: explain the problem it addresses and the solution it implements, including the rationale where helpful. Do not include a section describing what commands to run to test the PR.
-
-Example:
-
-```powershell
-git fetch upstream main
-git switch -c <branch> upstream/main
-git push --set-upstream origin <branch>
-gh pr create --repo dotnet/orleans --base main --head ReubenBond:<branch>
-```
+- **New pull requests:** branch from `dotnet/orleans`'s `main`, push to the authenticated user's fork, and open the PR against `dotnet/orleans`.
+- **Existing contributor pull requests:** when maintainer edits are enabled and authentication permits, push updates to the PR author's head fork and branch.
+- **Every push:** run `git remote -v` and verify the destination by URL. Use the authenticated user's fork for new work or the PR author's fork for an existing PR; never rely on remote names or hard-code `origin`.
+- Never push a feature branch to a remote whose URL points to `github.com/dotnet/orleans`, over HTTPS or SSH. Delete it immediately if this happens accidentally.
+- After rebasing a PR branch, use `--force-with-lease`, never `--force`.
+- Use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) for commits and PR titles. Update nonconforming PR titles during review.
+- When reviewing changes, check whether corresponding documentation or sample updates are needed in the `/docs` and `/samples` directories.
+- Keep PR descriptions focused on the problem, solution, and rationale; omit test-command sections.

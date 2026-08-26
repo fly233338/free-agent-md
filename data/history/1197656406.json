@@ -2,12 +2,6 @@
   "full_name": "open-multi-agent/open-multi-agent",
   "points": [
     {
-      "checked_at": "2026-07-26T06:17:10Z",
-      "commit_sha": "dbcf11a158abfac7b3d55ee2d0d64a8cbf77b6c4",
-      "pushed_at": "2026-07-26T06:16:49Z",
-      "stars": 6658
-    },
-    {
       "checked_at": "2026-08-10T04:56:53Z",
       "commit_sha": "566a59e7ad18858d554e9eb92086eae52ab4556b",
       "pushed_at": "2026-08-10T04:43:01Z",

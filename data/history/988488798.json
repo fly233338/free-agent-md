@@ -2,12 +2,6 @@
   "full_name": "openclaw/Peekaboo",
   "points": [
     {
-      "checked_at": "2026-07-26T06:17:10Z",
-      "commit_sha": "cb19c66d7b536d30731f81a18c0ec12bd19368e6",
-      "pushed_at": "2026-07-23T18:48:16Z",
-      "stars": 4914
-    },
-    {
       "checked_at": "2026-07-27T06:44:39Z",
       "commit_sha": "23e62b04b4f30969913a990c493c924e84615847",
       "pushed_at": "2026-07-27T01:52:43Z",
@@ -144,6 +138,12 @@
       "commit_sha": "ca606c5a40b12ba40878e38a6177a81c2853f305",
       "pushed_at": "2026-08-21T03:59:37Z",
       "stars": 5023
+    },
+    {
+      "checked_at": "2026-08-26T04:05:28Z",
+      "commit_sha": "d9bf4436a8294ae4678ba9ad4c5f3c138bbb6933",
+      "pushed_at": "2026-08-26T04:04:35Z",
+      "stars": 5051
     }
   ],
   "repo_id": 988488798
