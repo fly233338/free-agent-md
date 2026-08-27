@@ -2,12 +2,6 @@
   "full_name": "go-gitea/gitea",
   "points": [
     {
-      "checked_at": "2026-07-27T06:44:39Z",
-      "commit_sha": "e15a7e9066499cf29beb5072ffeabb45e314d6c5",
-      "pushed_at": "2026-07-27T06:35:26Z",
-      "stars": 57046
-    },
-    {
       "checked_at": "2026-08-07T05:04:44Z",
       "commit_sha": "a7df0d5f4135a640e867ae350bf9a3bd6997ce79",
       "pushed_at": "2026-08-07T04:54:08Z",

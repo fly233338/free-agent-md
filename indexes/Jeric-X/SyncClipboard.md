@@ -1,8 +1,8 @@
 # Jeric-X/SyncClipboard instruction files
 
-Upstream: [Jeric-X/SyncClipboard](https://github.com/Jeric-X/SyncClipboard) · License: `MIT` · Commit: `b3271fe280d8403c05e84f8ef6474ca4b4fae026`
+Upstream: [Jeric-X/SyncClipboard](https://github.com/Jeric-X/SyncClipboard) · License: `MIT` · Commit: `96ee0baf2f832b5e9dec64d7613bdf3d6d2d1977`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Jeric-X/SyncClipboard/AGENTS.md) | [Source](https://github.com/Jeric-X/SyncClipboard/blob/b3271fe280d8403c05e84f8ef6474ca4b4fae026/AGENTS.md) | `946d5d10558856b2d31fe6fbe7983101ea2c17bf8c64db9361df14cc7bffff4d` | 8,574 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Jeric-X/SyncClipboard/CLAUDE.md) | [Source](https://github.com/Jeric-X/SyncClipboard/blob/b3271fe280d8403c05e84f8ef6474ca4b4fae026/CLAUDE.md) | `bcbea4df876a304c245354df294ad715f2b15f99e2fd2cc34843f92a2d18b31d` | 8,581 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Jeric-X/SyncClipboard/AGENTS.md) | [Source](https://github.com/Jeric-X/SyncClipboard/blob/96ee0baf2f832b5e9dec64d7613bdf3d6d2d1977/AGENTS.md) | `946d5d10558856b2d31fe6fbe7983101ea2c17bf8c64db9361df14cc7bffff4d` | 8,574 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Jeric-X/SyncClipboard/CLAUDE.md) | [Source](https://github.com/Jeric-X/SyncClipboard/blob/96ee0baf2f832b5e9dec64d7613bdf3d6d2d1977/CLAUDE.md) | `bcbea4df876a304c245354df294ad715f2b15f99e2fd2cc34843f92a2d18b31d` | 8,581 B |

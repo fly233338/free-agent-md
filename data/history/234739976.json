@@ -2,12 +2,6 @@
   "full_name": "medusajs/medusa",
   "points": [
     {
-      "checked_at": "2026-07-27T06:44:39Z",
-      "commit_sha": "f16a505cb0ccfc103ca393847bb819e8f7c6255a",
-      "pushed_at": "2026-07-27T06:41:56Z",
-      "stars": 35387
-    },
-    {
       "checked_at": "2026-08-06T06:06:46Z",
       "commit_sha": "1fb31df2728659578b2aab697322b80b7501b66b",
       "pushed_at": "2026-08-06T06:04:13Z",

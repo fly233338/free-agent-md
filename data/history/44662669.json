@@ -2,12 +2,6 @@
   "full_name": "dbeaver/dbeaver",
   "points": [
     {
-      "checked_at": "2026-07-27T06:44:39Z",
-      "commit_sha": "93e03097c9f024e1174c4a2887a8e6bf3035150c",
-      "pushed_at": "2026-07-27T06:37:52Z",
-      "stars": 51150
-    },
-    {
       "checked_at": "2026-08-11T04:42:27Z",
       "commit_sha": "5002b558cc96f829d637255aea5bdc6d8e83030a",
       "pushed_at": "2026-08-11T04:34:48Z",

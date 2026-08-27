@@ -2,12 +2,6 @@
   "full_name": "moeru-ai/airi",
   "points": [
     {
-      "checked_at": "2026-07-28T06:05:17Z",
-      "commit_sha": "b544d91d0358cb0aa6a6ab9c2c7e35a29342f711",
-      "pushed_at": "2026-07-28T06:01:44Z",
-      "stars": 44244
-    },
-    {
       "checked_at": "2026-08-20T04:01:46Z",
       "commit_sha": "702b4c862d7eb6ca91a1053c4a0b00df04788fe5",
       "pushed_at": "2026-08-20T03:59:00Z",

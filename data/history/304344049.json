@@ -2,12 +2,6 @@
   "full_name": "sveltejs/kit",
   "points": [
     {
-      "checked_at": "2026-07-28T06:05:17Z",
-      "commit_sha": "629b45d9e68846d862c10006fdabcc1526849811",
-      "pushed_at": "2026-07-28T05:54:44Z",
-      "stars": 20695
-    },
-    {
       "checked_at": "2026-08-22T03:58:42Z",
       "commit_sha": "8495654273733e637fae542dffb16dc5066b75a4",
       "pushed_at": "2026-08-22T03:38:43Z",

@@ -2,18 +2,6 @@
   "full_name": "go-vikunja/vikunja",
   "points": [
     {
-      "checked_at": "2026-07-27T06:44:39Z",
-      "commit_sha": "a59872be2f3980fb09a133fd2e99e12172eb8716",
-      "pushed_at": "2026-07-27T00:57:28Z",
-      "stars": 4902
-    },
-    {
-      "checked_at": "2026-07-28T06:05:17Z",
-      "commit_sha": "54571fc72162951811881213a66ad4da263b2589",
-      "pushed_at": "2026-07-28T06:02:48Z",
-      "stars": 4914
-    },
-    {
       "checked_at": "2026-07-29T06:09:27Z",
       "commit_sha": "ef928aaeb2b9cebc58f3060aa775d26a6d79c922",
       "pushed_at": "2026-07-29T03:38:15Z",
@@ -72,6 +60,12 @@
       "commit_sha": "9403ed15264e414605c523b0c16ef28703e9915e",
       "pushed_at": "2026-08-07T01:11:13Z",
       "stars": 4990
+    },
+    {
+      "checked_at": "2026-08-27T14:17:09Z",
+      "commit_sha": "7a8c7eee6203af6ab75dfc2a3f99baef468f2f6a",
+      "pushed_at": "2026-08-27T14:13:15Z",
+      "stars": 5185
     }
   ],
   "repo_id": 159556794

@@ -2,12 +2,6 @@
   "full_name": "multica-ai/multica",
   "points": [
     {
-      "checked_at": "2026-07-27T06:44:39Z",
-      "commit_sha": "49fd6cd08aafc57393c8d110c131ee6420ca3574",
-      "pushed_at": "2026-07-27T06:37:54Z",
-      "stars": 42146
-    },
-    {
       "checked_at": "2026-07-29T06:09:27Z",
       "commit_sha": "cc5ee169f061b68633d1b7d25a0cc9343a22697f",
       "pushed_at": "2026-07-29T06:01:09Z",

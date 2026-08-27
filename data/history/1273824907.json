@@ -2,12 +2,6 @@
   "full_name": "lidge-jun/opencodex",
   "points": [
     {
-      "checked_at": "2026-07-28T06:05:17Z",
-      "commit_sha": "7cb15bff4efd7beafc49d0a125432230c6ec9461",
-      "pushed_at": "2026-07-28T05:56:24Z",
-      "stars": 5380
-    },
-    {
       "checked_at": "2026-07-29T06:09:27Z",
       "commit_sha": "7cb15bff4efd7beafc49d0a125432230c6ec9461",
       "pushed_at": "2026-07-29T06:03:27Z",
@@ -114,6 +108,12 @@
       "commit_sha": "231e622be00706677a9e721496e4858a7ccee13e",
       "pushed_at": "2026-08-22T03:50:47Z",
       "stars": 11695
+    },
+    {
+      "checked_at": "2026-08-27T14:17:09Z",
+      "commit_sha": "80fff9a7f47332a4445df2b26ea175053fa55b0b",
+      "pushed_at": "2026-08-27T14:13:22Z",
+      "stars": 12302
     }
   ],
   "repo_id": 1273824907

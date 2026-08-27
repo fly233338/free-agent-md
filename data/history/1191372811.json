@@ -2,12 +2,6 @@
   "full_name": "larksuite/cli",
   "points": [
     {
-      "checked_at": "2026-07-27T06:44:39Z",
-      "commit_sha": "56c9a2afd881317c3dcf2d3d5148b09041e3ea7a",
-      "pushed_at": "2026-07-27T06:43:51Z",
-      "stars": 15861
-    },
-    {
       "checked_at": "2026-07-31T06:25:54Z",
       "commit_sha": "41692b70418a7cc3ddf4c24e8e1c529345c30c96",
       "pushed_at": "2026-07-31T06:21:36Z",

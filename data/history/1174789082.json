@@ -2,12 +2,6 @@
   "full_name": "block/buzz",
   "points": [
     {
-      "checked_at": "2026-07-28T06:05:17Z",
-      "commit_sha": "3a4bf513df0e0c258587bfcbed9463d63723b56b",
-      "pushed_at": "2026-07-28T05:58:42Z",
-      "stars": 14843
-    },
-    {
       "checked_at": "2026-07-31T06:25:54Z",
       "commit_sha": "d88313f369acfa17973029787ee4c0bbea07fa51",
       "pushed_at": "2026-07-31T06:21:04Z",
@@ -72,6 +66,12 @@
       "commit_sha": "0720f5380ce8a6c050afac159f8462c06cd51ab5",
       "pushed_at": "2026-08-24T03:52:11Z",
       "stars": 30190
+    },
+    {
+      "checked_at": "2026-08-27T14:17:09Z",
+      "commit_sha": "c856be0fb954c9e5267d622841098c24e3381e8f",
+      "pushed_at": "2026-08-27T14:03:05Z",
+      "stars": 31063
     }
   ],
   "repo_id": 1174789082
