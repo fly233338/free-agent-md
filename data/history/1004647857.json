@@ -2,12 +2,6 @@
   "full_name": "OpenWhispr/openwhispr",
   "points": [
     {
-      "checked_at": "2026-07-29T06:09:27Z",
-      "commit_sha": "6f9c7f8c62e4b36ee287be5647f961607da55f39",
-      "pushed_at": "2026-07-29T02:50:20Z",
-      "stars": 4951
-    },
-    {
       "checked_at": "2026-08-11T04:42:27Z",
       "commit_sha": "d0709d2e68dcc36bf1133dfab69ede19d0d5aa3d",
       "pushed_at": "2026-08-11T04:34:15Z",

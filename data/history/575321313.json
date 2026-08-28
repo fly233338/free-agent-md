@@ -2,12 +2,6 @@
   "full_name": "langbot-app/LangBot",
   "points": [
     {
-      "checked_at": "2026-07-29T06:09:27Z",
-      "commit_sha": "463b1209235ceef8d47978340fcf51e3459df68e",
-      "pushed_at": "2026-07-29T05:58:31Z",
-      "stars": 17160
-    },
-    {
       "checked_at": "2026-08-24T04:08:25Z",
       "commit_sha": "c87548c0b9b034cdd0093a07482bd89d83394852",
       "pushed_at": "2026-08-24T03:59:24Z",

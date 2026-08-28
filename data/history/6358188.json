@@ -2,12 +2,6 @@
   "full_name": "apache/druid",
   "points": [
     {
-      "checked_at": "2026-07-29T06:09:27Z",
-      "commit_sha": "14a9df2e84b110dac12ecca39ba904caa6b07d7b",
-      "pushed_at": "2026-07-29T06:06:46Z",
-      "stars": 14035
-    },
-    {
       "checked_at": "2026-08-13T05:09:58Z",
       "commit_sha": "3f16421969c1d53271c1b948bf0c5323b119f6f5",
       "pushed_at": "2026-08-13T05:00:58Z",

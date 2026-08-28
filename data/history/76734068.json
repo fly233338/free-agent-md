@@ -2,12 +2,6 @@
   "full_name": "renovatebot/renovate",
   "points": [
     {
-      "checked_at": "2026-07-29T06:09:27Z",
-      "commit_sha": "1809104c03920423c0fd2db6479cb9fc376e6c04",
-      "pushed_at": "2026-07-29T06:03:25Z",
-      "stars": 22116
-    },
-    {
       "checked_at": "2026-08-27T14:17:09Z",
       "commit_sha": "d1c191add030f7dffc998f40d316573e18ea7864",
       "pushed_at": "2026-08-27T14:06:40Z",

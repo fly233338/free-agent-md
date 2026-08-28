@@ -2,12 +2,6 @@
   "full_name": "different-ai/openwork",
   "points": [
     {
-      "checked_at": "2026-07-29T06:09:27Z",
-      "commit_sha": "1e98838a98b34686b98757220c86a952d2e7a0bd",
-      "pushed_at": "2026-07-29T06:04:34Z",
-      "stars": 17391
-    },
-    {
       "checked_at": "2026-08-02T06:13:59Z",
       "commit_sha": "2e3ccb3da8fe67a78bdd6014848be190e4081972",
       "pushed_at": "2026-08-02T05:53:33Z",
@@ -30,6 +24,12 @@
       "commit_sha": "3d7a772a72e5a87e4f586f5568541d9e43db2aaa",
       "pushed_at": "2026-08-26T04:03:41Z",
       "stars": 23047
+    },
+    {
+      "checked_at": "2026-08-28T15:27:11Z",
+      "commit_sha": "c7b3996b0ffd74a5a105a56a577a1cce04f706d1",
+      "pushed_at": "2026-08-28T15:19:00Z",
+      "stars": 23149
     }
   ],
   "repo_id": 1133911335

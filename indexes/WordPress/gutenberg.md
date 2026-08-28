@@ -1,8 +1,8 @@
 # WordPress/gutenberg instruction files
 
-Upstream: [WordPress/gutenberg](https://github.com/WordPress/gutenberg) · License: `NOASSERTION` · Commit: `57d2c434d7b85a29a3c2dfa05d4a5301c741eef2`
+Upstream: [WordPress/gutenberg](https://github.com/WordPress/gutenberg) · License: `NOASSERTION` · Commit: `3debfd6f47436ba4ccf34934b0bd81afacc35185`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/WordPress/gutenberg/AGENTS.md) | [Source](https://github.com/WordPress/gutenberg/blob/57d2c434d7b85a29a3c2dfa05d4a5301c741eef2/AGENTS.md) | `34acfff1592cb4ac2665d0c8e024f91c44724beda1a3c8e349ad38cd29c37c4e` | 7,626 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/WordPress/gutenberg/CLAUDE.md) | [Source](https://github.com/WordPress/gutenberg/blob/57d2c434d7b85a29a3c2dfa05d4a5301c741eef2/CLAUDE.md) | `336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49` | 11 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/WordPress/gutenberg/AGENTS.md) | [Source](https://github.com/WordPress/gutenberg/blob/3debfd6f47436ba4ccf34934b0bd81afacc35185/AGENTS.md) | `a5a78cf2fc2fdd0379b0733c348aef34de5da7201f5a519d61e91e21146cb8a8` | 7,792 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/WordPress/gutenberg/CLAUDE.md) | [Source](https://github.com/WordPress/gutenberg/blob/3debfd6f47436ba4ccf34934b0bd81afacc35185/CLAUDE.md) | `336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49` | 11 B |

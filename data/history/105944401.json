@@ -2,12 +2,6 @@
   "full_name": "yugabyte/yugabyte-db",
   "points": [
     {
-      "checked_at": "2026-07-29T06:09:27Z",
-      "commit_sha": "436bf0f018d4d5395720e0f467435b0177a563e1",
-      "pushed_at": "2026-07-29T06:04:18Z",
-      "stars": 10433
-    },
-    {
       "checked_at": "2026-08-07T05:04:44Z",
       "commit_sha": "85176be59b793e53dcc68c9a433a3225b68dcc86",
       "pushed_at": "2026-08-07T04:59:35Z",

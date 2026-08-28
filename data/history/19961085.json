@@ -2,12 +2,6 @@
   "full_name": "apache/pinot",
   "points": [
     {
-      "checked_at": "2026-07-29T06:09:27Z",
-      "commit_sha": "ff1981c45f4f8724d558541463f78d970b254ff6",
-      "pushed_at": "2026-07-29T06:03:17Z",
-      "stars": 6116
-    },
-    {
       "checked_at": "2026-08-23T04:03:45Z",
       "commit_sha": "081a013e4f1d3745b3f725f8f3e269cd50408986",
       "pushed_at": "2026-08-23T03:50:49Z",

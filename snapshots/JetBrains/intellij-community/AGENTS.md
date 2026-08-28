@@ -14,18 +14,20 @@ repository: monorepo
 
 - A module or plugin directory can hold its own AGENTS or CLAUDE instructions. Follow them when they are present.
 - `*.iml` files are the source of truth. They generate the `BUILD.bazel` files.
-- Register a new or edited JPS module `.iml` with `bun build/jps-module.mjs register <path-to-iml> --fix-iml-eof`, then run `./build/jpsModelToBazel.cmd`. Never edit `.idea/modules.xml` by hand. The command keeps both `modules.xml` files in canonical order: by `.iml` basename without the suffix, as `org.jetbrains.intellij.build.ModulesXml` does.
+- Register a new or edited JPS module `.iml` with `bun build/jps-module.mjs register <path-to-iml> --fix-iml-eof`, then run `./build/jpsModelToBazel.cmd`. Never edit `.idea/modules.xml` by hand. The command keeps both `modules.xml` files in canonical order.
 - User-visible strings belong in `*.properties` for localization.
 
 ## Writing
 
-Write every user-visible artifact in [ASD-STE100 Simplified Technical English](https://www.asd-ste100.org/), and keep it short. This covers comments, KDoc and doc strings, commit messages, documentation, specs, and the reports and summaries you write for the user. Use the active voice and a simple tense, state one topic per sentence, write positively, and use no noun cluster longer than three words. The five that catch most of the damage here:
+Write every user-visible artifact in [ASD-STE100 Simplified Technical English](https://www.asd-ste100.org/), and keep it short. This covers a comment, KDoc, a commit message, documentation, a spec, and a report to the user. Use the active voice and a simple tense, state one topic per sentence, write positively, and use no noun cluster longer than three words. The five that catch most of the damage here:
 
 - Keep a sentence at or under 25 words. `AirSpecReferencesTest` enforces that number on a tagged spec.
 - Make an aside its own sentence. Do not put it between dashes.
 - Keep the articles. Write "the session", not "session".
 - One term per concept. Never introduce a synonym for a term the area already defines.
 - Say what you left out and why. Do not pad a report to look complete.
+
+Each kind of text has one home. Rationale and evidence for a change go in the commit message, not in a code comment. Document a declaration in KDoc on it, not in a `README.md`.
 
 ## Workspace Isolation
 
@@ -71,7 +73,7 @@ Keep IDE-serialized `.iml` files in canonical form. Do not:
 
 ## Tools
 
-Never use the `code-search` skill. The search tools below replace it.
+Never use the `code-search` skill. The search tools below replace it. Recipes, the Windows rules, and the full tool inventory: [Tools Reference](./.ai/tools.md).
 
 ### Search & navigation (ijproxy preferred)
 
@@ -81,25 +83,15 @@ Codex exposes these as `mcp__ijproxy__<name>`. Inspect the deferred tool catalog
 
 ### IDE-backed semantic tools
 
-Available through ijproxy or JetBrains MCP. Prefer a real refactoring over a manual search and replace.
-
-- Inspections & symbol info: `lint_files`, `get_symbol_info`
-- Refactors: `rename` (ijproxy) / `rename_refactoring` (JetBrains MCP)
-- Formatting: `reformat_file`
-- Concurrency checks: `find_threading_requirements_usages`, `find_lock_requirements_usages`
-- Project structure & VCS: `get_project_modules`, `get_project_dependencies`, `get_repositories`, `git_status`
-- Run configs: `get_run_configurations`, `execute_run_configuration`
+Available through ijproxy or JetBrains MCP: `lint_files`, `get_symbol_info`, `rename`, `reformat_file`, the threading and lock checks, and the project, VCS and run-configuration tools. Prefer a real refactoring over a manual search and replace.
 
 ### Tooling rules
 
-- Prefer ijproxy for a content or symbol **search** and for a semantic operation. Fall back to JetBrains MCP, then to `./tools/fd.cmd` (files) and `./tools/rg.cmd` (text and regex), only when ijproxy is unavailable.
+- Prefer ijproxy for a content or symbol **search** and for a semantic operation. Fall back to JetBrains MCP, then to `./tools/fd.cmd` (files) and `./tools/rg.cmd` (text and regex), only when ijproxy is unavailable. Pass `-H` to see a dot-directory such as `.agents/`.
 - Ask the Product DSL for a plugin model answer, not `rg` or `bazel cquery`: `bazel run //platform/buildScripts:plugin-model-tool -- --json='<request>'`. The `plugin-model-analyzer` skill holds the request shapes.
-- Do not shell out for a file **search**, inside the repo or outside it. This is enforced: the `Glob` and `Grep` tools are denied, and so are the `grep` and `find` commands in every pipeline position. An absolute path through the wrappers is fine. Pipe into `./tools/rg.cmd` instead of `| grep`, because it reads stdin.
-- `fd.cmd` and `rg.cmd` skip a dot-directory by default. Agent assets live in `.agents/`, `.claude/`, `.junie/`, and `.opencode/`. Pass `-H` (`--hidden`) to find a skill, a guideline, or a hook. Without it you will conclude they do not exist.
-- On Windows and PowerShell, do not pass a literal `<`, `>`, `|`, or `&` through a `.cmd` search wrapper, even inside quotes. For `rg.cmd` alternation, repeat `-e` (`./tools/rg.cmd -n -e "foo" -e "bar" path/to/file.kt`) instead of `"foo|bar"`. To check one file for conflict markers, use `Select-String -SimpleMatch -Pattern '<<<<<<<','=======','>>>>>>>' -Path <file>`.
-- Prefer a documented wrapper command over a hand-rolled equivalent. A spelling the allowlist knows runs without a prompt. A novel one does not. Add a new entry to `community/.ai/tool-permissions.json` and rerun `bazel run @community//.ai:render-guides`. Never edit a harness allowlist by hand.
-- Shell is allowed where this guide documents it, and for git, build, and test. Prefer `git_status` when that tool is available.
-- Outside the working copy, shell access is task-scoped. Read what this repo's tooling produced, or what the user or a skill named: build output, an IDE sandbox (`system/`, `config/`, `idea.log`), a tool cache, or a VM workspace a skill documents. Do not survey the machine. Do not list or read the home directory, `~/Downloads`, another checkout, mail, or browser and messaging data. Report a failed step instead of hunting for an artifact nobody named. If the task needs a path outside that set, ask first.
+- Do not shell out for a file **search**, inside the repo or outside it. This is enforced: the `Glob` and `Grep` tools are denied, and so are the `grep` and `find` commands in every pipeline position.
+- Prefer a spelling the allowlist knows, because a novel one asks for a prompt. Add a new entry to `community/.ai/tool-permissions.json`, never to a harness allowlist.
+- Shell is allowed where this guide documents it, and for git, build, and test. Prefer `git_status` when that tool is available. Outside the working copy it is task-scoped: read what this repo's tooling produced, or what the user or a skill named, and never survey the machine.
 
 ### Skills
 

@@ -2,12 +2,6 @@
   "full_name": "vlang/v",
   "points": [
     {
-      "checked_at": "2026-07-29T06:09:27Z",
-      "commit_sha": "b01b89b2a814113580f93ceeaba8056a547bfcb1",
-      "pushed_at": "2026-07-29T06:07:07Z",
-      "stars": 37763
-    },
-    {
       "checked_at": "2026-07-30T06:01:01Z",
       "commit_sha": "877219c8dfb20663faef45699b59d5d50645fbea",
       "pushed_at": "2026-07-30T05:58:29Z",

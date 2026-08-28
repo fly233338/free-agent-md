@@ -72,6 +72,12 @@ npm run dist:mac
 npm run dist:win
 npm run dist:linux
 
+# Windows installer gate (runs automatically at the start of dist:win and the
+# dist:win:web stub pass): re-applies patches/app-builder-lib+*.patch and runs
+# the installer contract tests against node_modules. If it fails, run `npm ci`;
+# never ship an installer from a tree where it fails.
+npm run verify:installer-patches
+
 # Build current-platform OpenClaw runtime manually
 npm run openclaw:runtime:host
 ```

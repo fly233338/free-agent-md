@@ -2,6 +2,16 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Agent skills
+
+### Triage labels
+
+Use the repository's mapped triage vocabulary. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+This is a multi-context repository rooted at `CONTEXT-MAP.md`. See `docs/agents/domain.md`.
+
 ## Opt-in Agent Okteto Development Environment
 
 This workflow is enabled only when
@@ -128,6 +138,24 @@ pnpm -F common test
 pnpm -F backend test:dev:nowatch # runs only tests for modified files
 ```
 
+When running a specific Vitest file in any package, pass the path directly to
+the package test script:
+
+```bash
+pnpm -F <package> test path/to/file.test.ts
+```
+
+Never insert `--` before the file path. Vitest can ignore the file filter and
+run the entire package test suite:
+
+```bash
+# Wrong — can run every test in the package
+pnpm -F <package> test -- path/to/file.test.ts
+```
+
+For a single-file run, verify the Vitest summary reports one test file. If
+unrelated test files appear, stop the command immediately and correct it.
+
 **API Generation:**
 
 OpenAPI artifacts are generated from TSOA controllers in PR CI for compatibility
@@ -171,7 +199,7 @@ pnpm -F backend rollback-last
 
 ## Development Workflow
 
-1. **Package Management**: Use `pnpm` (v11.17.0+, pinned via `packageManager` in the root `package.json` — let Corepack pick it up) - never use npm or yarn
+1. **Package Management**: Use `pnpm` (pinned via `packageManager` in the root `package.json`, which pnpm reads directly). Install pnpm directly; do not use Corepack, npm, or yarn for workspace commands.
 2. **Database**: Uses Knex.js for migrations and query building
 3. **API**: TSOA generates OpenAPI specs from TypeScript controllers
 4. **Authentication**: CASL-based authorization with multiple auth providers
@@ -408,6 +436,26 @@ the contract explicit instead of relying on the name:
 - **Service args** mirror the same names: a `UuidOrSlug` arg must be resolved to
   `entity.uuid` (via `getByIdOrSlug`) before being used as a key, FK, or in any
   comparison — never pass the raw arg downstream.
+
+## Translation — deliberately limited to embeds
+
+There is no i18n framework and no full-app localization (that is PROD-3774,
+not built). Two embed-scoped mechanisms exist, with a strict boundary:
+
+-   **Content** (chart/dashboard names, tile titles, labels): `LanguageMap` /
+    the SDK `contentOverrides` prop — slug-keyed, schema-derived.
+-   **UI chrome** (filter operators/inputs, date zoom, tile menus, filter
+    bar): the SDK `uiOverrides` prop — a flat key→string map. The registry
+    `DEFAULT_UI_STRINGS` in `packages/common/src/utils/i18n/uiStrings.ts` is
+    the single source of truth; components render `override ?? English
+    default` via `useUiStrings()`. Shipped keys are a public SDK contract:
+    additive only, never rename or remove.
+
+When adding user-visible strings to embed-reachable surfaces (anything a
+dashboard viewer sees), follow the mandate in
+`packages/frontend/src/components/common/Filters/CLAUDE.md` — it generalizes
+beyond filters. English strings for those surfaces live only in the registry,
+never inline. Do not add an i18n framework; host apps own locale state.
 
 ## Development Troubleshooting
 

@@ -2,12 +2,6 @@
   "full_name": "bytebase/bytebase",
   "points": [
     {
-      "checked_at": "2026-07-29T06:09:27Z",
-      "commit_sha": "04c093f21ffec14fbae51924ca32ad26994cc37f",
-      "pushed_at": "2026-07-29T06:05:36Z",
-      "stars": 14304
-    },
-    {
       "checked_at": "2026-08-19T04:01:55Z",
       "commit_sha": "4564aa9592165df1767affbc39b1e73060e1ce43",
       "pushed_at": "2026-08-19T03:50:14Z",
