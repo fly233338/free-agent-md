@@ -208,7 +208,7 @@ Checklist in order:
 
 ### 11. Change a feature that has an Agent tool
 
-The in-app Agent exposes 53 tools that wrap host service classes. When you change a feature, trace the tool chain:
+The in-app Agent exposes 57 tools that wrap host service classes. When you change a feature, trace the tool chain:
 
 ```text
 LLM response (tool_calls)
@@ -241,10 +241,44 @@ Key paths:
 | Permission prompt (Channel-based) | `app/.../agent/permission/PermissionPrompter.kt` |
 | LLM provider (SSE streaming) | `app/.../agent/llm/OpenAiCompatProvider.kt` |
 
+### 12. Change editor config-card UI (Compose)
+
+The editor screens are built from `WtaSettingCard`s that share one visual grammar. The activation-card series (issue #567: PRs #568 → #571 → #573 → #574) took four attempts because each round invented layout instead of copying the neighbours, and each round was only compile-checked. A short prompt like "改一下 XX 卡的 UI" still means: follow these rules.
+
+**Copy, don't invent.** Before writing any card, open the reference implementation on the same screen and mirror it element by element:
+
+| You are writing… | Copy from (`CreateAppWebViewCards.kt`) |
+|------------------|----------------------------------------|
+| Toggle-headed feature card | `FullscreenModeCard` |
+| Collapsible card with `WtaChoiceRow` header | `BrowserAdvancedConfigCard` |
+| Radio group (single-choice) | PWA offline-strategy selector in `sectionOfflinePerformance` |
+| Sub-toggles / fields inside an expanded zone | `staticAssetPack` block, proxy block |
+| Nested conditional content | proxy MANUAL/PAC `AnimatedVisibility` swap |
+
+Hard rules learned the hard way:
+
+1. **Two sanctioned card shapes.** Toggle header: `WtaSettingCard { WtaToggleRow(header); AnimatedVisibility(enabled, CardExpandTransition/CardCollapseTransition) { Column { WtaSectionDivider(); full-bleed rows separated by more dividers } } }`. Collapse header: `WtaSettingCard { Column { WtaChoiceRow(header); AnimatedVisibility(expanded) { Column(padding(horizontal = WtaSpacing.RowHorizontal, vertical = WtaSpacing.ContentGap), spacedBy(WtaSpacing.ContentGap)) { … } } } }`.
+2. **Alignment grid.** `WtaToggleRow` / `WtaChoiceRow` are full-bleed rows carrying their own 16dp padding. Anything that is *not* a row — text fields, radios, group labels, buttons, notes — must sit inside a `Column(padding(horizontal = WtaSpacing.RowHorizontal, vertical = WtaSpacing.ContentGap))` zone. Sub-toggles inside a zone double-indent (16dp zone + 16dp row); that matches the reference, do not "fix" it. Group labels are `Text(style = labelMedium, color = primary)`, not `WtaSection`.
+3. **Radio groups** are exactly: `Text(labelMedium, primary)` label, then `Row(fillMaxWidth().clip(MaterialTheme.shapes.small).clickable { … }.padding(vertical = 4.dp)) { RadioButton; Spacer(4.dp); Text(bodySmall) }`. Never wrap a radio group in `WtaSection`, never attach per-option prose.
+4. **Card headers carry title + icon only.** No subtitle on the header row, no free-floating description text next to it. Subtitles belong on child rows that genuinely need one (e.g. 显示状态栏).
+5. **Expansion state ≠ feature state.** Never bind a section's `isExpanded` / `AnimatedVisibility(visible=…)` to the feature's `enabled` flag — expanding a panel must never switch the feature on. Section collapse state is its own `remember { mutableStateOf }`.
+6. **Conditional sub-blocks** (mode swaps, dependent fields) use `AnimatedVisibility` with `CardExpandTransition` / `CardCollapseTransition`, never bare `if` inside the card body.
+7. **Compile ≠ verified.** After any card UI change, build + install on the emulator and check the rendered card: `uiautomator dump` element bounds, compare left edges / row heights of the changed card against its neighbours on the same screen (they must share the same content columns), plus a screenshot pass. Content a few dp off the grid is invisible in code review and obvious on screen.
+
 ---
+
+### 12. Change or add editor / common-config UI
+
+The editor screens have an established card language. **Find the neighboring cards first and copy their patterns element by element — do not invent your own layout**, even if it looks better in isolation. Hard rules learned the hard way (#571):
+
+1. **Container**: `WtaSettingCard`. **Header toggle**: `WtaToggleRow` (icon + title + subtitle + switch). **Collapsible section**: `WtaChoiceRow` + `AnimatedVisibility(CardExpandTransition)`. **Inner toggles**: `WtaToggleRow`. **Separators**: `WtaSectionDivider`. **Single-choice**: radio rows (see the offline-policy selector). **Text input**: `PremiumTextField`. **List-manager dialogs**: `Dialog` + `WtaCard` + embedded `TopAppBar` (see `AdBlockSubscriptionSelectorDialog`).
+2. **Never couple `isExpanded` to a feature `enabled` flag** — expanding a card to look around must never change app state; only the row's switch does.
+3. Canonical templates: `FullscreenModeCard` (toggle card), `BrowserAdvancedConfigCard` (collapsible config card), `ActivationCodeCard`'s offline-policy rows (radio selection).
+4. If a UI rework PR gets "this doesn't match the other cards" feedback, the fix is realignment to these patterns, not further invention.
 
 ## Easy-to-miss points
 
+- **Keyboard avoidance below API 30 requires the classic window path.** Android 10 and lower have no native IME-inset dispatch: an edge-to-edge window (`decorFitsSystemWindows = false`) is never resized for the keyboard and reports zero IME insets, so no `softInputMode` value helps there. `WindowHelper.applyImmersiveFullscreen` therefore keeps the decor fitting system windows on the RESIZE keyboard path below API 30 (system `SOFT_INPUT_ADJUST_RESIZE` works) and degrades TRANSPARENT/IMAGE status-bar styles to solid colors on that path. Do not re-enable edge-to-edge unconditionally for those devices (#613; #634 flipped only the softInputMode bits and fixed nothing — its Robolectric test passed because it never asserted the layout flags).
 - **Shared sources are authored in `app/`.** Editing only a file under `shell/src` is usually wrong; it will be overwritten on sync or diverge from host.
 - **Config field names drift.** Editor model, `ApkConfig`, JSON factory, and shell config must stay aligned; Gson silently drops unknown/missing fields. Run `checkConfigFieldDrift`.
 - **Low targetSdk (28) and fork/exec runtimes** constrain "modernize the shell SDK" changes.
@@ -259,6 +293,7 @@ Key paths:
 - **Splash preview media path.** Preview reads splash media from the host filesystem (`splashMediaPath`); export packages it into assets. Do not hardcode `assets/splash_media.*` as the only source.
 - **Port conflict policy.** Local server runtimes must allocate through `PortManager` and clean up on stop; do not bind ports directly.
 - **Agent tool ↔ service drift.** When a service class API changes, the corresponding Agent tool in `core/agent/tool/builtin/` must be updated in the same PR. A stale tool either fails to compile or silently passes wrong arguments at runtime. Check `ToolRegistryFactory.baseTools()` for the full tool list.
+- **Editor card UI grammar.** Config-screen cards share one layout grammar (recipe 12): rows are full-bleed, non-row content sits in 16dp-padded zones, expansion never toggles the feature, and card UI is verified on the emulator — not just compiled.
 
 ---
 
@@ -275,6 +310,7 @@ Key paths:
 - Regressing HTML/FRONTEND file access in packaged shells
 - Shipping NODEJS_APP without `libnode_bridge.so` / `libnode.so` / `libc++_shared.so`
 - Skipping 16KB alignment for large ELF natives
+- Inventing editor card layout/spacing/animations instead of copying the neighbouring cards' patterns, or shipping card UI verified only by compilation
 
 ---
 
@@ -282,7 +318,7 @@ Key paths:
 
 ```bash
 ./gradlew :shell:assembleRelease :app:syncShellTemplateApk --no-configuration-cache
-./gradlew :app:compileDebugKotlin -x syncCloneHostDex --no-configuration-cache
+./gradlew :app:compileStandardDebugKotlin -x syncCloneHostDex --no-configuration-cache
 ./gradlew :app:checkConfigFieldDrift --no-configuration-cache
 python3 scripts/check_config_field_drift.py
 ```
@@ -313,4 +349,4 @@ Landed:
 - Config field drift detection (`checkConfigFieldDrift`)
 - Module Market: Chrome Web Store live search + GreasyFork browse
 - Code editor find-and-replace
-- Agent tool system: 53 tools (app lifecycle, config templates, ports/engine, hosts/runtime, stats/modifier/import, build env/Play, modules, files, imagery) with Channel-based permission prompting, per-section SSE parse resilience, and plan mode; runtime/build-env tools surface `localExecAllowed` so the LLM knows targetSdk>=29 hosts cannot exec app-storage binaries
+- Agent tool system: 57 tools (app lifecycle, config templates, ports/engine, hosts/runtime, stats/modifier/import, build env/Play, modules, files, imagery) with Channel-based permission prompting, per-section SSE parse resilience, and plan mode; runtime/build-env tools surface `localExecAllowed` so the LLM knows targetSdk>=29 hosts cannot exec app-storage binaries

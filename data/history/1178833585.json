@@ -2,12 +2,6 @@
   "full_name": "iflytek/skillhub",
   "points": [
     {
-      "checked_at": "2026-07-30T06:01:01Z",
-      "commit_sha": "6817d98007c7890c1a8ecb3e822272287bb37a05",
-      "pushed_at": "2026-07-30T01:56:01Z",
-      "stars": 4945
-    },
-    {
       "checked_at": "2026-08-25T04:02:47Z",
       "commit_sha": "954dfce7a46e2d96353a797f72e8855b6ed80012",
       "pushed_at": "2026-08-25T02:49:39Z",
@@ -18,6 +12,12 @@
       "commit_sha": "c11a51c75f05a004f0868b17dcc43cee5731e121",
       "pushed_at": "2026-08-28T09:22:19Z",
       "stars": 4907
+    },
+    {
+      "checked_at": "2026-08-29T10:10:12Z",
+      "commit_sha": "b896c698cde8e50e58023bb80eb1004bcf67fdd5",
+      "pushed_at": "2026-08-29T10:00:31Z",
+      "stars": 4914
     }
   ],
   "repo_id": 1178833585

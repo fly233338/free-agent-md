@@ -2,12 +2,6 @@
   "full_name": "BasedHardware/omi",
   "points": [
     {
-      "checked_at": "2026-07-30T06:01:01Z",
-      "commit_sha": "71539bca27aa9cea1e137d54d912105060248d90",
-      "pushed_at": "2026-07-30T05:57:15Z",
-      "stars": 13085
-    },
-    {
       "checked_at": "2026-07-31T06:25:54Z",
       "commit_sha": "b945d18fec7482d460ff2ef6a5881ac22959204e",
       "pushed_at": "2026-07-31T06:18:56Z",

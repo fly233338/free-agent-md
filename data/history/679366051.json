@@ -2,12 +2,6 @@
   "full_name": "NVIDIA/TensorRT-LLM",
   "points": [
     {
-      "checked_at": "2026-07-30T06:01:01Z",
-      "commit_sha": "78ab4e71cef589b6233a336cf0ea0925a59c1bd2",
-      "pushed_at": "2026-07-30T05:55:53Z",
-      "stars": 14250
-    },
-    {
       "checked_at": "2026-08-03T06:39:09Z",
       "commit_sha": "ef1e9f5f6fc53aa4429b7807255b7f99947e24bd",
       "pushed_at": "2026-08-03T06:37:16Z",

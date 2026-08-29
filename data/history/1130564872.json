@@ -2,12 +2,6 @@
   "full_name": "koala73/worldmonitor",
   "points": [
     {
-      "checked_at": "2026-07-30T06:01:01Z",
-      "commit_sha": "c8b3985ba9865d1aa4489829cdc269b8d198ded0",
-      "pushed_at": "2026-07-30T05:59:37Z",
-      "stars": 76626
-    },
-    {
       "checked_at": "2026-07-31T06:25:54Z",
       "commit_sha": "7fc70030317178f272784f5b4e11c2fd6a4cb2b7",
       "pushed_at": "2026-07-31T06:14:27Z",
@@ -78,6 +72,12 @@
       "commit_sha": "146006440c10f1c5ebd0d7260704815345b15ce8",
       "pushed_at": "2026-08-28T15:22:40Z",
       "stars": 84642
+    },
+    {
+      "checked_at": "2026-08-29T10:10:12Z",
+      "commit_sha": "a3efaa485ef70aa40f75d4cb22cb522063936b81",
+      "pushed_at": "2026-08-29T10:06:14Z",
+      "stars": 84731
     }
   ],
   "repo_id": 1130564872

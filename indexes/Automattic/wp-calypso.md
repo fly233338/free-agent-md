@@ -1,8 +1,0 @@
-# Automattic/wp-calypso instruction files
-
-Upstream: [Automattic/wp-calypso](https://github.com/Automattic/wp-calypso) · License: `GPL-2.0` · Commit: `3f045d0367f4e8ab305130d5ea664305a0334bb1`
-
-| Type | Path | Snapshot | Fixed source | SHA-256 | Size |
-|---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Automattic/wp-calypso/AGENTS.md) | [Source](https://github.com/Automattic/wp-calypso/blob/3f045d0367f4e8ab305130d5ea664305a0334bb1/AGENTS.md) | `f6f00073953d2f6f278994aaa92641644213fbb4c43f6a3164bfe62ccf6d2056` | 5,584 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Automattic/wp-calypso/CLAUDE.md) | [Source](https://github.com/Automattic/wp-calypso/blob/3f045d0367f4e8ab305130d5ea664305a0334bb1/CLAUDE.md) | `7445e4a9d1b803f270ec676a498c6a76880b8e747948d63b4f5d667380a4846e` | 626 B |

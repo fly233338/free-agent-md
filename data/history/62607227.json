@@ -2,12 +2,6 @@
   "full_name": "yangshun/tech-interview-handbook",
   "points": [
     {
-      "checked_at": "2026-07-30T06:01:01Z",
-      "commit_sha": "1b681502fbec5765514079e76f5da767aa8a5171",
-      "pushed_at": "2026-07-29T09:01:29Z",
-      "stars": 141403
-    },
-    {
       "checked_at": "2026-07-31T06:25:54Z",
       "commit_sha": "1b681502fbec5765514079e76f5da767aa8a5171",
       "pushed_at": "2026-07-29T09:01:29Z",
@@ -180,6 +174,12 @@
       "commit_sha": "e1d28e8886c0b6ff3e50da991ce0e895134ddc59",
       "pushed_at": "2026-08-07T12:06:42Z",
       "stars": 142264
+    },
+    {
+      "checked_at": "2026-08-29T10:10:12Z",
+      "commit_sha": "e1d28e8886c0b6ff3e50da991ce0e895134ddc59",
+      "pushed_at": "2026-08-07T12:06:42Z",
+      "stars": 142278
     }
   ],
   "repo_id": 62607227

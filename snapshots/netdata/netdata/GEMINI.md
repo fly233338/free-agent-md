@@ -676,15 +676,23 @@ When user decisions are needed:
 Review findings are leads until they are verified against the shipped code and
 its contracts.
 
-- A merge blocker MUST identify a production-reachable trigger, the violated
+- A shipping blocker MUST identify a production-reachable trigger, the violated
   contract or invariant, the concrete consequence, and supporting code or test
   evidence.
+- Failing required validation or an unmet explicit acceptance criterion is also
+  a shipping blocker, regardless of the reviewer's severity label.
 - An unreachable defensive scenario, optional refactor, style preference, or
   speculative future risk MUST NOT be promoted to a blocker. Reject it with
   evidence, or track it separately when it has independent value.
-- After a validated material correction, repeat the required full review scope.
-  Stop when no verified material correctness, security, deadlock, leak,
-  protocol, resource-consumption, or test-coverage defect remains. Nits alone
+- Optional test expansion, documentation polish, and maintainability suggestions
+  without a concrete current defect MUST NOT extend the review cycle by
+  themselves.
+- One complete review round is the default. Repeat the same full scope only when
+  a verified shipping blocker required a material change to shipped
+  implementation or behavior, or when the prior review could not assess the
+  complete change.
+- Stop when no verified shipping blocker remains. Reviewer unanimity, exact
+  readiness phrases, and zero optional suggestions are NOT required. Nits alone
   MUST NOT keep a review cycle open.
 
 ### Followup Discipline
@@ -855,6 +863,13 @@ Runtime input skills:
   Trigger: authoring or modifying any Netdata data-collection plugin or module (Go go.d / ibm.d, Rust crates, internal C plugins, external plugins via PLUGINSD). Read before adding a new collector, modifying an existing one, working on NetFlow/sFlow/IPFIX, OTEL ingestion, topology, SNMP profiles, or interactive Functions.
   Status: live. Updates that close gaps or fix outdated pointers must ship in the same PR that exposed the issue.
 
+- `.agents/skills/project-prometheus-profiles/`
+  Trigger: creating, reviewing, validating, iterating, or installing Netdata Prometheus collector chart profiles from
+  Prometheus exposition dumps; diagnosing profile schema/runtime behavior, selector/relabel/fallback policy, coverage,
+  NIDL hierarchy, or profile installation and live verification.
+  Status: live. Reasoning-first dashboard-design guidance, focused metric/schema/application references, a thin
+  validation launcher, and a repository Go validator that exercises the real collector-to-emitter pipeline.
+
 - `.agents/skills/project-create-topology/`
   Trigger: creating or updating Netdata topology producers, topology Function payloads, topology schema fixtures, graph presentation, correlation rules, direction semantics, topology drilldowns, telemetry overlays, or Cloud topology aggregation fixtures.
   Status: live. Developer-facing topology authoring workflow. End-user/operator-facing AI skills belong under `docs/netdata-ai/skills/`; this project skill is the runtime guidance for repository work.
@@ -862,6 +877,10 @@ Runtime input skills:
 - `.agents/skills/project-writing-go-modules-framework-v2/`
   Trigger: creating or migrating a Go go.d collector to framework V2; touching `CollectorV2`, `metrix.CollectorStore`, `ChartTemplateYAML` / `charts.yaml`, `charttpl`, `chartengine`, V2 host scopes, or V2 collector tests.
   Purpose: mirror maintainer-preferred framework V2 patterns from accepted collectors so new or migrated modules blend with repository style.
+
+- `.agents/skills/project-query-corpus/`
+  Trigger: running or extending `tests/query-corpus/`; authoring corpus fixtures or oracles; adding a red case for a query-engine bug or flipping one green after a fix merges; changing a formatter byte-pin; validating a query-engine fix branch against the corpus.
+  Status: live. The developer contract for the query contract corpus: the three oracle classes and the anti-fit-to-engine rule, the manifest green/red ledger, fixture/settle/GUID discipline, the red→green bug workflow, and the known extension boundaries. Overview of the layered ladder stays in `tests/query-corpus/README.md`.
 
 - `.agents/skills/integrations-lifecycle/`
   Trigger: editing any `metadata.yaml` or collector `taxonomy.yaml`; modifying `integrations/` generators, schemas, taxonomy registries, or templates; debugging generated gitignored integration outputs (`integrations.js`, `integrations.json`, `integrations/taxonomy.json`); working with committed per-integration `.md` files / `COLLECTORS.md` / `SECRETS.md` / `SERVICE-DISCOVERY.md`; ibm.d module generation (`contexts.yaml` -> `metadata.yaml`); CI workflows `generate-integrations.yml` and `check-markdown.yml`; the collector-consistency rule.
@@ -951,7 +970,9 @@ All existing project-specific instructions in this file remain active. The SOW f
 ## Collector Consistency Requirements
 
 When working on collectors, runtime behavior, metrics, charts, configuration,
-alerts, taxonomy, and generated documentation MUST stay consistent in one PR.
+alerts, taxonomy, and authoritative documentation sources MUST stay consistent
+in the source PR. Generated integration and umbrella documentation is validated
+locally, then committed by the post-merge generated-artifact PR.
 The detailed collector consistency checklist and CI enforcement notes live in
 `.agents/skills/integrations-lifecycle/consistency.md`.
 
