@@ -2,12 +2,6 @@
   "full_name": "ai-dynamo/dynamo",
   "points": [
     {
-      "checked_at": "2026-07-31T06:25:54Z",
-      "commit_sha": "00ceeec51a93e20d27a53b8071d7a8a28f4939b6",
-      "pushed_at": "2026-07-31T06:15:25Z",
-      "stars": 7640
-    },
-    {
       "checked_at": "2026-08-13T05:09:58Z",
       "commit_sha": "cdc400caf473eec0509ed81d47d723cdee53c443",
       "pushed_at": "2026-08-13T05:06:47Z",

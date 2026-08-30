@@ -2,12 +2,6 @@
   "full_name": "jaegertracing/jaeger",
   "points": [
     {
-      "checked_at": "2026-07-31T06:25:54Z",
-      "commit_sha": "6a13ef0d44088b128645cbeed97b4be0cca3fa4b",
-      "pushed_at": "2026-07-31T06:23:13Z",
-      "stars": 23045
-    },
-    {
       "checked_at": "2026-08-27T14:17:09Z",
       "commit_sha": "db774b0d2efee8ae1c2605fc54eb44c5179688e2",
       "pushed_at": "2026-08-27T14:02:20Z",

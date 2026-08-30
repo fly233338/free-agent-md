@@ -2,12 +2,6 @@
   "full_name": "openclaw/clawhub",
   "points": [
     {
-      "checked_at": "2026-07-31T06:25:54Z",
-      "commit_sha": "73eb44cd70ff6c2759e5cf4748a84c7a8949a37f",
-      "pushed_at": "2026-07-31T06:22:38Z",
-      "stars": 9245
-    },
-    {
       "checked_at": "2026-08-18T04:00:27Z",
       "commit_sha": "09f790ad580d77933ce0e5221a06cf7f97946486",
       "pushed_at": "2026-08-18T03:54:48Z",

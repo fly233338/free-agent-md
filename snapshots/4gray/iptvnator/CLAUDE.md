@@ -31,10 +31,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Any change a user could notice — new behavior, changed behavior, bug fix, performance win, breaking change — must add one note file under `.changes/` in the same PR. Format, field table, and writing rules: `.changes/README.md`.
 - Name it `<area>-<short-slug>.md`; `area` matches the conventional-commit scope. There is no version field — the release version is chosen at release time.
 - Write the body for a user, not a reviewer: "the player now remembers volume between episodes", not "hoist volume state into the session". Max 400 characters; depth belongs in the release blog post.
+- `type: internal` records invisible maintenance. Internal notes stay collapsed in `CHANGELOG.md`, are omitted from the blog scaffold, and are removed from the authored public GitHub body by `extract-changelog-section.mjs --public`; GitHub's generated commit list remains separate, so an internal-only release can have an empty authored body.
+- `highlight: <short headline>` (max 60 characters, rejected on `type: internal`) marks a note as one of the release's two or three headline changes. Highlights lead the Telegram/Reddit announcement drafts, become ready-made blog section headings, and are the input the highlight-card generator renders from. A release where everything is a highlight has none.
 - Skip the note for test-only changes, docs, CI/workflow plumbing, and pure refactors with no behavior change. When skipping on a PR that touches `apps/**` or `libs/**`, apply the `no-release-note` label.
 - CI enforces this: the "Release note gate" job in `.github/workflows/ci.yml` fails PRs that change runtime code without an added `.changes/*.md` or the label (policy in `tools/release/check-release-note-gate.mjs`; tests/e2e/website/mock-server/docs paths are auto-exempt).
-- The `release-notes` skill covers writing notes; the `release-cut` skill covers the full release sequence.
+- The `release-notes` skill covers writing notes; the `release-cut` skill covers the full release sequence. Canonical contract — surfaces, ordering constraints, the required draft asset set: `docs/architecture/release-pipeline.md`.
 - Validate before finishing: `pnpm run release:notes:validate`.
+- Announcement drafts and highlight cards are built from the same notes: `pnpm --silent run release:notes:telegram` and `pnpm --silent run release:notes:reddit` print paste-ready posts to stdout (Telegram is guaranteed to fit its 4096-character limit; `--silent` keeps pnpm's lifecycle banner out of a redirected post), and `pnpm run release:cards:generate` renders branded 1200×630 highlight cards plus a release hero into `dist/release-highlight-cards/v<version>/`. All three read `highlight:` metadata that exists only in the note files, so they must run before `build-release-notes.mjs --consume`; the cards additionally need `release:screenshots` to have run. Nothing is posted or copied into the website tree automatically.
+- Pushes to `master` and `v*` can publish Docker images. A `v*` tag build creates a draft GitHub release.
+- `pnpm run release:verify:draft` waits for that tag build (polling until the run is indexed, then `gh run watch`) and verifies the draft's status, authored body, and complete required asset set. It is read-only and deliberately fails on an already-published release, because it is the gate that runs before publication.
+- Publishing the GitHub release verifies its Snap assets and automatically uploads them to `edge`; installed-Snap smoke and candidate/stable promotion remain manual.
 - Release-post screenshots come only from the release capture script running against the mock servers. Never add a screenshot taken from a real playlist or account to `apps/website/public/blog/**` — real streams, logos, and metadata are copyrighted, and credentials must never reach a published image.
 - Final task summaries should state whether a release note was added or why it was skipped.
 
@@ -67,11 +73,36 @@ pnpm nx show projects
 ```
 
 - Run the install step in a fresh worktree before relying on Nx discovery, lint, test, or build commands. Without `node_modules`, local Nx modules are unavailable.
+- Re-run the install whenever the checkout moves — `git pull`, `git reset --hard`, a rebase, or a worktree branch being re-pointed. Git rewrites `pnpm-lock.yaml` but never re-links `node_modules`, so a tree installed at an older commit keeps serving the old dependency versions and tests fail locally while CI stays green. Check with `cmp pnpm-lock.yaml node_modules/.pnpm/lock.yaml`; any difference means the tree is stale, and a plain `pnpm install --frozen-lockfile` in that directory repairs it. Each worktree needs its own install — with no local `node_modules`, Nx aborts with `Could not find ".modules.yaml"`.
 - Use scoped path aliases from `tsconfig.base.json` such as `@iptvnator/services`, `@iptvnator/shared/interfaces`, and `@iptvnator/ui/components`.
 - Do not add new imports from legacy bare aliases such as `services`, `shared-interfaces`, `components`, `m3u-state`, or `database`.
 - Every Nx project should keep `scope:*`, `domain:*`, and `type:*` tags in `project.json`.
 - See `docs/architecture/nx-workspace-boundaries.md` for the current Nx tag and alias policy.
-- Repository-specific skills are committed under `.codex/skills/`. Claude Code only discovers skills under `.claude/skills/`, so `release-notes` and `release-cut` are mirrored there and the two copies must be kept in sync; every other entry in `.claude/skills/` is personal and stays gitignored. If an agent does not load skills directly, treat those files as concise ownership docs.
+- Keep `nx` and every official `@nx/*` package on the same exact version; run
+  `pnpm run deps:nx:validate` after dependency updates.
+- Vite `7.3.6`, resolved through Angular's build tooling, is patched with
+  bounded transform prefilters and the upstream precise matchers in
+  `patches/vite@7.3.6.patch`. Keep the patch until supported Angular tooling
+  resolves a Vite version containing the fix, and run `pnpm run deps:vite:test`
+  after related dependency updates.
+- A directory holding files consumed by other projects must be an Nx project.
+  Nx builds its graph from TypeScript imports only, so a relative SCSS `@use`
+  across project roots creates no edge and the imported file lands in no task
+  hash — edits then return a cache hit instead of rebuilding. Shared partials
+  live in `libs/ui/styles` (project `ui-styles`), and each consumer declares
+  `"implicitDependencies": ["ui-styles"]`. Run `pnpm run styles:inputs:validate`
+  after adding a cross-project stylesheet import.
+- Update Nx with `pnpm nx migrate nx@<target> --skipInstall`, regenerate the
+  lockfile, run generated migrations when present, and validate before opening
+  a PR. Major updates are always manual. Replace incomplete Dependabot security
+  PRs with a coordinated update instead of editing the bot branch.
+- Repository-specific skills live under `.codex/skills/`.
+- Frontmatter descriptions are trigger-only and begin with `Use when`; keep
+  each skill at or below 500 words.
+- Run `pnpm run skills:validate` after editing a committed skill or a literal
+  path it documents.
+- Keep `.codex` and `.claude` copies of `release-notes` and `release-cut`
+  byte-identical.
 
 ### Building and Serving
 
@@ -116,6 +147,22 @@ pnpm run make:app
 # or
 nx run electron-backend:make
 ```
+
+### Windows Embedded MPV Pin Maintenance
+
+- PR, master, and tag builds resolve the Windows runtime only from
+  `tools/embedded-mpv/windows-runtime-pin.json`; repository variables are not
+  build inputs.
+- Validate the checked-in schema and provenance with
+  `pnpm embedded-mpv:windows-runtime-pin:check`.
+- Prepare a manual rotation with
+  `pnpm embedded-mpv:windows-runtime-pin:refresh -- --force`. The weekly
+  `refresh-windows-embedded-mpv-runtime.yaml` workflow runs the same updater
+  and opens a reviewable PR before upstream retention expires.
+- The PAT-backed refresh job must keep every third-party action pinned to a
+  full commit. Do not mirror the upstream binary without complete
+  corresponding source, build records, license notices, and a validated
+  transitive license closure.
 
 ### Electron CDP Debugging
 
@@ -225,10 +272,13 @@ baseline generator import so the enforced rule and the generated list cannot
 drift:
 
 - **Production TypeScript: hard maximum 400 lines.**
-- **Tests: 1200.** `**/*.spec.ts`, `**/*.e2e.ts` and everything under
-  `apps/*-e2e/**` — a spec is a flat list of independent cases, so splitting one
-  at the production limit yields arbitrary `-2.spec.ts` files, and length there
-  signals coverage rather than the design debt the production limit catches.
+- **Tests: 1200.** `**/*.spec.ts`, `**/*.spec-data.ts`, `**/*.e2e.ts` and
+  everything under `apps/*-e2e/**` — a spec is a flat list of independent
+  cases, so splitting one at the production limit yields arbitrary
+  `-2.spec.ts` files, and length there signals coverage rather than the
+  design debt the production limit catches. `.spec-data.ts` fixtures (flat
+  case lists consumed only by a spec, e.g. the worker IPC contract table)
+  grow with coverage the same way.
 - **Blank lines and comments are not counted** (`skipBlankLines`,
   `skipComments`), so a docblock is never the reason a file must be split.
 
@@ -263,7 +313,7 @@ This is an Nx monorepo with the following structure:
 
 - **apps/web** - Angular application (frontend, shared by Electron and PWA)
 - **apps/electron-backend** - Electron main process
-- **apps/web-backend** - HTTP backend for the self-hosted PWA (`/parse`, `/parse-xml`, `/xtream`, `/stalker` CORS proxy endpoints)
+- **apps/web-backend** - HTTP backend for the self-hosted PWA (`/parse`, `/parse-xml`, `/xtream`, `/stalker` CORS proxy endpoints). At startup it raises Node's happy-eyeballs per-attempt connection timeout to 2500 ms (`network-family-autoselection.ts`) so dual-stack provider hostnames fall back to IPv4 behind IPv6-less VPN/Docker networks; an explicit `--network-family-autoselection-attempt-timeout` passed via `NODE_OPTIONS`/CLI always wins. Outbound provider failures are logged hostname-only with the underlying Node error codes and return the primary code in the error body (`provider-error.ts`) — the proxied URL query carries credentials and must never be logged. Every proxied request carries the same timeout as its Electron counterpart (Xtream 30 s, Stalker 15 s / 30 s for `create_link`, playlist and XMLTV 30 s). The shared per-host circuit breaker (`host-guard.ts`, injected via `WebBackendAppOptions.hostGuard`) covers `/xtream` and `/stalker` only — playlist/XMLTV downloads keep the timeout but no breaker, matching Electron. A fast-fail keeps the route's normal failure shape (HTTP 200 with a `{message, status}` body), `skipConnectionGuard=true` carries the Stalker discovery exemption through the proxy, and `POST /connectivity-guard/reset` is the PWA's counterpart to the `CONNECTIVITY_GUARD_RESET` IPC
 - **apps/remote-control-web** - Mobile remote-control web app served by the Electron backend
 - **apps/web-e2e** - Playwright E2E tests against the web app
 - **apps/electron-backend-e2e** - Playwright E2E tests against the Electron app
@@ -273,17 +323,18 @@ This is an Nx monorepo with the following structure:
 - **libs/** - Shared libraries:
     - **epg/data-access** - EPG services, runtime bridge, program normalization
     - **m3u-state** - NgRx state management for M3U playlists
-    - **playlist/import/feature** - Playlist import flows (file/URL/text upload, Xtream and Stalker import dialogs)
+    - **playlist/import/feature** - Playlist import flows (file/URL/text upload, Xtream and Stalker import dialogs, and the "Auto-detect" method: paste a provider message, `detectProviderImportCandidates` in `libs/shared/interfaces` deterministically extracts URLs/credentials/MAC+device identity and prefills the matching form — detection only proposes, the target form's own validation and behavioral probes stay authoritative)
     - **playlist/m3u/feature-player** - M3U video player page and `/workspace/playlists/:id` routes
     - **playlist/shared/{ui,util}** - Shared playlist UI and utilities
     - **portal/xtream/{data-access,feature}** - XtreamStore, services, data sources; routed Xtream components
     - **portal/stalker/{data-access,feature}** - StalkerStore and routed Stalker components
     - **portal/catalog/feature** - Portal catalog UI
     - **portal/downloads/feature** - Download manager UI
-    - **portal/shared/{data-access,ui,util}** - Cross-portal shared code
+    - **portal/shared/{data-access,ui,util}** - Cross-portal shared code: stateful collection services and VOD multi-source discovery/resolve/ranking live in `data-access`; reusable views live in `ui`; `util` is for pure contracts/helpers
     - **services** - Abstract DataService contract and shared app services (incl. the TMDB metadata enrichment module in `lib/tmdb/`)
     - **shared/interfaces** - TypeScript interfaces and types (incl. `ElectronBridgeApi`)
     - **shared/logging** - Dependency-free structured redaction for diagnostic logs
+    - **shared/host-health** - Per-host circuit breaker for portal requests (`HostConnectivityGuard`), shared by the Electron main process and the web backend; transport-free, the owning app supplies the clock and owns the instance
     - **shared/database** - Canonical Drizzle schema and DB connection (used by the Electron backend)
     - **shared/m3u-utils** - M3U playlist utilities
     - **shared/marketing-fixtures** - Provider-neutral fictional movie metadata shared by the Xtream and Stalker marketing mocks
@@ -323,14 +374,14 @@ The Xtream Codes module uses NgRx Signal Store with a layered architecture:
 │            (Composes feature stores, unified API)                │
 └─────────────────────────────────────────────────────────────────┘
                                   │
-        ┌────────────┬────────────┼────────────┬────────────┐
-        ▼            ▼            ▼            ▼            ▼
-┌────────────┐ ┌────────────┐ ┌────────────┐ ┌────────────┐ ┌────────────┐
-│  withPortal│ │withContent │ │withSelection│ │ withSearch │ │ withPlayer │
-└────────────┘ └────────────┘ └────────────┘ └────────────┘ └────────────┘
-        │                           │              │
-        └───────────────────────────┼──────────────┘
-                                    ▼
+                                  ▼
+┌─────────────────────────────────────────────────────────────────┐
+│ withPortal · withContent · withSelection · withSearch · withEpg │
+│ withPlayer · withFavorites · withRecentItems                     │
+│ withPlaybackPositions                                           │
+└─────────────────────────────────────────────────────────────────┘
+                                  │
+                                  ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │                    DATA SOURCE LAYER                             │
 │                   IXtreamDataSource                              │
@@ -350,7 +401,7 @@ libs/portal/xtream/
 │   │   ├── features/
 │   │   │   ├── with-portal.feature.ts             # Playlist & portal status
 │   │   │   ├── with-content.feature.ts            # Categories & streams
-│   │   │   ├── with-selection.feature.ts          # UI selection & pagination
+│   │   │   ├── with-selection.feature.ts          # UI selection & infinite-scroll window
 │   │   │   ├── with-search.feature.ts             # Search functionality
 │   │   │   ├── with-epg.feature.ts                # EPG data
 │   │   │   ├── with-player.feature.ts             # Stream URLs & player
@@ -382,15 +433,32 @@ Key patterns:
 
 - **Feature stores**: Each `with*.feature.ts` uses `signalStoreFeature()` for focused functionality
 - **Facade pattern**: `XtreamStore` composes all features, maintaining backward compatibility
-- **Data source abstraction**: `IXtreamDataSource` interface with environment-specific implementations
-- **Factory injection**: `provideXtreamDataSource()` selects Electron or PWA implementation at runtime
+- **Data source abstraction**: `IXtreamDataSource` has SQLite-backed and
+  API/in-memory implementations
+- **Factory injection**: `provideXtreamDataSource()` selects
+  `ElectronXtreamDataSource` only when
+  `RuntimeCapabilitiesService.supportsXtreamSqliteDataSource`; otherwise it
+  selects `PwaXtreamDataSource`
+- **Catalog lazy loading**: catalog grids scroll infinitely instead of paging.
+  `withSelection` keeps a `visibleCount` render window over the in-memory
+  catalog plus bounded per-selection scroll snapshots for detail/tab
+  round-trips; the shared `InfiniteScrollDirective`
+  (`libs/portal/shared/ui`) measures container overflow to auto-fill tall
+  viewports (terminating on lack of container growth, not on a load count)
+  and fires `loadMore` near the bottom. The search layout routes its results
+  container through the same directive (`nearEnd*` inputs). Stalker feeds the
+  same contract from server-paged appends: portal pages accumulate into one
+  deduplicated list, `hasMoreContent` derives from accumulated length vs
+  `total_items`, a failed append keeps loaded pages and offers a tail retry,
+  and the facade maps page 0 to the skeleton and later pages to the tail
+  spinner. No paginator remains anywhere in the app
 
-Data strategies by environment:
+Xtream data strategies by runtime capability:
 
-| Environment  | Strategy                                                |
-| ------------ | ------------------------------------------------------- |
-| **Electron** | DB-first: Check DB → fetch API if missing → cache to DB |
-| **PWA**      | API-only: Always fetch from API, store in memory        |
+| Capability                        | Strategy                                                 |
+| --------------------------------- | -------------------------------------------------------- |
+| **Complete Xtream SQLite bridge** | DB-first: check DB → fetch API if missing → cache to DB  |
+| **Bridge unavailable**            | API-only: fetch from API and keep session data in memory |
 
 **M3U Playlist Module Architecture**:
 
@@ -441,6 +509,21 @@ Key radio behavior:
 - Keyboard: ArrowUp/Down adjusts volume by 5%, M toggles mute
 - Component: `libs/ui/playback/src/lib/audio-player/audio-player.component.ts`
 
+**M3U Movie Recognition** (VOD detail instead of the EPG zone): an M3U entry
+recognized as a movie FILE swaps the player + EPG area for the portals'
+two-state VOD detail shell fed by TMDB, watch-first (activation still plays
+immediately; Esc reveals the Browse hero). Detection is synchronous URL-shape
+heuristics — movie container extension (`mkv`/`mp4`/…, never `ts`/`m3u8`/`mpd`)
+or an Xtream-style `/movie|movies|vod/` path segment; radio, DASH, `/series/`
+paths and episode-marker names (`S01E02`, "2 серия") fail toward the live
+layout (`isLikelyM3uMovie` in `libs/shared/m3u-utils`). Gated on TMDB
+enrichment being enabled AND `Settings.m3uVodDetails` (default on; checkbox in
+Settings → Metadata (TMDB)). Host: `m3u-vod-detail/` in
+`libs/playlist/m3u/feature-player` (shell + `PortalInlinePlayerComponent`,
+parent's `embeddedPlayback()` with `isLive: false`); external MPV/VLC users
+keep Browse. See "Movie Recognition (VOD Detail View)" in
+`docs/architecture/m3u-playlist-module.md`.
+
 Channel List Component Structure (parent coordinator pattern):
 
 ```
@@ -474,12 +557,16 @@ See `docs/architecture/m3u-playlist-module.md` for complete documentation.
 
 - Dashboard: `/workspace/dashboard`; sources overview: `/workspace/sources`
 - M3U player: `/workspace/playlists/:id` (children: `favorites`, `recent`, `:view`) — routes in `libs/playlist/m3u/feature-player`
-- Xtream Codes: `/workspace/xtreams/:id` (children: `live`, `vod`, `series`, `search`, `actor/:personId`, `recently-added`, `favorites`, `recent`, `downloads`) — `libs/portal/xtream/feature/src/lib/xtream-feature.routes.ts`
-- Stalker portal: `/workspace/stalker/:id` (children: `itv`, `vod`, `radio`, `series`, `favorites`, `recent`, `search`, `actor/:personId`, `downloads`) — `libs/portal/stalker/feature/src/lib/stalker-feature.routes.ts`
+- Xtream Codes: `/workspace/xtreams/:id` (children: `live`, `vod`, `series`, `search`, `actor/:personId`, `discover`, `recently-added`, `favorites`, `recent`, `downloads`) — `libs/portal/xtream/feature/src/lib/xtream-feature.routes.ts`
+- Stalker portal: `/workspace/stalker/:id` (children: `itv`, `vod`, `radio`, `series`, `favorites`, `recent`, `search`, `actor/:personId`, `discover`, `downloads`) — `libs/portal/stalker/feature/src/lib/stalker-feature.routes.ts`
 - Global collections: `/workspace/global-favorites`, `/workspace/global-recent`
 - Global search: `/workspace/search` (Electron-only; a guard redirects the PWA to `/workspace/sources`)
-- Downloads: `/workspace/downloads`
-- Settings: `/workspace/settings` (`/settings` redirects there)
+- Downloads: `/workspace/downloads` with focused
+  `/workspace/downloads/:downloadId`; source-scoped equivalents are
+  `/workspace/xtreams/:id/downloads/:downloadId` and
+  `/workspace/stalker/:id/downloads/:downloadId`. Focused download details hide
+  the workspace context panel.
+- Settings: `/workspace/settings/:section` — one page per section (`general`, `playback`, `epg`, `dashboard`, `remote-control`, `tmdb`, `backup`, `reset`, `about`); `/workspace/settings` redirects to `general`, unknown or capability-gated sections redirect there too, and `/settings` redirects into the workspace. The shared form lives on the parent `SettingsComponent`, so edits survive section switches; a floating unsaved-changes bar (Save/Discard) replaces the old always-visible footer Save button. Leaving the settings AREA with a dirty form triggers `settingsUnsavedChangesGuard` (canDeactivate) and a save/discard/stay dialog — section switches deliberately bypass it, and a failed save cancels the navigation. Non-router exits are covered too: `SettingsUnloadGuardService` (provided by `SettingsComponent`) arms a `beforeunload` handler while the form is dirty (native leave prompt in the PWA) and arms an Electron main-process close guard (`window-close-guard.service.ts`) for the whole settings mount — mount-long on purpose, since arming on the first edit would race the close it protects against. The guard intercepts window close/app quit before `beforeunload` fires and completes the original intent only after the renderer confirms through the same dialog (a pristine form auto-confirms); Electron reloads are cancelled and re-triggered the same way, a failed save always keeps the window open, and installing an app update suspends the whole guard so the updater's quit passes unchallenged — every install entry point (settings About section and the global update notification panel) must go through the root `AppUpdateInstallService`, which owns that suspend/restore choreography
 
 **Service Architecture** (Factory Pattern):
 
@@ -511,8 +598,8 @@ See `docs/architecture/m3u-playlist-module.md` for complete documentation.
 Keep production TypeScript files under **300 lines**. Hard maximum is
 **350–400 lines**, and CI enforces the 400. Blank lines and comments do not
 count toward it, so documenting a file never costs you headroom. Tests
-(`**/*.spec.ts`, `**/*.e2e.ts`, `apps/*-e2e/**`) are held to 1200 instead — the
-guidance below is about production code.
+(`**/*.spec.ts`, `**/*.spec-data.ts`, `**/*.e2e.ts`, `apps/*-e2e/**`) are held
+to 1200 instead — the guidance below is about production code.
 
 - When creating new files, design them to stay within this limit from the start.
 - When adding a feature to an existing file that would push it past 350 lines, **refactor first**: extract helpers, sub-services, or feature modules before adding the new code.
@@ -622,15 +709,17 @@ This project uses modern Angular signal-based APIs and patterns. **ALWAYS** use 
 - **Schema** (`libs/shared/database/src/lib/schema.ts` — canonical; `apps/electron-backend/src/app/database/schema.ts` is a backwards-compat re-export shim):
     - `playlists` - Playlist metadata (M3U, Xtream, Stalker)
     - `categories` - Content categories (live, movies, series)
-    - `content` - Streams/VOD/series items
+    - `content` - Streams/VOD/series items. Besides the catalog fields it carries what a detail view learned and handed back: `backdrop_url`, plus the TMDB identity (`tmdb_id`, `release_year`, `original_title`) that lets an activity row repeat the detail view's lookup instead of rebuilding a weaker one from the display title
     - `favorites` - User favorites
     - `recentlyViewed` - Watch history
     - `epgChannels`, `epgPrograms` - Persisted EPG data
     - `epgChannelMappings` (`epg_channel_mappings`) - Manual EPG channel mappings (defined in `epg-mapping.schema.ts`, re-exported by `schema.ts`)
     - `playbackPositions` - Resume positions
     - `downloads` - Download manager state
+    - `recordings` - Live-TV recording lifecycle + start-time channel/EPG snapshot (defined in `schema.ts` beside `downloads`)
     - `appState` - Key-value app state (also tracks one-off data migrations)
     - `tmdbMetadata` - TMDB enrichment cache (details payloads + search match resolutions, keyed by media type/lookup key/language)
+    - `vodSourcePins` (`vod_source_pins`) - VOD multi-source per-movie preferred playlist, keyed by a portal-agnostic match key (defined in `vod-source-pins.schema.ts`, re-exported by `schema.ts`)
 - **Connection**: `libs/shared/database/src/lib/connection.ts`
     - `createTables()` auto-creates tables on init (`CREATE TABLE IF NOT EXISTS`)
     - Provides full read-write access for `electron-backend` and a read-only mode
@@ -649,6 +738,7 @@ This project uses modern Angular signal-based APIs and patterns. **ALWAYS** use 
     - `epg.events.ts` - EPG IPC registration; freshness/fetch orchestration lives in `epg-fetch.service.ts`, manual channel-mapping resolution and CRUD in `epg-mapping.service.ts`, worker lifecycle in `epg-worker.service.ts`, DB lookups in `epg-query.service.ts`
     - `xtream.events.ts` - Xtream Codes API
     - `stalker.events.ts` - Stalker portal API
+    - `connectivity-guard.events.ts` - `CONNECTIVITY_GUARD_RESET`: forgets the connection failures recorded for a portal host. Both portal handlers above run every request through the per-host circuit breaker (rules in `@iptvnator/shared/host-health`, process-wide instance in `util/host-connectivity-guard.ts`; the web backend runs the same breaker over its proxy routes) — after 2 consecutive connection-level failures (no HTTP response; `ETIMEDOUT`/`ENOTFOUND`/`ECONNREFUSED`/… but never `ECONNRESET`) requests to that endpoint fail immediately for 30 s. The key is `URL.origin`, not `URL.host`, which would give `http://panel` and `https://panel` one shared record and let a dead TLS listener fast-fail the working HTTP one instead of hanging the full 30 s/15 s axios timeout again, with one half-open trial request afterwards. Any HTTP response (4xx and 5xx included) clears the record. The refusal is a real `Error` whose wording is a renderer contract (`buildHostConnectivityFastFailMessage` in `libs/shared/interfaces`): it must carry no `HTTP Error <code>`, no timeout wording and none of the auth phrases, or Stalker endpoint discovery misclassifies it and lazy portal repair fires against a host just declared dead. Discovery probes are exempt via the `skipConnectionGuard` payload flag (bypass + no failure counting, but successes still clear the record). Every user-driven retry/refresh that issues portal requests must reset BEFORE its first request, or the affordance fast-fails and looks broken; automatic and first-load paths deliberately do not reset. Current senders: Xtream content-gate Retry, Stalker catalog append retry (`retryContentPage`), Stalker search-page retry, `StalkerItvCacheService.refresh()` (Live TV refresh), both account-info dialogs' Retry, the destructive Xtream refresh (`XtreamRefreshFlowService`, before it deletes the cached catalog — one flow shared by both entry points, `PlaylistRefreshActionService.refreshXtream()` and `RecentPlaylistsComponent.refreshXtreamPlaylist()`, which supply only a progress reporter), `StalkerPortalDiscoveryService.discover()`, and `PortalStatusService` on `skipCache`. Kill switch: `IPTVNATOR_DISABLE_CONNECTIVITY_GUARD=1`. Contract: `docs/architecture/host-connectivity-guard.md`
     - `player.events.ts` - External player IPC registration; MPV/VLC lifecycle logic lives in `mpv-session.service.ts`, `vlc-session.service.ts`, and shared `external-player-*` helpers
     - `settings.events.ts` - App settings
     - `electron.events.ts` - App version, etc.
@@ -666,6 +756,23 @@ This project uses modern Angular signal-based APIs and patterns. **ALWAYS** use 
 - M3U/M3U8 files (local or URL)
 - Xtream Codes API (`username`, `password`, `serverUrl`)
 - Stalker portal (`macAddress`, `url`)
+
+**Stalker playback links**: `create_link` runs only when the catalog row sets
+`use_http_tmp_link` or `use_load_balancing`; otherwise the static `cmd` plays
+directly. One helper decides
+(`resolveStalkerStaticPlaybackUrl` in
+`libs/portal/stalker/data-access/.../stalker-link-semantics.utils.ts`), applied
+by `fetchStalkerPlaybackLink()` for ITV/VOD/radio and by
+`StreamResolverService` for Favorites/Recently Viewed. It falls back to
+`create_link` for anything it cannot resolve alone: no row to read flags from,
+a relative/query-only command (the VOD `has_files` rewrite), a non-HTTP scheme,
+or a loopback host; an episode (`series` set) always mints, since the parameter
+selects the episode server-side. Temporary links live ~5 s, so no resolved URL
+is persisted or replayed — favorites and recently-viewed store the `cmd`,
+playback positions store ids, and the main-process context map stores headers
+keyed by origin+path. Downloads are the one exception (they must retry a URL).
+`forced_storage`/`play_token` are deliberately unwired. Contract:
+`docs/architecture/stalker-portal.md` ("Playback Link Resolution").
 
 **Opening a playlist from the OS** (Electron only): a `.m3u`/`.m3u8` path passed
 on the command line, opened through a file association, or delivered by macOS'
@@ -709,6 +816,140 @@ app as a real argument, so it is not an option.
 **Video Players**:
 
 - Built-in web players: HTML5+hls.js, Video.js, and ArtPlayer
+- mpegts.js `1.8.1` errors from all three built-in players cross one
+  version-locked structured evidence boundary in `libs/playback/util`. It
+  retains only exact public type/detail pairs, pair-derived stage/failure,
+  terminal disposition, and a
+  validated HTTP 4xx/5xx status; raw messages and arbitrary `info` never reach
+  stored or rendered diagnostics. HTTP/network failures avoid false decoder
+  recommendations, while exact format, codec, truncated-stream, and
+  MediaSource failures retain actionable recovery guidance. This diagnostic
+  layer remains separate from the shared `PlayerController` controls contract.
+- Browser playback diagnostics and recovery policy live in
+  `libs/playback/util` and are exported by `@iptvnator/playback/util`.
+  Public engine errors cross allowlisted sanitizers into a
+  `PlaybackDiagnostic`; `recommendPlaybackRecovery(context)` then ranks at
+  most three actions, and `WebPlayerViewComponent` executes only the action
+  the user selects. The policy is a sibling of `PlayerController`; shared
+  controls only gate interaction while the diagnostic panel is visible.
+  `WebPlayerViewComponent` owns a host-derived content-session key that is
+  stable for the mounted logical selection, attempted target IDs, the temporary
+  player override, and VOD handoff position. Its `PlaybackBinding` is exactly
+  `{ generation, target }`, while every source/target/reload application uses a
+  fieldless opaque `Symbol` token. Diagnostic storage uses a separate fieldless
+  intent `Symbol`, and source applications advance a third fieldless revision
+  `Symbol` that clears only the VOD handoff position; target-only switches and
+  Retry leave that revision stable. None of these ownership primitives contains
+  URLs, headers, DRM material, or credentials. The application effect
+  synchronizes the content session before tracking intent, so clearing a
+  temporary player override cannot schedule a duplicate application or header
+  handoff. Every application start clears both the diagnostic owner and backing
+  signal before asynchronous header setup; a current false result or rejection
+  leaves them clear, and a stale completion cannot erase a newer owned
+  diagnostic. Each
+  rendered web or Embedded MPV application captures its nullable binding, the
+  application and source-revision tokens, and live/VOD flag; a time update
+  changes resume state only while that exact capture still owns the current
+  application. A recommended built-in
+  player temporarily
+  outranks the host override and saved player for that mounted content session,
+  never mutates `Settings.player`, and resumes finite VOD position on a
+  best-effort basis; live playback returns to the live edge. Retry and
+  alternative sources preserve attempts, while a different content-session key
+  or component teardown resets them. Recovery recommendations never
+  auto-switch, persist history, learn across sessions, or emit telemetry.
+  The policy projects attempted inline target IDs through the validated
+  canonical source/target capabilities and excludes every attempted engine
+  family, so HTML5 and ArtPlayer are not separate hls.js recoveries. Network
+  and generic unknown evidence fail closed to Retry/alternative source; the
+  exact Shaka browser-unsupported preflight marker is the sole unknown-code
+  exception. PWA capability suppresses managed MPV/VLC, and ClearKey/KODIPROP
+  DRM suppresses external targets because its payload is not transferable. Raw
+  engine messages, arbitrary data, and credentials never enter recommendation
+  evidence or ownership state. MPV/VLC actions remain mounted after an attempt
+  and expose credential-free per-target launching/started/playing/error state;
+  only an exact Electron `playing` update is labelled Playing. One handshake is
+  allowed at a time. The renderer claims the credential-free content identity
+  before awaiting Electron, so primary Play is disabled and a launching or
+  closable-error alternative remains owned before the controller commits it.
+  Every route action that can start the same external playback, including
+  Restart and the provider-source shortcut, observes that local pre-IPC guard.
+  The Xtream VOD diagnostic-fallback handler records the same route-scoped
+  destination and pending generation before invoking MPV/VLC, so route reuse
+  cannot orphan that process outside the next route's close-before-play path.
+  Its fieldless intent is bound to the exact session returned
+  by the source owner's launch promise, so a late timed-out attempt cannot take
+  over a retry; later global updates must match that ID. A replacement waits for
+  confirmed teardown of the tracked external process, applies the old exact
+  close before launch, and cancels an unlaunched handoff if diagnostic ownership
+  changes. Process teardown has bounded graceful and forced confirmation
+  windows, and reusable MPV bounds the IPC command that precedes them; if any
+  stage cannot reach a confirmed exit, the exact session stays live and the
+  replacement fails closed instead of overlapping it. A process-wide teardown
+  gate starts before any potentially slow teardown preparation, including VLC
+  position flush and a reused player's protocol quit, and rejects every
+  MPV/VLC spawn until that exact child reports exit. If bounded
+  teardown fails while a fresh launch is still pending, that launch IPC rejects
+  and the exact session remains a closable error instead of hanging forever.
+  If a pre-content reuse failure has no still-live displaced session to restore,
+  the replacement error keeps its attached closer so Stop can retry the orphaned
+  child teardown. A terminal error without a closer is never restorable.
+  A failed close is single-flight only while its promise is pending: Stop can
+  retry the same exact child after a bounded confirmation failure. Reuse maps
+  the child to its current content session, so a stale older closer becomes a
+  no-op instead of terminating a newer `loadfile`/VLC enqueue handoff.
+  A duplicate close for an already closed session returns its terminal snapshot
+  without re-entering the saved closer, and a late process error cannot revive
+  that terminal session. Reused MPV commands are bound to the socket captured
+  for that exact child, so a later process cannot inherit a stale protocol quit.
+  Stop observed before a pending MPV content command or VLC enqueue command
+  prevents that command from dispatching. A source handoff fails closed while
+  a live session has no closer (`canClose: false`); renderer Dismiss is not
+  teardown confirmation. That denied handoff advances neither the multi-source
+  switch token nor the playback generation, so it cannot cancel the sole launch
+  already in flight.
+  VLC rechecks the gate at each concrete spawn after port allocation or reuse
+  work; if a post-start fallback is blocked there, the opened session becomes
+  an error rather than retaining a false started status. A failed RC-port
+  allocation never claims reuse ownership, so the fallback VLC child retains
+  its exact one-shot closer.
+  Reuse failures before a content command restore the globally displaced
+  renderer session, not the reusable process's prior owner, and only while the
+  exact displaced-session ID is still active; after
+  `loadfile`/VLC `clear` is dispatched,
+  the replacement owns the process and remains a closable error instead of
+  restoring stale content metadata. Stop during an in-flight MPV or VLC reuse
+  command, including during failed-command teardown or the subsequent VLC
+  fallback port-allocation wait, settles that exact close without falling
+  through to a fresh spawn;
+  a stopped VLC spawn error that reports only `close` also settles its original
+  launch IPC with the exact closed session;
+  a fresh fallback retires the old child's exit under its prior session so it
+  cannot close the replacement. Source handoffs recheck ownership after launch
+  and accept only `opened`/`playing`; a stale returned session is closed exactly
+  and a Stop-returned `closed` session is never committed. If that exact stale
+  close fails, its credential-free destination owner is retained for the next
+  close attempt. Retained destination ownership is scoped to the initiating
+  playlist/VOD route key, so route reuse cannot expose Stop for the previous
+  movie's external session. Play/Resume capture that route key before awaiting
+  close and cancel if navigation changes it; a late diagnostic fallback closes
+  its exact returned session instead of adopting it on the new route. They
+  supersede an older source resolution before awaiting the shared
+  close-before-replacement path, and accepting a diagnostic fallback retires
+  the same older resolution before opening MPV/VLC. They publish the route-source
+  badge, caption evidence, and position only after start succeeds.
+  Closable errors still participate in every replacement close and keep Stop as
+  the global dock's only teardown affordance; Dismiss is reserved for terminal
+  errors that have no closer. The shared `isLiveExternalPlayerSession` predicate
+  keeps M3U and series ownership while
+  such an error can still be stopped; consumers must not treat every `error`
+  status as terminal.
+  If the local handshake times out after an exact Electron session is known,
+  that ID remains
+  correlated so a later exact update can recover the UI. The global dock mirrors
+  those statuses, keeps closable errors visible until Stop confirms teardown and
+  terminal errors visible until dismissal, and intentionally has no retry because
+  it does not own the original launch headers or credentials.
 - DASH + ClearKey (M3U module): `.mpd` channels play through a lazily loaded
   Shaka Player source engine inside the HTML5 and ArtPlayer components (no new
   player in settings). ClearKey keys come from `#KODIPROP:inputstream.adaptive.*`
@@ -720,10 +961,35 @@ app as a real argument, so it is not an option.
   ArtPlayer). Unsupported license types (Widevine/PlayReady — out of scope,
   need the castLabs Electron fork) surface a DRM playback diagnostic instead
   of crashing. ClearKey EME works in stock Electron. Engine:
-  `libs/ui/playback/src/lib/shaka-engine/`; details in
+  `libs/ui/playback/src/lib/shaka-engine/`. Its DOM-free Shaka `5.2.4`
+  diagnostic boundary lives in `libs/playback/util`; it version-locks public
+  severity/category/code evidence, ignores
+  recoverable error events, treats rejected loads as terminal lifecycle
+  outcomes, preserves exact public DASH text-parser category/code evidence with
+  unknown stage/failure, and never retains or renders raw messages or
+  `error.data`. A failed browser-support preflight stays generic-unknown but
+  carries the exact app-owned
+  `PlaybackRuntimeSupport.ShakaBrowserUnsupported` marker, preserving managed
+  external fallback only for clear transferable DASH; PWA capability and
+  KODIPROP DRM still suppress it. Details in
   `docs/architecture/m3u-playlist-module.md` ("DASH + ClearKey Playback").
 - External players: MPV, VLC (via IPC to Electron backend)
-- Embedded MPV (experimental, macOS/Windows/Linux): renders mpv video inside the Electron window through a native addon. macOS uses the libmpv render API in an `NSOpenGLView`; Windows uses in-process libmpv with `--wid` against an app-owned child `HWND`; Linux spawns an out-of-process `mpv --wid=<x11-window>` controlled over a JSON IPC socket (X11/XWayland only, requires system `mpv` on PATH; subtitles/speed/aspect/recording are not exported there). mpv's own screensaver inhibition does not apply to any of these paths, so `EmbeddedMpvNativeService` holds an Electron `powerSaveBlocker` (`prevent-display-sleep`) whenever any session's status is `playing`, and releases it on pause, dispose, or shutdown. Renderer bounds are CSS pixels; the service converts them to native units in the main process (`embedded-mpv-bounds.util.ts`: × page zoom everywhere, × display scale on Windows/Linux whose child windows are positioned in physical pixels; frame-copy bounds stay unscaled), and the session controller re-syncs bounds when `devicePixelRatio` changes. Service: `apps/electron-backend/src/app/services/embedded-mpv-native.service.ts`; full architecture: `docs/architecture/embedded-mpv-native.md`.
+- Display sleep during playback: `PlaybackKeepAwakeService`
+  (`apps/web/src/app/services/playback-keep-awake.service.ts`) watches every
+  `<video>` via document-level capture listeners (media events don't bubble;
+  release listeners sit on the tracked element because Chromium's
+  removed-from-DOM pause never reaches the document) and, while any video is
+  playing and the document is visible (or the playing video is in
+  picture-in-picture — the PiP surface survives a minimized window), holds a
+  display-sleep lock: in
+  Electron a main-process `powerSaveBlocker` behind
+  `window.electron.setPlaybackKeepAwake`
+  (`apps/electron-backend/src/app/services/playback-keep-awake.service.ts`;
+  auto-cleared on renderer reload/crash), in the PWA the Screen Wake Lock
+  API. Radio's `<audio>` deliberately never blocks display sleep. Embedded
+  MPV holds its own blocker in `EmbeddedMpvNativeService`; external MPV/VLC
+  inhibit the screensaver themselves.
+- Embedded MPV (experimental, macOS/Windows/Linux): renders mpv video inside the Electron window through a native addon. macOS uses the libmpv render API in an `NSOpenGLView`; Windows uses in-process libmpv with `--wid` against an app-owned child `HWND`; Linux spawns an out-of-process `mpv --wid=<x11-window>` controlled over a JSON IPC socket (X11/XWayland only, requires system `mpv` on PATH; subtitles/speed/aspect/recording are not exported there). mpv's own screensaver inhibition does not apply to any of these paths, so `EmbeddedMpvNativeService` holds an Electron `powerSaveBlocker` (`prevent-display-sleep`) whenever any session's status is `playing`, and releases it on pause, dispose, or shutdown. Renderer bounds are CSS pixels; the service converts them to native units in the main process (`embedded-mpv-bounds.util.ts`: × page zoom everywhere, × display scale on Windows/Linux whose child windows are positioned in physical pixels; frame-copy bounds stay unscaled), and the session controller re-syncs bounds when `devicePixelRatio` changes and polls (500 ms, drift-gated) for position-only layout shifts that `ResizeObserver` cannot observe. Service: `apps/electron-backend/src/app/services/embedded-mpv-native.service.ts`; full architecture: `docs/architecture/embedded-mpv-native.md`.
 - Embedded MPV frame-copy engine (experimental, macOS Apple Silicon + Linux
   x64 + Windows; enabled via `Settings > Playback > Embedded MPV: frame-copy
 engine` (restart required) or
@@ -764,8 +1030,11 @@ engine` (restart required) or
   default provider. Its only provider-data layouts bind `/usr/share/libdrm`
   from `$SNAP/graphics/libdrm` and symlink `/usr/share/drirc.d` to
   `$SNAP/graphics/drirc.d`. Installed-Snap CI requires controlled unavailable
-  status after disconnect, then reconnects and requires success. The helper
-  links `libGL.so.1`, and probe/playback share a sanitized loader environment
+  status after disconnect, then reconnects and requires success. Static
+  artifact verification requires regular `desktop-init.sh`,
+  `desktop-common.sh`, and `desktop-gnome-specific.sh` files at the Snap root,
+  with `desktop-init.sh` executable. The helper links `libGL.so.1`, and
+  probe/playback share a sanitized loader environment
   in which ambient audit, preload, library, graphics-driver, and shell-startup
   overrides are removed; the validated private closure plus trusted host GL,
   graphics-content, core22 base x64, and exact GNOME-platform roots have
@@ -853,8 +1122,8 @@ engine` (restart required) or
   helper: `apps/electron-backend/native/helper/`; canonical packaging/runtime
   contracts: `docs/architecture/embedded-mpv-native.md` and
   `tools/embedded-mpv/README.md`.
-- Shared player-controls layer: `libs/ui/playback/src/lib/player-controls/` exports the engine-neutral `PlayerController` contract, standalone `app-player-controls`, a generic web-video adapter/helper, and component-scoped `WEB_PLAYER_SHARED_CONTROLS` rollout token. In fullscreen, `app-player-controls` shows a pointer-transparent media-title overlay at the top while controls are revealed (`mediaTitle` input: movie/channel/series name, plus an `S01E03` second line for episodes; series names flow from the detail views through `PortalInlinePlayerComponent.seriesTitle` and `WebPlayerViewComponent.mediaTitle`). Persisted `Settings.webPlayerSharedControls` is default-off, and its checkbox appears only when HTML5, Video.js, or ArtPlayer is selected. `WebPlayerViewComponent` snapshots the preference into the immutable token for each new player host. The parent `/workspace` route awaits the initial `SettingsStore` load, including cold-start direct links, before this snapshot can occur. Saving applies to the next host without an application restart; an existing session never changes controls mode in place. Embedded MPV ignores the web-player preference: frame-copy always uses shared DOM controls through `EmbeddedMpvControlsAdapter`, native-view retains its compositor-safe legacy dock, and external MPV/VLC retain their own UI. The Embedded MPV host selects exactly one controls UI for its reported engine. `showControls=false` detaches the shared surface, modal overlays gate frame-copy playback shortcuts, fullscreen remains DOM-based with Embedded MPV bounds sync, and a playback/session transition key prevents engine or session handoff from presenting stale recording feedback while timers and pending commands are cancelled. Same-session IPC replies yield to a broadcast snapshot received while the command was pending, so a successful recording acknowledgement cannot be rolled back by a stale reply. The built-in HTML5/hls.js player is the second guarded consumer: `HtmlVideoPlayerComponent` provides a component-scoped `WebVideoControlsAdapter`, while its neutral `web-video-support` bridge is shared with ArtPlayer and owns HLS/Shaka(DASH)/native tracks, MPEG-TS VOD duration correction, caption preference, and source cleanup. `HtmlVideoElementSession` owns native video-event lifecycle, persisted volume, and start-time/time/ended propagation. Video.js is the third guarded consumer: `VjsPlayerComponent` provides a component-scoped `WebVideoControlsAdapter`; its bridge rebinds the current Tech video after `playerreset`, exposes source-stable audio/subtitle IDs, preserves caption preference and explicit subtitle-off state, and reads Video.js duration. Reset-driven raw MPEG-TS changes pause first, coalesce to the latest desired source, preserve actual volume across Video.js's reset, and restart when authoritative live/VOD metadata changes. In shared-controls mode, Video.js native controls, click/double-click/hotkey actions, and spatial navigation are disabled. ArtPlayer is the fourth guarded consumer: `ArtPlayerComponent` provides a component-scoped `WebVideoControlsAdapter`; `ArtPlayerSourceSession` owns HLS/DASH(Shaka)/MPEG-TS/native sources, the neutral web-video bridge, exact cleanup, and a destroyed-session guard for delayed `customType` callbacks, while `ArtPlayerVideoSession` owns native media/ArtPlayer events. Shared ArtPlayer mode uses authoritative live/VOD metadata, HLS/Shaka/native tracks and caption preference, MPEG-TS VOD duration correction, and reapplies app volume directly after ArtPlayer restores its own stored volume. Vendor chrome/hotkeys are disabled, and a transparent capture layer gives shared controls exclusive click and double-click ownership. `WebPlayerViewComponent.resolvedIsLive` supplies authoritative metadata; visible playback diagnostics disable shared pointer/keyboard ownership and exit only the active HTML5, Video.js, or ArtPlayer shell's own fullscreen so retry/fallback actions remain visible. On the preference-off path, all three web players retain their existing controls, source behavior, and legacy series navigation. `Settings.showCaptions` is deliberately outside this rollout gate: it is engine state, so the preference-off players apply it through the same helpers without an adapter (`WebVideoSourceTracks` for HTML5/ArtPlayer, `VjsLegacyTracks` for Video.js), re-applying it as the engine adds or switches text tracks. The two modes differ in how long it is enforced: shared controls are authoritative for the session (user intent arrives via `setSubtitleTrack`), while vendor chrome is source-default — the preference seeds each new source and is released once the media reports `playing`, so the engine's own caption menu keeps working. Mode selection is the optional `playbackStarted` probe the legacy owners pass to all three helpers (HLS, native text tracks, Shaka); in that mode the HLS helper deselects (`subtitleTrack = -1`) rather than hiding, since `subtitleDisplay` would override the vendor menu, and DASH is seeded by `ShakaVideoSession.start()` after the manifest loads. `WebPlayerViewComponent` reads it from `SettingsStore` instead of a host input so every host (M3U, Xtream/Stalker live layouts, portal detail inline player) inherits it. Contract: `docs/architecture/player-controls-contract.md`.
-- Shared web picture-in-picture stays inside that default-off rollout.
+- Shared player-controls layer: `libs/ui/playback/src/lib/player-controls/` exports the engine-neutral `PlayerController` contract, standalone `app-player-controls`, a generic web-video adapter/helper, and component-scoped `WEB_PLAYER_SHARED_CONTROLS` rollout token. Its subtitle menu carries capability-gated advanced subtitle support (#1408): external subtitle file loading, a ±0.5 s timing-offset row, and size/color styling persisted in the shared `subtitleStyle` localStorage key. HTML5/ArtPlayer implement it through the neutral source bridge (`.srt`/`.vtt` via a DOM file picker with encoding detection, native `TextTrack` rendering, `::cue` styling, delay only while the loaded file is the selected track; picks are source-generation-guarded and engine deselection precedes external track activation); the canonical style shape and clamp/normalize rules are shared with the main process via `@iptvnator/shared/interfaces` (`subtitle-style.util.ts`). Embedded MPV frame-copy implements it through new helper protocol commands (`sub-add`/`sub-delay`/`sub-scale`/`sub-color`, main-process file dialog, ASS supported, delay for all tracks). Video.js shared mode, vendor-chrome paths, native-view, and the Linux out-of-process path advertise no such capability and render no UI. Contract details: `docs/architecture/player-controls-contract.md` ("Advanced subtitle support"). Shared controls include a per-session quality menu (Auto + “1080p”-style levels via `setQualityLevel`; `AUTO_QUALITY_LEVEL_ID` restores ABR): the capability derives from the manifest — advertised only when the source exposes >1 video rendition (multi-variant HLS via hls.js `nextLevel`/`manualLevel`, DASH via Shaka variant tracks pinned to the active variant's exact audio stream (`audioId`, language fallback) with ABR toggled off for manual picks, Video.js via videojs-contrib-quality-levels) — so single-bitrate VOD and raw MPEG-TS never show it, nothing persists to Settings, and Embedded MPV/external players report the capability false. In fullscreen, `app-player-controls` shows a pointer-transparent media-title overlay at the top while controls are revealed (`mediaTitle` input: movie/channel/series name, plus an `S01E03` second line for episodes; series names flow from the detail views through `PortalInlinePlayerComponent.seriesTitle` and `WebPlayerViewComponent.mediaTitle`). Persisted `Settings.webPlayerSharedControls` is default-ON (absent stored values coerce with `!== false` in every normalization site; only an explicit false — the Settings > Playback checkbox — opts out to the legacy vendor chrome), and its checkbox appears only when HTML5, Video.js, or ArtPlayer is selected. The shared surface has explicit touch semantics (`ControlsSurface.wasTouchInteraction`): viewport taps toggle overlay visibility instead of pausing, the volume popover opens on tap instead of hover, coarse pointers get a taller scrub strip, and at container widths ≤640px the bar reflows to two rows (full-width timeline above transport + an end-aligned, wrapping actions cluster with 40px buttons whose panels remain unclipped). Deliberately dropped vs. vendor chrome (opt-out retains them): Video.js spatial navigation, ArtPlayer screenshot/AirPlay/web-fullscreen/mini-progress/vendor gestures — listed in the contract doc's "Known differences" section. `WebPlayerViewComponent` snapshots the preference into the immutable token for each new player host. The parent `/workspace` route awaits the initial `SettingsStore` load, including cold-start direct links, before this snapshot can occur. Saving applies to the next host without an application restart; an existing session never changes controls mode in place. Embedded MPV ignores the web-player preference: frame-copy always uses shared DOM controls through `EmbeddedMpvControlsAdapter`, native-view retains its compositor-safe legacy dock, and external MPV/VLC retain their own UI. The Embedded MPV host selects exactly one controls UI for its reported engine. `showControls=false` detaches the shared surface, modal overlays gate frame-copy playback shortcuts, fullscreen remains DOM-based with Embedded MPV bounds sync, and a playback/session transition key prevents engine or session handoff from presenting stale recording feedback while timers and pending commands are cancelled. Same-session IPC replies yield to a broadcast snapshot received while the command was pending, so a successful recording acknowledgement cannot be rolled back by a stale reply. The built-in HTML5/hls.js player is the second guarded consumer: `HtmlVideoPlayerComponent` provides a component-scoped `WebVideoControlsAdapter`, while its neutral `web-video-support` bridge is shared with ArtPlayer and owns HLS/Shaka(DASH)/native tracks, MPEG-TS VOD duration correction, caption preference, and source cleanup. `HtmlVideoElementSession` owns native video-event lifecycle, persisted volume, and start-time/time/ended propagation. Video.js is the third guarded consumer: `VjsPlayerComponent` provides a component-scoped `WebVideoControlsAdapter`; its bridge rebinds the current Tech video after `playerreset`, exposes source-stable audio/subtitle IDs, preserves caption preference and explicit subtitle-off state, and reads Video.js duration. Reset-driven raw MPEG-TS changes pause first, coalesce to the latest desired source, preserve actual volume across Video.js's reset, and restart when authoritative live/VOD metadata changes. In shared-controls mode, Video.js native controls, click/double-click/hotkey actions, and spatial navigation are disabled. ArtPlayer is the fourth guarded consumer: `ArtPlayerComponent` provides a component-scoped `WebVideoControlsAdapter`; `ArtPlayerSourceSession` owns HLS/DASH(Shaka)/MPEG-TS/native sources, the neutral web-video bridge, exact cleanup, and a destroyed-session guard for delayed `customType` callbacks, while `ArtPlayerVideoSession` owns native media/ArtPlayer events. Shared ArtPlayer mode uses authoritative live/VOD metadata, HLS/Shaka/native tracks and caption preference, MPEG-TS VOD duration correction, and reapplies app volume directly after ArtPlayer restores its own stored volume. Vendor chrome/hotkeys are disabled, and a transparent capture layer gives shared controls exclusive click and double-click ownership. `WebPlayerViewComponent.resolvedIsLive` supplies authoritative metadata; visible playback diagnostics disable shared pointer/keyboard ownership and exit only the active HTML5, Video.js, or ArtPlayer shell's own fullscreen so ranked recovery actions remain visible. On the preference-off path, all three web players retain their existing controls, source behavior, and legacy series navigation — but the playback keyboard shortcuts (Space/K, F, arrow seek/volume, M) still work: each vendor-chrome player attaches `LegacyPlayerShortcuts` (a wrapper over the same `ControlsShortcuts` arbitration/ignore rules) with engine-specific command wiring (`html-video-legacy-shortcuts.ts`, `vjs-legacy-shortcuts.ts`, `art-player-legacy-shortcuts.ts`); seek is gated on authoritative `isLive` plus a finite positive duration, `interactionEnabled` (visible playback diagnostic) disables the keys, and the legacy ArtPlayer chrome passes `hotkey: false` because ArtPlayer's focus-scoped hotkeys ignore `defaultPrevented` and would double-handle every key (its lost Escape-exits-`fullscreenWeb` behavior is restored by the wiring). `Settings.showCaptions` is deliberately outside this rollout gate: it is engine state, so the preference-off players apply it through the same helpers without an adapter (`WebVideoSourceTracks` for HTML5/ArtPlayer, `VjsLegacyTracks` for Video.js), re-applying it as the engine adds or switches text tracks. The two modes differ in how long it is enforced: shared controls are authoritative for the session (user intent arrives via `setSubtitleTrack`), while vendor chrome is source-default — the preference seeds each new source and is released once the media reports `playing`, so the engine's own caption menu keeps working. Mode selection is the optional `playbackStarted` probe the legacy owners pass to all three helpers (HLS, native text tracks, Shaka); in that mode the HLS helper deselects (`subtitleTrack = -1`) rather than hiding, since `subtitleDisplay` would override the vendor menu, and DASH is seeded by `ShakaVideoSession.start()` after the manifest loads. `WebPlayerViewComponent` reads it from `SettingsStore` instead of a host input so every host (M3U, Xtream/Stalker live layouts, portal detail inline player) inherits it. Contract: `docs/architecture/player-controls-contract.md`.
+- Shared web picture-in-picture stays inside that default-on rollout.
   `PlayerController` exposes capability `pictureInPicture`, state
   `pictureInPictureActive`/`canPictureInPicture`, and command
   `togglePictureInPicture()`. HTML5, Video.js, and ArtPlayer use standard
@@ -877,18 +1146,252 @@ engine` (restart required) or
   chrome, with browser-dependent subtitles. AirPlay, Cast, Document PiP, a PiP
   keyboard shortcut, and Embedded MPV popup/native support are out of scope.
 
+**Download Manager**:
+
+- Fresh Xtream movie and series-episode downloads propagate the playlist's
+  User-Agent, Referer, and Origin, defaulting User-Agent to the same
+  provider-compatible `XTREAM_CLIENT_USER_AGENT` used by API requests and
+  stream probes. Retry, resume, and missing-file
+  recovery also add the fallback to legacy Xtream rows that have no stored
+  User-Agent. Because download rows survive source deletion, a headerless
+  legacy row whose playlist is already absent receives the same IPTV-player
+  fallback; a known Stalker row remains unchanged. Allowlisted connection
+  resets after bytes reach disk retain the partial and show a credential-safe
+  `DOWNLOAD_NETWORK_INTERRUPTED` code. Retry resumes with Range/If-Range when
+  the response supplied a strong ETag or Last-Modified validator; without one
+  the Range request rewinds by a 256 KiB overlap window whose bytes must match
+  the partial's tail before anything is appended (`download-overlap.ts`); a
+  smaller partial is verified in full from byte zero and appended, never
+  rewritten in place; reported progress is floored at the retained size while
+  appending; and a mismatch truncates the partial and restarts from byte zero
+  instead of risking mixed-representation corruption. The runtime also
+  reconnects interrupted transfers automatically (`download-reconnect.ts`):
+  reconnects continue while attempts end ≥64 KiB past the previous attempt;
+  restarts are an explicit `task.transferRestarts` signal (never byte
+  inference) that opens a fresh progress epoch, at most twice per transfer;
+  three consecutive stalled attempts surface the retained failure; and a
+  reconnect that fails before any response is converted into the same
+  retained interruption so it can never delete the partial. Only the response's own
+  total authorizes completion — an indeterminate `bytes X-Y/*` range stays
+  incomplete even at a clean EOF; carried totals are informational and
+  dropped when falsified; and any retainable network failure retains any
+  nonempty partial (no evidence required), persisting a falsified total as
+  unknown.
+- The desktop-only manager shares one global download store across the global,
+  Xtream-scoped, and Stalker-scoped routes. Completed movie and grouped-series
+  cards use the global Small/Medium/Large cover-grid tokens; missing completed
+  files move to Needs attention instead of remaining in Ready to watch.
+- Series details route individual and selected-season episode downloads through
+  the provider-neutral `SeasonDownloadCoordinator`. It reserves per-episode
+  pending identities synchronously, submits season candidates sequentially and
+  best-effort through the existing `DOWNLOADS_START` path, performs one final
+  authoritative refresh after added or stable duplicate submissions, and
+  reports added, skipped, and failed counts. Xtream and Stalker adapters remain
+  responsible for provider URLs, headers, and metadata; the backend still runs
+  one active transfer with a FIFO queue. `DOWNLOADS_START` remains the sole
+  start IPC. A reserved completed-missing match triggers one authoritative
+  preflight refresh before provider preparation. Download-list loads are
+  serialized as one active IPC plus one coalesced trailing refresh; a preflight
+  assigned to that trailing refresh cannot be starved by later progress
+  broadcasts. A restored Stalker file can therefore become a stable skip
+  without a portal request. The IPC's stable
+  `reason: 'already-in-progress'` and `reason: 'already-downloaded'`
+  results are counted as skipped, and no batch IPC is introduced. The latter
+  comes from an asynchronous main-process filesystem recheck before a
+  completed-missing row can be reset, so a file restored after the renderer
+  snapshot is not orphaned or downloaded again. The recheck has a one-second
+  caller deadline that starts before shared-slot acquisition; timeout or probe
+  failure leaves the row untouched and reports a failed submission so the
+  season loop can continue. Completed-file list callers use the same deadline
+  and report a timeout as missing for that snapshot. The underlying filesystem
+  operation remains coalesced and charged against the four-probe cap until it
+  settles, so later callers have independent bounded waits without duplicating
+  stalled native work. Only `ENOENT` and `ENOTDIR` prove absence; permission,
+  I/O, and other filesystem errors remain unknown and cannot clear a completed
+  row. Before a completed-missing, failed, or canceled row clears its retained
+  path, the start IPC asynchronously removes any `.part` through a separate,
+  same-path-coalesced, four-operation cap. A one-second admission deadline
+  rejects queued work before unlink starts; started work is awaited so it cannot
+  mutate after a failure response. Non-absence errors keep the row's ownership
+  intact; `ENOENT` and `ENOTDIR` safely proceed. Episode and season download
+  actions require an authoritative global list. A
+  successful snapshot remains authoritative while a later background refresh
+  is in flight; a latest refresh failure leaves
+  loading/empty-state resolution intact but disables starts until another
+  snapshot succeeds. Overlapping download-list callers join one serialized
+  trailing refresh, so responses commit in request order and frequent progress
+  events cannot perpetually postpone a waiting series action.
+- Episode ownership uses normalized `episode.id` as the canonical `xtreamId`
+  for both providers; Stalker playback identifiers only resolve the URL. Exact
+  `(playlistId, contentType, xtreamId)` matches are authoritative, while
+  complete playlist/series/season/episode coordinates are a fail-closed legacy
+  fallback that migrates reusable rows to the canonical id. Numeric season
+  zero, including fallback key `"0"`, remains a valid Specials coordinate for
+  both providers. Stalker persists
+  `episode_identity_scope` separately for regular `/series`, embedded VOD
+  `series[]`, and lazy Ministra VOD `is_series`. Known different scopes do not
+  match; a pre-scope coordinate row is ambiguous and blocked, while an exact
+  canonical legacy row remains authoritative. Renderer lookup preserves that
+  ambiguity or conflicting ownership as a distinct ineligible state, so
+  neither the episode action nor the season count treats it as a row-less
+  download. SQLite `null` and optional `undefined` coordinates both mean an
+  incomplete canonical legacy row, matching the backend resolver. Pending and
+  active rows plus completed available/unknown rows are skipped; failed,
+  canceled, completed-missing, and unambiguous row-less episodes remain
+  eligible.
+- Ready cards (movies, grouped series, and standalone episodes) open a focused
+  local detail; local file actions (Play, Show in folder, Copy URL, Remove)
+  live in the poster's overflow menu. Movies play the finalized local file;
+  series list only locally available episode rows and every episode action
+  targets its own downloaded file. Focused routes disable route search and use
+  `contextPanel: 'none'`.
+- Downloads capture a versioned metadata snapshot from the rendered Xtream or
+  Stalker movie/episode detail at start time, including already-merged TMDB
+  fields. Legacy, sparse, stale, or wrong-language snapshots are safely
+  backfilled from row/provider metadata and optional TMDB enrichment when the
+  focused detail opens.
+- `View in portal` resolves a concrete Xtream category/item route. Stalker
+  accepts a recently-viewed shape only when its raw movie/series mode matches
+  the download, and prefers an exact numeric category from the download
+  snapshot. Without that shape, only a movie carrying an exact category can
+  form a metadata-only target; unproven episode and legacy-movie handoffs stay
+  unavailable. The normal detail uses one-shot `provider-only` presentation:
+  it exposes provider content/playback it can resolve while hiding
+  Offline/local/download actions. A second, independent `View in portal`
+  bridge exists for inline collection details — see **Collection Detail
+  Portal Handoff** below; it deliberately does NOT use `provider-only`.
+- Download rows and local files survive source deletion. The global offline
+  library remains visible with no playlists; only provider handoff is disabled
+  until the source exists again.
+- If a finalized file disappears while a focused detail is open, the
+  authoritative download list refreshes and returns to the manager. A failed
+  redirect leaves an actionable missing-file state with Back and Retry.
+- Live-TV recordings (Embedded MPV `stream-record`) are tracked beside
+  downloads in their own `recordings` table (no unique index, no playlist FK —
+  recordings survive source deletion with a `playlistDisplayLabel` name
+  snapshot). `EmbeddedMpvRecordingTracker` persists the lifecycle: start/stop
+  hooks in `EmbeddedMpvNativeService` plus a session-snapshot observer. The
+  stop hook only REQUESTS a stop (`addon.stopRecording()` dispatches
+  asynchronously), so finalization waits for the snapshot reporting the
+  recording inactive — bounded at 10s — and only a recording that never went
+  active has its empty reservation unlinked; mpv's bytes are never deleted.
+  The same observer covers the implicit stops (stream-replacement auto-stop,
+  helper crash, session error/close). Rows carry `owner_pid`, so startup
+  repair turns a hard kill's leftovers into playable `interrupted` partials or
+  `failed` while skipping rows another live instance owns. Channel/EPG metadata is
+  snapshotted at recording START (each live host passes
+  `RecordingStartMetadata` down through the player chain; provider EPG never
+  reaches SQLite so post-hoc lookup is impossible). `EmbeddedMpvPlayerComponent`
+  owns the active→inactive recording edge and emits `recordingStopped` for
+  every trigger (including the manager's Stop, which bypasses the player's own
+  toggle); the host answers with enrichment: programs overlapping the recorded
+  window, keyed by target path (`RECORDINGS_UPDATE_PROGRAMS`, which awaits only
+  the tracker's write queue and then matches the newest row for that path in
+  ANY status — `finalize()` never touches `programs_json`, so the two writes
+  are order-independent and no deadline can drop the programs) — that covers
+  recordings spanning a program boundary. Own `RECORDINGS_*` IPC + `RECORDINGS_UPDATE_EVENT` ping
+  and a separate `supportsRecordings` capability gate (never folded into the
+  all-or-nothing `supportsDownloads` allowlist). Manager UI: `recording`
+  filter chip, "Recording now" queue section (REC pulse + elapsed, live size,
+  Stop, no percentage), 16:9 channel-logo "Recordings" library cards, Needs
+  attention with Remove only (a broadcast cannot be re-recorded), focused
+  detail at `/workspace/downloads/recording/:recordingId` listing covered
+  programs. Reveal/play shell IPCs are gated on the recordings table
+  (`isManagedRecordingFile`).
+- Canonical contract: `docs/architecture/download-manager.md`; provider handoff:
+  `docs/architecture/portal-detail-navigation.md`.
+
+**Collection Detail Portal Handoff** (`View in portal` for inline details):
+
+- Details opened outside portal category context — `/workspace/global-favorites`,
+  `/workspace/global-recent` (which also receive the dashboard hero, Continue
+  Watching and favorites-rail handoffs), and a portal's own `favorites`/`recent`
+  tabs — render full-width with no category sidebar. They expose a separate-row
+  hero action that jumps to the item inside its owning portal.
+- Visibility is DI-gated, never URL-sniffed: `app-view-in-portal-action`
+  (`libs/ui/components/src/lib/view-in-portal-action/`) renders only when a host
+  provides `VIEW_IN_PORTAL_HANDOFF`. The sole providers are
+  `XtreamCollectionDetailComponent` (through its dynamic detail injector) and
+  `StalkerCollectionDetailComponent` (component providers), which exist only in
+  collection contexts — so router-mounted category details need no opt-out. When
+  hidden the host must stay `display: none`, or its `flex: 0 0 100%` would claim
+  a phantom row in the hero action container.
+- Targets come from `getUnifiedCollectionDetailNavigation()`
+  (`libs/portal/shared/util/.../collection-detail-portal-navigation.ts`). Unlike
+  `getUnifiedCollectionNavigation` it NEVER degrades to a category- or
+  section-only route: an Xtream item without a resolvable category and positive
+  item id keeps the action hidden rather than promising a jump to the title and
+  landing in a list.
+- Stalker section resolution mirrors `resolveStalkerCollectionDetailMode()`
+  (`libs/portal/stalker/feature/src/lib/stalker-collection-detail-mode.ts`) and
+  must not be
+  simplified to `item.contentType`: `extractStalkerItemType()` reports `series`
+  for embedded `series[]` snapshots and lazy Ministra VOD `is_series` items, but
+  both belong in the VOD catalog — the lazy season/episode fetch in
+  `StalkerCatalogFacadeService.selectItem()` is gated on the VOD content type, so
+  a `/series` route leaves the detail unable to load episodes. The virtual
+  `series` category is normalized to `vod` the same way
+  `resolveStalkerCollectionSelectedCategory()` does. Stalker also carries
+  `stalkerReturnTo` plus
+  `stalkerReturnByHistory`, and the portal detail's back affordance
+  (`StalkerCatalogDetailComponent.onVodBack()`,
+  `StalkerSeriesViewComponent.goBack()`) honours the latter by stepping back
+  one history entry instead of calling `navigateByUrl()`. The collection's
+  active tab, scope and open inline detail live only in `window.history.state`
+  (`collectionViewState` / `openCollectionDetailItem`), so re-navigating would
+  reopen it on the default `live` tab and leave the portal page one browser
+  Back away. The marker carries the handed-off item's identity, not a bare
+  `true`: `openStalkerItem` is consumed on arrival while the return keys stay
+  on the entry, and a Stalker detail opens in place without pushing one — so
+  after Back + browser Forward the same entry can host a different title, whose
+  back affordance must just close it. A stale marker suppresses the whole
+  return contract, and honouring it retires both keys from the entry so a
+  browser Forward cannot replay them for a reopened title. Leaving with the
+  browser's own Back runs no affordance, so `CategoryContentViewComponent`
+  also retires the contract whenever it lands on the entry with no handoff
+  item and no open detail. That retirement is gated on the marker, so a plain
+  `stalkerReturnTo` caller such as the dashboard handoff is unaffected. The identity is
+  restricted to what `buildStalkerSelectedVodItem()` preserves (`id ??
+stream_id`); it drops `series_id`/`movie_id`, so the builder pins the
+  resolved id onto the handoff state item when the raw row carries neither —
+  those rows then get the same history return instead of degrading to a
+  re-navigation that resets the collection's tab.
+  Only this builder sets the marker, so the
+  dashboard handoff and any other `stalkerReturnTo` caller keeps
+  re-navigating.
+- Unlike the download handoff this bridge does NOT pass
+  `detailPresentation: 'provider-only'` — the item exists in the provider
+  catalog, so the full normal detail (downloads included) is wanted.
+- Contract: `docs/architecture/portal-detail-navigation.md`.
+
 **VOD/Series Detail Pages (two-state layout)**:
 
 - Xtream and Stalker detail pages use the shared `PortalDetailShellComponent` (`libs/ui/components/src/lib/portal-detail-shell/`) with two states: **Browse** (hero with poster/metadata/actions, episodes below) and **Watch** (hero collapses with a ~300ms morph, the inline player takes the full content width, metadata moves to an About block below the episodes)
 - The inline player (`PortalInlinePlayerComponent`) renders a full-width **theater stage** (`.player-shell__viewport`): the 16:9 player is centered and letterboxed so the leftover on wide-short windows is always the stage's black background, never app surface. An opt-in `playerAmbientMode` setting (Settings → Playback, default off, built-in web players only) fills that leftover with a blurred, dimmed copy of the poster (YouTube "Ambient mode" style)
 - For inline **series** playback on wide windows the stage instead docks the player left and shows an **"Up Next" episode rail** in the leftover column (`app-up-next-rail` in `libs/ui/playback/src/lib/portal-inline-player/`): rest of the current season plus next-season spillover, playing episode highlighted, watch-progress bars from playback positions; clicking plays inline via the host's episode flow (both Xtream and Stalker). Gated by the `playerUpNextRail` setting (default on, web players only) and a ≥320px leftover-width check via ResizeObserver — narrower windows keep the centered theater/ambient stage; movies and live never show the rail. The rail is opaque and sits on top of the ambient fill
 - Watch state derives from `inlinePlayback() !== null` only; external MPV/VLC playback keeps the browse layout. Esc and "Close player" exit to browse without navigation; the now-playing back arrow is route-level back (straight to the list via the host's `goBack()`)
+- Xtream VOD treats metadata presentation and playability as separate contracts. Empty or sparse `get_vod_info` data keeps the curated fallback detail page, while Play/Resume, Favorite, and Download remain available whenever a positive stream id and non-empty container extension resolve from `movie_data` or the catalog fields. Playback fields are selected as one atomic pair in detail → recovered catalog → owner-valid cached catalog order; incomplete candidates never combine into a synthetic source. In-memory VOD categories/streams carry their owner playlist, and cross-portal Favorites/Recent details ignore arrays from another playlist so colliding Xtream ids cannot inject stale playback or presentation data. When Electron's normalized catalog cache lacks the extension, the detail loader immediately publishes the sparse fallback and ends its loading state, then performs a best-effort category-scoped raw catalog lookup and reactively upgrades the same item with actions on success. It maps the normal SQLite route category through all persisted categories, including hidden ones, while also accepting the provider `xtream_id` carried by cross-portal Similar links; ambiguous numeric matches keep local-id precedence, deduplicate provider candidates, and try the next candidate when the exact VOD is absent. PWA falls back to API categories. It skips that request when existing data is sufficient, never sends an unresolved database id as a provider id, preserves concurrent metadata enrichment, and drops late detail/recovery responses after replacement, playlist reset, or detail teardown. Inline playback moves either detail page into Watch; external MPV/VLC remains in Browse. Unresolvable items expose no actions, and playback/download titles and posters fall back through `info`, `movie_data`, then catalog fields.
 - A successful external MPV/VLC episode launch immediately persists the selected episode as the latest playback-position entry and retargets the series CTA to `Play episode N`; real player telemetry overwrites that marker when available, so episode identity is reliable while exact external timestamps remain best-effort.
-- Stalker preserves this contract for regular `/series`, embedded VOD `series[]`, and lazy Ministra VOD `is_series` items: quick-start translation parameters must reach the CTA, and inline/external episode handoffs must include the parent series id plus resolved season and episode numbers. This metadata lets the dashboard render the tracked S/E badge for VOD-backed series. Existing playback rows without it remain badge-less until the episode is played again.
+- Stalker preserves this contract for regular `/series`, embedded VOD `series[]`, and lazy Ministra VOD `is_series` items; `is_series` is normalized only from `true`, `1`, or `'1'`. Quick-start translation parameters must reach the CTA, and inline/external episode handoffs must include the parent series id plus resolved season and episode numbers. Lazy VOD episode tracking IDs scope the parent series, provider episode, season key, and episode number; the previous season/episode hash is only a compatibility alias. Exact scoped positions win, while compatible legacy rows are considered only for the current parent and must match any stored season/episode coordinates. The scoped row is persisted through the strict failure-propagating boundary before confirmed legacy cleanup, so a failed save keeps the old row; compatibility is lazy and performs no schema migration or bulk rewrite.
 - Hosts pass hero chips/meta/actions as `*appDetailTags`/`*appDetailMeta`/`*appDetailActions` templates; the shell stamps them into both the hero and the About block
-- Seasons are tabs (`SeasonTabsComponent`, dropdown beyond 6 seasons) with auto-selection (playing episode's season → resume season → first) that fires the same `seasonSelected` lazy-load/enrichment hooks as manual clicks; grid/list episode view toggle persists to localStorage; season descriptions come from `get_series_info` (Xtream) or TMDB (Stalker)
-- Dashboard hero/Continue Watching clicks for an Xtream series carry a one-shot resume target through the global-recent inline-detail handoff; after series metadata and playback positions load, the exact saved episode starts at its stored position. A failed positions load leaves the target unconsumed and the handoff detail-only, so a transient storage error never starts the episode from the beginning. Ordinary global-recent grid clicks remain detail-only.
+- Seasons are tabs (`SeasonTabsComponent`, dropdown beyond 6 seasons) with auto-selection (playing episode's season → resume season → earliest season with unwatched episodes → latest non-empty season; Stalker lazy-VOD series with unhydrated seasons fall back to the first season, and a session's own watched-toggle echo never re-resolves the selection) that fires the same `seasonSelected` lazy-load/enrichment hooks as manual clicks; grid/list episode view toggle persists to localStorage; season descriptions come from `get_series_info` (Xtream, provider-first with URL-only junk filtered by `sanitizeProviderOverview` and a TMDB season-overview fallback stored as `tmdb_season_overviews` by the lazy season enrichment) or TMDB (Stalker)
+- The season header hosts a bulk watched toggle next to "Download season" (both portals): marking writes full-progress position rows for the unwatched episodes only — skipping the episode currently playing/launching, whose position ticks would overwrite the row — and a fully watched season flips the action to unwatch-all (`buildSeasonWatchToggleRequest` in `libs/ui/components/.../season-watch-toggle.util.ts`). Xtream persists via the batch IPC `DB_SAVE/CLEAR_PLAYBACK_POSITIONS_BATCH` (one SQLite transaction; the PWA data source rewrites its localStorage blob once) and refreshes `XtreamStore.loadAllPositions` after any toggle so catalog progress badges follow; Stalker loops the serialized position-mutation queue (legacy-row reconciliation, one coalesced reload) and reports direction-specific partial failures. A batch resolving after navigation neither mutates the new page's state nor shows its snackbar. A series-level counterpart sits in a `⋮` menu at the end of the header row (`SeasonWatchPresenter` owns both scopes' state math; `buildSeriesWatchToggleRequest` flattens every loaded season; the direction is always the one the label advertised). It reuses the same host machinery per portal (Xtream: scope-parameterized `SerialDetailsSeasonWatchService`; Stalker: shared `runWatchToggleBatch` core). Stalker lazy-VOD hydrates unloaded seasons sequentially first (abort with zero writes on a failed fetch; a well-formed EMPTY portal answer marks the season loaded-and-empty via `VodSeriesSeasonVm.episodesLoaded` rather than eternally pending, while `fetchVodSeriesEpisodes` rejects malformed envelopes and answers without recognizable episodes; `loadEpisodesForSeason` is single-flight per season so concurrent callers join one request), re-runs the position reconcile synchronously so hydrated episodes' legacy rows are cleaned, then rebuilds the request keeping the clicked direction — the `hasUnloadedSeasons` container input blocks the unwatch verdict and the count label until everything is loaded. Contract: `docs/architecture/embedded-inline-playback.md`
+- The dashboard hero CTA and the Continue Watching cards' explicit "Resume episode" ⋮ action for an Xtream series carry a one-shot resume target through the global-recent inline-detail handoff; after series metadata and playback positions load, the exact saved episode starts at its stored position. A failed positions load leaves the target unconsumed and the handoff detail-only, so a transient storage error never starts the episode from the beginning. Continue Watching cards' DEFAULT click is detail-only (movie-like, issue #1441), and their ⋮ menu (`buildDashboardContinueWatchingActions`) also offers "Mark as Watched" (maxes out the existing position row via `DashboardDataService.markRecentItemWatched`) and "Remove from history". Ordinary global-recent grid clicks remain detail-only.
 - See `docs/architecture/embedded-inline-playback.md` ("Two-State Detail Layout")
+
+**VOD Multi-Source** (alternative sources for a movie):
+
+- Finds the same movie in the user's other imported playlists and adds a "Sources N" chip to the Xtream VOD action row (only when ≥1 alternative exists), plus a `.source-caption` line reporting where playback is coming from. The chip opens a 660px anchored CDK-overlay popover (`libs/ui/components/src/lib/vod-sources/`; not `MatMenu`, which caps its width at 280px), reused unchanged in the inline player's now-playing bar and on the playback-error screen. It opens ABOVE the chip (right edges aligned, pressed state on the chip while open), height-capped by the overlay's flexible bounding box so only the source list scrolls, and flips below when less than the overlay `minHeight` remains above; filter chips (All / Available / HD+ / language select) compose with the host search, "Available" auto-runs check-all when no verdicts exist, and expanded copy rows show a parsed language chip + raw stream title with diff-only tags ("same as above" for the parent's copy). A row's language is `vodSourceLanguage` (`libs/shared/interfaces/src/lib/vod-source-language.util.ts`): the title's own prefix (pipe incl. Unicode lookalikes, bracketed, or ALL-CAPS spaced-dash form; Latin/Cyrillic 2–4 letters + `MULTI`; only the legacy pipe form is permissive — bracket/dash matches must also pass `isKnownLanguageTag`, since those positions carry quality/rip tags like `[HD]`) wins, else the language the stream's visible categories unambiguously carry ("EN | Netflix" — discovery returns all category names — the FTS tier joins them with `group_concat(cat.name, char(31))` under the GROUP BY it already needs, the scan tier must NOT group (per-category uniqueness means sibling rows can carry different titles and grouping would drop a matching one) and its names merge in TypeScript, prefixed categories must agree, and category prefixes must pass `isKnownLanguageTag`, since `new`/`top`/`hot` are real ISO 639-3 codes but everyday category words; the route's own row reads the one category the route arrived through, overlaid late by the host's same-key `refreshRouteFacts` since cold/direct routes load categories after discovery). Both forms are parsed guesses: browse filter and chips only, never ranking/failover/dub-warning inputs. Recognition alone is not enough — `normalizeTitleKeys` must STRIP the same tag or the copy is never discovered, so its leading-tag rule shares `PROVIDER_PIPE_CLASS` and drops the required space after a pipe. It goes no further on purpose: a wrong guess costs a filter option, a wrong strip corrupts identity, and on 1.27M real titles a case-insensitive/Cyrillic pipe rule corrupts 349 keys ("Akira | 1988", "Момо | Momo" — the name sits in the tag position) while `–`/`—` on the dash branch amputates 14 subtitled titles. The one shape that cannot decide itself is a strip leaving NO real word behind — decided by running the rest of the pipeline on the stripped form rather than re-implementing what later stages drop, since quality tags, trailing tags, underscore tags, double-dash suffixes and season markers each otherwise smuggle the strip through ("|TA| RRR - HEVC" → empty key, "IF - 2024_sub" → bare year "2024") — "IT - 65 (2023)" is the film "65" tagged Italian, "AKA - 2023" is the film "AKA" and its year — so there the leading token must be in `TRAILING_TAG_VOCABULARY` or the prefix-only list (`NF`, `EX`, `NRC`, `AMZ`, `D+`, `P+`, `OSN`, `VO`, …; a compound is read by its HEAD, so `4K-*` works and the film names "INU-OH"/"PC-4L" do not), and an unknown token keeps its title: a refused strip costs one unmatched copy, a wrong one produced a bare-year key that collapsed AKA/BDE/BRO/OUT/WIL/IF onto `"2023"`. Every vocabulary entry is one the catalog proves prefixes hundreds of ordinary titles — never one that merely looks like a provider ("MAX - 2015" is a film). Verify such widenings against the real catalog before shipping them, over movies AND series: a movie-only derivation missed `AMZ`/`D+`/`P+` and broke the numeric series 1923, 1883, 24 and 9-1-1. Checks run through a 4-slot queue and settled verdicts are cached 10 min per movie+source (`VodSourceProbeCacheService`). Both chips are handed the same `matchKind` and `vodAutoFailover` and both write the setting back. The details-page chip badge counts TOTAL **copies** across all playlists (the in-player chip still counts alternatives); the caption ("also found in N other playlists") counts distinct **playlists** via `alternativePlaylistCount`, because the popover groups one portal's copies under that portal. The action row's Favorites and Download buttons are icon-only 64px squares: filled red heart when favorited, and a download idle icon → progress ring (real percent, indeterminate spin, paused-resume) → green done-checkmark whose click reveals the file (state read from the download manager; the labeled "Play from source" secondary is gone — provider playback for a downloaded movie goes through the Sources popover).
+- Scope v1 is **Xtream ↔ Xtream, movies only, Electron only**. Stalker never reaches the `content` table and M3U is a JSON blob whose search forces `content_type:'live'`; both are additive later since `VodSourceCandidate.portalType` already carries all three. In the PWA every entry point is gated off by a bridge `typeof` check and the chip renders nothing.
+- **Metadata provenance is the core contract.** Every field is `{value, provenance}` where `api`/`probe` are facts (plain tag), `parsed` is a title-regex guess (tag prefixed `~`, warn colour), and absent renders **no tag at all** plus a `check` chip. `factualOnly()` in `vod-source-metadata.util.ts` is the only accessor allowed for ranking/failover, so guesses are structurally unable to influence a decision. `VodSourceProbeStatus` separates `fail` (contacted and refused) from `unknown` (timed out / blocked / no capability) — an unchecked source is never shown as offline. Quality is derived from pixel **width** because letterboxing crops height — but a known height vetoes the answer on every tier, since cropping only removes lines: a taller frame is a different shape (1440×1080 anamorphic or 1600×900 are not 720p, 960×540 is not 576p) and gets no tag rather than a wrong one carrying `api` provenance. The route's OWN row is never resolved, so it takes its facts from the `get_vod_info` the page already loaded (`providerVodMetadataOf`, shared with the resolver) and picks them up via `refreshRouteFacts()` even when they arrive without changing the movie identity — otherwise `audioDiffersFactually` has nothing on one side and the dub warning cannot fire on a route-to-alternative switch.
+- Discovery (`DB_FIND_TITLE_SOURCES`, trigram FTS over `content_title_fts`) is lazy and returns only what the `content` table can prove; titles whose tokens are all shorter than three characters ("Up", "It") fall back to a scan, since the trigram tokenizer cannot index them at all. A source that is never read looks exactly like one that does not exist, so: the current playlist is excluded **in SQL** and duplicates collapse there too (`GROUP BY cat.playlist_id, c.xtream_id` before the limit — one playlist's dozens of identically ranked category rows would otherwise crowd out every alternative), and the scan matches an ASCII token as a whole word (`' ' || LOWER(title) || ' ' GLOB '*[^a-z0-9]it[^a-z0-9]*'`) ordered by title length **with no row limit** — FTS keeps its 60-row window because it ranks by relevance, while a scan cannot rank, and the GLOB reads every row regardless so a limit would only truncate the answer. The year gate covers BOTH match tiers: `normalizeTitleKeys` strips bracketed segments, so "Dune (1984)" normalizes identically to "Dune" and would otherwise be an _exact_ match for the 2021 film; a bracketed year is read out of the raw title and a stated disagreement rejects the row — but the two tiers read different forms: the base tier accepts bracketed or trailing (it just stripped a trailing year, the only thing separating "Dune 1984" from "Dune 2021"), while the exact tier reads bracketed ONLY, since reaching it means both titles are the same string and a trailing number is then part of the NAME ("Blade Runner 2049" against a metadata year of 2017 would otherwise vanish once enrichment lands). A non-ASCII token cannot be folded by `LOWER()` (ASCII-only) but CAN be by a GLOB character class (UTF-8 code points), so `caseInsensitiveGlobPattern` folds the case in JS and emits one `[lowerUpper]` class per character — returning `null`, leaving the two substring tests alone, for a GLOB metacharacter or a length-changing case map (`ß`→`SS`). The movie's own year comes from `releaseTagYear` (bracketed or trailing only), never `extractYear`: a year inside the NAME ("2001: A Space Odyssey") would fail every genuine 1968 copy at the year gate and move the pin key once enrichment lands. One row inside the excluded playlist is kept when the caller names it (`keepContentId`), because a pin can point at another copy in the playlist being viewed — the host reads the pin before discovery for exactly this. Resolution is deferred to click/pin/check because `content` stores no `container_extension` and `constructVodUrl` returns `''` without one — each alternative costs a live `get_vod_info` against the foreign playlist's credentials.
+- Switching = one `inlinePlayback.set({...next, startTime})`, never null-then-set, so the player and engine survive and re-seek. The carried position is read _before_ the 15s persistence throttle, and `VodDetailsPlaybackService` uses a one-shot `resumeSettled` latch so a resuming engine's `timeupdate` at ~0 cannot overwrite the resume point. `handleInlineTimeUpdate` returns that verdict and the route feeds multi-source the requested `startTime` until the engine reaches it — one latch for both, or a switch during the initial seek would restart the film. Before anything plays there is no live position at all, so the controller is seeded from the persisted one (`seedResumeSeconds`, one-way: a live value always wins). Portal failures in the multi-source path log through the redacting `createLogger`/`redactSensitiveData` — an Xtream error message carries the stream URL, and that URL is built out of the username and password.
+- Pins are keyed portal-agnostically (`tmdb:{id}` else `title:{base}:{year}` else the yearless `title:{base}:`, `vod_source_pins` table); enrichment supplies the id and the year late, so a pin may sit under any poorer form — three key sets (`pinKeysFor`): `lookup` passes every alias most-trusted-first, `write` holds only keys naming exactly one film, and `loaded` records where the pin on screen was found — the yearless alias is readable but never written or deleted on spec, since it is shared by every remake, with the single exception of the row this session actually read. A write stores the decision under **every** key in `write` (`setVodSourcePin(db, pin, retireKeys, aliasKeys)`: one upsert per key plus the leftover retirement, in a single transaction), because a movie's identity grows — recorded only under the enriched `tmdb:` key, a pin is invisible to the next reopen, which starts out with just a title and a year, and stays invisible for good if enrichment is off or never answers. A pin is not decoration: the primary Play action starts from the pinned source (except when that button reads Stop — an active external session wins, or the control would launch a second player), and it outranks everything else in failover ranking. The row changes only after the write lands, so a refused pin is never shown as saved. Starting a pinned source loads THAT source's own playback position — progress is keyed by (playlist, stream), so the row the page loaded belongs to the route's copy. The primary button says nothing at all until that row is in, and "is it in" is answered by comparing the loaded pin **id** rather than mere presence, or re-pinning would leave the button wearing the previous copy's timecode. An external player launched for an alternative carries the OTHER playlist's ids, so `VodDetailsPlaybackBindings.activeSource` feeds one `ownsContent()` predicate used by BOTH the session matcher and the playback-position bridge — if they disagree, the page shows Stop for a session whose progress it throws away and a later switch rewinds hours. Two identity keys: `vodMultiSourceMovieKey` (title, year, tmdbId) makes TMDB enrichment re-trigger discovery and rebuild the pin keys, while `vodMultiSourceSessionKey` (`playlistId:contentId`) decides whether that rerun is a refresh or a new session — a refresh keeps the active source, its resolved facts, the tried set, the live position and any switch in flight; only a different film resets them.
+- Claims in the present tense (the "Playing from" caption and the source row's `Playing` badge) are gated on `VodDetailsRouteComponent.playbackLive`, never on `isActive` — discovery marks a source active before anything plays and it stays active after the player closes. Inline that means a `timeupdate` has arrived (`inlinePlayback()` is only the request to play); external it means the session is past `launching`. A merely selected row reads `Current`.
+- Pins are included in playlist backup as the optional `sourcePins` collection, carried under the playlist they point at; `matchKey` survives untouched and only the playlist id is remapped on restore (older archives simply lack the field).
+- Auto-failover is `Settings.vodAutoFailover`, **opt-in and off by default**, web engines only — the toggle is hidden in settings and in the sources menu on MPV, VLC and Embedded MPV, since only the built-in web players raise the playback diagnostic that triggers it (`reportsPlaybackFailures()`); it awaits a discovery still in flight before concluding there is nowhere to go (a stream can fail faster than SQLite answers) and re-checks the session afterwards, since the user can navigate during that wait; pinned Play takes the same guarded wait. Each source is tried at most once per session (`triedSourceIds` only grows), so it terminates structurally — but SELECTION is not an attempt: `setActiveSource` only selects, `markPlaying` spends the turn, and `runFailover` retires whatever is on screen before picking, so discovery selecting the route row (or a pin selecting an alternative) before anything plays cannot burn a healthy fallback; and it continues past candidates that fail to resolve rather than stopping at the first one — `switchTo` reports whether it was unresolvable (keep going) or superseded (stop), since only the former marks the candidate tried. The switch is never silent: the toast names the new playlist (through `playlistDisplayLabel`, since a stored playlist name is routinely the pasted URL with credentials), offers Undo, and warns "dub may differ" only when both sides state a spoken **language** as fact — `audioLanguage`, never `audio`. The latter holds the codec whenever the fact came from the API, and a codec cannot answer that question: AAC and AC3 routinely carry the same dub while two AC3 tracks can carry different ones, so comparing codecs fired on identical-language re-encodes and stayed silent on real dub changes. Few panels tag a language, so the warning is usually silent — which is the honest state.
+- HEAD probe reuses the main-process handler extracted to `apps/electron-backend/src/app/events/stream-probe.ts` (`STREAM_PROBE_URL`; `XTREAM_PROBE_URL` still delegates there for catchup), and carries the playlist's own `userAgent`/`referer`/`origin` (`StreamProbeHeaders`) — a panel that requires them answers 401/403 otherwise and a working source would be shown as dead. No ffprobe — the binary is not bundled.
+- See `docs/architecture/vod-multi-source.md`
 
 **Radio Player**:
 
@@ -910,12 +1413,15 @@ engine` (restart required) or
 **TMDB Metadata Enrichment** (opt-in):
 
 - Enriches Xtream and Stalker VOD/series detail views with TMDB data (plot, cast with avatar chips, director, genres, rating, artwork, YouTube trailers) via a field-level merge — the provider stays authoritative for stream data and any field TMDB can't fill; Cyrillic titles are searched with `ru-RU` so exact-title matching works
+- The M3U player consumes it too: entries recognized as movie files open in the VOD detail shell fed purely by `enrichMovie` (no provider payload to merge); the extra `Settings.m3uVodDetails` toggle (default on) sits in the TMDB settings section — see "M3U Movie Recognition" above
 - "Similar" rail in ALL detail views: TMDB recommendations matched against the provider catalog by normalized title, two-tier — exact form first, year-stripped fallback gated on year compatibility (`libs/portal/xtream/feature/src/lib/tmdb-similar.util.ts`, `normalizeTitleKeys`); cross-portal matches from other imported Xtream playlists supplement the Xtream rail and fully power the Stalker rail (`CrossPortalSimilarService` in `libs/services`, batched `DB_MATCH_TITLES`, Electron only); detail components re-initialize on route param changes since the router reuses them for detail→detail navigation
 - Season/episode enrichment: opening a season lazily fetches `/tv/{id}/season/{n}` and overlays real episode names, overviews and stills via `mergeEpisodesWithTmdb` (Xtream: `XtreamStore.enrichSelectedSerialSeason`; Stalker: overlay in the series view's `mappedSeasons`); for single-season provider slices whose title carries an explicit season marker ("The Mandalorian (2 season)", "s02", "2 сезон"), the marker overrides the provider's renumbered season (`resolveEnrichmentSeasonNumber` in `libs/shared/interfaces/src/lib/season-marker.util.ts`)
-- Dashboard: opt-in "Trending this week" rail (weekly TMDB trending matched against imported Xtream playlists via one batched `DB_MATCH_TITLES` request; Electron-only, `dashboardRails.tmdbTrending` toggle) and hero TMDB extras (backdrop fallback, rating + genre badges, memoized per session; series heroes show the tracked S/E badge from playback positions) — `DashboardTrendingService` in `libs/workspace/dashboard/data-access`, `DashboardHeroTmdbService` in `libs/workspace/dashboard/feature`; both load async after first paint
+- Dashboard: opt-in "Trending this week" rail (weekly TMDB trending matched against imported Xtream playlists via one batched `DB_MATCH_TITLES` request; Electron-only, `dashboardRails.tmdbTrending` toggle), a "Because you watched" recommendations rail (`dashboardRails.tmdbRecommendations` toggle; TMDB has no account-free "for you" endpoint, so `DashboardRecommendationsService` seeds per-title `recommendations` — already riding in every cached details payload — from up to 3 recently watched movies/series via the shared `dashboard-tmdb-lookup.util.ts` attempt builder, interleaves them, dedupes by TMDB id (title collisions are resolved after matching, by the catalog row, so same-titled remakes both reach the matcher), drops watched/favorited titles through a year-gated exclusion index built by the same lookup-attempt builder (so a Stalker embedded-VOD series indexes under `series:` despite routing as `movie`, and its stored `o_name` alias counts too; only the PRIMARY attempt is indexed, or a watched film would swallow the same-named show) on two title tiers (exact normalized title plus a year-gated base tier so a stored "Inception 2010" excludes TMDB's "Inception" while "Blade Runner 2049" does not swallow the 1982 film), keeps only year-compatible `DB_MATCH_TITLES` matches — matching/exclusion run through both the localized title and the TMDB original-title alias, and a year-incompatible first alias falls through to the other — and hides the rail below 5 cards while resetting the latch; successful loads are keyed by TMDB language + seed set + watched/favorited exclusion set + imported-playlist ids, an emptied history clears the rail, a mid-flight load request is queued, and a no-seed-resolved load retries instead of latching) and hero TMDB extras (backdrop fallback, rating + genre badges, memoized per lookup identity; series heroes show the tracked S/E badge from playback positions) — `DashboardTrendingService` in `libs/workspace/dashboard/data-access`, `DashboardHeroTmdbService` in `libs/workspace/dashboard/feature`; both load async after first paint. The hero lookup must carry the same identity the detail view used, not just the display title — `extractStalkerItemTmdbHints` (`libs/shared/interfaces`) reads title/original title/year/tmdb id off a stored Stalker entry; an unconfirmed Stalker `movie` verdict retries as `tv` without the id (the default answer earns a retry, and an id is valid only for its own media type), while a `tv` verdict — reached only on positive series evidence — gets no retry back to `movie`; a confirmed `movie` gets none either, and is confirmed by an Xtream `source` (that catalog files movies and series apart) or by a stored Stalker `info.tmdb_id` (never a provider claim, only a match this app already gated). The lookup key is the WHOLE attempt sequence, since two rows can share title/year/id yet differ in whether a `tv` fallback follows, and callers memoize by it. Stalker items never reach the `content` table, so their backdrop rides in the stored entry (`info.tmdb_backdrop`) rather than `content.backdrop_url`, and the activity mappers surface it as `backdrop_url`. Xtream rows carry the same identity on the `content` row: the detail views back-fill `tmdb_id`/`release_year`/`original_title` next to `backdrop_url` (`xtreamDetailContentMetadata` → `XtreamStore.backfillContentMetadata` → `DB_SET_CONTENT_METADATA_IF_MISSING` → `persistContentMetadataIfMissing`), the activity SELECTs project them onto `PortalActivityItem`, and `buildDashboardTmdbAttempts` reads them back. Writes are per-column and never overwrite (enrichment supplies the pieces at different times, so a row-level guard would let the first arrival block every later one); `release_year` is the year the PROVIDER stated, never one read out of the title (readers still apply that fallback themselves, so an absent column means "no provider date" — and "2001: A Space Odyssey" can never be frozen in as a 2001 film), which holds only because the TMDB merge marks the dates it substitutes itself with `tmdb_supplied_release_date` and the extractor skips those — the merge's other `tmdb_*` fields are conditional on having content, so they cannot serve as an "enrichment ran" signal; the id is stored unvetted because every consumer re-gates it through `assessProviderId`; and there is no media-type column, since for Xtream `content.type` already is the media type. Both sides validate through `normalizeContentMetadataPatch` (`libs/shared/interfaces`), so legacy rows, never-opened rows and provider junk all collapse to the title-only fallback — as does the PWA, whose catalog cache is rebuilt from the API on every load
 - Series detail views show a TMDB production-status chip (`tmdb_status`, e.g. Ended / Returning) — TMDB sends `status` in English regardless of request language, so it is normalized to a token by `normalizeSeriesStatus` and rendered via `seriesStatusLabelKey` translations; person pages show `deathday` alongside `birthday`
-- Actor pages: cast avatar chips are clickable (TMDB person id) and open `actor/:personId` inside the current portal — TMDB person bio + full filmography (acting + directing credits merged; acting wins the per-title dedup); director/creator chips (`tmdb_directors` via `enrichedDirectors`/`enrichedCreators` in `tmdb-credits.ts`) are clickable the same way and open the same person page; Xtream matches titles against the loaded catalog (direct navigation), unmatched titles and all Stalker titles open the portal search prefilled (`?q=`); the in-portal search page shows a Back button (`SearchLayoutComponent.showBackButton` → `Location.back()`) so users can return to the actor page; shared UI in `libs/ui/shared-portals` (`ActorViewComponent`)
+- Actor pages: cast avatar chips are clickable (TMDB person id) and open `actor/:personId` inside the current portal — TMDB person bio + full filmography (acting + directing credits merged; acting wins the per-title dedup); director/creator chips (`tmdb_directors` via `enrichedDirectors`/`enrichedCreators` in `tmdb-credits.ts`) are clickable the same way and open the same person page; Xtream matches titles against the loaded catalog (direct navigation), unmatched titles and all Stalker titles open the portal search prefilled (`?q=`); the in-portal search page shows a Back button (`SearchLayoutComponent.showBackButton` → `Location.back()`) so users can return to the actor page; shared UI in `libs/ui/shared-portals` (`ActorViewComponent`, whose grid is the extracted `TitleResultsComponent` shared with the Discover pages)
+- Discover pages (clickable metadata chips, issue #1449): year, genre, and country chips on all four detail views (Xtream VOD/series, shared Stalker detail, Stalker series) are clickable when TMDB matched the item — the merges emit structured `tmdb_genres`/`tmdb_countries` (+ `tmdb_media_type` on Stalker), the year chip renders from provider data so it is gated on the navigation TARGET instead of the item's identity — `createDiscoverFacetNavigation()` offers a facet only when a playlist resolves AND `TmdbEnrichmentService.isEnabled()`, since Discover reads its results from TMDB (gating on `typeof tmdb_id === 'number'` is WRONG: the field is `number | string` and a provider-sent number satisfied it with enrichment never having run) — and clicks navigate via `discoverLink()` (`libs/portal/shared/util`) to the portal-scoped `discover` route (`?type&year&genre&genreLabel&country&countryLabel`). The route containers (`XtreamDiscoverRouteComponent`, `StalkerDiscoverRouteComponent`) clone the actor-page pattern: TMDB `/discover` top-5-pages by popularity via `TmdbDiscoverService` (session-only Map cache, never persisted to `tmdb_metadata`), matched against the catalog (Xtream in-memory index / all-portals `DB_MATCH_TITLES`; Stalker search-prefill), rendered by `DiscoverViewComponent`. Facets change via query params on the same route instance, so the discover load is guarded by recency (`createLatestRequestGuard()`) — A→B→A leaves two in-flight requests sharing one `discoverFacetKey()` — while the catalog match uses the guard for its spinner and the facet key for its results; availability also waits for catalog readiness (in-flight flags, not `isContentInitialized`, so a failed import still settles). See "Discover Pages" in `docs/architecture/tmdb-metadata-enrichment.md`
 - Actor page "All portals" scope (Electron only): batched `DB_MATCH_TITLES` worker op (trigram FTS over all imported Xtream playlists, `apps/electron-backend/src/app/database/operations/title-match.operations.ts`); `normalizeTitle` is shared renderer/worker via `libs/shared/interfaces/src/lib/title-normalization.util.ts`
+- All `DB_MATCH_TITLES` consumers (Trending rail, "Because you watched" recommendations rail, cross-portal Similar rail, actor "All portals" scope) resolve the worker's flat result list through the shared `groupTitleMatchesByKey()` + `pickTitleMatch()` in `libs/services/src/lib/catalog-title-match.service.ts`. The grouping keeps EVERY row per `type:exactNormalizedTitle` on purpose — the year that separates same-titled rows belongs to the lookup, which the grouping cannot see, so collapsing first made a catalog holding both "Dune 1984" and "Dune 2021" drop whichever copy the user actually owns. `pickTitleMatch` then ranks year-compatible rows by evidence (exact year → untagged → any compatible) across all title aliases at once; only the recommendations rail passes an alias (TMDB `original_title`, via `candidateLookup()`). Multi-source VOD discovery deliberately stays off these helpers: there every copy is a distinct selectable source, not one best answer
 - Opt-in via `Settings > Metadata (TMDB)` (sends titles to TMDB); the section also has a "check key" button and a cache panel (row count + payload size, with a clear button); optional user API key overrides the embedded default (`DEFAULT_TMDB_API_KEY` in `libs/services/src/lib/tmdb/tmdb-config.ts` — an empty placeholder in the repo by design; the real key lives in the `TMDB_API_KEY` GitHub Actions secret and is injected at CI build time by `tools/tmdb/inject-tmdb-key.mjs`)
 - Match confidence: a provider `tmdb_id` is a strong hint, not gospel — its payload is weighed against the item (`assessProviderId`: title or year agrees → use it; both years known and incompatible → the search may take over; title-only mismatch → keep it, since TMDB localizes titles). A 404 marks the id dead (`badProviderId:<id>` row); transient failures never do. Without a usable id: normalized-title + year (±1) search with a strict gate — no confident match means no enrichment
 - Detail views render provider data immediately; enrichment patches the selection asynchronously (staleness-guarded)
@@ -923,6 +1429,43 @@ engine` (restart required) or
 - Service layer: `libs/services/src/lib/tmdb/`; store glue: `libs/portal/xtream/data-access/src/lib/stores/xtream-tmdb-enrichment.ts` and `libs/portal/stalker/data-access/src/lib/stores/stalker-tmdb-enrichment.ts` (hooked in `withStalkerSelection().setSelectedItem`)
 - TMDB attribution (logo + disclaimer) is required and shown in the settings TMDB section and About
 - See `docs/architecture/tmdb-metadata-enrichment.md`
+
+**Portal Account Info**:
+
+- Both portal types expose an account-info dialog through the same entry points: header playlist switcher (bottom section for the active playlist + per-row ⋮ menu), dashboard source card ⋮ menu, and the command palette. Gates use the shared predicates in `libs/shared/interfaces/src/lib/portal-account-playlist.utils.ts`; `WorkspaceShellHeaderService.openAccountInfoFor()` picks the dialog by playlist type.
+- Xtream: `AccountInfoComponent` (`libs/portal/xtream/feature/src/lib/account-info/`), queries `get_account_info` live.
+- Stalker: `StalkerAccountInfoComponent` (`libs/portal/stalker/feature/src/lib/stalker-account-info/`), cached-first — renders the import-time `stalkerAccountInfo` snapshot instantly, then `StalkerAccountInfoService` refreshes, routing by the observed portal MODE rather than the URL shape (full mode: handshake+`get_profile`; simple mode: best-effort `account_info/get_main_info`, nested `js.account_info` envelope or flat fields), and re-routing when a lazy repair changes the mode mid-request. Details: `docs/architecture/stalker-portal.md` ("Account Info Dialog").
+- Dashboard source cards carry a passive subscription-expiry chip (amber within 7 days, error-toned once expired); account details remain behind ⋮ → Account info. `DashboardSourceExpiryService` (`libs/workspace/dashboard/data-access/`) gathers the facts: Xtream from `PortalStatusService.checkPortalStatusDetails()` (the switcher's cached status check, now carrying `exp_date`), Stalker from the persisted `stalkerAccountInfo` snapshot — it lives in the playlist payload, not on meta rows, so each Stalker source costs one memoized full-playlist read.
+
+**Stalker Portal Mode and Endpoint Discovery**:
+
+- Every resolved Edit commit is guarded by the source connection authority captured when Edit began. Electron checks it inside the per-playlist write queue; PWA performs the read, predicate, and cursor update in one IndexedDB readwrite transaction, so another tab cannot interleave a replacement. The one-time legacy mode-flag migration also scans and updates rows through one readwrite cursor transaction and never replays a pre-transaction snapshot. Delete/restore or replacement under the same playlist ID aborts both ordinary and post-navigation writes; the latter still merge concurrent title/EPG metadata when authority matches.
+- Portal mode (full vs. simple) follows OBSERVED behavior, never a URL substring. The single predicate is `isFullStalkerPortalPlaylist()` / `isFullStalkerPortalUrl()` in `@iptvnator/shared/interfaces` (`stalker-portal-mode.util.ts`): the persisted `Playlist.isFullStalkerPortal` flag is authoritative and the URL shape is a fallback for legacy rows only. Three diverging copies of this rule used to exist and shipped broken configurations (#850/#686/#755) — never re-implement it. A token-enforcing `portal.php` panel is a full portal; a `server/load.php` endpoint that answers without a token is a simple one.
+- Import requires an explicit HTTP(S) scheme but accepts a bare host, `/c`, or a concrete `.php` address. It probes candidates in order (a pasted `.php` endpoint first, then `<base>/portal.php` → `<base>/server/load.php` → `<base>/stalker_portal/server/load.php`) and classifies each by behavior — a token-less `itv/get_genres` returning data proves a token-free panel; the plain-text auth failure proves a full portal, confirmed by a real handshake + `get_profile`. `StalkerPortalDiscoveryService` (`libs/portal/stalker/data-access`) persists and displays the proven endpoint and mode. An unreachable panel-style import remains allowed with a warning; a bare host falls back to `<base>/portal.php`, while canonical-shaped unreachable addresses still abort. If bounded discovery returns while abandoned authentication remains on the wire, the refusal is shown immediately but Add and every form field stay disabled until its settlement promise resolves.
+- The playlist-info Edit dialog loads the complete persisted Stalker row before enabling the form, because Electron's startup metadata projection omits payload-only serial/device/signature/mode fields; a summarized row must never render and then persist an empty portal identity. A metadata-only Save omits connection/mode fields from its queued update, so the stored connection stays byte-identical even if the dialog hydrated before a concurrent discovery committed; it skips discovery. A persisted `portalUrl` keeps the row on the Stalker save path even if legacy Xtream fields remain. Changing URL, MAC, credentials, serial, device IDs or signatures blocks duplicate saves, disables dialog closure for the validation window, and runs the existing discovery service through the app-provided `STALKER_PLAYLIST_CONNECTION_EDITOR` token, keeping Stalker data-access out of `playlist-shared-ui`. Before discovery, PWA acquires a shared playlist-authority barrier plus an exclusive origin-wide per-playlist Web Lock and verifies the persisted source authority while holding both. Add/delete, backup restore, and bulk replacement take the same row lock, while Delete All takes the barrier exclusively, so authority cannot change between preflight and the identity-bearing request. A concurrent Edit or stale dialog fails before remote discovery; a replacement waits for the current owner. Same-tab Save first publishes its local authentication owner, drains an existing lazy repair through actual Web Lock request completion, and only then asks for the conflicting row lock; repair callers already queued behind that owner observe the Edit block and do not reserve again. PWA fails closed if Web Locks are unavailable, while Electron relies on its single-instance local owner. The reservation blocks every new authentication (including fingerprint-equivalent URL edits) and repair, drains existing work, and rechecks ownership after every asynchronous drain/rebase; ordinary failure releases it without changing the saved or runtime connection. If discovery returns after its bounded drain while an abandoned authentication is still on the wire, that result carries its settlement promise and both reservations remain installed until it resolves, so catalog, watchdog, repair, or retry authentication cannot race a late `get_profile`. Once Save starts, navigation or dialog destruction does not discard a later successful result: `get_profile` may already have pinned the submitted serial/device identity remotely and cannot be recalled. That late commit uses `transformPlaylistMeta()` inside the per-playlist write queue to merge only connection/session fields into the current row, so newer title/EPG/metadata edits win; its returned row feeds the state-only update together with discovery's transient session patch, so NgRx replaces or clears its session fields while success UI is suppressed. Success uses one awaited write to atomically replace endpoint, mode, normalized identity and session metadata, then feeds its complete merged row into the state-only NgRx update and active `StalkerStore`/session/watchdog replacement before another same-route request can use the old connection. This preserves playback headers and other metadata absent from the form. Runtime configuration authority covers the observed full/simple mode as well as the session fingerprint, and both authenticated and direct simple requests cross its guard before dispatch and after transport, so a same-endpoint mode change rejects stale snapshots and completed responses in either direction. A changed authority may rebase only when the persisted row proves that it owns the same playlist ID, keeping delete/restore and backup merge usable. The transient `PlaylistMetaUpdate.stalkerSessionPatch` preserves on absence, clears on `null`, and fully replaces from an object before storage; it is projected onto existing flat playlist fields and never changes the DB or backup shape.
+- `executeStalkerRequest()` (`stores/utils/stalker-request.utils.ts`) is the choke point for catalog, content and playback requests: mode routing, the in-session repair override, and retry-once all live there. Four callers are deliberately outside it because they run below or before the thing it routes on — `StalkerAuthApi` (handshake/`get_profile`/`do_auth`, which the full-portal branch is built from; routing them back would recurse), `StalkerPortalDiscoveryService` (probes precede the mode they determine), `StalkerAccountInfoService.fetchViaProfile()`, and `StreamResolverService` for a collection item with no playlist row. They are exempt from the routing, not from the repair it hooks, but only `fetchViaProfile()` wires `StalkerPortalRepairService` itself: discovery is what repair _drives_, the row-less resolver branch has no playlist to repair, and the auth layer needs nothing — a terminal handshake failure propagates out of the full-portal branch into whichever `executeStalkerRequest()` call triggered the authentication, which is why terminal handshake failures are a repair trigger. Anything new that is not auth or discovery belongs on `executeStalkerRequest()`. Existing playlists are repaired LAZILY (`StalkerPortalRepairService`) — only after a request fails with a shape a wrong endpoint/mode produces, at most once per source configuration per playlist per session, persisted through the atomic `PlaylistsService.transformPlaylistMeta`. Before an unrecorded repair reads the persisted source or calls discovery, PWA takes the same playlist-authority barrier and row reservation as explicit Edit; contention or unavailable Web Locks declines repair without a remote request, and ownership is held through the conditional transform. This prevents repair in another tab from authenticating alongside Edit or crossing delete/restore. The persisted-row preflight still verifies that the caller owns the failing source, so a late pre-Edit request cannot authenticate against the old portal after Edit commits and invalidate the newly saved token. Its in-session override is bound to source endpoint, mode, device identity, and credentials; an Edit or backup restore with the same playlist ID but different connection metadata retires the override and token only after the persisted row confirms ownership and only if no explicit Edit took ownership during that read, so a delayed stale request cannot remove valid runtime state or a token negotiated by the overlapping Edit. Each repair installs a session-level authentication fence synchronously, drains the existing token slot before probing, and keeps request routing ahead of effective-connection selection until repair finishes; an abandoned transport keeps both the repair and session fences until it actually settles. There is deliberately **no eager one-shot migration**: a portal that works is never re-probed.
+- Explicit Edit advances the repair generation before installing its resolved session. Lazy repair captures that generation before any probe-history row read and rechecks it with the active Edit fence before reserving discovery. A repair that started earlier is therefore discarded even if it was restoring a `discarded` history record or had already verified its row, so it cannot probe alongside Edit or restore an older endpoint, mode or token afterwards.
+- Both transports build the wire format from the same shared builders in `@iptvnator/shared/interfaces` — `buildStalkerRequestUrl()`, `buildStalkerIdentityRequestContext()`, `encodeStalkerCmdValue()` — so the Electron and PWA legs cannot drift. The mock's `/stalker` mirror shares the identity builder only — it dispatches in-process, so there is no portal URL to build and it mirrors the `JsHttpRequest` default by hand. Never fork any of them.
+- Simple portals skip the auth lifecycle (no handshake, token or watchdog) but their requests are not stripped to a bare cookie: they still carry everything the shared builder derives from a MAC alone (`mac`/`stb_lang`/`timezone` cookie, MAG `User-Agent`/`X-User-Agent`, `Accept` set). They do NOT carry the serial — `dispatchStalkerRequest()`'s direct branch forwards only `url`/`macAddress`/`params`, so no `SN` header and no serial-derived `__cfduid`, whatever the playlist stores. That gate is on API requests only: `buildStalkerExternalPlaybackHeaders()` reads the serial off the playlist row with no mode check, so the same simple-mode playlist does send `SN`/`__cfduid` with a portal-owned stream.
+- Contract: `docs/architecture/stalker-portal.md` ("Portal Mode and Endpoint Discovery", "Request Transport and `cmd` Encoding").
+
+**Stalker Session Authentication**:
+
+- Full portals authenticate through `StalkerSessionService` (`libs/portal/stalker/data-access/src/lib/stalker-session.service.ts`), a thin facade over `stalker-auth.api.ts` (handshake / `get_profile` / `do_auth` + the `authenticate()` orchestration), `stalker-authenticated-request-client.ts`, `stalker-edited-session-coordinator.ts` (authoritative Edit/session serialization), `stalker-watchdog.controller.ts`, `stalker-token-cache.ts` (in-run token + pending-auth state, tagged with the identity fingerprint), `stalker-session-store.ts` (the session persisted on the playlist row), `stalker-portal-error.ts` and `stalker-response-classification.ts`.
+- `get_profile`'s `js.status` decodes as: full profile/`0` = OK, `1` = refused (`device-conflict` when the message says so, otherwise `blocked`), `2` = login/password required → `do_auth` then `get_profile` with `auth_second_step=1` (only that retry sets it). A bare `{status: 1}` with no message is a refusal, not a success. Credentials come from the import dialog's username/password fields and are persisted so runtime re-auth can repeat `do_auth`. Status is read through a numeric coercion — portals stringify it.
+- Refusals throw `StalkerPortalError` (`login-required` / `login-rejected` / `device-conflict` / `blocked` / `auth-failed`) carrying the portal's markup-stripped `msg`/`block_msg` in `portalText`; the import dialog and the workspace context panel render it. Read it with `asStalkerPortalError()`, never `instanceof` in lazy-loaded code. `device-conflict` splits off `blocked` via `isStalkerDeviceConflictMessage` (narrow phrase set, structured `msg` only): it is the one refusal with a remedy, and the portal's own "Your STB is damaged" wording points away from it, so both surfaces lead with their own headline and append the portal text.
+- Auth failures are HTTP 200 + plain text (`Authorization failed.` / `Access denied.` / `Unauthorized request.`), classified at the transport boundary by `libs/shared/interfaces/src/lib/stalker-auth-failure.util.ts`; the Electron handler **returns** a `{stalkerAuthFailure}` marker rather than throwing, because `ipcRenderer.invoke` strips custom properties off rejections.
+- The handshake is idempotent, so `Playlist.stalkerToken` is re-presented and `get_profile` is skipped when it comes back unchanged (unless `not_valid` is set, or the persisted `stalkerSessionIdentity` no longer matches `stalkerSessionFingerprint(playlist)` — portal endpoint (origin, path, and URL Basic-auth userinfo) + identity + credentials; an edited endpoint, MAC or login must never inherit the previous session, and a token with no recorded fingerprint counts as unverified. The path is deliberate: discovery preserves tenant base paths, so `/tenant-a/server/load.php` and `/tenant-b/server/load.php` are different portals on one host and must not share a session; URL parsers omit `user:pass@` from `origin`, so userinfo is tracked separately while endpoints without it retain their previous fingerprint across upgrades). The advertised watchdog cadence is persisted alongside it (`stalkerWatchdogTimeout`/`stalkerTimeslot`) precisely because that reuse skips the response carrying it — and the skip only applies once the cadence is known, so a legacy token-only playlist profiles once instead of being stranded on the default. The _effective_ cadence is stored, so stored absence means "never profiled" and nothing re-profiles on every start.
+- Watchdog: `get_events` immediately (`init=1`), then every `watchdog_timeout` s (default **120**, clamped 30–3600) offset by `timeslot`. Ping failures are logged only — a missed ping never invalidates auth, it only affects the portal's "online" reporting.
+- Full contract: `docs/architecture/stalker-portal.md` ("Session Authentication Lifecycle").
+
+**Stalker Identity Hardening**:
+
+- The MAC is canonicalized to `00:1A:79:XX:XX:XX` by `normalizeStalkerMacAddress` (`@iptvnator/shared/interfaces`) at the INPUT boundary only — the import dialog and the playlist-info edit dialog, on blur and again on submit. Stored MACs are never rewritten on read: the MAC is the account key, and a transport-level rewrite would move `stalkerSessionFingerprint` for every existing playlist with no user action. An edit does move it, deliberately. `validateStalkerMacAddressControl` is the shared form validator, typed structurally so the contracts lib stays Angular-free.
+- Format is enforced, the Infomir OUI is **advisory only**: `hasInfomirMacOui` drives a hint, never a rejection. The stock filter is off on most reseller panels, so non-Infomir MACs are working setups; refusing one would lock those users out (`AUTH_REJECTED_MAC` in `stalker.e2e.ts` relies on a non-Infomir MAC being importable, and the mock only applies `enforceMacFormat` on the strict endpoint). The edit dialog additionally grandfathers the stored value via `createStalkerMacAddressValidator` — a pre-validation playlist may hold arbitrary text, and blocking Save would strand its title/URL/EPG edits too.
+- `deriveStalkerDeviceIdsFromMac` returns the StbEmu / `stalker-to-m3u` PAIR: `SHA256(MAC)` for `device_id` and `SHA256(MAC + 'stalker')` for `device_id2`. They must differ — a real box reports them from separate firmware calls and never equal, and the pinning is permanent, so an identical pair could never be corrected. Offered as an opt-in checkbox **at import only**, writing into the visible fields and persisted as literal strings — never recomputed at request time. The portal pins the first non-empty `device_id`/`device_id2` to the MAC forever, refuses a different one, and treats a later empty value as a permanent lockout, so a derived value that silently followed a MAC edit would be unrecoverable. The edit dialog offers no derivation and shows `DEVICE_ID_PINNED_WARNING` once an ID is stored.
+- `get_profile` reports one coherent MAG250 via `STALKER_STB_PROFILE_PARAMS` (`ver`, `stb_type` — previously empty —, `hw_version`, `image_version`, `client_type`, `num_banks`, `video_out`, `hd`). Constants, identical per playlist, deliberately outside both fingerprints.
+- Contract: `docs/architecture/stalker-portal.md` ("Stalker Identity Policy").
 
 **Favorites and Recently Viewed**:
 

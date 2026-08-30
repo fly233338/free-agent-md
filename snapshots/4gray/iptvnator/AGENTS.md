@@ -12,13 +12,38 @@ This file provides guidance to coding agents working in this repository.
 ## Agent Bootstrap
 
 - In a fresh worktree, run `pnpm install --frozen-lockfile` before relying on Nx project discovery, lint, test, or build commands. Without `node_modules`, `pnpm nx show projects` will fail because the local Nx modules are unavailable.
+- Re-run the install whenever the checkout moves — `git pull`, `git reset --hard`, a rebase, or a worktree branch being re-pointed. Git rewrites `pnpm-lock.yaml` but never re-links `node_modules`, so a tree installed at an older commit keeps serving the old dependency versions and tests fail locally while CI stays green. Check with `cmp pnpm-lock.yaml node_modules/.pnpm/lock.yaml`; any difference means the tree is stale, and a plain `pnpm install --frozen-lockfile` in that directory repairs it. Each worktree needs its own install — with no local `node_modules`, Nx aborts with `Could not find ".modules.yaml"`.
 - After dependencies are installed, verify workspace discovery with `pnpm nx show projects`.
 - Use scoped path aliases from `tsconfig.base.json` such as `@iptvnator/services`, `@iptvnator/shared/interfaces`, and `@iptvnator/ui/components`. Do not add new imports from legacy bare aliases such as `services`, `shared-interfaces`, `components`, `m3u-state`, or `database`.
 - Every Nx project should keep `scope:*`, `domain:*`, and `type:*` tags in `project.json` so `@nx/enforce-module-boundaries` remains useful for humans and agents.
 - See `docs/architecture/nx-workspace-boundaries.md` for the current Nx tag and alias policy.
-- ESLint enforces `max-lines` on TypeScript files: production code targets under 300 with a hard maximum of 400, while tests (`**/*.spec.ts`, `**/*.e2e.ts`, `apps/*-e2e/**`) are held to 1200 — a long spec signals coverage, not the design debt the production limit catches. Blank lines and comments are not counted, so a docblock never forces a split. Limits live in `tools/eslint/max-lines-config.mjs`, imported by both `eslint.config.mjs` and the generator so the rule and the baseline cannot drift. Files that predate the rule are baselined in `tools/eslint/max-lines-baseline.mjs`; after splitting a file, regenerate it with `node tools/eslint/generate-max-lines-baseline.mjs` (it runs ESLint's own rule rather than counting lines itself). Never add new files to the baseline — the list must only shrink. A new file that genuinely cannot be split (for example a function serialized into another process) instead carries its own file-wide `/* eslint-disable max-lines -- <why> */`; the generator skips those files, so a justified exemption never lands in the baseline. Remove such a directive once ESLint reports it as unused.
+- Keep `nx` and every official `@nx/*` package on the same exact version; run
+  `pnpm run deps:nx:validate` after dependency updates.
+- Vite `7.3.6`, resolved through Angular's build tooling, is patched with
+  bounded transform prefilters and the upstream precise matchers in
+  `patches/vite@7.3.6.patch`. Keep the patch until supported Angular tooling
+  resolves a Vite version containing the fix, and run `pnpm run deps:vite:test`
+  after related dependency updates.
+- A directory holding files consumed by other projects must be an Nx project.
+  Nx builds its graph from TypeScript imports only, so a relative SCSS `@use`
+  across project roots creates no edge and the imported file lands in no task
+  hash — edits then return a cache hit instead of rebuilding. Shared partials
+  live in `libs/ui/styles` (project `ui-styles`), and each consumer declares
+  `"implicitDependencies": ["ui-styles"]`. Run `pnpm run styles:inputs:validate`
+  after adding a cross-project stylesheet import.
+- Update Nx with `pnpm nx migrate nx@<target> --skipInstall`, regenerate the
+  lockfile, run generated migrations when present, and validate before opening
+  a PR. Major updates are always manual. Replace incomplete Dependabot security
+  PRs with a coordinated update instead of editing the bot branch.
+- ESLint enforces `max-lines` on TypeScript files: production code targets under 300 with a hard maximum of 400, while tests (`**/*.spec.ts`, `**/*.spec-data.ts`, `**/*.e2e.ts`, `apps/*-e2e/**`) are held to 1200 — a long spec signals coverage, not the design debt the production limit catches. Blank lines and comments are not counted, so a docblock never forces a split. Limits live in `tools/eslint/max-lines-config.mjs`, imported by both `eslint.config.mjs` and the generator so the rule and the baseline cannot drift. Files that predate the rule are baselined in `tools/eslint/max-lines-baseline.mjs`; after splitting a file, regenerate it with `node tools/eslint/generate-max-lines-baseline.mjs` (it runs ESLint's own rule rather than counting lines itself). Never add new files to the baseline — the list must only shrink. A new file that genuinely cannot be split (for example a function serialized into another process) instead carries its own file-wide `/* eslint-disable max-lines -- <why> */`; the generator skips those files, so a justified exemption never lands in the baseline. Remove such a directive once ESLint reports it as unused.
 - Project `lint` targets that shell out to eslint must quote the glob, e.g. `eslint "apps/<project>/**/*.ts"`. An unquoted `**` is expanded by the POSIX shell on Linux and macOS (which has no `globstar`, so it matches only a shallow subset of files) while Windows passes the literal pattern to ESLint, which expands it recursively — the two hosts then lint different file sets. The target still reports success either way, so a broken glob hides missing coverage instead of failing. After changing such a target, compare the linted file count against `find <project> -name '*.ts' | wc -l`.
-- Repository-specific skills are committed under `.codex/skills/`. Claude Code only discovers skills under `.claude/skills/`, so `release-notes` and `release-cut` are mirrored there and the two copies must be kept in sync; every other entry in `.claude/skills/` is personal and stays gitignored. If an external agent does not support skills, treat those files as concise ownership docs.
+- Repository-specific skills live under `.codex/skills/`.
+- Frontmatter descriptions are trigger-only and begin with `Use when`; keep
+  each skill at or below 500 words.
+- Run `pnpm run skills:validate` after editing a committed skill or a literal
+  path it documents.
+- Keep `.codex` and `.claude` copies of `release-notes` and `release-cut`
+  byte-identical.
 
 ## Documentation After Changes
 
@@ -40,10 +65,16 @@ This file provides guidance to coding agents working in this repository.
 - Any change a user could notice — new behavior, changed behavior, bug fix, performance win, breaking change — must add one note file under `.changes/` in the same PR. Format, field table, and writing rules: `.changes/README.md`.
 - Name it `<area>-<short-slug>.md`; `area` matches the conventional-commit scope. There is no version field — the release version is chosen at release time.
 - Write the body for a user, not a reviewer: "the player now remembers volume between episodes", not "hoist volume state into the session". Max 400 characters; depth belongs in the release blog post.
+- `type: internal` records invisible maintenance. Internal notes stay collapsed in `CHANGELOG.md`, are omitted from the blog scaffold, and are removed from the authored public GitHub body by `extract-changelog-section.mjs --public`; GitHub's generated commit list remains separate, so an internal-only release can have an empty authored body.
+- `highlight: <short headline>` (max 60 characters, rejected on `type: internal`) marks a note as one of the release's two or three headline changes. Highlights lead the Telegram/Reddit announcement drafts, become ready-made blog section headings, and are the input the highlight-card generator renders from. A release where everything is a highlight has none.
 - Skip the note for test-only changes, docs, CI/workflow plumbing, and pure refactors with no behavior change. When skipping on a PR that touches `apps/**` or `libs/**`, apply the `no-release-note` label.
 - CI enforces this: the "Release note gate" job in `.github/workflows/ci.yml` fails PRs that change runtime code without an added `.changes/*.md` or the label (policy in `tools/release/check-release-note-gate.mjs`; tests/e2e/website/mock-server/docs paths are auto-exempt).
-- The `release-notes` skill covers writing notes; the `release-cut` skill covers the full release sequence.
+- The `release-notes` skill covers writing notes; the `release-cut` skill covers the full release sequence. Canonical contract — surfaces, ordering constraints, the required draft asset set: `docs/architecture/release-pipeline.md`.
 - Validate before finishing: `pnpm run release:notes:validate`.
+- Announcement drafts and highlight cards are built from the same notes: `pnpm --silent run release:notes:telegram` and `pnpm --silent run release:notes:reddit` print paste-ready posts to stdout (Telegram is guaranteed to fit its 4096-character limit; `--silent` keeps pnpm's lifecycle banner out of a redirected post), and `pnpm run release:cards:generate` renders branded 1200×630 highlight cards plus a release hero into `dist/release-highlight-cards/v<version>/`. All three read `highlight:` metadata that exists only in the note files, so they must run before `build-release-notes.mjs --consume`; the cards additionally need `release:screenshots` to have run. Nothing is posted or copied into the website tree automatically.
+- Pushes to `master` and `v*` can publish Docker images. A `v*` tag build creates a draft GitHub release.
+- `pnpm run release:verify:draft` waits for that tag build (polling until the run is indexed, then `gh run watch`) and verifies the draft's status, authored body, and complete required asset set. It is read-only and deliberately fails on an already-published release, because it is the gate that runs before publication.
+- Publishing the GitHub release verifies its Snap assets and automatically uploads them to `edge`; installed-Snap smoke and candidate/stable promotion remain manual.
 - Release-post screenshots come only from the release capture script running against the mock servers. Never add a screenshot taken from a real playlist or account to `apps/website/public/blog/**` — real streams, logos, and metadata are copyrighted, and credentials must never reach a published image.
 - Final task summaries should state whether a release note was added or why it was skipped.
 
@@ -149,6 +180,22 @@ Key files:
   engine-neutral `PlayerController` contract, standalone
   `app-player-controls`, generic web-video adapter/helper, and component-scoped
   `WEB_PLAYER_SHARED_CONTROLS` rollout token.
+- The subtitle menu carries capability-gated advanced subtitle support
+  (#1408): external subtitle file loading, a ±0.5 s timing-offset row, and
+  size/color styling persisted in the shared `subtitleStyle` localStorage key.
+  HTML5/ArtPlayer implement it through the neutral source bridge (`.srt`/`.vtt`
+  via a DOM file picker with encoding detection, native `TextTrack` rendering,
+  `::cue` styling, delay only while the loaded file is the selected track;
+  picks are source-generation-guarded and engine deselection precedes external
+  track activation). The canonical style shape and clamp/normalize rules are
+  shared with the main process via `@iptvnator/shared/interfaces`
+  (`subtitle-style.util.ts`). Embedded MPV frame-copy implements it through
+  helper protocol commands (`sub-add`/`sub-delay`/`sub-scale`/`sub-color`,
+  main-process file dialog, ASS supported, delay for all tracks). Video.js
+  shared mode, vendor-chrome paths, native-view, and the Linux out-of-process
+  path advertise no such capability and render no UI. Contract details:
+  `docs/architecture/player-controls-contract.md` ("Advanced subtitle
+  support").
 - In fullscreen, `app-player-controls` shows a pointer-transparent media-title
   overlay at the top while controls are revealed (`mediaTitle` input:
   movie/channel/series name, plus an `S01E03` second line for episodes). Series
@@ -156,8 +203,10 @@ Key files:
   `PortalInlinePlayerComponent.seriesTitle` and `WebPlayerViewComponent.mediaTitle`;
   movie and live hosts fall back to `playback.title`, skipping raw stream-URL
   fallbacks. Outside fullscreen the overlay stays hidden.
-- Persisted `Settings.webPlayerSharedControls` is default-off, and its checkbox
-  appears only when HTML5, Video.js, or ArtPlayer is selected.
+- Persisted `Settings.webPlayerSharedControls` is default-ON (absent stored
+  values coerce with `!== false`; only an explicit false opts out to the legacy
+  vendor chrome), and its checkbox appears only when HTML5, Video.js, or
+  ArtPlayer is selected.
   `WebPlayerViewComponent` snapshots the preference into
   `WEB_PLAYER_SHARED_CONTROLS` for each new player host. The parent `/workspace`
   route awaits the initial `SettingsStore` load, including cold-start direct
@@ -184,6 +233,15 @@ Key files:
   `subtitleDisplay` would silently override whatever the vendor menu picks. For
   DASH the seed happens in `ShakaVideoSession.start()` after the manifest loads,
   so the helper only stops re-suppressing afterwards.
+- Shared controls include a per-session quality menu (Auto + "1080p"-style
+  levels via `setQualityLevel`; `AUTO_QUALITY_LEVEL_ID` restores ABR). The
+  capability derives from the manifest — advertised only when the source
+  exposes >1 video rendition (multi-variant HLS via hls.js
+  `nextLevel`/`manualLevel`, DASH via Shaka variant tracks pinned to the
+  active variant's exact audio stream (`audioId`, language fallback) with ABR
+  toggled off for manual picks, Video.js via videojs-contrib-quality-levels) —
+  so single-bitrate VOD and raw MPEG-TS never show it, nothing persists to
+  Settings, and Embedded MPV/external players report the capability false.
 - Embedded MPV ignores the web-player preference. Frame-copy always uses shared
   DOM controls through its component-scoped `EmbeddedMpvControlsAdapter`, while
   native-view retains the legacy compositor-safe dock and external MPV/VLC
@@ -201,8 +259,150 @@ Key files:
   engine (`libs/ui/playback/src/lib/shaka-engine/`) inside the HTML5 and
   ArtPlayer components; ClearKey keys come from KODIPROP-derived
   `Channel.drm`, and the shared bridge exposes Shaka audio/text tracks via
-  source kind `shaka`. See the CLAUDE.md "Video Players" feature entry and
-  `docs/architecture/m3u-playlist-module.md` ("DASH + ClearKey Playback").
+  source kind `shaka`. The DOM-free Shaka `5.2.4` diagnostic boundary lives in
+  `libs/playback/util`; it version-locks public severity/category/code evidence,
+  ignores recoverable error events,
+  treats rejected loads as terminal lifecycle outcomes, preserves exact public
+  DASH text-parser category/code evidence with unknown stage/failure, and never
+  retains or renders raw messages or `error.data`. A failed browser-support
+  preflight stays generic-unknown but carries the exact app-owned
+  `PlaybackRuntimeSupport.ShakaBrowserUnsupported` marker, preserving managed
+  external fallback only for clear transferable DASH; PWA capability and
+  KODIPROP DRM still suppress it. See the CLAUDE.md "Video Players" feature
+  entry and the "DASH + ClearKey Playback" section of
+  `docs/architecture/m3u-playlist-module.md`.
+- mpegts.js `1.8.1` errors from HTML5, Video.js, and ArtPlayer cross one
+  version-locked structured evidence boundary in `libs/playback/util`. Only
+  exact public type/detail pairs, pair-derived stage/failure, terminal
+  disposition, and the validated HTTP 4xx/5xx status slot are retained; raw
+  messages and arbitrary `info`
+  never reach diagnostics. This is a sibling of `PlayerController`, not part
+  of the controls contract.
+- Browser playback diagnostics and recovery policy live in
+  `libs/playback/util` and are exported by `@iptvnator/playback/util`.
+  Public engine errors cross allowlisted sanitizers into a
+  `PlaybackDiagnostic`; `recommendPlaybackRecovery(context)` then ranks at
+  most three actions, and `WebPlayerViewComponent` executes only the action
+  the user selects. The policy is a sibling of `PlayerController`; shared
+  controls only gate interaction while the diagnostic panel is visible.
+  `WebPlayerViewComponent` owns a host-derived content-session key that is
+  stable for the mounted logical selection, attempted target IDs, the temporary
+  player override, and VOD handoff position. Its `PlaybackBinding` is exactly
+  `{ generation, target }`, while every source/target/reload application uses a
+  fieldless opaque `Symbol` token. Diagnostic storage uses a separate fieldless
+  intent `Symbol`, and source applications advance a third fieldless revision
+  `Symbol` that clears only the VOD handoff position; target-only switches and
+  Retry leave that revision stable. None of these ownership primitives contains
+  URLs, headers, DRM material, or credentials. The application effect
+  synchronizes the content session before tracking intent, so clearing a
+  temporary player override cannot schedule a duplicate application or header
+  handoff. Every application start clears both the diagnostic owner and backing
+  signal before asynchronous header setup; a current false result or rejection
+  leaves them clear, and a stale completion cannot erase a newer owned
+  diagnostic. Each
+  rendered web or Embedded MPV application captures its nullable binding, the
+  application and source-revision tokens, and live/VOD flag; a time update
+  changes resume state only while that exact capture still owns the current
+  application. A recommended built-in
+  player temporarily
+  outranks the host override and saved player for that mounted content session,
+  never mutates `Settings.player`, and resumes finite VOD position on a
+  best-effort basis; live playback returns to the live edge. Retry and
+  alternative sources preserve attempts, while a different content-session key
+  or component teardown resets them. Recovery recommendations never
+  auto-switch, persist history, learn across sessions, or emit telemetry.
+  The policy projects attempted inline target IDs through the validated
+  canonical source/target capabilities and excludes every attempted engine
+  family, so HTML5 and ArtPlayer are not separate hls.js recoveries. Network
+  and generic unknown evidence fail closed to Retry/alternative source; the
+  exact Shaka browser-unsupported preflight marker is the sole unknown-code
+  exception. PWA capability suppresses managed MPV/VLC, and ClearKey/KODIPROP
+  DRM suppresses external targets because its payload is not transferable. Raw
+  engine messages, arbitrary data, and credentials never enter recommendation
+  evidence or ownership state. MPV/VLC actions remain mounted after an attempt
+  and expose credential-free per-target launching/started/playing/error state;
+  only an exact Electron `playing` update is labelled Playing. One handshake is
+  allowed at a time. The renderer claims the credential-free content identity
+  before awaiting Electron, so primary Play is disabled and a launching or
+  closable-error alternative remains owned before the controller commits it.
+  Every route action that can start the same external playback, including
+  Restart and the provider-source shortcut, observes that local pre-IPC guard.
+  The Xtream VOD diagnostic-fallback handler records the same route-scoped
+  destination and pending generation before invoking MPV/VLC, so route reuse
+  cannot orphan that process outside the next route's close-before-play path.
+  Its fieldless intent is bound to the exact session returned
+  by the source owner's launch promise, so a late timed-out attempt cannot take
+  over a retry; later global updates must match that ID. A replacement waits for
+  confirmed teardown of the tracked external process, applies the old exact
+  close before launch, and cancels an unlaunched handoff if diagnostic ownership
+  changes. Process teardown has bounded graceful and forced confirmation
+  windows, and reusable MPV bounds the IPC command that precedes them; if any
+  stage cannot reach a confirmed exit, the exact session stays live and the
+  replacement fails closed instead of overlapping it. A process-wide teardown
+  gate starts before any potentially slow teardown preparation, including VLC
+  position flush and a reused player's protocol quit, and rejects every
+  MPV/VLC spawn until that exact child reports exit. If bounded
+  teardown fails while a fresh launch is still pending, that launch IPC rejects
+  and the exact session remains a closable error instead of hanging forever.
+  If a pre-content reuse failure has no still-live displaced session to restore,
+  the replacement error keeps its attached closer so Stop can retry the orphaned
+  child teardown. A terminal error without a closer is never restorable.
+  A failed close is single-flight only while its promise is pending: Stop can
+  retry the same exact child after a bounded confirmation failure. Reuse maps
+  the child to its current content session, so a stale older closer becomes a
+  no-op instead of terminating a newer `loadfile`/VLC enqueue handoff.
+  A duplicate close for an already closed session returns its terminal snapshot
+  without re-entering the saved closer, and a late process error cannot revive
+  that terminal session. Reused MPV commands are bound to the socket captured
+  for that exact child, so a later process cannot inherit a stale protocol quit.
+  Stop observed before a pending MPV content command or VLC enqueue command
+  prevents that command from dispatching. A source handoff fails closed while
+  a live session has no closer (`canClose: false`); renderer Dismiss is not
+  teardown confirmation. That denied handoff advances neither the multi-source
+  switch token nor the playback generation, so it cannot cancel the sole launch
+  already in flight.
+  VLC rechecks the gate at each concrete spawn after port allocation or reuse
+  work; if a post-start fallback is blocked there, the opened session becomes
+  an error rather than retaining a false started status. A failed RC-port
+  allocation never claims reuse ownership, so the fallback VLC child retains
+  its exact one-shot closer.
+  Reuse failures before a content command restore the globally displaced
+  renderer session, not the reusable process's prior owner, and only while the
+  exact displaced-session ID is still active; after
+  `loadfile`/VLC `clear` is dispatched,
+  the replacement owns the process and remains a closable error instead of
+  restoring stale content metadata. Stop during an in-flight MPV or VLC reuse
+  command, including during failed-command teardown or the subsequent VLC
+  fallback port-allocation wait, settles that exact close without falling
+  through to a fresh spawn;
+  a stopped VLC spawn error that reports only `close` also settles its original
+  launch IPC with the exact closed session;
+  a fresh fallback retires the old child's exit under its prior session so it
+  cannot close the replacement. Source handoffs recheck ownership after launch
+  and accept only `opened`/`playing`; a stale returned session is closed exactly
+  and a Stop-returned `closed` session is never committed. If that exact stale
+  close fails, its credential-free destination owner is retained for the next
+  close attempt. Retained destination ownership is scoped to the initiating
+  playlist/VOD route key, so route reuse cannot expose Stop for the previous
+  movie's external session. Play/Resume capture that route key before awaiting
+  close and cancel if navigation changes it; a late diagnostic fallback closes
+  its exact returned session instead of adopting it on the new route. They
+  supersede an older source resolution before awaiting the shared
+  close-before-replacement path, and accepting a diagnostic fallback retires
+  the same older resolution before opening MPV/VLC. They publish the route-source
+  badge, caption evidence, and position only after start succeeds.
+  Closable errors still participate in every replacement close and keep Stop as
+  the global dock's only teardown affordance; Dismiss is reserved for terminal
+  errors that have no closer. The shared `isLiveExternalPlayerSession` predicate
+  keeps M3U and series ownership while
+  such an error can still be stopped; consumers must not treat every `error`
+  status as terminal.
+  If the local handshake times out after an exact Electron session is known,
+  that ID remains
+  correlated so a later exact update can recover the UI. The global dock mirrors
+  those statuses, keeps closable errors visible until Stop confirms teardown and
+  terminal errors visible until dismissal, and intentionally has no retry because
+  it does not own the original launch headers or credentials.
 - The built-in HTML5/hls.js player is the second guarded consumer.
   `HtmlVideoPlayerComponent` provides a component-scoped
   `WebVideoControlsAdapter`; its neutral `web-video-support` bridge is shared
@@ -215,7 +415,11 @@ Key files:
   metadata, while a visible playback diagnostic disables both shared surface
   interaction and shortcuts and exits the HTML5 shell's own fullscreen so the
   diagnostic actions remain visible. The preference-off path keeps native
-  controls and legacy series navigation unchanged.
+  controls and legacy series navigation unchanged, while the playback keyboard
+  shortcuts (Space/K, F, arrow seek/volume, M) attach through
+  `LegacyPlayerShortcuts` with commands acting on the native video element
+  (`html-video-legacy-shortcuts.ts`); seek requires authoritative VOD metadata
+  plus a finite positive duration, and a visible diagnostic disables the keys.
 - Video.js is the third guarded consumer. `VjsPlayerComponent` provides a
   component-scoped `WebVideoControlsAdapter`; its bridge binds the current Tech
   video, rebinds after `playerreset`, exposes source-stable audio/subtitle IDs,
@@ -226,7 +430,10 @@ Key files:
   The shared-controls path disables native controls, Video.js
   click/double-click/hotkey actions, and spatial navigation;
   diagnostic gating and owned-fullscreen exit match HTML5. The preference-off
-  path keeps the existing Video.js skin and legacy series navigation unchanged.
+  path keeps the existing Video.js skin and legacy series navigation unchanged
+  (still without `userActions.hotkeys`), while the playback keyboard shortcuts
+  attach through `LegacyPlayerShortcuts` and drive the player API so the
+  vendor control bar stays in sync (`vjs-legacy-shortcuts.ts`).
 - ArtPlayer is the fourth guarded consumer. `ArtPlayerComponent` provides a
   component-scoped `WebVideoControlsAdapter`; `ArtPlayerSourceSession` owns
   HLS/DASH(Shaka)/MPEG-TS/native sources, the neutral web-video bridge, exact cleanup, and
@@ -238,8 +445,14 @@ Key files:
   and a transparent capture layer gives shared controls exclusive click and
   double-click ownership. Diagnostic interaction gating and owned-fullscreen
   exit match the other web players. The preference-off path keeps the legacy
-  ArtPlayer skin, source behavior, and series navigation unchanged.
-- Shared web picture-in-picture stays inside that default-off rollout.
+  ArtPlayer skin, source behavior, and series navigation unchanged, while the
+  playback keyboard shortcuts attach through `LegacyPlayerShortcuts` using the
+  vendor setters ArtPlayer's own hotkeys used
+  (`art-player-legacy-shortcuts.ts`); the legacy chrome passes `hotkey: false`
+  because ArtPlayer's focus-scoped hotkeys ignore `defaultPrevented` and would
+  double-handle every key, and the wiring restores its Escape-exits-web-
+  fullscreen behavior.
+- Shared web picture-in-picture stays inside that default-on rollout.
   `PlayerController` exposes capability `pictureInPicture`, state
   `pictureInPictureActive`/`canPictureInPicture`, and command
   `togglePictureInPicture()`. HTML5, Video.js, and ArtPlayer use standard
@@ -263,6 +476,43 @@ Key files:
   keyboard shortcut, and Embedded MPV popup/native support are out of scope.
 - Canonical docs: `docs/architecture/player-controls-contract.md` and
   `docs/architecture/embedded-mpv-native.md`
+
+## Display Sleep During Playback
+
+- `PlaybackKeepAwakeService`
+  (`apps/web/src/app/services/playback-keep-awake.service.ts`) watches every
+  `<video>` via document-level capture listeners (media events don't bubble;
+  release listeners sit on the tracked element because Chromium's
+  removed-from-DOM pause never reaches the document) and, while any video is
+  playing and the document is visible (or the playing video is in
+  picture-in-picture — the PiP surface survives a minimized window), holds a
+  display-sleep lock.
+- Electron: a main-process `powerSaveBlocker` behind
+  `window.electron.setPlaybackKeepAwake`
+  (`apps/electron-backend/src/app/services/playback-keep-awake.service.ts`);
+  the renderer's vote is auto-cleared on renderer reload, crash
+  (`render-process-gone`), or destruction. PWA: the Screen Wake Lock API,
+  re-requested after browser auto-release; state changes masked by an
+  in-flight `request()` queue one re-evaluation on rejection.
+- Radio's `<audio>` deliberately never blocks display sleep. Embedded MPV
+  holds its own blocker in `EmbeddedMpvNativeService`; external MPV/VLC
+  inhibit the screensaver themselves.
+
+## Windows Embedded MPV Pin Maintenance
+
+- PR, master, and tag builds resolve the Windows runtime only from
+  `tools/embedded-mpv/windows-runtime-pin.json`; repository variables are not
+  build inputs.
+- Validate the checked-in schema and provenance with
+  `pnpm embedded-mpv:windows-runtime-pin:check`.
+- Prepare a manual rotation with
+  `pnpm embedded-mpv:windows-runtime-pin:refresh -- --force`. The weekly
+  `refresh-windows-embedded-mpv-runtime.yaml` workflow runs the same updater
+  and opens a reviewable PR before upstream retention expires.
+- The PAT-backed refresh job must keep every third-party action pinned to a
+  full commit. Do not mirror the upstream binary without complete
+  corresponding source, build records, license notices, and a validated
+  transitive license closure.
 
 ## Linux Embedded MPV Packaging
 
@@ -314,7 +564,10 @@ Key files:
   `$SNAP/graphics/drirc.d`. The provider is external shared content, not part
   of IPTVnator's package size, source archive, or notices. Installed-Snap CI
   must prove controlled unavailable exit after disconnect, then reconnect and
-  prove success. The helper links `libGL.so.1` rather than `libOpenGL.so.0`.
+  prove success. Static artifact verification requires regular
+  `desktop-init.sh`, `desktop-common.sh`, and `desktop-gnome-specific.sh`
+  files at the Snap root, with `desktop-init.sh` executable. The helper links
+  `libGL.so.1` rather than `libOpenGL.so.0`.
 - The probe and playback helper share one sanitized loader environment:
   ambient audit, preload, library, graphics-driver, and shell-startup overrides
   are removed; the validated private closure wins; trusted Snap GL,
@@ -407,35 +660,17 @@ Key files:
 
 ## Repo Skills
 
-- `iptvnator-ui-design`
-  Repository-specific UI design guidance for IPTVnator.
-  Use when working on channel rows, EPG views, settings surfaces, shared selection styles, or light/dark theme consistency.
-  File: `.codex/skills/iptvnator-ui-design/SKILL.md`
+- `.codex/skills/iptvnator-nx-architecture/SKILL.md`
+- `.codex/skills/iptvnator-sqlite-db-worker/SKILL.md`
+- `.codex/skills/iptvnator-theme-style/SKILL.md`
+- `.codex/skills/iptvnator-ui-design/SKILL.md`
+- `.codex/skills/release-cut/SKILL.md`
+- `.codex/skills/release-notes/SKILL.md`
+- `.codex/skills/stalker-portal/SKILL.md`
+- `.codex/skills/xtream-electron/SKILL.md`
 
-- `iptvnator-theme-style`
-  Theme architecture, design token reference, shared SCSS library, portal header pattern, Electron drag region, and common styling mistakes.
-  Use when adding/changing CSS tokens, styling portal headers or sidebars, using shared SCSS mixins (`portal-layout`, `content-grid`, `portal-sidebar`), or auditing cross-portal visual consistency.
-  File: `.codex/skills/iptvnator-theme-style/SKILL.md`
-
-- `iptvnator-nx-architecture`
-  Repository-specific Nx monorepo structure, library placement rules, path alias guidance, and migration guardrails for portal/workspace/app code.
-  Use when deciding where code belongs, extracting code into libs, choosing imports, or refactoring Xtream/Stalker/Workspace boundaries.
-  File: `.codex/skills/iptvnator-nx-architecture/SKILL.md`
-
-- `iptvnator-sqlite-db-worker`
-  Repository-specific guidance for the Electron non-EPG SQLite worker, including worker boundaries, request-scoped DB progress events, and validation steps for slow DB operations.
-  Use when moving heavy database work off the main thread, adding worker-backed SQLite operations, or wiring loading/progress UI for Xtream and playlist DB flows.
-  File: `.codex/skills/iptvnator-sqlite-db-worker/SKILL.md`
-
-- `stalker-portal`
-  Repository-specific guidance for Stalker/Ministra catalogs, all three VOD/series modes, cross-surface `is_series` behavior, playback metadata, collections, EPG, and remote control.
-  Use when changing Stalker routes, stores, detail views, playback, favorites/recent activity, EPG, or remote control.
-  File: `.codex/skills/stalker-portal/SKILL.md`
-
-- `xtream-electron`
-  Repository-specific guidance for IPTVnator's Electron-first Xtream implementation, including feature/data-access boundaries, worker-backed DB flows, and Xtream loading/progress UX expectations.
-  Use when working on Xtream routes, store/data-source logic, or Electron-backed Xtream import/search/delete behavior.
-  File: `.codex/skills/xtream-electron/SKILL.md`
+Descriptions and trigger conditions are canonical in each skill's frontmatter;
+do not duplicate them here.
 
 <!-- nx configuration start-->
 <!-- Leave the start & end comments to automatically receive updates. -->

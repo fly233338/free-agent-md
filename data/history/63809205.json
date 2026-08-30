@@ -1,0 +1,12 @@
+{
+  "full_name": "google/oss-fuzz",
+  "points": [
+    {
+      "checked_at": "2026-08-30T09:18:21Z",
+      "commit_sha": "d5b90ac21445b693431bf6ed9222fbc71bb3ce64",
+      "pushed_at": "2026-08-30T09:09:38Z",
+      "stars": 12602
+    }
+  ],
+  "repo_id": 63809205
+}

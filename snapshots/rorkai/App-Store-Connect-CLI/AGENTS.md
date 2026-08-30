@@ -54,9 +54,13 @@ Validate attributes against the exact create or update request schema. Validate 
 - Do not push directly to `main`, bypass hooks, use `--no-verify`, or skip checks to force a result.
 - Use TDD for behavior changes: reproduce or establish RED, implement the smallest coherent change, then reach GREEN.
 - Keep one logical change per commit. Do not mix unrelated refactors, fixes, and test rewrites.
+- Preserve additive PR history. Do not squash, rebase, force-push, or otherwise rewrite commits unless the user explicitly requests that strategy.
 - Re-run the focused failing test after each fix before broad validation.
 - Preserve and report pre-existing failures honestly.
-- Parallel exploration is allowed, but do not concurrently edit the same command group; integrate final changes in one coherent pass.
+- Parallelize independent read-only investigation and lightweight focused validation, using isolated subagents when available. Do not let agents concurrently edit the same branch, files, or command group. Keep edits, pushes, review replies and resolutions, approvals, merges, releases, and cleanup coordinated and serialized.
+- Treat repository-wide commands that compile, lint, or test broad package sets—including `make build`, `make lint`, `make test`, `go test ./...`, race tests over `./...`, and `golangci-lint run ./...`—as host-intensive gates. Coordinate them through one agent and run only one host-intensive gate at a time on the same host. Before starting one, check whether another task is already running a host-intensive gate; if so, wait instead of competing for the same CPUs. Never terminate another task's process without explicit authorization.
+- Within a worktree, wait for each focused test to finish before starting a broad gate. Do not overlap focused and broad tests against the same worktree or have multiple agents repeat a successful full gate for the same commit and unchanged worktree. A tracked or untracked worktree change, gate command or input change, relevant environment or toolchain change, or newly requested verification invalidates the affected results; rerun the relevant focused checks and full gate before claiming readiness.
+- Run host-intensive gates concurrently only when explicitly required. Assign each gate a CPU budget and keep the sum of concurrent gate budgets within the host's logical CPU count; tool flags are limits within a gate, not values to add together. Avoid multiplying Go package and in-binary concurrency: for a budget of `B`, use `GOMAXPROCS=1 go test -p=B -parallel=1 ./...` for package fan-out or `GOMAXPROCS=B go test -p=1 -parallel=B ./...` for one package at a time. Use `golangci-lint run --concurrency=B ./...` for a linter gate.
 
 User-facing commands and flags follow `experimental` -> `stable` -> `deprecated` -> `removed`. Do not delete stable behavior directly. Deprecations require warning text, transition tests, migration guidance, and a release-note entry.
 
@@ -83,14 +87,19 @@ make install-hooks
 
 Every manual test command must use `ASC_BYPASS_KEYCHAIN=1` to prevent host keychain prompts and profile bleed-through. The `make test` target enforces the same environment internally.
 
-Before opening or merging a PR, run `make format`, `make check-docs`, `make lint`, and `ASC_BYPASS_KEYCHAIN=1 make test`. If command help changed, run `make generate-command-docs` and commit `docs/COMMANDS.md` before those checks. Run `make check-wall-of-apps` for Wall changes.
+Before opening or merging a substantive behavior PR, run `make build`, `make format`, `make check-docs`, `make lint`, and `ASC_BYPASS_KEYCHAIN=1 make test`. If command help changed, run `make generate-command-docs` and commit `docs/COMMANDS.md` before those checks. For a narrowly scoped documentation or skill change, run `make check-docs`, which includes the repository and skill validators, instead of the full Go suite unless the changed surface or repository policy requires more. For a Wall-only PR, run `make check-wall-of-apps` on the exact head.
+
+Require GitHub-required checks before merge, but do not wait for advisory or otherwise non-required CI jobs. Inspect and report relevant advisory failures without treating pending or unrelated jobs as blockers.
 
 Do not weaken CI: formatting, documentation, lint, and tests must run on PR and `main` workflows.
 
 ## GitHub and issue guardrails
 
 - Inspect thread-aware GitHub review state before declaring a PR clean; flat comments do not prove every thread is resolved.
-- A PR is ready only when the latest head was reviewed, required checks pass, actionable threads are resolved, and GitHub reports it mergeable.
+- A PR is ready only when the latest head was reviewed, required checks pass, required reviews are satisfied, actionable threads are resolved, and GitHub reports it mergeable.
+- If `main` advances, recheck the exact PR head, merge-base diff, duplicate or overlap risk, review threads, required checks, and mergeability against current `main` without changing the branch. Do not update, rebase, or merge `main` into a clean PR merely to refresh its base. Update a branch only when GitHub already reports an actual merge conflict, or when an explicitly authorized merge attempt made with every readiness gate passing is refused under strict up-to-date branch protection. Never bypass branch protection with an admin merge.
+- When the user says to loop, babysit, or continue until green, keep re-fetching the exact head's required checks, required reviews, thread-aware review state, and mergeability. Fix valuable new feedback in additive commits, push, and repeat until the PR is clean or a material blocker requires user input; pending required CI or reviews are intermediate states. Advisory CI may remain pending only after every other clean-state gate passes.
+- When merge is explicitly authorized, preserve the PR commits with a regular merge commit, for example `gh pr merge <number> --merge --match-head-commit <sha>`. Do not squash unless the user explicitly requests squash for that PR.
 - Fix-forward is the default for `$audit-asc-pr`; approval and merge still require explicit user intent.
 - Every newly created or triaged issue must end with exactly one type (`bug`, `enhancement`, `question`), one priority (`p0`-`p3`), and one difficulty (`easy`, `medium`, `hard`) label.
 

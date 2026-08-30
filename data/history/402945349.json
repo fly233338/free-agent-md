@@ -2,12 +2,6 @@
   "full_name": "StarRocks/starrocks",
   "points": [
     {
-      "checked_at": "2026-07-31T06:25:54Z",
-      "commit_sha": "df08abe851a14faa244380df317a633d2396fb04",
-      "pushed_at": "2026-07-31T06:24:29Z",
-      "stars": 11944
-    },
-    {
       "checked_at": "2026-08-05T06:03:04Z",
       "commit_sha": "616386670a64aa07a5707239a91d28e7b2f3918e",
       "pushed_at": "2026-08-05T06:00:23Z",
