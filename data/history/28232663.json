@@ -2,12 +2,6 @@
   "full_name": "dotnet/orleans",
   "points": [
     {
-      "checked_at": "2026-08-01T06:10:38Z",
-      "commit_sha": "7cbd5ba4ec555c98494bec73df0cdc21cf16d976",
-      "pushed_at": "2026-08-01T06:04:59Z",
-      "stars": 10816
-    },
-    {
       "checked_at": "2026-08-26T04:05:28Z",
       "commit_sha": "1a889195c580e6b7aa4df521c753d37b098e42dd",
       "pushed_at": "2026-08-26T03:52:42Z",

@@ -2,12 +2,6 @@
   "full_name": "Tracer-Cloud/opensre",
   "points": [
     {
-      "checked_at": "2026-08-01T06:10:38Z",
-      "commit_sha": "ef6e93745467548afbaade76961f94d47afbd64a",
-      "pushed_at": "2026-08-01T06:09:44Z",
-      "stars": 9663
-    },
-    {
       "checked_at": "2026-08-03T06:39:09Z",
       "commit_sha": "26e1aeec9de3e5576d696774f48e42de1b4b1eba",
       "pushed_at": "2026-08-03T06:36:45Z",
@@ -18,6 +12,12 @@
       "commit_sha": "887e31f4fb4b195b131273e4c66557f1a44a83b6",
       "pushed_at": "2026-08-27T14:14:24Z",
       "stars": 10949
+    },
+    {
+      "checked_at": "2026-08-31T09:50:53Z",
+      "commit_sha": "8dda27f7ca7b22daf018555901868e9abf1e2cf3",
+      "pushed_at": "2026-08-31T09:43:49Z",
+      "stars": 10979
     }
   ],
   "repo_id": 1133141258
