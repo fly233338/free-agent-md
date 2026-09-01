@@ -1,8 +1,8 @@
 # PostHog/posthog instruction files
 
-Upstream: [PostHog/posthog](https://github.com/PostHog/posthog) · License: `NOASSERTION` · Commit: `1c0758a2f5aa0b381e70cb8dc274f0d81c8b4b7f`
+Upstream: [PostHog/posthog](https://github.com/PostHog/posthog) · License: `NOASSERTION` · Commit: `8d4ca627404b7d6a8e3f3ddefae68fa951e27242`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/PostHog/posthog/AGENTS.md) | [Source](https://github.com/PostHog/posthog/blob/1c0758a2f5aa0b381e70cb8dc274f0d81c8b4b7f/AGENTS.md) | `104c3ef4497c9d3ca8e63cae873fda1211375db6f71b5488f16eb751517f478d` | 42,876 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/PostHog/posthog/CLAUDE.md) | [Source](https://github.com/PostHog/posthog/blob/1c0758a2f5aa0b381e70cb8dc274f0d81c8b4b7f/CLAUDE.md) | `104c3ef4497c9d3ca8e63cae873fda1211375db6f71b5488f16eb751517f478d` | 42,876 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/PostHog/posthog/AGENTS.md) | [Source](https://github.com/PostHog/posthog/blob/8d4ca627404b7d6a8e3f3ddefae68fa951e27242/AGENTS.md) | `b29af88cf934392de8397bb9798e9563a9b7fa2394b453dbb16a7488a7f69374` | 43,585 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/PostHog/posthog/CLAUDE.md) | [Source](https://github.com/PostHog/posthog/blob/8d4ca627404b7d6a8e3f3ddefae68fa951e27242/CLAUDE.md) | `b29af88cf934392de8397bb9798e9563a9b7fa2394b453dbb16a7488a7f69374` | 43,585 B |

@@ -2,12 +2,6 @@
   "full_name": "apache/seatunnel",
   "points": [
     {
-      "checked_at": "2026-08-02T06:13:59Z",
-      "commit_sha": "458cefdc516a4fe95fe2c5cabf6b7eeb9f650d13",
-      "pushed_at": "2026-08-02T05:52:12Z",
-      "stars": 9521
-    },
-    {
       "checked_at": "2026-08-17T04:05:28Z",
       "commit_sha": "65e32aa5d037f2a6ab4a85f9e7f4dba6baf4724e",
       "pushed_at": "2026-08-17T03:54:11Z",

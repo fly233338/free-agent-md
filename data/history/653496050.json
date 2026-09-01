@@ -2,12 +2,6 @@
   "full_name": "xorbitsai/inference",
   "points": [
     {
-      "checked_at": "2026-08-02T06:13:59Z",
-      "commit_sha": "f89b0d072d184c6ff3d2a9f4dca3ed76c02a0dea",
-      "pushed_at": "2026-08-02T05:44:21Z",
-      "stars": 9470
-    },
-    {
       "checked_at": "2026-08-07T05:04:44Z",
       "commit_sha": "eae346c15f23dd4c20aa8ceca4a5fbdba6d4deba",
       "pushed_at": "2026-08-07T05:01:14Z",

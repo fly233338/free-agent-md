@@ -2,12 +2,6 @@
   "full_name": "coturn/coturn",
   "points": [
     {
-      "checked_at": "2026-08-02T06:13:59Z",
-      "commit_sha": "9f2728261c6f5559b6080194e1b7479bb8ff01a0",
-      "pushed_at": "2026-08-02T06:09:24Z",
-      "stars": 14262
-    },
-    {
       "checked_at": "2026-08-07T05:04:44Z",
       "commit_sha": "332b1d12bfa2ffde703b76f7dfe4ef96967c72f3",
       "pushed_at": "2026-08-07T04:49:35Z",

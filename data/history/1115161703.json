@@ -2,12 +2,6 @@
   "full_name": "openclaw/gogcli",
   "points": [
     {
-      "checked_at": "2026-08-02T06:13:59Z",
-      "commit_sha": "1b261244fc2687d33bccb6d23f85aa3f88c1062a",
-      "pushed_at": "2026-08-02T05:45:54Z",
-      "stars": 8245
-    },
-    {
       "checked_at": "2026-08-09T04:39:26Z",
       "commit_sha": "69e2e6555a1347824dd18973fb73d94bfe94c0b7",
       "pushed_at": "2026-08-09T04:29:46Z",

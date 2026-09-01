@@ -2,12 +2,6 @@
   "full_name": "opal/opal",
   "points": [
     {
-      "checked_at": "2026-08-02T06:13:59Z",
-      "commit_sha": "c7326bebce4d9f472a4ea6467d3800f933922617",
-      "pushed_at": "2026-08-02T01:30:06Z",
-      "stars": 4926
-    },
-    {
       "checked_at": "2026-08-03T06:39:09Z",
       "commit_sha": "f1fc6ef04d64b0759777af8e4cb28ea2a1505339",
       "pushed_at": "2026-08-03T00:05:13Z",

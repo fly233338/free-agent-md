@@ -2,12 +2,6 @@
   "full_name": "biomejs/biome",
   "points": [
     {
-      "checked_at": "2026-08-02T06:13:59Z",
-      "commit_sha": "1fbf7a3568b931ce388173bca33258635f2d2533",
-      "pushed_at": "2026-08-02T05:56:25Z",
-      "stars": 25464
-    },
-    {
       "checked_at": "2026-08-03T06:39:09Z",
       "commit_sha": "31f70701fa9f82578ac2d311b8c07f62c93db77b",
       "pushed_at": "2026-08-03T06:37:25Z",

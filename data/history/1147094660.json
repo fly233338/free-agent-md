@@ -2,12 +2,6 @@
   "full_name": "HKUDS/nanobot",
   "points": [
     {
-      "checked_at": "2026-08-02T06:13:59Z",
-      "commit_sha": "db6c9effc32972fd59fe1b50de684aad67ef9a30",
-      "pushed_at": "2026-08-02T05:59:37Z",
-      "stars": 46506
-    },
-    {
       "checked_at": "2026-08-10T04:56:53Z",
       "commit_sha": "66316f21da7ea43ccf9777735b0239e6a81217a4",
       "pushed_at": "2026-08-10T04:44:25Z",

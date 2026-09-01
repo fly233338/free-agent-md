@@ -2,12 +2,6 @@
   "full_name": "superset-sh/superset",
   "points": [
     {
-      "checked_at": "2026-08-02T06:13:59Z",
-      "commit_sha": "9ada1e03bc83c95fe42677e8d2fe068fc2f0eaaa",
-      "pushed_at": "2026-08-02T06:08:17Z",
-      "stars": 12731
-    },
-    {
       "checked_at": "2026-08-10T04:56:53Z",
       "commit_sha": "bf2e078632e260ce9e534832a03efe40960c034b",
       "pushed_at": "2026-08-10T04:43:43Z",

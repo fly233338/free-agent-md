@@ -1,5 +1,5 @@
 {
-  "full_name": "anywhere-labs/deepseek-harness-desktop",
+  "full_name": "anywhere-labs/dsh-desktop",
   "points": [
     {
       "checked_at": "2026-08-19T04:01:55Z",
@@ -18,6 +18,12 @@
       "commit_sha": "48c8ea7e471dfcdf8c1cac06ab0ead79de8886e4",
       "pushed_at": "2026-08-23T03:33:47Z",
       "stars": 18438
+    },
+    {
+      "checked_at": "2026-09-01T08:43:21Z",
+      "commit_sha": "e71a9ef0b168763d422042835a8c3b7d6d809800",
+      "pushed_at": "2026-09-01T08:42:09Z",
+      "stars": 22620
     }
   ],
   "repo_id": 1333321333
