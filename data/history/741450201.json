@@ -2,12 +2,6 @@
   "full_name": "Marker-Inc-Korea/AutoRAG",
   "points": [
     {
-      "checked_at": "2026-08-03T06:39:09Z",
-      "commit_sha": "1808507440d2beb56b824f77f0ee06a6374f39a3",
-      "pushed_at": "2026-08-01T03:36:07Z",
-      "stars": 4964
-    },
-    {
       "checked_at": "2026-08-04T06:06:17Z",
       "commit_sha": "1808507440d2beb56b824f77f0ee06a6374f39a3",
       "pushed_at": "2026-08-01T03:36:07Z",
@@ -72,6 +66,12 @@
       "commit_sha": "5e76122b6865798f17edf8e71e59daa6e78a6cf8",
       "pushed_at": "2026-09-01T08:42:56Z",
       "stars": 5055
+    },
+    {
+      "checked_at": "2026-09-02T07:57:56Z",
+      "commit_sha": "3a1b0a4ef45471f919a275109fe78e72f7a67337",
+      "pushed_at": "2026-09-02T07:54:12Z",
+      "stars": 5058
     }
   ],
   "repo_id": 741450201

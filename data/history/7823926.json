@@ -1,0 +1,12 @@
+{
+  "full_name": "prometheus/client_golang",
+  "points": [
+    {
+      "checked_at": "2026-09-02T07:57:56Z",
+      "commit_sha": "dec985692ee2133950327491c456043752b73e62",
+      "pushed_at": "2026-09-02T07:53:58Z",
+      "stars": 6023
+    }
+  ],
+  "repo_id": 7823926
+}

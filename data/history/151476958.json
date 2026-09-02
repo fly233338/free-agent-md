@@ -2,12 +2,6 @@
   "full_name": "IsmaelMartinez/teams-for-linux",
   "points": [
     {
-      "checked_at": "2026-08-03T06:39:09Z",
-      "commit_sha": "be1eb71a5d07c1c711c6306e9b26f7465c037beb",
-      "pushed_at": "2026-08-02T19:46:33Z",
-      "stars": 4897
-    },
-    {
       "checked_at": "2026-08-04T06:06:17Z",
       "commit_sha": "457b198362b2d7f5b57d01b2571efab47299acef",
       "pushed_at": "2026-08-04T00:10:59Z",
@@ -180,6 +174,12 @@
       "commit_sha": "2b4eecef1c8f988c4f17563f8e0e2bcaf7ceba4b",
       "pushed_at": "2026-09-01T07:31:25Z",
       "stars": 4997
+    },
+    {
+      "checked_at": "2026-09-02T07:57:56Z",
+      "commit_sha": "b2029d5c800e40cecf31efad1d3b62256c0f0d05",
+      "pushed_at": "2026-09-01T20:08:42Z",
+      "stars": 4999
     }
   ],
   "repo_id": 151476958

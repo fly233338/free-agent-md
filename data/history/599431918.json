@@ -2,12 +2,6 @@
   "full_name": "oxc-project/oxc",
   "points": [
     {
-      "checked_at": "2026-08-03T06:39:09Z",
-      "commit_sha": "b91d5a8afe36422990b6c7e8496bc2e05f0d6f04",
-      "pushed_at": "2026-08-03T06:34:10Z",
-      "stars": 22200
-    },
-    {
       "checked_at": "2026-08-15T03:56:21Z",
       "commit_sha": "b0e6c2574c66b02faab8e175adc154e8de3f4eef",
       "pushed_at": "2026-08-15T03:52:12Z",

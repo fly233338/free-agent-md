@@ -15,7 +15,7 @@ cargo check -p <crate>               # fast type-check one crate
 cargo test -p <crate>                # test one crate
 cargo fmt --all                      # format (required before PR)
 make pre-commit                      # fast gate: fmt + arch checks + quick-check (NO clippy/tests)
-make pre-pr                          # full pre-PR gate: fmt + arch checks + clippy + tests
+make pre-pr                          # optional full gate for broad cross-module changes
 make build-docker BUILD_OS=ubuntu22.04
 ```
 
@@ -27,6 +27,7 @@ make build-docker BUILD_OS=ubuntu22.04
 
 ## Where to look (do not duplicate here)
 
+- Agent knowledge base index and doc-writing rules: [docs/architecture/README.md](docs/architecture/README.md)
 - Crate membership: `Cargo.toml` `[workspace].members`
 - Architecture, layering, crate map: [ARCHITECTURE.md](ARCHITECTURE.md)
 - Migration guardrails & readiness contracts: [docs/architecture/](docs/architecture/README.md)

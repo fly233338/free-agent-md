@@ -1,5 +1,5 @@
 {
-  "full_name": "santifer/career-ops",
+  "full_name": "career-ops-hq/career-ops",
   "points": [
     {
       "checked_at": "2026-08-04T06:06:17Z",
@@ -12,6 +12,12 @@
       "commit_sha": "555ff2948266ce0f3ee176cc663acba1ca82533a",
       "pushed_at": "2026-09-01T08:40:10Z",
       "stars": 69665
+    },
+    {
+      "checked_at": "2026-09-02T07:57:56Z",
+      "commit_sha": "abc5a893a61b752b1e410d5145c044b82638f0d2",
+      "pushed_at": "2026-09-02T07:56:30Z",
+      "stars": 69810
     }
   ],
   "repo_id": 1201476594

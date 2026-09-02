@@ -2,12 +2,6 @@
   "full_name": "openemr/openemr",
   "points": [
     {
-      "checked_at": "2026-08-03T06:39:09Z",
-      "commit_sha": "1a6c755172d568c8163548cc9ba42c63f7d7a945",
-      "pushed_at": "2026-08-03T06:33:58Z",
-      "stars": 5336
-    },
-    {
       "checked_at": "2026-08-04T06:06:17Z",
       "commit_sha": "dd41dbbc33727e0a445c86cd20bf567b9c51b215",
       "pushed_at": "2026-08-04T05:54:10Z",

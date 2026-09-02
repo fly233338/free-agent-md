@@ -2,12 +2,6 @@
   "full_name": "firecrawl/firecrawl",
   "points": [
     {
-      "checked_at": "2026-08-03T06:39:09Z",
-      "commit_sha": "9554ad079840b0d405d5b1e5b1c57e577b4249cb",
-      "pushed_at": "2026-08-02T21:07:02Z",
-      "stars": 159666
-    },
-    {
       "checked_at": "2026-08-04T06:06:17Z",
       "commit_sha": "5f3f149fe70ffd5279ee127c2841cc9ed490cf78",
       "pushed_at": "2026-08-04T01:11:55Z",
@@ -180,6 +174,12 @@
       "commit_sha": "162e660426f2f1fa2947eceecef1244bc7f35600",
       "pushed_at": "2026-09-01T06:27:01Z",
       "stars": 174997
+    },
+    {
+      "checked_at": "2026-09-02T07:57:56Z",
+      "commit_sha": "dc2adaeab9e21d05b53037f4a3f296f5f7f3c4c5",
+      "pushed_at": "2026-09-02T07:28:56Z",
+      "stars": 175414
     }
   ],
   "repo_id": 787076358

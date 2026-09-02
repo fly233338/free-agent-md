@@ -86,6 +86,7 @@ This file contains repository-wide rules. Use the nearest subdirectory
 - CI gates: `.github/workflows/ci.yml`.
 - PR format: `.github/pull_request_template.md`.
 - Architecture routing: `ARCHITECTURE.md` and `docs/architecture/README.md`.
+- Knowledge-base index and documentation rules: `docs/architecture/README.md`.
 - Agent skills: `.agents/skills/*/SKILL.md`.
 
 Do not commit one-shot plans, trackers, migration ledgers, benchmark snapshots,
@@ -123,12 +124,13 @@ runtime/build output:
 - Use `make pre-commit` only when its repository-wide fast checks add confidence
   beyond the focused checks.
 
-### Broad or High-Risk Changes
+### Broad Cross-Module Changes
 
-After the required adversarial review, run `make pre-pr` when targeted coverage
-cannot bound the impact, including dependency/toolchain/build-matrix changes,
-unbounded cross-crate APIs, or locking, durability, erasure coding, replication,
-RPC, IAM/KMS/auth, cryptography, on-disk/on-wire, and S3-visible behavior.
+Do not run `make pre-pr` by default before opening a PR. Consider it only when
+the final diff is broad, spans multiple modules, and targeted checks cannot
+bound the impact. Decide dynamically from the affected boundaries and risks;
+otherwise use the scoped formatting, linting, compilation, and test checks
+above.
 
 `make pre-pr` includes `make pre-commit`; never run both for the same unchanged
 diff. Do not repeat a check already covered by a successful umbrella gate.

@@ -2,12 +2,6 @@
   "full_name": "block/buzz",
   "points": [
     {
-      "checked_at": "2026-08-03T06:39:09Z",
-      "commit_sha": "a5dbdf5e61e4c512acd99c219c79c154ddb57295",
-      "pushed_at": "2026-08-03T06:36:00Z",
-      "stars": 21310
-    },
-    {
       "checked_at": "2026-08-05T06:03:04Z",
       "commit_sha": "8342dfcc5890b81a269a8ec3db73a8a56f76ce79",
       "pushed_at": "2026-08-05T05:59:15Z",

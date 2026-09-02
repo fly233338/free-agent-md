@@ -2,12 +2,6 @@
   "full_name": "metabase/metabase",
   "points": [
     {
-      "checked_at": "2026-08-03T06:39:09Z",
-      "commit_sha": "8f68857a6720ba062f4e14881fc9e277cc1c1931",
-      "pushed_at": "2026-08-03T06:35:14Z",
-      "stars": 48499
-    },
-    {
       "checked_at": "2026-08-13T05:09:58Z",
       "commit_sha": "7a8ce63393507ec2d91763e43487b8dc30581823",
       "pushed_at": "2026-08-13T05:06:52Z",
@@ -36,6 +30,12 @@
       "commit_sha": "7e3ab7a682f2f3f13e1e054d8f4517a9b7bf8153",
       "pushed_at": "2026-08-28T15:25:58Z",
       "stars": 48978
+    },
+    {
+      "checked_at": "2026-09-02T07:57:56Z",
+      "commit_sha": "fc3927c030fbc1ca4512f4f81a5db9c366a4c66e",
+      "pushed_at": "2026-09-02T07:51:34Z",
+      "stars": 49050
     }
   ],
   "repo_id": 30203935

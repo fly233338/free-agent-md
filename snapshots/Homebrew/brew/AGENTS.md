@@ -12,6 +12,8 @@ When running Ruby directly (e.g. `ruby -e ...`, `gem`, profiling tools), never u
 
 Do not use conventional commit prefixes such as `feat:`, `fix:`, `chore:`, `refactor:`, `perf:` or `ci:`; the `Commit Style` GitHub Actions workflow rejects them.
 
+When opening pull requests, always fill in the pull request template from `.github/PULL_REQUEST_TEMPLATE.md`; do not bypass it with e.g. `gh pr create --fill`.
+
 ## Code Standards
 
 ### Required Before Each Commit

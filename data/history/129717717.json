@@ -2,12 +2,6 @@
   "full_name": "grafana/loki",
   "points": [
     {
-      "checked_at": "2026-08-03T06:39:09Z",
-      "commit_sha": "17bea1c39df3fabee1050023a909df85be642144",
-      "pushed_at": "2026-08-03T06:37:46Z",
-      "stars": 28664
-    },
-    {
       "checked_at": "2026-08-21T04:04:13Z",
       "commit_sha": "ae8b947f829f2d70bcab8fd9e6afc71b29e3b312",
       "pushed_at": "2026-08-21T03:55:49Z",
