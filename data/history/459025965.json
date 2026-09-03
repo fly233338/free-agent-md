@@ -2,12 +2,6 @@
   "full_name": "apache/opendal",
   "points": [
     {
-      "checked_at": "2026-08-04T06:06:17Z",
-      "commit_sha": "e785553f5c672c2f05d24b998ab472685fdaf5cf",
-      "pushed_at": "2026-08-04T06:05:21Z",
-      "stars": 5290
-    },
-    {
       "checked_at": "2026-08-15T03:56:21Z",
       "commit_sha": "a7656f1f2affa104cff0b018f4b682210dd1bbed",
       "pushed_at": "2026-08-15T03:53:12Z",

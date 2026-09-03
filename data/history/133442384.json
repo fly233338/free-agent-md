@@ -2,12 +2,6 @@
   "full_name": "denoland/deno",
   "points": [
     {
-      "checked_at": "2026-08-04T06:06:17Z",
-      "commit_sha": "c347f344242585dea94ec36129c711f77fdd4f07",
-      "pushed_at": "2026-08-04T05:37:26Z",
-      "stars": 107989
-    },
-    {
       "checked_at": "2026-08-05T06:03:04Z",
       "commit_sha": "f048172eb0f8515d8d0538544f03e4773b04e191",
       "pushed_at": "2026-08-05T03:31:39Z",
@@ -180,6 +174,12 @@
       "commit_sha": "62a0d5d6041a30aa3cb334f6889818c03158fcee",
       "pushed_at": "2026-09-01T17:00:19Z",
       "stars": 108363
+    },
+    {
+      "checked_at": "2026-09-03T08:07:06Z",
+      "commit_sha": "c5e973b59019ef3148d9a6f99610bb36a852fa22",
+      "pushed_at": "2026-09-03T00:04:12Z",
+      "stars": 108369
     }
   ],
   "repo_id": 133442384

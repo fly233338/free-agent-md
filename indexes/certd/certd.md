@@ -1,8 +1,8 @@
 # certd/certd instruction files
 
-Upstream: [certd/certd](https://github.com/certd/certd) · License: `AGPL-3.0` · Commit: `f44084dfd2866a486bd85401b2bb075d98bdacbc`
+Upstream: [certd/certd](https://github.com/certd/certd) · License: `AGPL-3.0` · Commit: `3efa0582ef204305e3c25b11a6e48b215ab633dd`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/certd/certd/AGENTS.md) | [Source](https://github.com/certd/certd/blob/f44084dfd2866a486bd85401b2bb075d98bdacbc/AGENTS.md) | `0ad20186cced359d4cbb0e530e138b79e1a240ad17ef201fa17e417a795d0547` | 26,140 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/certd/certd/CLAUDE.md) | [Source](https://github.com/certd/certd/blob/f44084dfd2866a486bd85401b2bb075d98bdacbc/CLAUDE.md) | `0ad20186cced359d4cbb0e530e138b79e1a240ad17ef201fa17e417a795d0547` | 26,140 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/certd/certd/AGENTS.md) | [Source](https://github.com/certd/certd/blob/3efa0582ef204305e3c25b11a6e48b215ab633dd/AGENTS.md) | `34d27f81621b05f68e3d22339a55ea2b85cb77a17cc32b930be56a48b36809b7` | 26,382 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/certd/certd/CLAUDE.md) | [Source](https://github.com/certd/certd/blob/3efa0582ef204305e3c25b11a6e48b215ab633dd/CLAUDE.md) | `34d27f81621b05f68e3d22339a55ea2b85cb77a17cc32b930be56a48b36809b7` | 26,382 B |

@@ -1,8 +1,8 @@
 # ripienaar/free-for-dev instruction files
 
-Upstream: [ripienaar/free-for-dev](https://github.com/ripienaar/free-for-dev) · License: `NOASSERTION` · Commit: `0d3b3547de81fc86cd459748e1a1a2faf3859219`
+Upstream: [ripienaar/free-for-dev](https://github.com/ripienaar/free-for-dev) · License: `NOASSERTION` · Commit: `499e9e0d91d47c95b09a0ff8b2202f7cc478ee05`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/ripienaar/free-for-dev/AGENTS.md) | [Source](https://github.com/ripienaar/free-for-dev/blob/0d3b3547de81fc86cd459748e1a1a2faf3859219/AGENTS.md) | `c792e18d2c18d8b368c4648b9e9b05b4c14f806840524af4284af3c7f7c635f6` | 392 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/ripienaar/free-for-dev/CLAUDE.md) | [Source](https://github.com/ripienaar/free-for-dev/blob/0d3b3547de81fc86cd459748e1a1a2faf3859219/CLAUDE.md) | `c792e18d2c18d8b368c4648b9e9b05b4c14f806840524af4284af3c7f7c635f6` | 392 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/ripienaar/free-for-dev/AGENTS.md) | [Source](https://github.com/ripienaar/free-for-dev/blob/499e9e0d91d47c95b09a0ff8b2202f7cc478ee05/AGENTS.md) | `c792e18d2c18d8b368c4648b9e9b05b4c14f806840524af4284af3c7f7c635f6` | 392 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/ripienaar/free-for-dev/CLAUDE.md) | [Source](https://github.com/ripienaar/free-for-dev/blob/499e9e0d91d47c95b09a0ff8b2202f7cc478ee05/CLAUDE.md) | `c792e18d2c18d8b368c4648b9e9b05b4c14f806840524af4284af3c7f7c635f6` | 392 B |

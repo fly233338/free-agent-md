@@ -2,12 +2,6 @@
   "full_name": "square/leakcanary",
   "points": [
     {
-      "checked_at": "2026-08-04T06:06:17Z",
-      "commit_sha": "69699553ae0d54a1bdf2ec0c6bd7dd37560d305d",
-      "pushed_at": "2026-08-04T06:04:36Z",
-      "stars": 29964
-    },
-    {
       "checked_at": "2026-08-05T06:03:04Z",
       "commit_sha": "6b95ccd0f3f38d72daee55b4538cb0226b9b2b13",
       "pushed_at": "2026-08-05T05:51:31Z",

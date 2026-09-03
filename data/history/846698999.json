@@ -2,12 +2,6 @@
   "full_name": "aaif-goose/goose",
   "points": [
     {
-      "checked_at": "2026-08-04T06:06:17Z",
-      "commit_sha": "48f1a7ec6e559e25a811d79f36db9044c14a7018",
-      "pushed_at": "2026-08-04T06:01:17Z",
-      "stars": 52190
-    },
-    {
       "checked_at": "2026-08-05T06:03:04Z",
       "commit_sha": "96a5a99cdd55dfc88049a512e54072973aafe289",
       "pushed_at": "2026-08-05T05:59:43Z",
@@ -54,6 +48,12 @@
       "commit_sha": "2f5ff48b56cf4f98e93b6c05d5b97b50d29613f0",
       "pushed_at": "2026-08-28T15:23:32Z",
       "stars": 53610
+    },
+    {
+      "checked_at": "2026-09-03T08:07:06Z",
+      "commit_sha": "9eb6ef099f20b6b3fb5093d7ebb39a3c2d16a35f",
+      "pushed_at": "2026-09-03T08:04:33Z",
+      "stars": 53869
     }
   ],
   "repo_id": 846698999

@@ -2,12 +2,6 @@
   "full_name": "google/adk-python",
   "points": [
     {
-      "checked_at": "2026-08-04T06:06:17Z",
-      "commit_sha": "fd33158f3db2cbb2faf9aab9f82836949fa274fd",
-      "pushed_at": "2026-08-04T05:58:12Z",
-      "stars": 20993
-    },
-    {
       "checked_at": "2026-08-11T04:42:27Z",
       "commit_sha": "74e7167d13a75b8eaab6e30a7af39e8c55315fc0",
       "pushed_at": "2026-08-11T04:28:55Z",

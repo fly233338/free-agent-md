@@ -2,12 +2,6 @@
   "full_name": "apache/shardingsphere",
   "points": [
     {
-      "checked_at": "2026-08-04T06:06:17Z",
-      "commit_sha": "959db03e1b23d36daca2fe4e03a874dee50a45f9",
-      "pushed_at": "2026-08-04T06:00:03Z",
-      "stars": 20773
-    },
-    {
       "checked_at": "2026-08-05T06:03:04Z",
       "commit_sha": "4d8810f40fe520ddd349028f98d1fba2a51aa45b",
       "pushed_at": "2026-08-05T05:57:55Z",

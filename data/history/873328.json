@@ -2,12 +2,6 @@
   "full_name": "getsentry/sentry",
   "points": [
     {
-      "checked_at": "2026-08-04T06:06:17Z",
-      "commit_sha": "c47c6c291aded813568997c074dd1860d5c6bb0c",
-      "pushed_at": "2026-08-04T06:03:23Z",
-      "stars": 44450
-    },
-    {
       "checked_at": "2026-08-18T04:00:27Z",
       "commit_sha": "6fcd3a85858775e2a28c69f8f0cc8b045aae03f5",
       "pushed_at": "2026-08-18T03:59:15Z",

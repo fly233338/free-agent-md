@@ -2,12 +2,6 @@
   "full_name": "grafana/mimir",
   "points": [
     {
-      "checked_at": "2026-08-04T06:06:17Z",
-      "commit_sha": "9fdadbea672bfb529893afa4f6f20f793e638859",
-      "pushed_at": "2026-08-04T06:03:17Z",
-      "stars": 5198
-    },
-    {
       "checked_at": "2026-08-06T06:06:46Z",
       "commit_sha": "ff90af745ecd6a980205dfc9bd398569dccabf54",
       "pushed_at": "2026-08-06T06:04:53Z",

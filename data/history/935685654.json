@@ -2,12 +2,6 @@
   "full_name": "facebook/pyrefly",
   "points": [
     {
-      "checked_at": "2026-08-04T06:06:17Z",
-      "commit_sha": "c63e4acc7e44686abf56a23f18a1fe7954c8b062",
-      "pushed_at": "2026-08-04T06:01:13Z",
-      "stars": 6851
-    },
-    {
       "checked_at": "2026-08-20T04:01:46Z",
       "commit_sha": "28bea020a772417979265a92a59eace0afd382c5",
       "pushed_at": "2026-08-20T03:51:54Z",

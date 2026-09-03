@@ -2,12 +2,6 @@
   "full_name": "apache/flink-cdc",
   "points": [
     {
-      "checked_at": "2026-08-04T06:06:17Z",
-      "commit_sha": "308359e541271e54b0ebd9d66bd37663a474a689",
-      "pushed_at": "2026-08-04T06:04:32Z",
-      "stars": 6454
-    },
-    {
       "checked_at": "2026-08-10T04:56:53Z",
       "commit_sha": "ff26ee22f7a89aafdb926d23f207c489d930b623",
       "pushed_at": "2026-08-10T04:56:19Z",

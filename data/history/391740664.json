@@ -2,12 +2,6 @@
   "full_name": "open-metadata/OpenMetadata",
   "points": [
     {
-      "checked_at": "2026-08-04T06:06:17Z",
-      "commit_sha": "bfc804391fb3c468b2b1fb6be0df160f83236f1f",
-      "pushed_at": "2026-08-04T06:06:16Z",
-      "stars": 14641
-    },
-    {
       "checked_at": "2026-08-07T05:04:44Z",
       "commit_sha": "cb2a7e8817bc47caa44d727ba489b1b7659b3fb8",
       "pushed_at": "2026-08-07T04:58:48Z",

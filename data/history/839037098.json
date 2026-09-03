@@ -2,12 +2,6 @@
   "full_name": "mastra-ai/mastra",
   "points": [
     {
-      "checked_at": "2026-08-04T06:06:17Z",
-      "commit_sha": "0a6598bde80bde008986ad6616bed9632b9294cb",
-      "pushed_at": "2026-08-04T06:03:38Z",
-      "stars": 26884
-    },
-    {
       "checked_at": "2026-08-05T06:03:04Z",
       "commit_sha": "1f7bbd7785a8d230aad02454ecabeb4a0b2cc96f",
       "pushed_at": "2026-08-05T06:01:51Z",
