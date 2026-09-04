@@ -2,12 +2,6 @@
   "full_name": "Automattic/wp-calypso",
   "points": [
     {
-      "checked_at": "2026-08-05T06:03:04Z",
-      "commit_sha": "c19581d0b6c84e34299f243f7157f02e8fcbdc1d",
-      "pushed_at": "2026-08-05T06:01:09Z",
-      "stars": 12634
-    },
-    {
       "checked_at": "2026-08-06T06:06:46Z",
       "commit_sha": "2871fbfc3f9574d52966e4956fdd8ff1ac610ccc",
       "pushed_at": "2026-08-06T05:56:43Z",

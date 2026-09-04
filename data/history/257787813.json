@@ -2,12 +2,6 @@
   "full_name": "firezone/firezone",
   "points": [
     {
-      "checked_at": "2026-08-05T06:03:04Z",
-      "commit_sha": "ebd60922dcaf6f743e2184fb9db443e929c0c302",
-      "pushed_at": "2026-08-05T06:00:08Z",
-      "stars": 8988
-    },
-    {
       "checked_at": "2026-08-14T05:06:13Z",
       "commit_sha": "1e1774fbcecc950c71d95cbbef54bde08cd0807f",
       "pushed_at": "2026-08-14T05:00:15Z",

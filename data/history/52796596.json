@@ -2,12 +2,6 @@
   "full_name": "netbox-community/netbox",
   "points": [
     {
-      "checked_at": "2026-08-05T06:03:04Z",
-      "commit_sha": "280e32fcc95a2dfb9a51f307e9a0b6b6e9388433",
-      "pushed_at": "2026-08-05T05:54:35Z",
-      "stars": 21255
-    },
-    {
       "checked_at": "2026-08-06T06:06:46Z",
       "commit_sha": "e160359e6e3375489a0d99eb2765c179572876ea",
       "pushed_at": "2026-08-06T05:57:20Z",

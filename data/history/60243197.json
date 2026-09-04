@@ -2,12 +2,6 @@
   "full_name": "nextcloud/server",
   "points": [
     {
-      "checked_at": "2026-08-05T06:03:04Z",
-      "commit_sha": "0d42292777bb583900fca71a0e0663beca87533a",
-      "pushed_at": "2026-08-05T06:02:14Z",
-      "stars": 36333
-    },
-    {
       "checked_at": "2026-08-28T15:27:11Z",
       "commit_sha": "4a724428f1fbf63dabe69eba28bb0b95b282b256",
       "pushed_at": "2026-08-28T15:25:25Z",
