@@ -2,12 +2,6 @@
   "full_name": "kserve/kserve",
   "points": [
     {
-      "checked_at": "2026-08-06T06:06:46Z",
-      "commit_sha": "4b8551567391fb0d60b587441c3b68a6b1e2d97c",
-      "pushed_at": "2026-08-06T06:05:49Z",
-      "stars": 5773
-    },
-    {
       "checked_at": "2026-08-27T14:17:09Z",
       "commit_sha": "c87493898e6ba2ac645c2d1e37ac1db8c449a002",
       "pushed_at": "2026-08-27T14:03:28Z",

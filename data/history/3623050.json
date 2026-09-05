@@ -2,12 +2,6 @@
   "full_name": "Homebrew/homebrew-cask",
   "points": [
     {
-      "checked_at": "2026-08-06T06:06:46Z",
-      "commit_sha": "f4bcc50b93c42b2deee90b53485d370f92756cff",
-      "pushed_at": "2026-08-06T06:00:47Z",
-      "stars": 22148
-    },
-    {
       "checked_at": "2026-08-07T05:04:44Z",
       "commit_sha": "50c611c5f3692aea16cc450ae79a394b97eeeed1",
       "pushed_at": "2026-08-07T05:04:23Z",
@@ -54,6 +48,12 @@
       "commit_sha": "70f0652bf47eba06cd158504ce4efdb836f00adc",
       "pushed_at": "2026-08-30T09:08:25Z",
       "stars": 22178
+    },
+    {
+      "checked_at": "2026-09-05T07:43:14Z",
+      "commit_sha": "0271b24e081f7ac6c0caf9f83e376dd7d570393c",
+      "pushed_at": "2026-09-05T07:41:51Z",
+      "stars": 22183
     }
   ],
   "repo_id": 3623050

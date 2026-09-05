@@ -24,6 +24,17 @@ This file provides guidance to coding agents working in this repository.
   `patches/vite@7.3.6.patch`. Keep the patch until supported Angular tooling
   resolves a Vite version containing the fix, and run `pnpm run deps:vite:test`
   after related dependency updates.
+- `app-builder-lib` `26.15.7` (electron-builder's macOS signing) is patched in
+  `patches/app-builder-lib@26.15.7.patch` with the upstream backport
+  electron-userland/electron-builder#10172: `security set-key-partition-list -k`
+  must receive the temporary keychain's own password, not the `.p12` import
+  password. macOS runner images since `macos-26-arm64` 20260831 verify that
+  password, and `Build on macos arm64` failed with `SecKeychainUnlock: The user
+  name or passphrase you entered is not correct`. Keep the patch until
+  electron-builder resolves an `app-builder-lib` containing the fix (26.16.1+),
+  and run `pnpm run deps:electron-builder:test` after related dependency
+  updates — the test fails when the patched version no longer matches the
+  installed one.
 - A directory holding files consumed by other projects must be an Nx project.
   Nx builds its graph from TypeScript imports only, so a relative SCSS `@use`
   across project roots creates no edge and the imported file lands in no task
@@ -203,6 +214,29 @@ Key files:
   `PortalInlinePlayerComponent.seriesTitle` and `WebPlayerViewComponent.mediaTitle`;
   movie and live hosts fall back to `playback.title`, skipping raw stream-URL
   fallbacks. Outside fullscreen the overlay stays hidden.
+- Auto-hide pauses while the pointer is over the controls bar or keyboard
+  focus is inside it, but only keyboard-originated focus pins the bar open.
+  Chromium also focuses a clicked `<button>`, so
+  `ControlsSurface.wasPointerInteraction` attributes a `focusin` to a recent
+  `pointerdown` inside the focused element; such focus reveals without
+  blocking auto-hide (otherwise the fullscreen button left the controls on
+  screen until a click-to-pause on the viewport). The press record is
+  discarded on the first bar focus event it is asked about or on any
+  `keydown`, a `pointerdown` inside the bar releases a keyboard pin, and a
+  `keydown` bubbling out of a bar control re-pins it, since operating a
+  focused control produces no focus event. A completed pointer click then
+  releases the focus it left on the control (`onBarClick` →
+  `ControlsSurface.releasePointerFocus`, attributed by `wasPointerClick`:
+  non-empty click `pointerType`, else a recent press inside the clicked
+  element), because a focused control captures the keyboard: Space and
+  Enter re-activated the clicked button and `ControlsShortcuts` yields to
+  any interactive element in the key's path, so after a click on fullscreen
+  Space left fullscreen instead of pausing. Keyboard activation (empty
+  `pointerType`) keeps focus, only buttons and range sliders are released,
+  Chromium keeps its sequential-focus starting point at the blurred control
+  so Tab continues from it, and the volume popover ignores the release's
+  `focusout` (`wasPointerFocusRelease`). Contract:
+  `docs/architecture/player-controls-contract.md` (auto-hide paragraph).
 - Persisted `Settings.webPlayerSharedControls` is default-ON (absent stored
   values coerce with `!== false`; only an explicit false opts out to the legacy
   vendor chrome), and its checkbox appears only when HTML5, Video.js, or
@@ -255,6 +289,16 @@ Key files:
   commands are cancelled. Same-session IPC replies also yield to a broadcast
   snapshot received while the command was pending, preventing a successful
   recording acknowledgement from being rolled back by a stale reply.
+- Embedded MPV seek steps (arrow keys, ±10 s buttons, `PlayerController.seekBy`)
+  go through the relative `seekEmbeddedMpvBy` IPC: every backend forwards the
+  delta as mpv `seek <delta> relative+exact` (addon export `seekBy`, helper
+  stdin command `seek-by`, Linux JSON IPC) and never advances the snapshot
+  position itself. Do not derive an absolute target from the renderer's
+  `positionSeconds`: it is floored to whole seconds, polled every 500 ms, and
+  a seek reply does not carry the new position, so rapid presses computed from
+  it collapse onto one target. Only the timeline scrub commits an absolute
+  `seek`. Contract: `docs/architecture/embedded-mpv-native.md` ("Resume And
+  Track Handling").
 - DASH (`.mpd`) sources play through a lazily imported Shaka Player source
   engine (`libs/ui/playback/src/lib/shaka-engine/`) inside the HTML5 and
   ArtPlayer components; ClearKey keys come from KODIPROP-derived
@@ -413,7 +457,8 @@ Key files:
   suppression.
   `WebPlayerViewComponent.resolvedIsLive` supplies authoritative live/VOD
   metadata, while a visible playback diagnostic disables both shared surface
-  interaction and shortcuts and exits the HTML5 shell's own fullscreen so the
+  interaction and shortcuts and exits the shared controls' resolved fullscreen
+  owner (the host-supplied `fullscreenTarget`, else the HTML5 shell) so the
   diagnostic actions remain visible. The preference-off path keeps native
   controls and legacy series navigation unchanged, while the playback keyboard
   shortcuts (Space/K, F, arrow seek/volume, M) attach through
@@ -433,7 +478,27 @@ Key files:
   path keeps the existing Video.js skin and legacy series navigation unchanged
   (still without `userActions.hotkeys`), while the playback keyboard shortcuts
   attach through `LegacyPlayerShortcuts` and drive the player API so the
-  vendor control bar stays in sync (`vjs-legacy-shortcuts.ts`).
+  vendor control bar stays in sync (`vjs-legacy-shortcuts.ts`). That chrome
+  also releases the focus a pointer interaction leaves on a control
+  (`vjs-pointer-focus-release.ts`, sharing `pointer-focus-release.ts`'s
+  `blurFocusedControl` with `ControlsSurface`): a focused Video.js component
+  stops every key before the document and turns Space/Enter into a click, so
+  after a click on fullscreen Space left fullscreen instead of pausing. It is
+  driven mainly by `focusin`, not the click, because choosing a menu item
+  moves focus to the menu button a tick later and that click never bubbles to
+  the shell: an eligible control (button/`role=button`/slider, never a menu
+  item) is released when its focus is attributable to a recent shell
+  `pointerdown` not yet ended by a document `keydown`, so `Tab` focus is kept.
+  A `click` runs the same release for a control clicked while already focused
+  (Tab, then a mouse click), which fires no `focusin`. The release is scoped
+  to `.vjs-control-bar`, so the caption-settings dialog (a modal sibling of
+  the bar) keeps its focus trap. Menu buttons live in the bar and are not
+  exempt: a popup is navigated through its focused item, so releasing the
+  button never disturbs an open menu, and the button focus a pointer moves
+  through (open, item selection, toggling an open menu shut) is released so
+  Space works again after the menu closes. ArtPlayer
+  (non-focusable divs) and the native HTML5 controls (focus lands on the
+  `<video>`) need no counterpart.
 - ArtPlayer is the fourth guarded consumer. `ArtPlayerComponent` provides a
   component-scoped `WebVideoControlsAdapter`; `ArtPlayerSourceSession` owns
   HLS/DASH(Shaka)/MPEG-TS/native sources, the neutral web-video bridge, exact cleanup, and

@@ -2,12 +2,6 @@
   "full_name": "apache/superset",
   "points": [
     {
-      "checked_at": "2026-08-06T06:06:46Z",
-      "commit_sha": "4278f4b3d937a5f77143431ec3c0b5c90228c682",
-      "pushed_at": "2026-08-06T05:58:05Z",
-      "stars": 74159
-    },
-    {
       "checked_at": "2026-08-08T04:30:33Z",
       "commit_sha": "d8b97e31faf7f02602ba417f77ec0bd81c8898dc",
       "pushed_at": "2026-08-08T04:26:52Z",

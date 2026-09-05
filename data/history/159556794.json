@@ -2,12 +2,6 @@
   "full_name": "go-vikunja/vikunja",
   "points": [
     {
-      "checked_at": "2026-08-06T06:06:46Z",
-      "commit_sha": "0db760752fe48be26f9e3bc600af11ada506a0ed",
-      "pushed_at": "2026-08-05T21:20:22Z",
-      "stars": 4982
-    },
-    {
       "checked_at": "2026-08-07T05:04:44Z",
       "commit_sha": "9403ed15264e414605c523b0c16ef28703e9915e",
       "pushed_at": "2026-08-07T01:11:13Z",

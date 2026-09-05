@@ -2,12 +2,6 @@
   "full_name": "Provenance-Emu/Provenance",
   "points": [
     {
-      "checked_at": "2026-08-06T06:06:46Z",
-      "commit_sha": "5215f2bc10ca44671c45c248c016be9a75699bf7",
-      "pushed_at": "2026-08-06T05:57:30Z",
-      "stars": 6344
-    },
-    {
       "checked_at": "2026-09-03T08:07:06Z",
       "commit_sha": "10d3c4685814e83290c4673a1d9cfafe5d584564",
       "pushed_at": "2026-09-03T08:00:00Z",

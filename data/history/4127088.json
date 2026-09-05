@@ -2,12 +2,6 @@
   "full_name": "Azure/azure-sdk-for-python",
   "points": [
     {
-      "checked_at": "2026-08-06T06:06:46Z",
-      "commit_sha": "cff419824c7160481499a4247941e2f97286eb71",
-      "pushed_at": "2026-08-06T06:05:14Z",
-      "stars": 5583
-    },
-    {
       "checked_at": "2026-08-21T04:04:13Z",
       "commit_sha": "205008d31604327f5fb456f878ae97f2f0d24d7a",
       "pushed_at": "2026-08-21T03:58:35Z",

@@ -2,12 +2,6 @@
   "full_name": "infiniflow/ragflow",
   "points": [
     {
-      "checked_at": "2026-08-06T06:06:46Z",
-      "commit_sha": "66f2c84c3fc89ff51287a742dd0ded144ae80285",
-      "pushed_at": "2026-08-06T05:53:42Z",
-      "stars": 86929
-    },
-    {
       "checked_at": "2026-08-12T05:06:54Z",
       "commit_sha": "7b2d052f8a094fa3f66e5ae327b8164df4c3d1a2",
       "pushed_at": "2026-08-12T05:04:40Z",

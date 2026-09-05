@@ -2,12 +2,6 @@
   "full_name": "apache/airflow",
   "points": [
     {
-      "checked_at": "2026-08-06T06:06:46Z",
-      "commit_sha": "dc0e0bb084d685e2cb475e312f729fbb2a262efa",
-      "pushed_at": "2026-08-06T05:55:00Z",
-      "stars": 46394
-    },
-    {
       "checked_at": "2026-08-15T03:56:21Z",
       "commit_sha": "39d801aa89d9ce7a8a38487a377cb3f6d076efee",
       "pushed_at": "2026-08-15T03:44:06Z",
