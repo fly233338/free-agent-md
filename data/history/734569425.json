@@ -1,11 +1,17 @@
 {
-  "full_name": "Bistutu/FluentRead",
+  "full_name": "FluentRead/FluentRead",
   "points": [
     {
       "checked_at": "2026-08-16T04:02:35Z",
       "commit_sha": "30ed67da232fdbc9ddb65a10ac133b791e7ea898",
       "pushed_at": "2026-08-16T03:48:53Z",
       "stars": 7479
+    },
+    {
+      "checked_at": "2026-09-06T07:57:27Z",
+      "commit_sha": "daac16ab8c08351659f1273e1ba04daf8ae65feb",
+      "pushed_at": "2026-09-06T07:43:41Z",
+      "stars": 7609
     }
   ],
   "repo_id": 734569425

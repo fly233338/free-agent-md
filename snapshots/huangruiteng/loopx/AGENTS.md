@@ -197,13 +197,29 @@ should include the PR comment URL and a compact summary of the posted findings.
 
 Before publishing a review, run the capability-owned review lenses for typed
 state rules, domain neutrality, behavior-change disclosure, and
-guidance-vs-obligation (defined in `pull_request_review_execution_contract_v1`).
+guidance-vs-obligation, plus default-off isolation and authority semantics
+(defined in `pull_request_review_execution_contract_v2`).
 Flag substring denylists or prose-only classification rules with the concrete
 misclassification risk, product- or benchmark-specific wording in generic
 control-plane contracts, silent default-behavior changes, and text that calls a
-machine-enforced obligation "guidance".
+machine-enforced obligation "guidance". For opt-in behavior, prove feature-off
+parity across every shared changed surface. Reject protocol names that imply a
+broader actor lifecycle or authority model than the implementation provides.
 
 ## Engineering Quality And Right-Sized Scope
+
+### Refactor Real-Path Validation
+
+Before delivering a refactor, validate the affected production entrypoint and
+real backend, not only mocks, in-memory substitutes, or unit tests. Authority
+store refactors that affect PostgreSQL must run the PostgreSQL integration
+suite against an isolated real server; report the exact source and results.
+Use a separate database/tenant and disposable runtime with synthetic fixtures
+or an owner-authorized read-only snapshot. Never test by promoting, rewriting,
+or corrupting an active goal, its registry, writer fence, Todo, or lease state.
+If the required real environment is unavailable, report the evidence gap and
+hold delivery; a skipped test does not satisfy this gate. See the testing and
+quality guide for the same safety and evidence boundary.
 
 Treat code volume as a cost, especially during refactors. A good LoopX change
 should make the next change easier to localize, test, and revert; it should not

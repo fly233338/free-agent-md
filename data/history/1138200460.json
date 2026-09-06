@@ -2,12 +2,6 @@
   "full_name": "rorkai/App-Store-Connect-CLI",
   "points": [
     {
-      "checked_at": "2026-08-07T05:04:44Z",
-      "commit_sha": "5aa910ddcf9b94404c9c6f0fff115ec32b8822d3",
-      "pushed_at": "2026-08-07T05:01:43Z",
-      "stars": 5533
-    },
-    {
       "checked_at": "2026-08-08T04:30:33Z",
       "commit_sha": "71ead8ce22668edeef8e4c2be4292e9d99f0edf3",
       "pushed_at": "2026-08-08T04:26:39Z",
@@ -42,6 +36,12 @@
       "commit_sha": "d3a84163aa031c0eae2452e10a03415ce0d50012",
       "pushed_at": "2026-09-03T08:03:43Z",
       "stars": 6375
+    },
+    {
+      "checked_at": "2026-09-06T07:57:27Z",
+      "commit_sha": "5ca5ad74989c112dc70eed8de317c23b8255634e",
+      "pushed_at": "2026-09-06T07:49:12Z",
+      "stars": 6405
     }
   ],
   "repo_id": 1138200460
