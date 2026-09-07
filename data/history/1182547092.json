@@ -2,12 +2,6 @@
   "full_name": "NVIDIA/NemoClaw",
   "points": [
     {
-      "checked_at": "2026-08-08T04:30:33Z",
-      "commit_sha": "b753c3802098b75f50dbf713da80d974a471c040",
-      "pushed_at": "2026-08-08T04:22:46Z",
-      "stars": 22090
-    },
-    {
       "checked_at": "2026-08-10T04:56:53Z",
       "commit_sha": "68129579827191770cfcf496715e4e272bc96129",
       "pushed_at": "2026-08-10T04:52:27Z",

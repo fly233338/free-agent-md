@@ -25,6 +25,10 @@ The keywords `MUST`, `MUST NOT`, `SHOULD`, and `MAY` define requirement levels:
 ## Before You Work
 
 - Development SHOULD use a Git worktree with its working copy located in the .worktrees directory
+- After a task branch is fully merged into its target branch, you MUST remove
+  its clean worktree and delete the original local task branch as part of delivery.
+  Verify that the target contains the branch tip before cleanup, and preserve
+  any uncommitted work. Do not force-delete unmerged branches.
 - Before deeply analyzing or changing a package, you MUST read every applicable
   `FLOW.md`. Broad repository discovery and symbol search do not trigger this
   requirement. A FLOW with `scope: package` applies only to its directory; a

@@ -300,7 +300,7 @@ The ids are defined by that integration's HookSpecs
 registered in `src/harness/registry.ts`, whose id is their
 `createPluginEntry(...)` argument — currently `antigravity-cli`, `claude-code`,
 `cline-cli`, `codex`, `copilot-cli`, `cursor-cli`, `devin-cli`, `grok-build`,
-`kilo`, `opencode`.
+`kilo`, `opencode`, `opencode2`.
 
 The control plane resolves the value in
 `hindsight-control-plane/src/lib/harness-logo.ts` (metadata wins over the tag) and
@@ -439,4 +439,4 @@ Optional (uses local models by default):
 - `HINDSIGHT_API_EMBEDDINGS_PROVIDER`: local (default) or tei
 - `HINDSIGHT_API_RERANKER_PROVIDER`: local (default) or tei
 - `HINDSIGHT_API_DATABASE_URL`: External PostgreSQL (uses embedded pg0 by default)
-- `HINDSIGHT_API_ENABLE_BANK_CONFIG_API`: Enable per-bank config API (default: true)
+- `HINDSIGHT_API_ENABLE_BANK_CONFIG_API`: Allow per-bank config *writes* (default: true; reads are always allowed)

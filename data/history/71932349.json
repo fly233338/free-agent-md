@@ -2,12 +2,6 @@
   "full_name": "ray-project/ray",
   "points": [
     {
-      "checked_at": "2026-08-08T04:30:33Z",
-      "commit_sha": "328e6b7646facad6dc92e37b8db2b478b2089a87",
-      "pushed_at": "2026-08-08T04:06:18Z",
-      "stars": 43468
-    },
-    {
       "checked_at": "2026-08-12T05:06:54Z",
       "commit_sha": "16a8cdf355fc671304b22defd7752b59207834b3",
       "pushed_at": "2026-08-12T05:00:13Z",

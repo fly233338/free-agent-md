@@ -2,12 +2,6 @@
   "full_name": "fastrepl/anarlog",
   "points": [
     {
-      "checked_at": "2026-08-08T04:30:33Z",
-      "commit_sha": "ceb1dfaa0a0ab7954b29e784f4ba87bef7d942a1",
-      "pushed_at": "2026-08-08T04:28:58Z",
-      "stars": 8982
-    },
-    {
       "checked_at": "2026-08-12T05:06:54Z",
       "commit_sha": "9245356329d09105fad83f6e6842de56792f6dc3",
       "pushed_at": "2026-08-12T05:04:06Z",
@@ -54,6 +48,12 @@
       "commit_sha": "9b1824553f19472b9eae0bf18e44a66bc27d8844",
       "pushed_at": "2026-09-06T07:45:29Z",
       "stars": 9248
+    },
+    {
+      "checked_at": "2026-09-07T08:24:13Z",
+      "commit_sha": "33d262b35d489d1104a7abbf661fbef9902fda95",
+      "pushed_at": "2026-09-07T08:21:32Z",
+      "stars": 9255
     }
   ],
   "repo_id": 900550981

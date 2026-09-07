@@ -8,13 +8,13 @@ This workspace contains **GitLens** - a powerful VS Code extension that supercha
 2. **Simplicity over abstraction** — Prefer the simplest correct solution; no new types, enums, or wrapper abstractions unless they serve multiple consumers.
 3. **Fixing over disabling** — Fix the root cause. "Fix" and "disable" are different instructions. This includes tests: when one fails, find and fix the cause — do NOT simplify the test or change its intent to make it pass.
 4. **Hypothesis before implementation** — When debugging, present your hypothesis with evidence before implementing against it. On any non-trivial change, state your approach before editing; if the request is ambiguous, ask rather than assume.
-5. **Branch ownership** — The current branch owns ALL of its issues, not just those from your current task. An error that exists on this branch but not on the base branch is the branch's responsibility regardless of when it was introduced (verify with `git diff main --stat` or similar; issues that also exist on the base branch are truly pre-existing and can be noted, not prioritized). After completing your task, address remaining branch build/type/test failures — or if the scope is too large, ask the user how to proceed. A task is not complete until the code builds cleanly and related tests pass.
+5. **Branch ownership** — The current branch owns ALL of its issues, not just those from your current task. An error or warning that exists on this branch but not on the base branch is the branch's responsibility regardless of when it was introduced (verify with `git diff main --stat` or similar; issues that also exist on the base branch are truly pre-existing and can be noted, not prioritized). After completing your task, address remaining branch build/type/test errors and warnings — or if the scope is too large, ask the user how to proceed. A zero exit code alone is not sufficient: inspect the complete build output, and treat warnings as failures. A task is not complete until the code builds without errors or warnings and related tests pass.
 
 > For the rules these summarize plus the ones not listed here — complexity limits, the completeness checklist (call sites, subclass overrides, Node.js _and_ browser paths), fix vs. disable, scope of changes, and error handling: see `docs/coding-standards.md`
 
 ## Development Environment
 
-- **Node.js** ≥ 22.12.0, **pnpm** ≥ 10.x (install via corepack: `corepack enable`), **Corepack** ≥ 0.31.0, **Git** ≥ 2.7.2
+- **Node.js** ≥ 24, **pnpm** ≥ 11.x (install via corepack: `corepack enable`), **Corepack** ≥ 0.31.0, **Git** ≥ 2.7.2
 
 ## Development Commands
 
@@ -53,7 +53,7 @@ Skill artifacts (goals, plans, reviews, live-exercise findings) all live under a
 
 Most of the layout is self-describing — browse `packages/`, `src/`, and `tests/`. What the folder names do _not_ tell you:
 
-- **`packages/` (`@gitlens/*`) vs `src/`** — `packages/git` holds the git domain (models, parsers, per-operation providers) and `packages/git-cli` runs the CLI; `src/git` is the orchestration layer over them (`gitProviderService.ts`, actions, formatters). `packages/utils` is the only utility layer webviews may import; `src/system` is host-only, and `src/system/-webview/` is extension-host-specific.
+- **`packages/` (`@gitlens/*` / `@gitkraken/*`) vs `src/`** — `packages/git` holds the git domain (models, parsers, per-operation providers) and `packages/git-cli` runs the CLI; `src/git` is the orchestration layer over them (`gitProviderService.ts`, actions, formatters). Webviews may import generic utilities (including DOM and keymap helpers) from `packages/utils` and reusable Lit UI from `packages/components`; `src/system` is host-only, and `src/system/-webview/` is extension-host-specific. Scope also marks publication: `@gitkraken/*` is published for other GitKraken products and `@gitlens/*` is workspace-internal, compiled into a `@gitkraken/*` publisher's `dist/` rather than installed.
 - **`src/env/node/` vs `src/env/browser/`** — the same feature must work in desktop VS Code and VS Code for Web. Shared code imports through the `@env/` alias, which resolves per build target. Changing one path means checking the other.
 - **`src/plus/` and `packages/plus/` are non-OSS** — licensed separately, see `LICENSE.plus`.
 - **`src/container.ts`** — the service locator; nearly every service is reached through it.
@@ -62,7 +62,7 @@ Most of the layout is self-describing — browse `packages/`, `src/`, and `tests
 - **`src/vsls/`** — VS Live Share support. **`src/uris/`** — deep-link URI handling.
 - **`custom-elements.json`** — generated web component metadata; never hand-edit.
 
-> For detailed architecture (patterns, services, environment abstraction, webviews, IPC, caching, build config): see `docs/architecture.md`
+> For detailed architecture (patterns, services, environment abstraction, webviews, caching, build config): see `docs/architecture.md`
 
 ## Coding Standards & Style Rules
 
@@ -92,13 +92,13 @@ The repo enforces its own rules from `scripts/eslint-rules/`. Write conforming c
 | `no-scss-in-css-template`          | No SCSS syntax inside `css` tagged templates                                                                                                                                                                                                       |
 | `no-src-imports`                   | No import specifiers starting with `src/`                                                                                                                                                                                                          |
 | `no-self-package-imports`          | Same-package imports use a relative path, not the workspace package name                                                                                                                                                                           |
-| `valid-package-imports`            | `@gitlens/*` imports name a subpath the target package's `exports` exposes                                                                                                                                                                         |
+| `valid-package-imports`            | Internal `@gitlens/*` and `@gitkraken/*` imports name a subpath the target package's `exports` exposes                                                                                                                                             |
 
 > For webview styling — prefix conventions, the `1rem = 10px` base, the `--gl-*` design tokens, and the elevation (z-index + shadow) system: see `docs/webview-styling.md`
 >
 > For webview accessibility requirements: see `docs/accessibility.md`
 >
-> For webview architecture — the two communication layers (legacy IPC vs Supertalk RPC + signals), which surface uses which, state ownership, resources, persistence, and lifecycle: see `docs/webview-architecture.md`
+> For webview architecture — the single RPC stack (Supertalk services over the namespaced binary pipe), state ownership, resources, persistence, and lifecycle: see `docs/webview-architecture.md`
 >
 > For the Commit Graph keyboard architecture — focus scopes, the Esc overlay stack, the chord vocabulary, and how to add a binding: see `docs/graph-keyboard.md`
 
@@ -129,7 +129,7 @@ When implementing something new, look at these files first:
 | ------------------------------- | ----------------------------------------------- |
 | Simple command                  | `src/commands/copyCurrentBranch.ts`             |
 | Complex command (multi-command) | `src/commands/gitWizard.ts`                     |
-| IPC protocol                    | `src/webviews/rebase/protocol.ts`               |
+| RPC service                     | `src/webviews/rpc/rebaseService.ts`             |
 | Webview provider                | `src/webviews/rebase/rebaseWebviewProvider.ts`  |
 | Webview app (Lit)               | `src/webviews/apps/rebase/`                     |
 | Unit test                       | `packages/utils/src/__tests__/iterable.test.ts` |
@@ -144,4 +144,4 @@ When implementing something new, look at these files first:
 - Run `pnpm run generate:contributions` after editing (or let the watcher handle it)
 - Run `pnpm run generate:commandTypes` after adding commands (or let the watcher handle it)
 
-**Webview communication** — two layers coexist: legacy IPC (`IpcCommand` / `IpcRequest` / `IpcNotification`) and Supertalk RPC + signals. Check which one your surface uses before adding a channel — see `docs/webview-architecture.md`
+**Webview communication** — a single stack: Supertalk RPC services (`src/webviews/rpc/`) over the namespaced binary postMessage pipe. Readiness rides the session handshake; visibility/focus ride buffered RPC events re-emitted as window CustomEvents; persisted state uses the `acquireVsCodeApi` state API — see `docs/webview-architecture.md`

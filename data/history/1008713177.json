@@ -2,12 +2,6 @@
   "full_name": "QwenLM/qwen-code",
   "points": [
     {
-      "checked_at": "2026-08-08T04:30:33Z",
-      "commit_sha": "b9be6c8ee8cd688852fd2c748607c43c273ec5e1",
-      "pushed_at": "2026-08-08T04:29:57Z",
-      "stars": 26831
-    },
-    {
       "checked_at": "2026-08-11T04:42:27Z",
       "commit_sha": "3f6551f9cf4683870b13f8f937d210c59555ec91",
       "pushed_at": "2026-08-11T04:36:30Z",
@@ -102,6 +96,12 @@
       "commit_sha": "a6549509c63a779e911fd5c846684f2140aed3bb",
       "pushed_at": "2026-09-06T07:57:22Z",
       "stars": 27673
+    },
+    {
+      "checked_at": "2026-09-07T08:24:13Z",
+      "commit_sha": "56da7ac4d71dd7dcfbe06038bd910b731c6822d5",
+      "pushed_at": "2026-09-07T08:17:22Z",
+      "stars": 27690
     }
   ],
   "repo_id": 1008713177

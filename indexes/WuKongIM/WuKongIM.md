@@ -1,7 +1,7 @@
 # WuKongIM/WuKongIM instruction files
 
-Upstream: [WuKongIM/WuKongIM](https://github.com/WuKongIM/WuKongIM) · License: `Apache-2.0` · Commit: `b24f7df4e38f33be7401e2f677087fd62201ef16`
+Upstream: [WuKongIM/WuKongIM](https://github.com/WuKongIM/WuKongIM) · License: `Apache-2.0` · Commit: `c27fc49aa1b0748ffc53533779b4fe49a632886f`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/WuKongIM/WuKongIM/AGENTS.md) | [Source](https://github.com/WuKongIM/WuKongIM/blob/b24f7df4e38f33be7401e2f677087fd62201ef16/AGENTS.md) | `612fe94712fbfa0e316fe581382935f153dfee6a8de39d078ab7481721c3d3b3` | 11,521 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/WuKongIM/WuKongIM/AGENTS.md) | [Source](https://github.com/WuKongIM/WuKongIM/blob/c27fc49aa1b0748ffc53533779b4fe49a632886f/AGENTS.md) | `1c28b7680b5fb18ec63354e544604e43f4b9cc9d86627c3e17b1ab73feda6984` | 11,824 B |
