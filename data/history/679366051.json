@@ -2,12 +2,6 @@
   "full_name": "NVIDIA/TensorRT-LLM",
   "points": [
     {
-      "checked_at": "2026-08-09T04:39:26Z",
-      "commit_sha": "1511d31c21b43da27c984f0810b292e6984755fd",
-      "pushed_at": "2026-08-09T04:36:44Z",
-      "stars": 14337
-    },
-    {
       "checked_at": "2026-08-10T04:56:53Z",
       "commit_sha": "d0b58628770189975eea67bcc1d50ff2cbb23533",
       "pushed_at": "2026-08-10T04:45:40Z",
@@ -36,6 +30,12 @@
       "commit_sha": "4b63205f49609ab261cf71e8166119b3e4f571e7",
       "pushed_at": "2026-09-03T08:04:14Z",
       "stars": 14538
+    },
+    {
+      "checked_at": "2026-09-08T08:09:08Z",
+      "commit_sha": "6c42edd0d61423bb852d20cb759b2ab81a0fd0f0",
+      "pushed_at": "2026-09-08T08:03:17Z",
+      "stars": 14568
     }
   ],
   "repo_id": 679366051

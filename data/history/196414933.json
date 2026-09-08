@@ -1,0 +1,12 @@
+{
+  "full_name": "open-telemetry/opentelemetry-collector-contrib",
+  "points": [
+    {
+      "checked_at": "2026-09-08T08:09:08Z",
+      "commit_sha": "8aee18f5a35fbb8370a128ad30337538fbfae113",
+      "pushed_at": "2026-09-08T08:00:53Z",
+      "stars": 4909
+    }
+  ],
+  "repo_id": 196414933
+}

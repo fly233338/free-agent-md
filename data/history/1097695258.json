@@ -2,12 +2,6 @@
   "full_name": "steipete/CodexBar",
   "points": [
     {
-      "checked_at": "2026-08-09T04:39:26Z",
-      "commit_sha": "81ca9f66338cc6ba750699b07639353436d0de7e",
-      "pushed_at": "2026-08-09T04:39:02Z",
-      "stars": 19818
-    },
-    {
       "checked_at": "2026-08-14T05:06:13Z",
       "commit_sha": "355e96823d53134bb1bc120469e9316c492aeffa",
       "pushed_at": "2026-08-14T05:03:46Z",
@@ -30,6 +24,12 @@
       "commit_sha": "d21639270142a7b7d02f3da49f761698531a766e",
       "pushed_at": "2026-08-24T04:06:58Z",
       "stars": 20506
+    },
+    {
+      "checked_at": "2026-09-08T08:09:08Z",
+      "commit_sha": "b1e27d266a8e1a0db991be7cf40526f12e6a4e1d",
+      "pushed_at": "2026-09-08T08:08:36Z",
+      "stars": 21078
     }
   ],
   "repo_id": 1097695258
