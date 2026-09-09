@@ -74,55 +74,63 @@
 
 强制的是**证据本身**，不是具体工具。工具链按可用性挑：
 
-### 工具选型（按可用性挑一条主路径 + 一条 fallback）
+### 工具选型（`mcp_dart` 是唯一主路径，adb / xcrun simctl 只作为截图 fallback）
 
-1. **主路径 — `mcp_dart`（debug 构建、DTD 在线时首选）**
-   - `dtd` → `listDtdUris` / `connect` 建立 DTD 连接
-   - `widget_inspector` → `get_widget_tree` / `get_selected_widget` 抓真实渲染出的 widget 树
-   - `get_runtime_errors` 拉 Dart 层异常（改动前后各拉一次）
+**2026-09-02 拍板**：本仓库统一走 `mcp_dart` 冒烟。历史上 `adb` 被写成"一等公民 fallback"是路径依赖的锅——`adb` 只是 Android 平台工具，天然把 iOS 排除在外，也不会随 Flutter / Dart 升级而同步演进。`mcp_dart` 直接连 DTD/VM Service，跨平台、随 Flutter 版本演进、能拉真 widget tree 和 runtime errors，是真正的一等公民。
+
+1. **一等公民 — `mcp_dart`（永远优先）**
+   - `dtd` → `listDtdUris` / `connect` 建立 DTD 连接（`flutter run` 起来后 stdout 会打印 DTD/VM Service URI）
+   - `widget_inspector` → `get_widget_tree` / `get_selected_widget` 抓**真实渲染出的 widget 树**，包含 `textPreview` 字段，可直接验证文案 / 是否渲染 / 挂载数量
+   - `get_runtime_errors` 拉 Dart 层异常（改动前后各拉一次；跑完关键路径后再拉一次）
+   - `vm_service` 走 isolate、eval、library 反射等更深的运行时诊断
+   - `hot_reload` / `hot_restart` 快速让改动生效验证
    - `flutter_driver_command` 只在工程已引入 `flutter_driver` / `integration_test`
      并且 `main.dart` 里显式调用 `enableFlutterDriverExtension()` 时才可用。
      本仓库目前**未引入这套依赖**，因此该子工具默认不可用，不得作为唯一验证手段。
 
-2. **Fallback — `adb`（release 构建、DTD 掉线、driver 未启用时的一等公民）**
-   - `adb devices` 确认设备可见
-   - `adb shell input tap/swipe/text/keyevent` 驱动 UI
-   - `adb exec-out screencap -p > /tmp/xxx.png` 抓真实渲染截图
-   - `adb logcat -d -s flutter` 抓 Dart 侧输出
-   - **截图文件路径必须写进完成汇报**，reviewer 需要能拿到该路径复核。
-   - 反复用到的 tap 序列必须沉淀到 [`tool/ai/smoke/`](tool/ai/smoke/)，
-     不允许把已经跑通的坐标序列扔在一次对话里就丢掉。
+2. **截图 fallback（只做截图，不做操作）**
+   - **iOS Simulator**：`xcrun simctl io <UDID> screenshot <path>`
+   - **Android 设备/模拟器**：`adb exec-out screencap -p > <path>`
+   - **禁止用截图 fallback 承担业务验证职责**。业务验证一律走 `mcp_dart` 拿 widget tree 与 runtime errors。截图只是给 reviewer 复核"人眼层面"用的补充证据。
+   - 截图**绝对路径必须写进完成汇报**，reviewer 需要能拿到该路径复核。
 
-3. **Web / DevTools 类改动**：用 `integrated_browser` 走同样"操作 → 截图 → 抓日志"流程。
+3. **UI 操作驱动**
+   - **优先方式**：`mcp_dart` `hot_restart` 后由 `main.dart` 走既定路由；或者通过 `vm_service` `eval` 触发 `Navigator.push`。
+   - **降级方式**：仅当无法通过 `mcp_dart` 触发时才允许人肉在模拟器上点，且必须在完成汇报里说明"这一步为什么无法自动化"。
+   - **禁止**：新增 `adb shell input tap/swipe` 类的坐标序列脚本——这类脚本硬编码分辨率、随 UI 微调即坏、且天然锁死 Android，是本次拍板要清理的历史包袱。
+
+4. **日志（辅助）**
+   - `mcp_dart` `get_runtime_errors` 是主渠道。
+   - `flutter run` 前台窗口本身就是 Dart 日志渠道，改动前后各留一份 stdout。
+   - **不再**推荐 `adb logcat -d -s flutter` 作为常规日志渠道（仅在 mcp_dart 掉线且需要跨 Flutter 生命周期的 native 侧日志时使用）。
+
+5. **Web / DevTools 类改动**：用 `integrated_browser` 走同样"操作 → 截图 → 抓日志"流程。
 
 ### 强制流程
 
 1. `flutter run` 或已装机的 build 起到已连接设备。
-   **重要：装机一律用 `adb install -r <apk路径>`，禁止使用 `flutter install`。**
-   原因见下方"禁止行为"条目——`flutter install` 内部会先执行 `adb uninstall`，
-   把应用数据（含 SharedPreferences 里的 `TOKEN_KEY`）一并清空，等同强制登出，
-   会直接毁掉真机 fixture 状态。
-2. 按上表挑工具组合抓证据；`mcp_dart` 不可用时直接切 `adb`，不视为破例。
-3. 走一遍改动**直接覆盖**的路径（例：改了 PR timeline 事件行 → 真的进 PR 详情页把
-   timeline 滚一遍，抓到目标文案的截图或 `get_text` 输出）。
-4. 覆盖不到的分支（例：`base_ref_force_pushed` 真机上罕见）必须在完成汇报里
-   **显式列为已知缺口**，不能糊成"通过"。稀有分支覆盖率无法靠真机保证时，
-   优先考虑加模型层单测 + 真实 JSON fixture 补齐。
+   - **debug 构建**：直接 `flutter run -d <deviceId>`，DTD/VM Service URI 会打印在 stdout。
+   - **iOS release 装机**：`flutter build ios --release` 后走 `xcrun simctl install <UDID> <app>` 或走 Xcode 装机。
+   - **Android release 装机**：`flutter build apk --release --target-platform=android-arm64 --no-shrink` 后走 `adb install -r <apk>`（`-r` 表示 reinstall，保留 app 数据）。
+   - **禁止用 `flutter install`**：该命令内部走 `adb uninstall <package>` + `adb install`，会把 `/data/data/<pkg>/` 下所有数据（含 SharedPreferences 里的 `TOKEN_KEY`）一起抹掉，等同把用户从 fixture 账号强制登出。详细教训见"禁止行为"章节。
+2. 用 `mcp_dart` `dtd listDtdUris` + `connect` 拿到 app 连接；跑 `get_runtime_errors` 拿到"改动前"基线。
+3. 走一遍改动**直接覆盖**的路径（例：改了 PR timeline 事件行 → 进 PR 详情页把 timeline 滚一遍，抓 `widget_inspector get_widget_tree` 找到目标事件行的 `textPreview`），并用 `xcrun simctl io screenshot` 或 `adb exec-out screencap -p` 抓截图作为人眼层面补充证据。
+4. 关键路径跑完后再次 `get_runtime_errors`，确认无新增异常。
+5. 覆盖不到的分支（例：`base_ref_force_pushed` 真机上罕见）必须在完成汇报里**显式列为已知缺口**，不能糊成"通过"。稀有分支覆盖率无法靠真机保证时，优先考虑加模型层单测 + 真实 JSON fixture 补齐。
 
 ### 分级要求（避免形式主义）
 
 | 改动类型 | 最低证据要求 |
 |---|---|
 | 纯模型 / 纯工具函数 | `flutter analyze` + 单测（若 test 目录已存在）；无需截图 |
-| UI 渲染 / 文案 / 事件行 | 至少 1 张真机截图 + `get_runtime_errors` 或 `logcat` 空异常 |
-| 关键路径（登录 / 网络栈 / 根装配 / 状态边界） | 主路径截图 + 至少 1 个失败/边界分支的证据 |
+| UI 渲染 / 文案 / 事件行 | 至少 1 张真机截图 + `mcp_dart` `widget_inspector get_widget_tree` 命中目标 widget 或 `textPreview` + `get_runtime_errors` 无异常 |
+| 关键路径（登录 / 网络栈 / 根装配 / 状态边界） | 主路径截图 + widget tree 命中 + `get_runtime_errors` 无异常 + 至少 1 个失败/边界分支的证据 |
 
 ### 完成汇报三段式（必填）
 
 **看代码**：改了哪些文件、哪些函数、为什么这么改。
 **看编译**：`flutter analyze` / `build_runner` / `gen-l10n` 的产物结论。
-**看运行**：设备 id、所用工具组合（mcp_dart 或 adb）、**截图文件绝对路径**、
-`get_runtime_errors` 或 `logcat` 结果、无法覆盖的分支列表。
+**看运行**：设备 id + 平台（iOS Simulator UDID 或 Android device serial）、`mcp_dart` DTD/VM Service URI、`get_runtime_errors` 结果、`widget_inspector` 命中的关键 widget/textPreview、**截图文件绝对路径**、无法覆盖的分支列表。
 
 三段任一缺失 = 任务未完成。
 
@@ -131,17 +139,32 @@
 - ❌ 只跑 `flutter analyze` 就报"测试通过"
 - ❌ 把"app 启动到首页"当成本次功能验证
 - ❌ 让用户手动操作 UI 代替 author 自测（除非物理上无法自动化，且已说明原因）
-- ❌ 拿"日志里没 Exception"当作行为正确的证据
+- ❌ 拿"日志里没 Exception"当作行为正确的证据——必须配 `mcp_dart` `widget_inspector` 命中或截图佐证
 - ❌ 只把截图放在自己上下文里而不写路径，导致 reviewer 拿不到证据
+- ❌ **只用 `adb` / `xcrun simctl` 而不连 `mcp_dart`**：截图工具不能承担业务验证职责（2026-09-02 拍板），至少要连一次 DTD 拿一次 `get_runtime_errors`，否则视为汇报不完整
+- ❌ **新增 `adb shell input tap/swipe` 坐标脚本**（2026-09-02 拍板）：这类脚本硬编码分辨率、锁死 Android、随 UI 微调即坏。旧脚本会被逐步替换成 `mcp_dart` 方案，新脚本一律不允许
 - ❌ **使用 `flutter install` 装机**：该命令内部走 `adb uninstall <package>` +
   `adb install`，会把 `/data/data/<pkg>/` 下所有数据（含 SharedPreferences 里的
   `TOKEN_KEY`）一起抹掉，等同把用户从 fixture 账号强制登出。
   正确姿势：`flutter build apk --release --target-platform=android-arm64 --no-shrink`
-  后走 `adb install -r <apk 路径>`（`-r` 表示 reinstall，保留 app 数据）。
+  后走 `adb install -r <apk 路径>`（`-r` 表示 reinstall，保留 app 数据）；iOS 走
+  `xcrun simctl install` 或 Xcode 装机。
   历史教训：2026 装 discussions 冒烟版本时用了 `flutter install`，导致
   CarSmallGuo 的 gho\_ token 从设备上被清空，reviewer 侧无法直接复核，属于
   **author 责任事故**。此后但凡装机脚本 / 命令里出现 `flutter install`，
   reviewer 一律直接打回。
+- ❌ **在文档 / commit message / code comment 里编造 VM Service / mcp_dart
+  时序细节**（2026-09-03 拍板）：不许写"evaluate 会同步塞进 build/layout/paint
+  半程"、"addPostFrameCallback 一定在当前帧末尾跑到"这类未在
+  [Dart VM Service Protocol](https://github.com/dart-lang/sdk/blob/main/runtime/vm/service/service.md)
+  或 [api.flutter.dev](https://api.flutter.dev/) 官方文档里出现的因果。
+  历史教训：commit `224a0d8` body 编造 `evaluate` 同步注入回调栈，把
+  `_smokePostFrame` 定性成"根因修复"，实际上 `evaluate` 是走 isolate 事件循环
+  排队执行，`_smokePostFrame` 只是防御性保底；该编造在 `ed7077e` / `8106529`
+  连续订正，并在
+  [tool/ai/smoke/README.md `## 历史勘误（errata）`](file:///Users/guoshuyu/workspace/flutter-work/gsy_github_app_flutter/tool/ai/smoke/README.md)
+  章节留档（用章节名定位，避免行号漂移）。原则：**写不确定的时序 / 语义细节
+  前先查一次官方 spec，不能"根据经验"猜**。
 
 ## 当前已知约束
 
@@ -149,49 +172,58 @@
 - CI 使用 GitHub Actions，当前偏重构建成功
 - 项目同时使用 Redux、Riverpod、Provider、Signals
 - OAuth 登录相关流程依赖本地 `ignoreConfig.dart`
-- **GSY 是 GitHub 的只读 + 评论客户端**，不承担写 PR / 提交 review / 建仓库这类"作者行为"。冒烟或回归时**禁止通过 gh cli 或 GitHub API 新建仓库、造 PR 或提交 review**去伪造证据，一律用既有仓库里的真实数据
+- **GSY 是 GitHub 的轻量作者 + 阅读客户端**：产品语义上是"看仓库 / 读 issue-PR-discussion"为主，
+  但**允许用户在自己或已授权的仓库里做已实现的写操作**（发 issue、发 discussion、发评论、reaction、star/watch、resolve review thread 等，见下文清单）。
+  历史上曾把口径写成"只读 + 评论客户端"是根据"AI 冒烟阶段"的观察反推的口径，
+  与代码里既有的 [IssueRepository.createIssueRequest](file:///d:/workspace/project/gsy_github_app_flutter/lib/common/repositories/issue_repository.dart#L428-L440)
+  等入口不符，2026-09-08 拍板订正。
 
 ### 允许 / 禁止的写操作清单
 
-> 状态：作者已于 2026-07-06 拍板转正，正式约束。修改需在 PR 描述里显式提出并同步 `docs/00-overview/roadmap.md §4.1`。
+> 状态：作者已于 2026-07-06 首次拍板，2026-09-08 二次订正（把"针对能力"改成"针对目标"）。修改需在 PR 描述里显式提出并同步 `docs/00-overview/roadmap.md §4.1`。
 
-**允许（已在做且不打算收回）**：
+**判断口径（2026-09-08 订正，读清单前先看这段）**：
+
+- **写操作是否允许，判断的是"针对谁 / 为了什么"，不是"是不是 write endpoint"**：
+  - GSY 提供的产品能力（发 issue / 发 discussion / 发评论 / reaction / star / watch / mark thread resolved 等）→ **允许用户对任意有权限的仓库做**，这是 app 的正常使用；
+  - **AI / 开发者做冒烟或回归测试** → **不允许往 `CarGuo/*` 主仓或任何不属于自己 / 未经明确授权的第三方仓库塞测试数据**；允许在 AI / 开发者本人名下的测试仓库、fork、sandbox 里造数据，但**必须在 fixture 表里登记该仓库**以便 reviewer 复核。
+- 仓库运维类（改分支保护 / webhook / rerun workflow / Projects V2 卡片状态等）与 GSY 的产品定位无关，**始终禁止**，不因主体而放松。
+- 若未来需要新增一条允许项（新的产品能力），需要在 PR 描述里显式提出，并同步更新本清单与 roadmap §4.1。
+
+**允许（GSY 已实现或即将实现的产品能力，用户对**有权限**的仓库都可以做）**：
 
 - Issue / Comment 上加/取消 reaction
 - Issue / PR / Discussion 下发评论
+- **新建 issue**（[IssueRepository.createIssueRequest](file:///d:/workspace/project/gsy_github_app_flutter/lib/common/repositories/issue_repository.dart#L428-L440) 早就在做，`_createIssue` 按钮在仓库详情页右下角）
+- **新建 discussion**（2026-09-08 新增，见 [discussion_list_page.dart](file:///d:/workspace/project/gsy_github_app_flutter/lib/page/discussion/discussion_list_page.dart) 里的 FAB + `createDiscussion` mutation）
 - Notify 标记已读 / 标记 done / unsubscribe
 - 关注 / 取消关注仓库（star / watch 切换）
 - **PR review thread mark as resolved / unresolved（2026-07-06 新加）**：仅操作层，不做"未 resolved thread 计数"这类仪表盘
 - **编辑自己发的 issue body / comment 内容（2026-07-06 新加）**：服务端会按作者身份校验，不会误伤他人；范围**限编辑**，不含删除
 
-**明确禁止（越界的作者行为）**：
+**明确禁止（越界的作者行为 / 仓库运维行为）**：
 
-- 新建仓库 / fork 仓库
-- 新建 issue / PR / discussion
+- **AI / 开发者为了造冒烟数据往主仓 `CarGuo/*` 或任何第三方非本人授权的仓库写入**（issue / PR / discussion / comment 都算），2026-09-08 订正口径：这里禁止的是"造数据的目的和目标"，不是"能力"
+- 新建仓库 / fork 仓库（fork 视图目前只做**读**，动作没做）
+- **新建 PR**（暂未做，且合入前会引入较高审查开销，本轮暂不打开）
 - 提交 / dismiss review
 - 合并 PR / close issue / lock conversation
 - 修改仓库设置 / 分支保护 / webhook / secret
-- 通过 gh cli 或 GitHub API 制造冒烟数据
 - **GitHub Actions workflow rerun / cancel（2026-07-06 拍板归入禁止）**：属于仓库运维行为，GSY 不介入；用户如需 rerun 请去 GitHub 官网或官方 app
 - **Projects V2 卡片移动 / 状态字段编辑（2026-07-06 拍板归入禁止）**：等同协作作者视角编辑，与只读 + 评论定位冲突；连 Projects V2 阅读也一并搁置
 - **删除自己发的 issue / comment**：即使 API 支持，也不做——避免"误删无法恢复"的用户投诉面
 
-**判断口径**：
-
-- 判断依据是"是否让 GSY 用户在 GitHub 上产生新数据 / 修改他人内容 / 触发仓库运维"，不是"API 是不是 write endpoint"
-- 若未来需要新增一条允许项，需要在 PR 描述里显式提出，并同步更新本清单与 roadmap §4.1
-
 
 ## 真机验证专用 fixture（写死，不允许随手换）
 
-以下 PR/仓库是真机冒烟脚本 `tool/ai/smoke/open_pr_timeline.sh` 默认命中的证据源。改动 timeline 相关代码时，优先复用它们；只有在明确覆盖不到时才另外找 PR。
+以下 PR/仓库是真机冒烟脚本 [tool/ai/smoke/](file:///Users/guoshuyu/workspace/flutter-work/gsy_github_app_flutter/tool/ai/smoke) 默认命中的证据源。改动 timeline 相关代码时，优先复用它们；只有在明确覆盖不到时才另外找 PR。
 
-- **fixture 账号**：`CarSmallGuo`（当前 adb 设备与 gh cli 登录的账号，token 有 `repo` 权限但**只做读**）
+- **fixture 账号**：`CarSmallGuo`（当前 iOS 模拟器 / Android 设备与 gh cli 登录的账号，token 有 `repo` 权限但**只做读**）
 - **fixture 仓库**：`CarGuo/gsy_github_app_flutter`（GSY 主仓库自身）
 - **fixture PR**：
   - `#938`：Copilot 提交的 `reviewed / state=commented`，body 788 字符，同时覆盖 `ready_for_review` / `review_requested` / `assigned` / `merged` / `closed` / 未知事件兜底等新事件类型
-    - 打开方式：`bash tool/ai/smoke/open_pr_timeline.sh`（默认参数即可）
-    - 期望截图证据：`/tmp/gsy_smoke_07_issue_detail_scrolled.png` 与随后一屏能同时看到"Copilot 提交了评审意见"这一行**和其下方灰底 body 卡片**
+    - 打开方式：`flutter run` 起 app 后走 `mcp_dart` `dtd connect` + `widget_inspector` 观测；参考 [tool/ai/smoke/open_pr_timeline.md](file:///Users/guoshuyu/workspace/flutter-work/gsy_github_app_flutter/tool/ai/smoke/open_pr_timeline.md) 的路径描述（人肉操作 UI 或用 `vm_service eval` 触发路由）
+    - 期望证据：`widget_inspector get_widget_tree` 命中包含 `textPreview: Copilot 提交了评审意见` 的事件行 + 其下方灰底 body 卡片（`Card` widget），并附一张 `xcrun simctl io screenshot` 截图
   - 后续若需要 approved/changes_requested body 场景，请在 `CarGuo` 名下的其它 PR 里挑选并把 PR 号写回本段落，不要造 PR
 
 ### 按功能分类的 fixture 表（2026-07-06 扩展）
@@ -200,7 +232,7 @@
 
 **探针复核方式**：所有 `✅` 项都用 CarSmallGuo 的 gho\_ token 在 `2026-07-06` 实测过；每半年可用 [docs/00-overview/roadmap.md §3.5 探针结果快照](file:///d:/workspace/project/gsy_github_app_flutter/docs/00-overview/roadmap.md) 那批命令重跑一次防止过时。
 
-**Fixture 优先级**：主仓 [CarGuo/gsy_github_app_flutter](https://github.com/CarGuo/gsy_github_app_flutter) > CarGuo 其他仓库 > CarSmallGuo 数据 > 外部真实仓库（`flutter/flutter` / `defunkt` 等，**必须标注为"外部妥协项"**）。**禁止造数据**同 §允许 / 禁止的写操作清单。
+**Fixture 优先级**：主仓 [CarGuo/gsy_github_app_flutter](https://github.com/CarGuo/gsy_github_app_flutter) > CarGuo 其他仓库 > CarSmallGuo 数据 > AI/开发者自有测试仓库（**必须登记**，见下文 Discussion 行示例） > 外部真实仓库（`flutter/flutter` / `defunkt` 等，**必须标注为"外部妥协项"**）。**禁止往主仓或第三方非授权仓库造冒烟数据**（口径见 §允许 / 禁止的写操作清单 2026-09-08 订正）。
 
 | 功能域 | 首选 fixture | 备注 |
 |---|---|---|
@@ -209,6 +241,7 @@
 | Issue assignee 挂件 | 主仓 `#938`（assignees=`CarGuo,Copilot`） | 主仓 issue 只有 #938 有 assignee，其余是 (none) |
 | Issue 长 timeline / 分页 | 主仓 [`#13`](https://github.com/CarGuo/gsy_github_app_flutter/issues/13) | README 明示"所有运行问题请点这里" |
 | Issue comment reactions | 主仓 [`#643`](https://github.com/CarGuo/gsy_github_app_flutter/issues/643) | README 里的"登录失败"高流量 issue |
+| **Discussion 创建 / 回复冒烟（2026-09-08 新加）** | ✅ 已登记：[`CarSmallGuo/gsy-smoke-2026q3`](https://github.com/CarSmallGuo/gsy-smoke-2026q3)（fixture 账号自有，创建时 `has_discussions=true`），首条 [`#1 Smoke test 2026-09-09`](https://github.com/CarSmallGuo/gsy-smoke-2026q3/discussion/1)（category=General，含 1 条真机回复 "reply smoke"） | 2026-09-09 真机走通 create + comment 端到端（expanded 双栏），证据见 `tool/ai/smoke/evidence/2026090{8,9}-discussion-*.png`。禁止用主仓 `CarGuo/gsy_github_app_flutter` 承接；造数据只允许在该自有测试仓库；用完不删（AGENTS.md 禁止删除自己发的内容） |
 | Release 详情 / reactions | 主仓 `releases`（`8.0.0` 已在真机日志出现） | 本轮真机 `versionName 8.0.0` |
 | Compare 视图 | 主仓 `423c762...bf557aa`（本轮实际 commit） | |
 | Contributors / Stargazers / Watchers | 主仓（★15461） | |

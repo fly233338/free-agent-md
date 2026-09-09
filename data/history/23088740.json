@@ -2,12 +2,6 @@
   "full_name": "axios/axios",
   "points": [
     {
-      "checked_at": "2026-08-10T04:56:53Z",
-      "commit_sha": "ba98559a7f5a18e531b5762387e5957bd281af3d",
-      "pushed_at": "2026-08-09T08:34:44Z",
-      "stars": 109241
-    },
-    {
       "checked_at": "2026-08-11T04:42:27Z",
       "commit_sha": "ba98559a7f5a18e531b5762387e5957bd281af3d",
       "pushed_at": "2026-08-10T23:12:20Z",
@@ -179,6 +173,12 @@
       "checked_at": "2026-09-08T08:09:08Z",
       "commit_sha": "b8d67bbbd6b381e1f4b1887e32686fcc89c5b0a8",
       "pushed_at": "2026-09-07T17:45:39Z",
+      "stars": 109233
+    },
+    {
+      "checked_at": "2026-09-09T08:13:13Z",
+      "commit_sha": "d1f060dddebb9353c269c32ca4f8334492ca252c",
+      "pushed_at": "2026-09-09T07:22:28Z",
       "stars": 109233
     }
   ],

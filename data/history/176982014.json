@@ -2,12 +2,6 @@
   "full_name": "NVIDIA/Megatron-LM",
   "points": [
     {
-      "checked_at": "2026-08-10T04:56:53Z",
-      "commit_sha": "6518b75ecb93ad27f8c3e4d8512860faae7e7bb2",
-      "pushed_at": "2026-08-10T04:45:47Z",
-      "stars": 17380
-    },
-    {
       "checked_at": "2026-08-13T05:09:58Z",
       "commit_sha": "3cd8cf30a20b1eea4ae29ae201d0c021738680d9",
       "pushed_at": "2026-08-13T05:02:51Z",
@@ -42,6 +36,12 @@
       "commit_sha": "37a7554c7d536519722d551b3c6afb13e807e1fa",
       "pushed_at": "2026-09-02T07:49:58Z",
       "stars": 17708
+    },
+    {
+      "checked_at": "2026-09-09T08:13:13Z",
+      "commit_sha": "8dc7ed381636e8c46f982dcfb96d4498dba68643",
+      "pushed_at": "2026-09-09T08:05:27Z",
+      "stars": 17793
     }
   ],
   "repo_id": 176982014

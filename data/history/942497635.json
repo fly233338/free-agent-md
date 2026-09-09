@@ -2,12 +2,6 @@
   "full_name": "lynx-family/lynx",
   "points": [
     {
-      "checked_at": "2026-08-10T04:56:53Z",
-      "commit_sha": "4ce380f55450e41e713c0901de9200e4bcd857b8",
-      "pushed_at": "2026-08-10T04:56:42Z",
-      "stars": 15057
-    },
-    {
       "checked_at": "2026-08-13T05:09:58Z",
       "commit_sha": "2bf06b6a7323745de9a9e5ccad296c4f056a9ea4",
       "pushed_at": "2026-08-13T05:00:55Z",

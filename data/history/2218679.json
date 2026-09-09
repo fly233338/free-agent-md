@@ -2,12 +2,6 @@
   "full_name": "metabrainz/picard",
   "points": [
     {
-      "checked_at": "2026-08-10T04:56:53Z",
-      "commit_sha": "c6d78835a0098078c1390758b06f9e9a1d48b3e1",
-      "pushed_at": "2026-08-10T04:50:12Z",
-      "stars": 5085
-    },
-    {
       "checked_at": "2026-09-01T08:43:21Z",
       "commit_sha": "5ff1656fd00343edf953f228b0c173cf33e854c4",
       "pushed_at": "2026-09-01T08:34:40Z",
