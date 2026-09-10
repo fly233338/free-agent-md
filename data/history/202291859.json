@@ -2,12 +2,6 @@
   "full_name": "chatwoot/chatwoot",
   "points": [
     {
-      "checked_at": "2026-08-11T04:42:27Z",
-      "commit_sha": "2fbcc715cec0961b747ed035f4c52783a0125c52",
-      "pushed_at": "2026-08-11T04:38:12Z",
-      "stars": 35705
-    },
-    {
       "checked_at": "2026-08-14T05:06:13Z",
       "commit_sha": "9a73c1473ffa0ae6a9c7725046b8ca17922dcc83",
       "pushed_at": "2026-08-14T05:00:12Z",
@@ -42,6 +36,12 @@
       "commit_sha": "5bd167d31ca23f0cf11156a8fc47ab20bb9d2e9a",
       "pushed_at": "2026-09-09T08:09:24Z",
       "stars": 36616
+    },
+    {
+      "checked_at": "2026-09-10T08:12:06Z",
+      "commit_sha": "50a812e8d0efbf7469eb3a86c5fb979c4f0b9fd3",
+      "pushed_at": "2026-09-10T08:11:38Z",
+      "stars": 36650
     }
   ],
   "repo_id": 202291859

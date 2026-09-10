@@ -1,7 +1,7 @@
 # expo/expo instruction files
 
-Upstream: [expo/expo](https://github.com/expo/expo) · License: `MIT` · Commit: `9c4ab89e5bfe8fecb0e6ebc59285731d6e16d939`
+Upstream: [expo/expo](https://github.com/expo/expo) · License: `MIT` · Commit: `63b178e1b7f8affefa6522ab3ce98036e4eb7b3f`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `CLAUDE.md` | `.claude/CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/expo/expo/.claude/CLAUDE.md) | [Source](https://github.com/expo/expo/blob/9c4ab89e5bfe8fecb0e6ebc59285731d6e16d939/.claude/CLAUDE.md) | `a3a3ac1017a370ab06f88c2452b85b07cd3061bd57a03c9aceb3ea2514d360ef` | 4,742 B |
+| `CLAUDE.md` | `.claude/CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/expo/expo/.claude/CLAUDE.md) | [Source](https://github.com/expo/expo/blob/63b178e1b7f8affefa6522ab3ce98036e4eb7b3f/.claude/CLAUDE.md) | `a3a3ac1017a370ab06f88c2452b85b07cd3061bd57a03c9aceb3ea2514d360ef` | 4,742 B |

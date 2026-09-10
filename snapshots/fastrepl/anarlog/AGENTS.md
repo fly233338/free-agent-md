@@ -3,7 +3,7 @@
 Anarlog is a pnpm and Rust workspace. Read the nearest `AGENTS.md` before changing a component.
 
 - `apps/desktop/`: Tauri 2 with React, TypeScript, Vite, and Tailwind. Zustand owns UI state; TanStack Query/Form own queries, mutations, and forms.
-- `apps/web/`: React with TanStack Start/Router, Vite, and Tailwind; deployed through Netlify.
+- `apps/web/`: React with TanStack Start/Router, Vite, and Tailwind; deployed through Vercel.
 - `apps/mobile/` and `apps/watch/apple/`: Expo/React Native with a Rust UniFFI bridge, plus a native watchOS app. Use the versions in `apps/mobile/package.json` and the mobile instructions.
 - `apps/api/`: Rust/Axum API. `apps/stripe/`: Bun/Hono billing service. Both have separate deployment workflows.
 - `apps/cli/`: Rust CLI/TUI and MCP entry point (`anarlog-cli` package, `anarlog` binary).
@@ -64,9 +64,10 @@ Fix failures caused by the change before committing. If an existing unrelated fa
 ## Release verification
 
 - For an explicitly requested stable desktop release, follow `.agents/skills/release-new-version/SKILL.md` and inspect the current workflows. The explicit version must have an accurate, validated changelog merged into `main`; record that exact candidate SHA.
+- Before freezing each release candidate, complete the release skill's surface review: check product changes against CLI, local and hosted MCP, API/generated clients, agent skills/plugins, and documentation. Merge required updates and verify their publication through each surface's own channel. Record reasons for unchanged surfaces and explicit deferrals; a desktop build or changelog alone does not prove these surfaces are current.
 - Desktop native CI (macOS, Windows, Linux x86_64/ARM64, and Swift) runs only on the daily schedule and `workflow_dispatch`, including release-candidate verification. PRs and pushes to `main` run desktop JS and i18n checks. Mobile iOS, Android, and watchOS native jobs also skip PRs. Check each required job and SHA, not only the aggregate green result.
-- Follow the release skill's candidate `desktop_ci.yaml` dispatch: CloudSync source rebuilds run only on `workflow_dispatch`. Verify the platform artifacts and tests from that candidate before approving the desktop lanes. Mobile has its own native-build and release requirements.
-- `desktop_cd.yaml` builds a stable draft and records artifact provenance; `desktop_publish.yaml` publishes those verified artifacts using the explicit version, candidate SHA, and dry-run ID. Require a successful first-attempt dry run, matching hashes, and current `main` at the candidate SHA. Dispatch a fresh build after failure; do not mix evidence across rerun attempts or commits.
+- Follow the release skill's candidate `desktop_ci.yaml` dispatch: CloudSync source rebuilds run on `workflow_dispatch` or the Nightly caller with `rebuild_cloudsync=true`. Verify the platform artifacts and tests from that candidate before approving the desktop lanes. Mobile has its own native-build and release requirements.
+- `desktop_cd.yaml` builds a stable draft and records artifact provenance; `desktop_publish.yaml` publishes those verified artifacts using the explicit version, candidate SHA, and dry-run ID. Require a successful first-attempt dry run, matching hashes, and a candidate merged into `main`. Dispatch from the tested immutable Nightly tag so the workflow SHA still equals the candidate. Dispatch a fresh build after failure; do not mix evidence across rerun attempts or commits.
 - Verify publish completion, immutable `desktop_v<version>` tag, GitHub/CrabNebula assets, signatures/hashes, and downstream store/package results. Report pending store submission or package-publication work separately.
 - Web, API, Stripe, and hosted database each have separate `*_cd.yaml` workflows. Check the relevant packaging/build path before deployment; filtered Docker builds must include every workspace dependency's manifest and source. Verify the deployed version/health and affected behavior after the workflow succeeds.
 - Release and optional QA are separate requested workflows. Run the QA skills or hardware/provider E2E workflows when explicitly requested; do not add them as implicit publish gates. Report build, QA, publication, and live deployment results separately.
@@ -76,7 +77,7 @@ Fix failures caused by the change before committing. If an existing unrelated fa
 - JavaScript/TypeScript formatting runs through `oxfmt` via dprint's exec plugin.
 - Use `useForm` (tanstack-form) and `useQuery`/`useMutation` (tanstack-query) for form/mutation state. Avoid manual state management (e.g. `setError`).
 - Keep schema creation, migrations, and DB initialization on the Rust side. TypeScript consumes the shared transport contracts; the Drizzle adapter uses `executeProxy` and must not parse SQL or remap named rows into positional rows.
-- New SQLite migrations must be downgrade-safe (older builds tolerate newer schemas): additive only, new columns nullable or with a DEFAULT. If a migration can't be downgrade-safe, add a `-- breaking` line to the leading comment block of its `.sql` file so older builds refuse the database with an update prompt.
+- New SQLite migrations must be downgrade-safe (older builds tolerate newer schemas): additive only, new columns nullable or with a DEFAULT. If a migration can't be downgrade-safe, add a `-- breaking` line to the leading comment block of its `.sql` file so older builds refuse the database with an update prompt. Nightly and stable desktop builds share one database, so a breaking migration published in Nightly locks stable out until stable ships it.
 - Branch naming: `fix/`, `chore/`, `refactor/` prefixes.
 
 ## Code Style
