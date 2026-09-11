@@ -2,12 +2,6 @@
   "full_name": "rustfs/rustfs",
   "points": [
     {
-      "checked_at": "2026-08-12T05:06:54Z",
-      "commit_sha": "6850482247723516b371cc4560b6b8265f3fa812",
-      "pushed_at": "2026-08-12T04:54:23Z",
-      "stars": 30950
-    },
-    {
       "checked_at": "2026-08-20T04:01:46Z",
       "commit_sha": "22b4ef9f0c24e22633a4eb62fb600f0d6675ee1d",
       "pushed_at": "2026-08-20T03:56:37Z",

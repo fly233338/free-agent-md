@@ -2,12 +2,6 @@
   "full_name": "jxxghp/MoviePilot",
   "points": [
     {
-      "checked_at": "2026-08-12T05:06:54Z",
-      "commit_sha": "8bf2f601a6f9975a763f8d9fc1e0e09c2efcc668",
-      "pushed_at": "2026-08-12T04:57:24Z",
-      "stars": 11529
-    },
-    {
       "checked_at": "2026-08-22T03:58:42Z",
       "commit_sha": "30ebf98fbbab5d28655413fcea6793b59a6b84a6",
       "pushed_at": "2026-08-22T03:46:44Z",
@@ -36,6 +30,12 @@
       "commit_sha": "b658f7c2c0dcb771f3e6b1124a8835e18b2f62cb",
       "pushed_at": "2026-08-29T09:59:48Z",
       "stars": 11654
+    },
+    {
+      "checked_at": "2026-09-11T08:07:25Z",
+      "commit_sha": "2bd9df3ef417a2765ef9212f8ac1e9d830dc11c6",
+      "pushed_at": "2026-09-11T08:04:34Z",
+      "stars": 11726
     }
   ],
   "repo_id": 647509652

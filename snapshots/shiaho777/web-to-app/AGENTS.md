@@ -14,7 +14,7 @@ Instructions for coding agents working in this repository.
 |------|------|
 | `app/` | Full builder host: editor UI, export pipeline, runtimes, preview. |
 | `shell/` | Runtime template. Built to `app/src/main/assets/template/webview_shell.apk` via `:shell:assembleRelease` + `:app:syncShellTemplateApk`. |
-| `clone-host/` | Host-side APK clone / identity reshape support library (compiled to a DEX asset). |
+| `clone-host/` | Host-side APK clone / identity reshape support library. Its DEX asset generation (`syncCloneHostDex`) is deliberately disabled (`enabled = false`, AV false-positive mitigation, e0d2d4d6) — `AppCloner` runs fail-soft without the asset. |
 | `modules/` | Module Market catalog (`registry.json` + per-module folders). |
 | `docs/` | VitePress documentation site (guide / developer / extensions, EN + ZH), published to https://shiaho777.github.io/web-to-app/ by `.github/workflows/docs-deploy.yml`. Site URL paths map 1:1 to files under `docs/` (`/zh/...` → `docs/zh/...`). |
 | `scripts/` | Build helpers and gates (`check_config_field_drift.py`). |
@@ -49,7 +49,7 @@ Mental model:
 
 - Host UI strings live in `app/src/main/java/com/webtoapp/core/i18n/Strings.kt` (split across `Strings` / `StringsA` … `StringsE`).
 - **All** user-visible strings must be inline `when (Strings.lang)` blocks covering all 10 languages: Chinese, English, Arabic, Portuguese, Spanish, French, German, Russian, Japanese, Korean. `when(lang)` blocks may never use `else ->` — `AppStringsResourceConsistencyTest` and `StringsKtTranslationParityTest` enforce this.
-- **Never** load user-visible text via `context.getString(R.string.*)` / `stringResource(R.string.*)`. `res/values*/` is only maintained for zh/en/ar; the other 7 locales have no `values-*/` directory, so resource lookups silently fall back to the default `values/` (Chinese). Use `Strings.xxx` (or `Strings.funName(arg)` for parameterised strings — see `linuxEnvInstalledToast(name)` for the pattern). A test gates this: `kotlin source never references R string for user-visible text`.
+- **Never** load user-visible text via `context.getString(R.string.*)` / `stringResource(R.string.*)`. `res/values/strings.xml` holds only `translatable="false"` resources (e.g. `app_name`) and no locale `values-*/` directories exist, so a localized resource string could never cover the 10 languages and would silently fall back to the default `values/` (Chinese). Use `Strings.xxx` (or `Strings.funName(arg)` for parameterised strings — see `linuxEnvInstalledToast(name)` for the pattern). Tests gate this: `kotlin source never references R string for user-visible text`, plus `values strings xml only holds non-localised resources` and `no locale values dirs or grouped app strings files exist` which block resurrecting resource-based strings.
 - `R.string` is reserved for `translatable="false"` non-localised resources only (e.g. `app_name`).
 - Prefer adding properties on the existing split objects; match surrounding style.
 
@@ -57,6 +57,7 @@ Mental model:
 
 - Generated apps keep a low `targetSdk` (28) on the shell path because they rely on on-device fork+exec runtimes. Do not raise shell targetSdk casually.
 - The host app targets SDK 35 (antivirus reputation); SELinux W^X therefore blocks host-side exec of downloaded runtimes. `RuntimeExecPolicy` (`core/linux`) gates those previews by probing the installed targetSdk — generated APKs (always 28) pass unconditionally. Node preview (JNI via native libs) is unaffected.
+- Launch runtime / toolchain processes through `HostProcessLauncher` (`core/linux`): plain `ProcessBuilder` fork+exec where the platform allows it (generated APKs, targetSdk 28), the user-mode static exec loader (`StaticExecProcess`, memfd-based) on W^X hosts (targetSdk ≥ 29), or a degraded error when no static exec bridge is available. A raw `Runtime.exec` on a downloaded binary crashes the host app on W^X devices (#795).
 - Avoid new third-party dependencies unless strongly justified (`app/build.gradle.kts` / `shell/build.gradle.kts`). Prefer platform APIs and existing modules.
 - Notification push channels: Web Notification polyfill, polling, WebSocket, FCM (developer-owned Firebase config). Do not add OEM vendor push SDKs by default.
 - Foreground services and notification helpers must use `SafeNotificationChannels` (or equivalent fail-soft create). Channel creation failures must not crash FGS startup.
@@ -150,6 +151,16 @@ Trace and update **all** of:
    a spot-check to `key non-Boolean WebViewConfig fields survive the export
    round-trip`. This is the safety net that catches "preview works, export
    broken" before it ships.
+7. **Shell UI parity (REQUIRED for per-type player screens).** Gallery / media /
+   splash-style app types render through DIFFERENT composables in preview
+   (`ui/gallery/`, `ui/media/`) vs generated APKs (`ui/shell/`). A flag that flows
+   end-to-end still does nothing if the shell screen never reads it (gallery
+   thumbnail bar shipped config + assets correctly and still rendered nothing,
+   #781). `ShellUiParityTest.kt` enforces this: every model field read by host
+   runtime UI must also be read by shell runtime UI. If you add a field and read
+   it in a host player, the test fails naming the field until you port the
+   behavior to shell or add an explicit `allow` entry with a reason. When adding
+   a new per-type player pair, extend its `pairs` list the same way.
 
 Missing any step usually yields: editor shows the switch, export ignores it, or export embeds config the runtime never reads.
 
@@ -199,16 +210,18 @@ Checklist in order:
 1. Allocate ports through `PortManager` with the configured conflict policy; implement real stop handlers.
 2. Wire fork+exec processes into `LocalDnsBridgeProxy` when they need host DNS/proxy env.
 3. Use `NetworkModule.downloadClient` for large dependency / engine / runtime downloads.
+4. Launch processes through `HostProcessLauncher` (`core/linux`) so W^X hosts (targetSdk ≥ 29) degrade to the user-mode static exec loader instead of crashing.
 
 ### 10. Node.js / Go export
 
 1. Node.js: ensure `injectNodeJsNativeLibs` embeds `libnode_bridge.so` + `libnode.so` (16KB-aligned via `ElfAligner16k`) + `libc++_shared.so`. Node binary resolution prefers `nativeLibraryDir`, falls back to download cache.
 2. Go: ensure `injectGoExecLoaderNativeLib` embeds `libgo_exec_loader.so`.
-3. `NodeService` runs in a dedicated `:nodejs` OS process so V8 lifecycle is isolated from the host.
+3. Go host-side builds never run the multi-process `go build` driver: `GoDirectBuilder` replays `compile`/`asm`/`link` as single-shot processes through `HostProcessLauncher` (user-mode static exec loader on W^X hosts), with a content-keyed persistent package archive cache (#796).
+4. `NodeService` runs in a dedicated `:nodejs` OS process so V8 lifecycle is isolated from the host.
 
 ### 11. Change a feature that has an Agent tool
 
-The in-app Agent exposes 57 tools that wrap host service classes. When you change a feature, trace the tool chain:
+The in-app Agent exposes up to 57 tools — 52 base + 2 plan-mode + 3 imagery (imagery only load with an image-capable model; see `ToolRegistryFactory.build()`) — that wrap host service classes. When you change a feature, trace the tool chain:
 
 ```text
 LLM response (tool_calls)
@@ -255,6 +268,8 @@ The editor screens are built from `WtaSettingCard`s that share one visual gramma
 | Sub-toggles / fields inside an expanded zone | `staticAssetPack` block, proxy block |
 | Nested conditional content | proxy MANUAL/PAC `AnimatedVisibility` swap |
 
+Inputs and dialogs follow the same grammar: text inputs are `PremiumTextField`, list-manager dialogs are `Dialog` + `WtaCard` + embedded `TopAppBar` (see `AdBlockSubscriptionSelectorDialog`), and `ActivationCodeCard`'s offline-policy rows are another canonical radio reference.
+
 Hard rules learned the hard way:
 
 1. **Two sanctioned card shapes.** Toggle header: `WtaSettingCard { WtaToggleRow(header); AnimatedVisibility(enabled, CardExpandTransition/CardCollapseTransition) { Column { WtaSectionDivider(); full-bleed rows separated by more dividers } } }`. Collapse header: `WtaSettingCard { Column { WtaChoiceRow(header); AnimatedVisibility(expanded) { Column(padding(horizontal = WtaSpacing.RowHorizontal, vertical = WtaSpacing.ContentGap), spacedBy(WtaSpacing.ContentGap)) { … } } } }`.
@@ -264,17 +279,9 @@ Hard rules learned the hard way:
 5. **Expansion state ≠ feature state.** Never bind a section's `isExpanded` / `AnimatedVisibility(visible=…)` to the feature's `enabled` flag — expanding a panel must never switch the feature on. Section collapse state is its own `remember { mutableStateOf }`.
 6. **Conditional sub-blocks** (mode swaps, dependent fields) use `AnimatedVisibility` with `CardExpandTransition` / `CardCollapseTransition`, never bare `if` inside the card body.
 7. **Compile ≠ verified.** After any card UI change, build + install on the emulator and check the rendered card: `uiautomator dump` element bounds, compare left edges / row heights of the changed card against its neighbours on the same screen (they must share the same content columns), plus a screenshot pass. Content a few dp off the grid is invisible in code review and obvious on screen.
+8. **If a UI rework PR gets "this doesn't match the other cards" feedback**, the fix is realignment to these patterns, not further invention.
 
 ---
-
-### 12. Change or add editor / common-config UI
-
-The editor screens have an established card language. **Find the neighboring cards first and copy their patterns element by element — do not invent your own layout**, even if it looks better in isolation. Hard rules learned the hard way (#571):
-
-1. **Container**: `WtaSettingCard`. **Header toggle**: `WtaToggleRow` (icon + title + subtitle + switch). **Collapsible section**: `WtaChoiceRow` + `AnimatedVisibility(CardExpandTransition)`. **Inner toggles**: `WtaToggleRow`. **Separators**: `WtaSectionDivider`. **Single-choice**: radio rows (see the offline-policy selector). **Text input**: `PremiumTextField`. **List-manager dialogs**: `Dialog` + `WtaCard` + embedded `TopAppBar` (see `AdBlockSubscriptionSelectorDialog`).
-2. **Never couple `isExpanded` to a feature `enabled` flag** — expanding a card to look around must never change app state; only the row's switch does.
-3. Canonical templates: `FullscreenModeCard` (toggle card), `BrowserAdvancedConfigCard` (collapsible config card), `ActivationCodeCard`'s offline-policy rows (radio selection).
-4. If a UI rework PR gets "this doesn't match the other cards" feedback, the fix is realignment to these patterns, not further invention.
 
 ## Easy-to-miss points
 
@@ -291,6 +298,7 @@ The editor screens have an established card language. **Find the neighboring car
 - **Adblock is wired for preview + export.** Do not wipe host filter state during export; the host AdBlocker serves preview and the compiled rule set ships in the APK.
 - **Runtime permissions are feature-driven.** `RuntimePermissionSync` derives the permission list from enabled features; do not revert to a static template.
 - **Splash preview media path.** Preview reads splash media from the host filesystem (`splashMediaPath`); export packages it into assets. Do not hardcode `assets/splash_media.*` as the only source.
+- **Host player UI ≠ shell player UI.** Preview players (`ui/gallery/`, `ui/media/`) and generated-APK players (`ui/shell/`) are separate composables sharing only the config. Port every visible behavior across (thumbnail bar, background, keep-screen-on, orientation) and let `ShellUiParityTest` verify the flags; config flowing end-to-end is necessary but not sufficient.
 - **Port conflict policy.** Local server runtimes must allocate through `PortManager` and clean up on stop; do not bind ports directly.
 - **Agent tool ↔ service drift.** When a service class API changes, the corresponding Agent tool in `core/agent/tool/builtin/` must be updated in the same PR. A stale tool either fails to compile or silently passes wrong arguments at runtime. Check `ToolRegistryFactory.baseTools()` for the full tool list.
 - **Editor card UI grammar.** Config-screen cards share one layout grammar (recipe 12): rows are full-bleed, non-row content sits in 16dp-padded zones, expansion never toggles the feature, and card UI is verified on the emulator — not just compiled.
@@ -308,6 +316,7 @@ The editor screens have an established card language. **Find the neighboring car
 - Crashing FGS when notification channel creation fails
 - Committing secrets, keystores, or local machine config
 - Regressing HTML/FRONTEND file access in packaged shells
+- Shipping a host player-screen feature without its shell counterpart (preview-only UI)
 - Shipping NODEJS_APP without `libnode_bridge.so` / `libnode.so` / `libc++_shared.so`
 - Skipping 16KB alignment for large ELF natives
 - Inventing editor card layout/spacing/animations instead of copying the neighbouring cards' patterns, or shipping card UI verified only by compilation
@@ -324,6 +333,8 @@ python3 scripts/check_config_field_drift.py
 ```
 
 Use these when you change shell membership, export packaging, or config fields. For host-only UI/string work, targeted compile on `:app` is usually enough.
+
+CI note: the PR `check` job compiles only `:shell:compileDebugKotlin` (debug variant) and skips template sync (`-PskipShellTemplateSync=true`). The shell **release** variant (R8 / proguard) and the template pipeline are exercised only by the manual `workflow_dispatch` packaging job — after touching `shell/proguard-rules.pro` or shell packaging, run the first command locally before pushing.
 
 Related focused tests often worth running after nearby edits: `ApkBuildCacheTest`, `AdBlockerHostRuntimeTest`, `AdBlockExportWiringTest`, `PortManagerTest`, `BuildInputPreflightTest`, `GoBuildEnvironmentTest`, `RuntimePermissionSyncTest`.
 
@@ -344,9 +355,16 @@ Landed:
 - HTML/FRONTEND file-access for packaged local shells
 - Node.js export: `libnode_bridge.so` + 16KB-aligned `libnode.so` + `libc++_shared.so`; 16KB app-compat before dlopen; stable `NodeJniOutputBridge` JNI callback
 - Go export: `libgo_exec_loader.so` embedded; in-app build ENOSPC handling + GOTMPDIR relocation
+- Go host-side builds on W^X hosts: `GoDirectBuilder` replays `compile`/`asm`/`link` as single-shot processes through `HostProcessLauncher` (user-mode static exec loader), with a content-keyed persistent package archive cache (#796)
+- Multi-web: gallery/media site sources embedded into the APK and resolved at runtime; nested site sources degrade to a URL instead of aborting the build (#798, #792)
+- Gallery playback: shuffleOnLoop, rememberPosition, overview grid, thumbnail bar, pinch-to-zoom viewer, with host/shell parity enforced by `ShellUiParityTest` (#781, #786, #801)
+- Untrusted bitmap decodes bounded (oversized-image crash fix) (#788)
+- Backup/restore coverage aligned with the current storage layout; restarts only when local files change, with throttled progress callbacks (#790, #794)
+- NativeBridge enabled by default for newly created apps (#805)
 - Runtime permission sync (feature-driven)
 - Splash preview media path fallback
 - Config field drift detection (`checkConfigFieldDrift`)
 - Module Market: Chrome Web Store live search + GreasyFork browse
 - Code editor find-and-replace
-- Agent tool system: 57 tools (app lifecycle, config templates, ports/engine, hosts/runtime, stats/modifier/import, build env/Play, modules, files, imagery) with Channel-based permission prompting, per-section SSE parse resilience, and plan mode; runtime/build-env tools surface `localExecAllowed` so the LLM knows targetSdk>=29 hosts cannot exec app-storage binaries
+- Security hardening sweep: TLS-fingerprint bridge validates upstream certs (system + custom CAs + hostname) and its local CA is signature-verified with no error-type fallback; JS bridges are caller/origin/scheme-gated (NativeBridge CORS bypass, GM bridge, MV3 `ChromeHostPermissions`); MITM proxy host-allowlisted and CA key wrapped at rest; zip extraction routed through `util/SafeZip`; concurrent exports serialized per package with per-package work dirs; multi-web server-runtime site sources degrade to URL; PHP/Python/WP embed failures fail the build; error pages and `TranslateBridge` callbacks JSON-escaped; keystore password sidecars excluded from backups
+- Agent tool system: up to 57 tools — 52 base + 2 plan-mode + 3 imagery (image-capable models only) — covering app lifecycle, config templates, ports/engine, hosts/runtime, stats/modifier/import, build env/Play, modules, files, and imagery, with Channel-based permission prompting, per-section SSE parse resilience, and plan mode; runtime/build-env tools surface `localExecAllowed` so the LLM knows targetSdk>=29 hosts cannot exec app-storage binaries

@@ -2,6 +2,75 @@
 
 Codex reads this file at the repo root before doing work here. Follow it.
 
+## Non-negotiable AI git boundary: commit locally, never push
+
+An AI assistant may prepare changes and create local commits when the rules below
+authorize committing. **An AI assistant must never push anything to any remote.** This
+prohibition has no exception, even when the user asks the AI to release, publish, merge,
+or "finish" work, and even when credentials or an SSH agent are available. In particular:
+
+- never run `git push`, including `--force`, `--force-with-lease`, tags, or deletion;
+- never update remote refs through an API, GitHub CLI, IDE action, or another tool;
+- never run a script, build-menu option, release command, or alias that performs a push;
+- never use or probe an SSH agent, credential helper, token, or private key for a push.
+
+Stop after the local commit and report its hash and the exact human-run push command.
+All push, merge, release, and publishing instructions elsewhere in this file are for a
+human maintainer only; they do not authorize an AI assistant to execute remote writes.
+
+## Where this repository is, and which branch commits go on
+
+**Which branch depends on WHO is committing, and it is one of exactly two answers.**
+Work out which you are from the git identity (the next section says how), then:
+
+| Who | Where the work goes |
+| --- | --- |
+| **The maintainer** — `Lauri Ojansivu <x@xet7.org>` | **Directly on `main`.** Never a feature branch, never a topic branch, never a pull request. |
+| **A contributor** — anybody else | **A branch in your own fork, then a pull request** for the maintainer to review. Never a commit on `main`. |
+
+Nothing else is a third option. If a tool, a task runner or an agent harness offers
+some other arrangement — a topic branch for the maintainer, a direct push for a
+contributor — that offer is the mistake, not the rule.
+
+The maintainer's half is the release flow, not taste. Releases here are frequent —
+several a day when a fault is being chased — and `releases/release-all.sh` cuts one
+from whatever is on `main`, taking the version from the `# Upcoming WeKan ® release`
+section of `CHANGELOG.md`. Work parked on a branch is work that is not in the next
+release, and `tests/changelogEntriesBelongToTheirRelease.test.cjs` fails when a
+released section links a commit that release does not contain.
+
+The contributor's half is review. Nobody but the maintainer commits to `main` in
+wekan/wekan, so a change from anyone else arrives as a pull request — which is also
+the only place it can be discussed before it lands.
+
+Check which branch you are on before committing:
+
+```
+git rev-parse --abbrev-ref HEAD
+```
+
+For the maintainer, anything but `main` is a reason to stop and say so rather than
+commit where you are. A side task that was given its own git worktree cannot be on
+`main` — git allows one checkout per branch — so its work belongs back on `main` in
+the checkout below before it is committed, not on the worktree's branch.
+
+Either way the boundary at the top of this file still holds: an AI assistant makes
+the local commit and stops. Pushing a branch, opening the pull request, and every
+release step are the human's.
+
+The checkout is at a fixed place on each operating system:
+
+| OS | WeKan repository |
+| --- | --- |
+| Linux | `~/repos/wekan` |
+| macOS | `~/Documents/repos/wekan` |
+| Windows | `Downloads\repos\wekan` (under the user's profile, e.g. `C:\Users\<name>\Downloads\repos\wekan`) |
+
+The companion repositories under `.tools/` follow the same rule on their OWN default
+branch, which is not always called `main`: `main-v1` for the FerretDB fork, `devel`
+for TSC (see the table further down). Committing directly is not permission to push
+— the boundary above still holds, for every one of them.
+
 ## First: who maintains this, and who is committing?
 
 **WeKan, the `wekan/` repositories cloned under `.tools/`, and
@@ -16,12 +85,36 @@ all the same — his GitHub profile, [xet7](https://github.com/xet7), says exact
 **`Lauri Ojansivu <x@xet7.org>`** — that author, in every one of those repositories,
 every time. Two rules follow from it and neither has an exception:
 
-- **Never attribute a commit to an AI.** No `Co-Authored-By:` trailer, no "Generated
-  with", no assistant or model name — not in the commit message, not in a pull-request
-  body, not in the CHANGELOG. [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) is where this
-  comes from: *"For pull requests, mention only those participants that are
-  **human**."* A `Thanks to ... and xet7 !` line credits people — the issue reporter
-  and xet7 — never a tool.
+- **Name the actual participant — and an AI is only ever the participant when no
+  human is behind the change.** One rule, two halves, and the test is simply whether
+  a person made this change or a tool did it on its own:
+  - **A human's AI is not a participant. It is invisible.** When the maintainer or a
+    contributor uses Claude Code, Codex, Copilot as an assistant or any other model
+    to do the work, that person is the author and the tool is not mentioned at all:
+    no `Co-Authored-By:` trailer, no "Generated with", no assistant or model name —
+    not in the commit message, not in a pull-request body, not in the CHANGELOG.
+    [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) is where this comes from: *"For pull
+    requests, mention only those participants that are **human**."* A
+    `Thanks to ... and xet7 !` line credits people — the issue reporter and xet7 —
+    never the tool that helped.
+
+    It IS acknowledged, once, in exactly ONE place: the sponsors page,
+    <https://wekan.fi/sponsors>, under *"AI donated by. All code and PRs verified by
+    xet7"*, where **Claude**, **Codex** and **GitHub Copilot** are listed alongside
+    the people and companies that donate hosting, servers, grants and testing to
+    WeKan. That is the whole of the credit and it is deliberate. Attributing it per
+    commit instead put the same fact on thousands of lines and drowned out the
+    humans the entries exist to name, so it was moved to the one page that says who
+    gives WeKan what. Acknowledging it anywhere else is not extra politeness; it is
+    undoing that.
+  - **An AI that raised the pull request ITSELF is the participant, and is named.**
+    GitHub CodeQL filing a security fix, Copilot Autofix, Dependabot raising a
+    dependency bump: nobody wrote those, so crediting a human would be false and
+    crediting nobody would leave the change unattributed. Name the bot, the way the
+    dependency sections below already close with `Thanks to dependabot.`
+  So the same words — "Copilot", say — are forbidden in one commit and required in
+  another, and what decides it is not the word but whether a person is behind the
+  change.
 - **If the git identity is missing or wrong in one of these checkouts, set it; do not
   commit under something else.** The `.tools/` clones are made by `build.sh` inside
   this checkout and can come up with no `user.name`/`user.email` of their own, which
@@ -41,15 +134,34 @@ git config user.name && git config user.email
 - **Maintainer mode** — the identity is `Lauri Ojansivu <x@xet7.org>` (name
   `Lauri Ojansivu`, email `x@xet7.org`), or it is unset in a checkout of one of the
   repositories above, which means it is to be SET to that as above rather than worked
-  around. Then: commit **directly to the current branch** as
-  `Lauri Ojansivu <x@xet7.org>` with no AI trailer and no pull request, and the
-  **publishing / release steps** below are available.
+  around. Then the AI ITSELF makes the commit, and makes it **directly on `main`**
+  (see the section above), authored `Lauri Ojansivu <x@xet7.org>` — not as a
+  co-author, not as a second author, but as that author and no other — with no pull
+  request and with nothing anywhere in the commit message, the CHANGELOG entry or
+  anything else it writes that says an AI was involved. Working for the maintainer
+  is the invisible half of the attribution rule above — the acknowledgement for it
+  already exists, on <https://wekan.fi/sponsors>, and belongs nowhere else. The **publishing / release
+  steps** below are available to a human maintainer only: an AI stops after
+  committing locally and never runs a step that pushes or publishes.
 - **Contributor mode** — the identity is somebody ELSE, in a fork or a clone of your
-  own. Then: do **not** commit directly to the branch and do **not** run any
-  release/publishing step. Make changes on a branch and open a **pull request** for
-  the maintainer to review, and keep that pull request free of AI attribution too.
-  The "commit as Lauri Ojansivu", "commit directly", and all release instructions
-  below are **maintainer-only and do not apply to you**.
+  own — a person, or an AI that files pull requests on its own account. Then: do
+  **not** commit to `main` and do **not** run any release/publishing step. Make the
+  changes on a branch and open a **pull request** for the maintainer to review. The
+  "commit as Lauri Ojansivu", "commit directly to `main`", and all release
+  instructions below are **maintainer-only and do not apply to you**.
+
+  Who that pull request credits follows the attribution rule above, and the two
+  cases differ:
+  - **A person contributing, with an AI helping them.** The person is the author and
+    the tool is not mentioned — the pull request stays free of AI attribution, body
+    and commits alike. Pushing the branch and opening the pull request are that
+    person's own steps; the never-push boundary above means their AI stops at the
+    local commit on the branch.
+  - **An AI contributing on its own** — GitHub CodeQL raising a fix for something it
+    found, Copilot Autofix, Dependabot. There is no human in that pull request at
+    all, so it is named as the contributor it is. This is the one place an AI is
+    credited by name in this project, and it is credited because it is the author,
+    not because it assisted one.
 
 Maintainer mode covers TSC as well: commit directly to its `devel` branch, no pull
 request, same author and no AI attribution. What it does NOT bring along is WeKan's
@@ -219,15 +331,32 @@ directly after the merge.
 
 - **[maintainer only]** Commit as `Lauri Ojansivu <x@xet7.org>`, with **no**
   "Co-Authored-By" or any other AI trailer, directly to the `main` branch of WeKan and
-  the `main-v1` branch of the FerretDB fork. **Do not make pull requests.** (Contributors
-  do the opposite: work on a branch and open a pull request — see the top section.)
+  the `main-v1` branch of the FerretDB fork. **Do not make pull requests.**
+  (Contributors do the opposite: work on a branch and open a pull request — see the
+  top section.)
   This is the same rule as the top section, restated where the release work is: one
   author, `Lauri Ojansivu <x@xet7.org>`, and no AI attribution anywhere.
 - Lauri Ojansivu (xet7) maintains WeKan (https://wekan.fi), the FerretDB v1 fork, and
   the two patch repositories under `.tools/` — node-patches and mongo-tools-patches.
 - Directory structure:
   - `wekan` — this repo (https://github.com/wekan/wekan); see
-    `docs/DeveloperDocs/Directory-Structure.md`; `CHANGELOG.md` at root.
+    `docs/DeveloperDocs/Directory-Structure.md`; `CHANGELOG.md` at root. It is at
+    `~/repos/wekan` on Linux, `~/Documents/repos/wekan` on macOS and
+    `Downloads\repos\wekan` on Windows. The maintainer commits on `main`; a
+    contributor works on a branch and opens a pull request — see "Where this
+    repository is, and which branch commits go on" above.
+  - `.build/` and `_build/` — the two BUILD directories, generated and
+    gitignored, easy to confuse and different things. `.build/` is the RELEASE
+    bundle (`meteor build .build --directory`; `.build/bundle` is what is
+    deployed, tested and packaged). `_build/` is rspack's compiled output,
+    written by ANY Meteor compile, and Meteor reads the app's main modules from
+    `_build/main-prod/` — so it is a HANDOFF, not a leftover, and must **not**
+    be added to `.meteorignore` (ignoring it breaks the build; that file says
+    why). Never edit or commit either, and SKIP `_build/` in anything that walks
+    the repository: it holds a bundled second copy of every source file, so a
+    tool that reads it sees every file twice and reports the bundler's rewritten
+    code as if it were source. That is not hypothetical — a source-scanning test
+    did exactly that and failed on generated code nobody can edit.
   - `.tools/wekan.fi` — the WeKan website companion repository.
   - `.tools/` — everything that is NOT part of this repository but is needed to
     build, test and release it, in ONE directory that `.gitignore` and
@@ -254,6 +383,16 @@ directly after the merge.
     `node-v<version>-linux-<arch>/` (the Node.js the test suites are run with),
     `go/` with `gopath/`, `gomodcache/` and `gocache/` (FerretDB's Go builds),
     `.meteor/` when `HOME` is pointed at `.tools`, and the `TSC*` AppImage.
+  - **Temporary files belong in `.tools/tmp`, never in `/tmp`.** At the start of
+    work that creates temporary files or runs tools which may create them, make
+    `.tools/tmp` if necessary and export its absolute path as `TMPDIR` before
+    invoking `mktemp`, npm, node-gyp, compilers, test runners or build scripts.
+    Keep task-specific subdirectories beneath it and remove only the exact
+    subdirectories the task created. The host `/tmp` may be a small tmpfs even
+    when the repository filesystem has ample space. On Windows, use
+    `.tools\\tmp` and set both `TEMP` and `TMP` to its absolute path for the
+    command or script. `.tools/` is already excluded by `.gitignore` and
+    `.meteorignore`, so these files cannot enter a commit or trigger Meteor.
   - **Do NOT add a `CLAUDE.md` or an `AGENTS.md` to any repository under
     `.tools/`.** node-patches and mongo-tools-patches each had a pair and they were
     REMOVED on purpose: the rules are the same for every one of these repositories,
@@ -275,7 +414,7 @@ directly after the merge.
 
   | Repository | File | Format |
   | --- | --- | --- |
-  | `wekan/wekan` | `CHANGELOG.md` | the WeKan format this section describes: `# Platforms`, `# TODO Later`, then `# v<MAJOR>.<MINOR> YYYY-MM-DD WeKan ® release` sections of `<details>` entries whose `<summary>` links the commit |
+  | `wekan/wekan` | `CHANGELOG.md` | the WeKan format this section describes: `# Status` (Platforms/Version/TODO Later nested as `<details>`), then `# v<MAJOR>.<MINOR> YYYY-MM-DD WeKan ® release` sections of `<details>` entries whose `<summary>` links the commit |
   | `wekan/node-patches` | `CHANGELOG.md` | the same WeKan format, with `# Upcoming node-patches release` |
   | `wekan/mongo-tools-patches` | `CHANGELOG.md` | the same WeKan format, with `# Upcoming mongo-tools-patches release` |
   | `wekan/FerretDB` | `CHANGELOG.md` | **upstream FerretDB's** format, not WeKan's: `## [v1.48.0](tag URL) (YYYY-MM-DD)` and `### New Features 🎉` / `### Fixed 🐛` / `### Other Changes 🤖` bullets ending `by @xet7. Thanks to xet7.` |
@@ -307,14 +446,15 @@ directly after the merge.
 
   | | |
   | --- | --- |
-  | `CHANGELOG.md` | the current month, plus `# Platforms`, `# TODO Later`, `# Upcoming` |
+  | `CHANGELOG.md` | the current month, plus `# Status` (Platforms/TODO Later inside it), `# Upcoming` |
   | `old-CHANGELOG/<year>/<MM>.md` | earlier months of the current year |
   | `old-CHANGELOG/<year>.md` | years that are over, whole |
 
   Past years stay one file each because they are already small (30–107 KB);
   splitting them further would trade a size problem nobody has for a hundred
   more files. Each archive opens with a **release count** — per month in a year
-  file, per day in a month file — and a bullet in `# Platforms` links every one.
+  file, per day in a month file — and a bullet in `# Status`'s "Newest WeKan at
+  these platforms" details links every one.
   That `git blame` is less useful on the split file is accepted: the history is
   still in git (`gitk`, `git-gui`, `git log --follow`), and being small enough
   to open is worth more.
@@ -324,15 +464,24 @@ directly after the merge.
   takes the month to keep from the FILE rather than the clock, so two people
   running it on the same day agree. An archived section is never edited, for the
   same reason a released one is not.
-- **The file's shape, top to bottom** — keep it exactly as it is now:
-  1. `# Platforms` — the line `Newest WeKan at these platforms:` and the Install /
-     Upgrade / Docs / Mac ChangeLog bullets, the `Older releases:` bullet linking
-     the per-year archives, then a `<details>` whose `<summary>` is `Version`
-     holding "which WeKan version uses what". There is no `# Version` heading of
+- **The file's shape, top to bottom** — keep it exactly as it is now. There is
+  exactly ONE `#` heading before the releases: `# Status`. Platforms, Version
+  and TODO Later are `<details>` blocks nested inside it, not headings of
+  their own (they used to be `# Platforms` and `# TODO Later`; both were
+  folded under `# Status` so the file opens with a single top-level section
+  rather than three):
+  1. `# Status` — opens with a `<details>` whose `<summary>` is `More status
+     info`, holding a link to <https://wekan.fi/status/>. Then a `<details>`
+     whose `<summary>` is `Newest WeKan at these platforms`, holding the line
+     `Newest WeKan at these platforms:` and the Install / Upgrade / Docs / Mac
+     ChangeLog bullets, plus the `Older releases:` bullet linking the per-year
+     archives. Then a `<details>` whose `<summary>` is `Version` holding
+     "which WeKan version uses what". Then a `<details>` whose `<summary>` is
+     `TODO Later`, itself holding a `<details>` whose `<summary>` is `Carried
+     to a future release.` explaining the list, then one `<details>` per
+     category (below). There is no `# Version` or `# TODO Later` heading of
      its own.
-  2. `# TODO Later` — a `<details>` whose `<summary>` is `Carried to a future
-     release.` explaining the list, then one `<details>` per category (below).
-  3. The releases, newest first, each `# v<MAJOR>.<MINOR> YYYY-MM-DD WeKan ® release`.
+  2. The releases, newest first, each `# v<MAJOR>.<MINOR> YYYY-MM-DD WeKan ® release`.
 
   Nothing else is an `#` heading. A `##`/`###` inside a release would break the
   version list, and a wrapped line that BEGINS with `#` (e.g. an issue number such
@@ -369,10 +518,13 @@ directly after the merge.
 - **A change with nothing more to say stays a plain bullet** —
   `- [Short description](https://github.com/wekan/wekan/commit/<hash>). Thanks to xet7.`
   — and a dependency batch keeps its `- **package 1.2.3 → 1.2.4** — one line on what
-  it is` bullets, closing with `Thanks to dependabot.` A `<details>` whose body only
+  it is` bullets, closing with `Thanks to dependabot.` That bot is named for the same
+  reason CodeQL and Copilot Autofix are: it raised those pull requests itself, with no
+  human behind them, so it IS the contributor (see the attribution rule at the top).
+  A `<details>` whose body only
   repeats its summary is noise; use one when there IS a longer story to reveal, which
   is most fixes.
-- **`# TODO Later` blocks are the same shape with two differences:** the `<summary>` is
+- **TODO Later's own blocks are the same shape with two differences:** the `<summary>` is
   the short category text (no `<a>`, because nothing was committed), and there is **no
   `Thanks to`** — nothing is done yet, so there is nobody to thank. The body lists the
   issues as `[#NNNN](https://github.com/wekan/wekan/issues/NNNN) (one-line reason)`.
@@ -403,40 +555,19 @@ directly after the merge.
   `<details>` blocks below carry that information. Keep the paragraph current as
   topics change, and shorten it when added commits make it grow. A finished release
   keeps the paragraph it was written with.
-- **Under the summary comes the BINARIES TABLE: what each platform ships.** So the
-  top of a release section is, in order, (1) the `**In short:**` paragraph and
-  (2) this table, and only then the `This release …:` subsections. A WeKan bundle
-  is not only WeKan — it carries a Node.js, a FerretDB and the MongoDB Database
-  Tools that other projects publish, and WHICH source has a given CPU changes
-  from release to release: nodejs.org builds some architectures,
-  unofficial-builds others, and [wekan/node-patches](https://github.com/wekan/node-patches)
-  the ones neither of them does. "Which Node.js is in the arm64 bundle of 10.69,
-  and was it checked" must be answerable from the CHANGELOG, not from a build log
-  that expires.
-
-  ```
-  | Platform | Binary | From | Version | SHA256 |
-  | --- | --- | --- | --- | --- |
-  | amd64 | Node.js | [nodejs.org](https://nodejs.org/dist/v24.19.0/node-v24.19.0-linux-x64.tar.xz) | v24.19.0 | `a1b2…` |
-  | amd64 | FerretDB | [wekan/FerretDB](https://github.com/wekan/FerretDB/releases/download/v1.24.0/ferretdb-amd64) | v1.24.0 | `c3d4…` |
-  | arm64 | Node.js | [nodejs.org](https://nodejs.org/dist/v24.19.0/node-v24.19.0-linux-arm64.tar.xz) | v24.19.0 | `e5f6…` |
-  ```
-
-  **GROUPED BY PLATFORM**: rows are sorted by platform and then by binary, so one
-  platform's binaries stay together and the table is read a platform at a time.
-  The URL is the LINK ON THE "From" CELL — never a bare URL as visible text, the
-  same rule as everywhere else — and it is the exact file that was downloaded, not
-  the project's front page. The SHA256 is the checksum the source published and the
-  build verified, in backticks; a source that publishes none says *no checksum
-  published*, which is not a failed check but a source worth fixing. Table rows
-  carry links, so the 80-character wrap does not apply to them.
-
-  It is the same table `releases/provenance-table.sh` puts at the top of the GitHub
-  release notes, from the `provenance.tsv` rows each build job records — so the two
-  are filled from the same data and cannot disagree. **A platform that was NOT built
-  has no rows**, which is how the table also answers "why is there no i386 bundle
-  this time": no source published a Node.js for it (see
-  `releases/resolve-node-source.sh`).
+- **No release section carries a Platform/Binary/From/Version/SHA256 table, and
+  none ever should again.** It used to sit right under the `**In short:**`
+  paragraph, then moved to a `**Binaries in these bundles:**` label at the end
+  of the section — both tried and both removed, because CHANGELOG.md is not
+  where that data belongs: it made every release's entry mostly a giant table
+  nobody read, on top of what `<details>` entries already say. "Which Node.js
+  is in the arm64 bundle of 10.69, and was it checked" is answered by the
+  **GitHub Release notes** instead: `releases/provenance-table.sh` puts the
+  same table at the TOP of those, built fresh from the `provenance.tsv` rows
+  each build job records (see `releases/record-provenance.sh`), every time a
+  release is made — so it is never stale and never needs hand-editing into
+  CHANGELOG.md. Adding a binaries table back into a CHANGELOG entry, in any
+  shape, is reintroducing something the maintainer removed on purpose.
 - **Inside a subsection, entries are GROUPED BY TOPIC/AREA.** A release touches a handful
   of areas and repeating the area's name in every summary is the noise this
   removes — twelve entries that each begin "All Boards:" say "All Boards" twelve
@@ -492,8 +623,9 @@ directly after the merge.
   `This release fixes the following SECURITY ISSUES found by GitHub CodeQL code scanning:`.
   Because CRITICAL comes first, it keeps the `This release ` prefix; a following non-security
   subsection becomes `and …` per the rule above.
-- **`# TODO Later` section** — a triage backlog near the TOP of `CHANGELOG.md` (above the
-  version sections), for open issues that were **investigated but not fixed here**, each
+- **TODO Later** — a `<details>` nested inside `# Status` near the TOP of
+  `CHANGELOG.md` (above the version sections), a triage backlog for open
+  issues that were **investigated but not fixed here**, each
   recorded with a concrete REASON so whoever picks it up next knows why. Use it when working
   through open issues (the "Fix open issues" process): for each issue, either **fix it** (commit
   ending `Fixes #NNNN,`), **close it** if already fixed in current code (commit `Close #NNNN` /
@@ -547,9 +679,11 @@ Fixes #1235.
   release-tooling fixes found in build logs, refactors. `Thanks to ... and xet7 !`
   still names whoever reported it.
 
-### Making a release — no version number needed  **[maintainer only]**
+### Making a release — no version number needed  **[human maintainer only — never AI]**
 
-All publishing / release steps below are maintainer-only. Contributors never run them.
+All publishing / release steps below are human-maintainer-only. Contributors and AI
+assistants never run them. An AI may prepare a local release commit only when requested,
+then must stop and hand the commit and command sequence to the human maintainer.
 
 **Releases are FREQUENT, and that is the normal state of this repository — not an
 interruption to it.** The maintenance loop is:
@@ -568,16 +702,25 @@ to reason about; it is what always happens, and anything that only works when
 releases are rare is broken here. Two consequences worth stating, because both
 have cost a released section its accuracy:
 
-- **Work continues immediately after a release**, so `release-all.sh` renames
-  `# Upcoming WeKan ® release` to `# v<NEW> …` and then OPENS A NEW EMPTY
-  `# Upcoming` (`releases/changelog-open-next.mjs`), so the next entry has
-  somewhere correct to go. Without it an entry appended above the closing
-  `Thanks to above GitHub users …` line lands INSIDE the release just published.
-  The new section carries an `**In short:** nothing here yet.` placeholder and
-  the binaries table, so the file stays valid; replace the placeholder as entries
-  are added. `tests/changelogEntriesBelongToTheirRelease.test.cjs` checks the
-  newest few releases against git and fails when a section links a commit that
-  release does not contain.
+- **Work continues immediately after a release**, so an entry written right
+  after one has to go somewhere. `release-all.sh` renames `# Upcoming WeKan ®
+  release` to `# v<NEW> …` and stops there — it does **not** create a new,
+  empty `# Upcoming` section. CHANGELOG.md never carries an
+  `**In short:** nothing here yet.` placeholder sitting between releases; it
+  used to (via a now-deleted `releases/changelog-open-next.mjs`), and that
+  meant the file always had a section saying nothing, from the moment a
+  release was cut until the first real entry replaced it. Instead: **add `#
+  Upcoming WeKan ® release` yourself, by hand, the moment you have a real
+  entry for it** — not before — using the skeleton at
+  [docs/DeveloperDocs/Changelog-Upcoming-Template.md](docs/DeveloperDocs/Changelog-Upcoming-Template.md).
+  An entry appended above the closing `Thanks to above GitHub users …` line
+  with no Upcoming section yet lands INSIDE the release just published — the
+  same mistake the auto-created section used to prevent — but it is caught
+  regardless: `tests/changelogEntriesBelongToTheirRelease.test.cjs` asks git
+  which commits a release actually contains and fails when a section links
+  one that is not an ancestor of that release, whether or not an Upcoming
+  heading existed first. Run that test (or `build.sh`'s node-suite option)
+  before committing a CHANGELOG entry written right after a release.
 - **A released section is a RECORD, not a draft.** When a release turns out to be
   broken, its section keeps saying what it shipped — including the part that was
   wrong — and the fix goes in a new `# Upcoming` above it. Do NOT edit a
