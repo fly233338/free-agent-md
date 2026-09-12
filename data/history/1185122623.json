@@ -2,16 +2,16 @@
   "full_name": "rullerzhou-afk/clawd-on-desk",
   "points": [
     {
-      "checked_at": "2026-08-13T05:09:58Z",
-      "commit_sha": "b5a5ec8ca1bf602bb5df4eab069fc72a77dbb3fa",
-      "pushed_at": "2026-08-13T04:56:45Z",
-      "stars": 5916
-    },
-    {
       "checked_at": "2026-09-09T08:13:13Z",
       "commit_sha": "043b2da1deab616ef3f59ef85737dc5923375b1a",
       "pushed_at": "2026-09-09T08:10:53Z",
       "stars": 6179
+    },
+    {
+      "checked_at": "2026-09-12T07:58:42Z",
+      "commit_sha": "a219293863f5a1e35fe331d9e3f03f38ce607e94",
+      "pushed_at": "2026-09-12T07:54:29Z",
+      "stars": 6206
     }
   ],
   "repo_id": 1185122623

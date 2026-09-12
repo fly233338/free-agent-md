@@ -2,12 +2,6 @@
   "full_name": "oven-sh/bun",
   "points": [
     {
-      "checked_at": "2026-08-13T05:09:58Z",
-      "commit_sha": "04148c881c49e0b31ac996fa824bfe867b01268a",
-      "pushed_at": "2026-08-13T05:08:45Z",
-      "stars": 95397
-    },
-    {
       "checked_at": "2026-08-14T05:06:13Z",
       "commit_sha": "f7ad274e3f0e572e17b78bf74056b4a382c5524d",
       "pushed_at": "2026-08-14T05:05:21Z",
@@ -78,6 +72,12 @@
       "commit_sha": "c01965ff724cabd72936c3b517d85902712731e0",
       "pushed_at": "2026-09-05T07:37:49Z",
       "stars": 95887
+    },
+    {
+      "checked_at": "2026-09-12T07:58:42Z",
+      "commit_sha": "62ceb03d16376e525912fd4906cba92118ee3899",
+      "pushed_at": "2026-09-12T07:56:28Z",
+      "stars": 95946
     }
   ],
   "repo_id": 357728969

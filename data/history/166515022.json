@@ -2,12 +2,6 @@
   "full_name": "trinodb/trino",
   "points": [
     {
-      "checked_at": "2026-08-13T05:09:58Z",
-      "commit_sha": "46884c8044f123885a32fe80015e8002f1298451",
-      "pushed_at": "2026-08-13T05:00:27Z",
-      "stars": 13135
-    },
-    {
       "checked_at": "2026-08-19T04:01:55Z",
       "commit_sha": "cf736c07a785955b1989ba0bcb128fd7b8e39e28",
       "pushed_at": "2026-08-19T04:00:49Z",

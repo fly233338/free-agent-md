@@ -2,12 +2,6 @@
   "full_name": "appwrite/appwrite",
   "points": [
     {
-      "checked_at": "2026-08-13T05:09:58Z",
-      "commit_sha": "a6d21fcda6b5208032cd73d84ea311d4a4606947",
-      "pushed_at": "2026-08-13T05:05:23Z",
-      "stars": 56905
-    },
-    {
       "checked_at": "2026-08-17T04:05:28Z",
       "commit_sha": "52a39af7f1a26dd40a76848b3cd4aa18e7dfa630",
       "pushed_at": "2026-08-17T03:54:37Z",

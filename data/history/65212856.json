@@ -2,12 +2,6 @@
   "full_name": "gitkraken/vscode-gitlens",
   "points": [
     {
-      "checked_at": "2026-08-13T05:09:58Z",
-      "commit_sha": "18c2c7a41876642db6a883d680a89011a6553ec1",
-      "pushed_at": "2026-08-13T05:09:47Z",
-      "stars": 9880
-    },
-    {
       "checked_at": "2026-09-07T08:24:13Z",
       "commit_sha": "0c5b658eadeec667bc980be17b9a8bf225246b8c",
       "pushed_at": "2026-09-07T08:23:55Z",
