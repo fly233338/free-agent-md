@@ -1,7 +1,7 @@
 # Comfy-Org/ComfyUI instruction files
 
-Upstream: [Comfy-Org/ComfyUI](https://github.com/Comfy-Org/ComfyUI) · License: `GPL-3.0` · Commit: `c75d8c966c29cb0392259af791f43373315b72db`
+Upstream: [Comfy-Org/ComfyUI](https://github.com/Comfy-Org/ComfyUI) · License: `GPL-3.0` · Commit: `02d39c8cd7828566f48ccf783c1c75b8336044f5`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Comfy-Org/ComfyUI/AGENTS.md) | [Source](https://github.com/Comfy-Org/ComfyUI/blob/c75d8c966c29cb0392259af791f43373315b72db/AGENTS.md) | `000538dc45b5f82ddfec37ced779601a4db6a6a84141e892645652ac3aae741c` | 24,564 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Comfy-Org/ComfyUI/AGENTS.md) | [Source](https://github.com/Comfy-Org/ComfyUI/blob/02d39c8cd7828566f48ccf783c1c75b8336044f5/AGENTS.md) | `000538dc45b5f82ddfec37ced779601a4db6a6a84141e892645652ac3aae741c` | 24,564 B |

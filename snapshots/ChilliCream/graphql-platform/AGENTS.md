@@ -2,6 +2,10 @@
 
 This file provides guidance to coding agents when working with this repository.
 
+## Attribution
+
+- Do not add `Co-authored-by` trailers or other co-author attribution for agents.
+
 ## Build
 
 ### Website
@@ -15,16 +19,18 @@ yarn
 
 ### C# Source Code
 
+Always pass `-p:EnforceCodeStyleInBuild=true` when building or testing. It reports IDE code-style violations (`IDE*`) as build errors, the same as CI does. Fix every reported style error.
+
 Build the full solution:
 
 ```bash
-dotnet build src/All.slnx
+dotnet build src/All.slnx -p:EnforceCodeStyleInBuild=true
 ```
 
 Each area has its own solution file, so you can build or test a subset directly:
 
 ```bash
-dotnet test src/HotChocolate/Fusion
+dotnet test src/HotChocolate/Fusion -p:EnforceCodeStyleInBuild=true
 ```
 
 ## Code Quality
@@ -95,3 +101,28 @@ After adding or editing any `.graphql` document under `src/HotChocolate/Fusion/s
 ```
 
 Never hand-write or hand-edit a `.sha256` sidecar. The `update` command is the only source of sidecar content, and `verify` must pass before handoff.
+
+## Components
+
+### All components
+
+#### Exceptions
+
+Create exceptions through the `ThrowHelper` class of the project you are editing instead of inlining `throw new ...`. Each project keeps its own, which centralizes exception messages.
+Example: `src/HotChocolate/Fusion/src/Fusion.Execution/Execution/ThrowHelper.cs`
+
+#### GraphQL errors
+
+Create GraphQL errors through the `ErrorHelper` class of the project you are editing instead of inlining `ErrorBuilder` calls. Each project keeps its own, which centralizes error messages.
+Example: `src/HotChocolate/AspNetCore/src/AspNetCore.Pipeline/Utilities/ErrorHelper.cs`
+
+### src/Fusion
+
+#### Execution nodes
+
+When you add a value to `ExecutionNodeType`, map it in two places:
+
+- `ExecutePlanNodeSpan.KindValues` in `src/HotChocolate/Fusion/src/Fusion.Diagnostics/Spans/ExecutePlanNodeSpan.cs`
+- `GraphQL.Operation.Step.KindValues` in `src/HotChocolate/Diagnostics/src/Diagnostics.Core/SemanticConventions.cs`, if the kind needs a new constant. Tag values are snake_case.
+
+`KindValues` supplies the `graphql.operation.step.kind` tag on the step span. An unmapped type does not fail execution. `ExecutePlanNodeSpan.Start` falls back to an untagged span, so the node silently loses its kind in traces. The guard test `StepSpan_Should_MapEveryExecutionNodeTypeToAKindValue` in `src/HotChocolate/Fusion/test/Fusion.Diagnostics.Tests/FusionActivityExecutionDiagnosticListenerTests.cs` fails until the mapping exists.

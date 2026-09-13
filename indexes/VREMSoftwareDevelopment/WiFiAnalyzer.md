@@ -1,7 +1,7 @@
 # VREMSoftwareDevelopment/WiFiAnalyzer instruction files
 
-Upstream: [VREMSoftwareDevelopment/WiFiAnalyzer](https://github.com/VREMSoftwareDevelopment/WiFiAnalyzer) · License: `GPL-3.0` · Commit: `4d59f4fce0527ef895cc652417fe2d425acfb9cb`
+Upstream: [VREMSoftwareDevelopment/WiFiAnalyzer](https://github.com/VREMSoftwareDevelopment/WiFiAnalyzer) · License: `GPL-3.0` · Commit: `4b42e9a54dfc481135a0f6229993e05e3acd7f7d`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/VREMSoftwareDevelopment/WiFiAnalyzer/AGENTS.md) | [Source](https://github.com/VREMSoftwareDevelopment/WiFiAnalyzer/blob/4d59f4fce0527ef895cc652417fe2d425acfb9cb/AGENTS.md) | `71d353d229ace101e314b68454bedbf245b2165181032271bc1861ef4861c0f3` | 9,235 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/VREMSoftwareDevelopment/WiFiAnalyzer/AGENTS.md) | [Source](https://github.com/VREMSoftwareDevelopment/WiFiAnalyzer/blob/4b42e9a54dfc481135a0f6229993e05e3acd7f7d/AGENTS.md) | `37dd2ee3c146f3eb6689105c84acb3fe75ce6eda427ab91f0251fc9e86999ee2` | 9,249 B |
