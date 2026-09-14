@@ -2,12 +2,6 @@
   "full_name": "protobuf-net/protobuf-net",
   "points": [
     {
-      "checked_at": "2026-08-15T03:56:21Z",
-      "commit_sha": "164bde9e85feeffd112c02628599275ec9cf05bc",
-      "pushed_at": "2026-08-14T22:27:14Z",
-      "stars": 4965
-    },
-    {
       "checked_at": "2026-08-16T04:02:35Z",
       "commit_sha": "afb97b2d0a4336c8ae3ea2ed58ee4a348a4e4897",
       "pushed_at": "2026-08-15T21:17:18Z",
@@ -177,6 +171,12 @@
     },
     {
       "checked_at": "2026-09-13T08:22:51Z",
+      "commit_sha": "ca651cf020f41d5c094fa984952cf0db55513519",
+      "pushed_at": "2026-09-11T22:12:30Z",
+      "stars": 4972
+    },
+    {
+      "checked_at": "2026-09-14T09:01:05Z",
       "commit_sha": "ca651cf020f41d5c094fa984952cf0db55513519",
       "pushed_at": "2026-09-11T22:12:30Z",
       "stars": 4972

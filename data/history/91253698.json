@@ -2,12 +2,6 @@
   "full_name": "ccxt/ccxt",
   "points": [
     {
-      "checked_at": "2026-08-15T03:56:21Z",
-      "commit_sha": "b1319cb71ccdb9647e7c036dd8b05f859a8e67a3",
-      "pushed_at": "2026-08-15T03:36:13Z",
-      "stars": 43629
-    },
-    {
       "checked_at": "2026-09-08T08:09:08Z",
       "commit_sha": "98a94aa9755acb2ef21bad26ead75c7c0bece307",
       "pushed_at": "2026-09-08T08:03:26Z",

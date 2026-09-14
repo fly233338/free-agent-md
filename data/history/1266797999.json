@@ -2,12 +2,6 @@
   "full_name": "DietrichGebert/ponytail",
   "points": [
     {
-      "checked_at": "2026-08-15T03:56:21Z",
-      "commit_sha": "2ed6c52c9d7e5e56942508591085fd45dea277d3",
-      "pushed_at": "2026-08-07T21:44:01Z",
-      "stars": 102797
-    },
-    {
       "checked_at": "2026-08-16T04:02:35Z",
       "commit_sha": "2ed6c52c9d7e5e56942508591085fd45dea277d3",
       "pushed_at": "2026-08-07T21:44:01Z",
@@ -180,6 +174,12 @@
       "commit_sha": "356918eba965ee1eac64bd3a7f0dd02108350de5",
       "pushed_at": "2026-09-07T16:27:01Z",
       "stars": 136853
+    },
+    {
+      "checked_at": "2026-09-14T09:01:05Z",
+      "commit_sha": "356918eba965ee1eac64bd3a7f0dd02108350de5",
+      "pushed_at": "2026-09-07T16:27:01Z",
+      "stars": 137749
     }
   ],
   "repo_id": 1266797999

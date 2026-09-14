@@ -2,12 +2,6 @@
   "full_name": "angular/angular",
   "points": [
     {
-      "checked_at": "2026-08-15T03:56:21Z",
-      "commit_sha": "ec678c0f8d449b5be81438738d09f9f503f3e1a0",
-      "pushed_at": "2026-08-14T16:29:46Z",
-      "stars": 101007
-    },
-    {
       "checked_at": "2026-08-16T04:02:35Z",
       "commit_sha": "ec678c0f8d449b5be81438738d09f9f503f3e1a0",
       "pushed_at": "2026-08-14T16:29:46Z",
@@ -96,6 +90,12 @@
       "commit_sha": "fc2f6fd67de91225f505269f728ca1574b3f5b66",
       "pushed_at": "2026-09-11T23:00:03Z",
       "stars": 100998
+    },
+    {
+      "checked_at": "2026-09-14T09:01:05Z",
+      "commit_sha": "c60c41e29aa175ca25b0e91a40f5ab115b46139f",
+      "pushed_at": "2026-09-13T21:20:30Z",
+      "stars": 101002
     }
   ],
   "repo_id": 24195339

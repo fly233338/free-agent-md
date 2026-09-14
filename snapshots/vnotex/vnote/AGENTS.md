@@ -181,6 +181,12 @@ use `setEnabled(false)` to mute text. See
 [src/widgets/AGENTS.md § No Hardcoded Colors in C++](src/widgets/AGENTS.md#no-hardcoded-colors-in-c)
 for the decision table and the escape hatch.
 
+### Tooltip Copy
+
+Tooltip text MUST NOT end with sentence-ending punctuation. Keep punctuation needed between
+sentences or clauses; write parenthetical qualifiers such as `(restart required)` in lowercase
+without terminal punctuation.
+
 ### Naming Conventions
 
 | Element | Convention | Example |
@@ -269,6 +275,17 @@ notebook are serialized by the per-notebook `NotebookIoGate` async mutex.
 
 Full rationale and the two-phase sync gate:
 [src/core/services/AGENTS.md § Save Path Threading Contract](src/core/services/AGENTS.md#save-path-threading-contract).
+
+---
+
+## Cross-Notebook Node Transfer
+
+Cross-notebook copy and move operations must go through
+[`NodeTransferService`](src/core/services/nodetransferservice.h). VNote owns editor/comment
+durability, sync exclusion, IO-gate ordering, hooks, clipboard policy, progress, and UI feedback;
+vxcore owns snapshotting, identity regeneration, storage transactions, recovery, and mutation facts.
+Controllers and widgets must not call the vxcore transfer API directly. Full orchestration contract:
+[src/core/services/AGENTS.md § Cross-Notebook Node Transfer](src/core/services/AGENTS.md#cross-notebook-node-transfer).
 
 ---
 
