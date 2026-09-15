@@ -2,12 +2,6 @@
   "full_name": "simstudioai/sim",
   "points": [
     {
-      "checked_at": "2026-08-16T04:02:35Z",
-      "commit_sha": "417ae2075d52bc777d3317d9540525cfe26bb49d",
-      "pushed_at": "2026-08-16T03:58:39Z",
-      "stars": 29425
-    },
-    {
       "checked_at": "2026-09-10T08:12:06Z",
       "commit_sha": "03dffb46a012ddd269c709b7f10e60a2a3886c53",
       "pushed_at": "2026-09-10T08:08:21Z",

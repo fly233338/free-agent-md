@@ -1,8 +1,8 @@
 # TabularisDB/tabularis instruction files
 
-Upstream: [TabularisDB/tabularis](https://github.com/TabularisDB/tabularis) · License: `Apache-2.0` · Commit: `ebc148678cdff6425bd3017eb7e63d97413582dd`
+Upstream: [TabularisDB/tabularis](https://github.com/TabularisDB/tabularis) · License: `Apache-2.0` · Commit: `59da6350d388270828cbf9ceab1a8a39272091cd`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/TabularisDB/tabularis/AGENTS.md) | [Source](https://github.com/TabularisDB/tabularis/blob/ebc148678cdff6425bd3017eb7e63d97413582dd/AGENTS.md) | `7c19dcddc6a18e52f9139fe34814288c6b0d2c8fb19cb27e0066796c53f268b6` | 3,390 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/TabularisDB/tabularis/CLAUDE.md) | [Source](https://github.com/TabularisDB/tabularis/blob/ebc148678cdff6425bd3017eb7e63d97413582dd/CLAUDE.md) | `7c19dcddc6a18e52f9139fe34814288c6b0d2c8fb19cb27e0066796c53f268b6` | 3,390 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/TabularisDB/tabularis/AGENTS.md) | [Source](https://github.com/TabularisDB/tabularis/blob/59da6350d388270828cbf9ceab1a8a39272091cd/AGENTS.md) | `7c19dcddc6a18e52f9139fe34814288c6b0d2c8fb19cb27e0066796c53f268b6` | 3,390 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/TabularisDB/tabularis/CLAUDE.md) | [Source](https://github.com/TabularisDB/tabularis/blob/59da6350d388270828cbf9ceab1a8a39272091cd/CLAUDE.md) | `7c19dcddc6a18e52f9139fe34814288c6b0d2c8fb19cb27e0066796c53f268b6` | 3,390 B |

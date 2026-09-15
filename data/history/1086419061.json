@@ -2,12 +2,6 @@
   "full_name": "vectorize-io/hindsight",
   "points": [
     {
-      "checked_at": "2026-08-16T04:02:35Z",
-      "commit_sha": "205e47b4e965f5fa77794c64695308dc2a58fe18",
-      "pushed_at": "2026-08-16T03:34:38Z",
-      "stars": 20011
-    },
-    {
       "checked_at": "2026-08-23T04:03:45Z",
       "commit_sha": "3295716cafcc593b6a2cdebd03dd71373b091859",
       "pushed_at": "2026-08-23T03:37:11Z",

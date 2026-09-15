@@ -1,0 +1,12 @@
+{
+  "full_name": "DataDog/datadog-agent",
+  "points": [
+    {
+      "checked_at": "2026-09-15T08:45:05Z",
+      "commit_sha": "44ff480c323651a95c431786e857135f0ce8c539",
+      "pushed_at": "2026-09-15T08:45:07Z",
+      "stars": 3727
+    }
+  ],
+  "repo_id": 49970739
+}

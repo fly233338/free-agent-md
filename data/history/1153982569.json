@@ -2,12 +2,6 @@
   "full_name": "run-llama/liteparse",
   "points": [
     {
-      "checked_at": "2026-08-16T04:02:35Z",
-      "commit_sha": "36e7431dea3779f2f4c0558487de42ce8cd90cd9",
-      "pushed_at": "2026-08-16T03:35:35Z",
-      "stars": 12099
-    },
-    {
       "checked_at": "2026-08-20T04:01:46Z",
       "commit_sha": "59b63ede9b3d7cde037b3e81e8b8d905691783c8",
       "pushed_at": "2026-08-20T03:53:55Z",
