@@ -2,12 +2,6 @@
   "full_name": "langchain-ai/langchain",
   "points": [
     {
-      "checked_at": "2026-08-17T04:05:28Z",
-      "commit_sha": "9a5810712658bdb9ad91925d3242032822f54a5e",
-      "pushed_at": "2026-08-16T08:08:02Z",
-      "stars": 144360
-    },
-    {
       "checked_at": "2026-08-18T04:00:27Z",
       "commit_sha": "9f2d56e376ea926d334f8f99ed7c67b154c2f0bf",
       "pushed_at": "2026-08-18T01:51:37Z",
@@ -180,6 +174,12 @@
       "commit_sha": "41d357287c0470f70e45e232c711013258c0ac1a",
       "pushed_at": "2026-09-15T08:31:17Z",
       "stars": 146359
+    },
+    {
+      "checked_at": "2026-09-16T08:39:32Z",
+      "commit_sha": "c01de7fed06b83fcc95d1d06e9b67943a7454a2a",
+      "pushed_at": "2026-09-16T08:33:01Z",
+      "stars": 146428
     }
   ],
   "repo_id": 552661142

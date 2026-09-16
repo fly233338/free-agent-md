@@ -2,12 +2,6 @@
   "full_name": "datahub-project/datahub",
   "points": [
     {
-      "checked_at": "2026-08-17T04:05:28Z",
-      "commit_sha": "73e24213437f34a4962c43458ef4fd05f56a51b1",
-      "pushed_at": "2026-08-17T04:02:35Z",
-      "stars": 12535
-    },
-    {
       "checked_at": "2026-08-20T04:01:46Z",
       "commit_sha": "3f17de7ad751ae0c93887eecf0ad2da0a20c53a2",
       "pushed_at": "2026-08-20T04:00:35Z",
@@ -18,6 +12,12 @@
       "commit_sha": "4ccacf91905823707f140959e4f83f77211af6e6",
       "pushed_at": "2026-09-08T08:07:22Z",
       "stars": 12648
+    },
+    {
+      "checked_at": "2026-09-16T08:39:32Z",
+      "commit_sha": "89638710d1fd10310af74391394953e38435396e",
+      "pushed_at": "2026-09-16T08:39:05Z",
+      "stars": 12715
     }
   ],
   "repo_id": 46398090

@@ -2,12 +2,6 @@
   "full_name": "goauthentik/authentik",
   "points": [
     {
-      "checked_at": "2026-08-17T04:05:28Z",
-      "commit_sha": "4837f0220675764898b909de2424106226d1cfd6",
-      "pushed_at": "2026-08-17T04:04:58Z",
-      "stars": 24879
-    },
-    {
       "checked_at": "2026-08-20T04:01:46Z",
       "commit_sha": "254d60c9328e3b277ed502c6ff80a012a3b44d25",
       "pushed_at": "2026-08-20T03:54:19Z",
@@ -30,6 +24,12 @@
       "commit_sha": "acd0eb754e8fbed97560277c82106931c9917dcb",
       "pushed_at": "2026-09-04T07:56:48Z",
       "stars": 25346
+    },
+    {
+      "checked_at": "2026-09-16T08:39:32Z",
+      "commit_sha": "9c23cb9e452410c77cd251e28f08386e14e180aa",
+      "pushed_at": "2026-09-16T08:37:45Z",
+      "stars": 25577
     }
   ],
   "repo_id": 230885748

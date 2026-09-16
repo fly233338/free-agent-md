@@ -2,12 +2,6 @@
   "full_name": "HKUDS/LightRAG",
   "points": [
     {
-      "checked_at": "2026-08-17T04:05:28Z",
-      "commit_sha": "d692105847ca7a32f4c90e20e81c25c50af1e87c",
-      "pushed_at": "2026-08-17T04:04:15Z",
-      "stars": 38911
-    },
-    {
       "checked_at": "2026-08-19T04:01:55Z",
       "commit_sha": "a28d886e424578d0756c35a5499508d2322842af",
       "pushed_at": "2026-08-19T03:49:46Z",

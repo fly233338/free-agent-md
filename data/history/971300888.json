@@ -2,12 +2,6 @@
   "full_name": "modelcontextprotocol/go-sdk",
   "points": [
     {
-      "checked_at": "2026-08-17T04:05:28Z",
-      "commit_sha": "64e454e35c23c473e1fcf1e1c3a6f623260ca773",
-      "pushed_at": "2026-08-13T14:43:41Z",
-      "stars": 4994
-    },
-    {
       "checked_at": "2026-08-18T04:00:27Z",
       "commit_sha": "1fcaf0c39375a74950f06f41f0d91c81d778df3e",
       "pushed_at": "2026-08-17T12:21:15Z",
