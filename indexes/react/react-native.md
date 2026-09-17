@@ -1,8 +1,8 @@
 # react/react-native instruction files
 
-Upstream: [react/react-native](https://github.com/react/react-native) · License: `MIT` · Commit: `b4d57abe129d65d02a18ab4f5dd89e9e404357e9`
+Upstream: [react/react-native](https://github.com/react/react-native) · License: `MIT` · Commit: `76ca12ba552f5558367c97bbd75ff77c56997a84`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/react/react-native/AGENTS.md) | [Source](https://github.com/react/react-native/blob/b4d57abe129d65d02a18ab4f5dd89e9e404357e9/AGENTS.md) | `3f54d17405c43058b9c2a39ec79fbc8fa09d1587e82a81fe24b62c12385a0428` | 5,224 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/react/react-native/CLAUDE.md) | [Source](https://github.com/react/react-native/blob/b4d57abe129d65d02a18ab4f5dd89e9e404357e9/CLAUDE.md) | `336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49` | 11 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/react/react-native/AGENTS.md) | [Source](https://github.com/react/react-native/blob/76ca12ba552f5558367c97bbd75ff77c56997a84/AGENTS.md) | `bf96ac8c18073c780c4734686876a5f734e8524fbb1bbc6834c92b03c2eb9023` | 6,066 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/react/react-native/CLAUDE.md) | [Source](https://github.com/react/react-native/blob/76ca12ba552f5558367c97bbd75ff77c56997a84/CLAUDE.md) | `336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49` | 11 B |

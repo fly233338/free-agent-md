@@ -2,12 +2,6 @@
   "full_name": "openai/codex",
   "points": [
     {
-      "checked_at": "2026-08-18T04:00:27Z",
-      "commit_sha": "5ee6baee2fcc0b6ffd413d9611f5538dad40d0f2",
-      "pushed_at": "2026-08-18T03:33:26Z",
-      "stars": 106527
-    },
-    {
       "checked_at": "2026-08-19T04:01:55Z",
       "commit_sha": "956f590ad549e75913894614ce0cbec4d5fd677a",
       "pushed_at": "2026-08-19T03:55:20Z",
@@ -180,6 +174,12 @@
       "commit_sha": "50d77959bf927293c4b5ddcca81d05331ae582ea",
       "pushed_at": "2026-09-16T07:12:31Z",
       "stars": 124595
+    },
+    {
+      "checked_at": "2026-09-17T08:43:22Z",
+      "commit_sha": "b0659c53865dd48b0cd69c454368cea3980017cc",
+      "pushed_at": "2026-09-17T05:26:59Z",
+      "stars": 124866
     }
   ],
   "repo_id": 965415649

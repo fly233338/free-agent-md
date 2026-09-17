@@ -2,12 +2,6 @@
   "full_name": "Kinnara/ModernWpf",
   "points": [
     {
-      "checked_at": "2026-08-18T04:00:27Z",
-      "commit_sha": "a80c5462d9e5bb7972b75ec30cf605c6be2d43f2",
-      "pushed_at": "2026-08-17T05:37:22Z",
-      "stars": 4953
-    },
-    {
       "checked_at": "2026-08-19T04:01:55Z",
       "commit_sha": "a80c5462d9e5bb7972b75ec30cf605c6be2d43f2",
       "pushed_at": "2026-08-17T05:37:22Z",
@@ -177,6 +171,12 @@
     },
     {
       "checked_at": "2026-09-16T08:39:32Z",
+      "commit_sha": "23555a6c00623b2f80e67f20d7f1df49a1d28ad8",
+      "pushed_at": "2026-09-14T05:39:18Z",
+      "stars": 4959
+    },
+    {
+      "checked_at": "2026-09-17T08:43:22Z",
       "commit_sha": "23555a6c00623b2f80e67f20d7f1df49a1d28ad8",
       "pushed_at": "2026-09-14T05:39:18Z",
       "stars": 4959

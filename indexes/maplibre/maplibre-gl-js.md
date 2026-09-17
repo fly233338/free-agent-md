@@ -1,0 +1,7 @@
+# maplibre/maplibre-gl-js instruction files
+
+Upstream: [maplibre/maplibre-gl-js](https://github.com/maplibre/maplibre-gl-js) · License: `NOASSERTION` · Commit: `1cd4cb8e23f6b1b675b5e746cbefbe60ebabab2f`
+
+| Type | Path | Snapshot | Fixed source | SHA-256 | Size |
+|---|---|---|---|---|---:|
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/maplibre/maplibre-gl-js/AGENTS.md) | [Source](https://github.com/maplibre/maplibre-gl-js/blob/1cd4cb8e23f6b1b675b5e746cbefbe60ebabab2f/AGENTS.md) | `2dda53cf912bde0a1a136659ba6ae4a44797818df849a4e5b9013f200dae2ca4` | 8,646 B |

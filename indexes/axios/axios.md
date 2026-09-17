@@ -1,8 +1,8 @@
 # axios/axios instruction files
 
-Upstream: [axios/axios](https://github.com/axios/axios) · License: `MIT` · Commit: `ba0f3a0c568e68de5e7d455ae8c566ed43525550`
+Upstream: [axios/axios](https://github.com/axios/axios) · License: `MIT` · Commit: `56a5f1acdc41965f464eb59bec6cc828113ba546`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/axios/axios/AGENTS.md) | [Source](https://github.com/axios/axios/blob/ba0f3a0c568e68de5e7d455ae8c566ed43525550/AGENTS.md) | `5cdb89f7647451becab2fb3db19cea393c1dfd184e8f0a5d09537185016d9e71` | 8,873 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/axios/axios/CLAUDE.md) | [Source](https://github.com/axios/axios/blob/ba0f3a0c568e68de5e7d455ae8c566ed43525550/CLAUDE.md) | `336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49` | 11 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/axios/axios/AGENTS.md) | [Source](https://github.com/axios/axios/blob/56a5f1acdc41965f464eb59bec6cc828113ba546/AGENTS.md) | `5cdb89f7647451becab2fb3db19cea393c1dfd184e8f0a5d09537185016d9e71` | 8,873 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/axios/axios/CLAUDE.md) | [Source](https://github.com/axios/axios/blob/56a5f1acdc41965f464eb59bec6cc828113ba546/CLAUDE.md) | `336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49` | 11 B |

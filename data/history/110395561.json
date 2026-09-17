@@ -2,12 +2,6 @@
   "full_name": "MCSManager/MCSManager",
   "points": [
     {
-      "checked_at": "2026-08-18T04:00:27Z",
-      "commit_sha": "6a7c8485ecd67fe6129b520afd4a4d0195b66c13",
-      "pushed_at": "2026-08-16T10:15:38Z",
-      "stars": 4920
-    },
-    {
       "checked_at": "2026-08-19T04:01:55Z",
       "commit_sha": "6a7c8485ecd67fe6129b520afd4a4d0195b66c13",
       "pushed_at": "2026-08-16T10:15:38Z",
@@ -180,6 +174,12 @@
       "commit_sha": "f590600c490e0214d8d3a2c014405e691bd0d629",
       "pushed_at": "2026-09-16T05:58:59Z",
       "stars": 4960
+    },
+    {
+      "checked_at": "2026-09-17T08:43:22Z",
+      "commit_sha": "f590600c490e0214d8d3a2c014405e691bd0d629",
+      "pushed_at": "2026-09-16T05:58:59Z",
+      "stars": 4962
     }
   ],
   "repo_id": 110395561

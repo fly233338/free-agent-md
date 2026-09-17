@@ -2,12 +2,6 @@
   "full_name": "react/react",
   "points": [
     {
-      "checked_at": "2026-08-18T04:00:27Z",
-      "commit_sha": "eb8feb71096eec5c885b2a4c7d8d030d3622f265",
-      "pushed_at": "2026-08-17T11:16:23Z",
-      "stars": 247381
-    },
-    {
       "checked_at": "2026-08-19T04:01:55Z",
       "commit_sha": "eb8feb71096eec5c885b2a4c7d8d030d3622f265",
       "pushed_at": "2026-08-17T11:16:23Z",
@@ -180,6 +174,12 @@
       "commit_sha": "2c68870bcc453a76334ec941732040829f0fbea9",
       "pushed_at": "2026-09-16T07:13:39Z",
       "stars": 250481
+    },
+    {
+      "checked_at": "2026-09-17T08:43:22Z",
+      "commit_sha": "2b19aecd0e9111b774fad0fad9862e50bcb5bc8a",
+      "pushed_at": "2026-09-17T03:25:42Z",
+      "stars": 250519
     }
   ],
   "repo_id": 10270250
