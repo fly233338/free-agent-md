@@ -2,12 +2,6 @@
   "full_name": "CherryHQ/cherry-studio",
   "points": [
     {
-      "checked_at": "2026-08-19T04:01:55Z",
-      "commit_sha": "fdd8bad1af40e1a335cf019a68218361861ff16e",
-      "pushed_at": "2026-08-19T03:59:16Z",
-      "stars": 50740
-    },
-    {
       "checked_at": "2026-08-22T03:58:42Z",
       "commit_sha": "1605f36da0b2d25007a87986b3ed29483d791dd0",
       "pushed_at": "2026-08-22T03:55:21Z",
@@ -54,6 +48,12 @@
       "commit_sha": "4828b1c7c0b07ea92508b86f432d36dd0646f96b",
       "pushed_at": "2026-09-17T08:43:20Z",
       "stars": 51900
+    },
+    {
+      "checked_at": "2026-09-18T08:19:12Z",
+      "commit_sha": "41713d0d80b2ef0ff489303cf6c3e2147528bac2",
+      "pushed_at": "2026-09-18T08:11:21Z",
+      "stars": 51946
     }
   ],
   "repo_id": 805155266

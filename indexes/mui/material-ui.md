@@ -1,8 +1,8 @@
 # mui/material-ui instruction files
 
-Upstream: [mui/material-ui](https://github.com/mui/material-ui) · License: `MIT` · Commit: `1d829b8c9d9df9a92048920bf827737e41ae4eeb`
+Upstream: [mui/material-ui](https://github.com/mui/material-ui) · License: `MIT` · Commit: `554f7cf7371d17a5d7b33dd3a979d4de4e954801`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/mui/material-ui/AGENTS.md) | [Source](https://github.com/mui/material-ui/blob/1d829b8c9d9df9a92048920bf827737e41ae4eeb/AGENTS.md) | `b06845bf046c9e3bb3be144908cec091ed7094871c5db0c436cbefc6f204a9c3` | 8,986 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/mui/material-ui/CLAUDE.md) | [Source](https://github.com/mui/material-ui/blob/1d829b8c9d9df9a92048920bf827737e41ae4eeb/CLAUDE.md) | `259d73f06a8e9db2798ab3fc24c4151afc27062d170e2c907f2b06cb18cce61a` | 174 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/mui/material-ui/AGENTS.md) | [Source](https://github.com/mui/material-ui/blob/554f7cf7371d17a5d7b33dd3a979d4de4e954801/AGENTS.md) | `b06845bf046c9e3bb3be144908cec091ed7094871c5db0c436cbefc6f204a9c3` | 8,986 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/mui/material-ui/CLAUDE.md) | [Source](https://github.com/mui/material-ui/blob/554f7cf7371d17a5d7b33dd3a979d4de4e954801/CLAUDE.md) | `259d73f06a8e9db2798ab3fc24c4151afc27062d170e2c907f2b06cb18cce61a` | 174 B |

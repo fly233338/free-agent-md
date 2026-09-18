@@ -1,7 +1,7 @@
 # microsoft/FluidFramework instruction files
 
-Upstream: [microsoft/FluidFramework](https://github.com/microsoft/FluidFramework) · License: `MIT` · Commit: `400b2f1828ff7a5c671e85214dfa28bc20387fdd`
+Upstream: [microsoft/FluidFramework](https://github.com/microsoft/FluidFramework) · License: `MIT` · Commit: `d013fc5fd2922a8f88981bdaa6df91c4120e1b72`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `CLAUDE.md` | `.claude/CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/microsoft/FluidFramework/.claude/CLAUDE.md) | [Source](https://github.com/microsoft/FluidFramework/blob/400b2f1828ff7a5c671e85214dfa28bc20387fdd/.claude/CLAUDE.md) | `0260f1441df01745e50e9568440bbc08ab0e8ac851046ddf19f9060a8bbda895` | 1,833 B |
+| `CLAUDE.md` | `.claude/CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/microsoft/FluidFramework/.claude/CLAUDE.md) | [Source](https://github.com/microsoft/FluidFramework/blob/d013fc5fd2922a8f88981bdaa6df91c4120e1b72/.claude/CLAUDE.md) | `2cbb52f6f02d09d9ba9c9d1889dfc49cd38e872e778c7ad6b8780ce05e7f3f1a` | 2,561 B |

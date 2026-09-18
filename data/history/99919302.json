@@ -2,12 +2,6 @@
   "full_name": "apache/doris",
   "points": [
     {
-      "checked_at": "2026-08-19T04:01:55Z",
-      "commit_sha": "4a11d0b74b74d6b1b2ec92b9706fbf16618b75ce",
-      "pushed_at": "2026-08-19T03:56:12Z",
-      "stars": 15796
-    },
-    {
       "checked_at": "2026-08-26T04:05:28Z",
       "commit_sha": "955f72035a3b8ae1c38856c145c1ab62b7117b95",
       "pushed_at": "2026-08-26T04:03:17Z",
@@ -42,6 +36,12 @@
       "commit_sha": "64d2911f64d0620adb7c79881a5ec3a716ed19aa",
       "pushed_at": "2026-09-17T08:39:10Z",
       "stars": 15931
+    },
+    {
+      "checked_at": "2026-09-18T08:19:12Z",
+      "commit_sha": "0b0ae09153153c73d22e1b2e225f3ae6061a3d2c",
+      "pushed_at": "2026-09-18T08:18:59Z",
+      "stars": 15957
     }
   ],
   "repo_id": 99919302

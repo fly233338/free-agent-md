@@ -12,6 +12,9 @@ per-area `AGENTS.md` linked from the Architecture and Conventions sections befor
 - Use meaningful variable and function names.
 - Follow established conventions and good practices (SOLID, maintainable code).
 - Do not modify code unrelated to the task or issue you are working on.
+- Do not create GitHub pull requests unless the user explicitly asks. Commit and
+  push the branch as needed; leave opening the PR to the user. If asked to open
+  a PR, make sure tests, lint, and type-check pass first.
 
 ## Architecture
 
@@ -85,12 +88,13 @@ pnpm install && pnpm dev
 **Fresh worktrees** (`.claude/worktrees/`) don't carry `.env` or built artifacts. Before running
 tests in a new worktree, from the repo root:
 ```bash
-./dev/setup-environment       # generates server/.env, server/.jwks.json, clients/apps/web/.env.local
+./dev/setup-environment       # generates server/.env and clients/apps/web/.env.local
 uv run --directory server task emails   # builds server/emails/bin/react-email-pkg
 ```
-Without these, pytest fails at config load with `JWKS` and `EMAIL_RENDERER_BINARY_PATH` errors.
+Without the email renderer, pytest fails at config load with an
+`EMAIL_RENDERER_BINARY_PATH` error.
 
-Only two artifacts actually block config import: `server/.jwks.json` and *any existing file* at
+One artifact actually blocks config import: *any existing file* at
 `EMAIL_RENDERER_BINARY_PATH` — the validator only checks that the path exists. When you need to
 collect tests, lint or typecheck without waiting on the ~60s email build, do what
 `test_sdk.yaml` does: `touch /tmp/email-renderer` and set
@@ -154,6 +158,8 @@ Treat **Accepted** ADRs as binding:
 - If code contradicts an Accepted ADR, flag it and cite the id (e.g. "violates ADR-0002").
 - If a change makes a significant decision no ADR covers, propose a new one from
   `handbook/engineering/decisions/template.mdx` rather than losing the rationale in the diff.
+- **ADR-0012:** AI API prompts send only the fields the feature needs. Do not
+  dump a whole org, customer, or payment object into a model call.
 
 ## Custom Commands
 
@@ -162,9 +168,23 @@ Treat **Accepted** ADRs as binding:
 ## Documentation
 
 - **Handbook**: https://handbook.polar.sh/engineering/
-- **Design docs**: https://handbook.polar.sh/engineering/design-documents/
+- **Design docs**: `handbook/engineering/design-documents/` — write one only when
+  Polar stores or processes new data, changes login or permissions, adds a
+  new system, or adds a third-party tool that can see Polar data. Not every
+  new API endpoint. Copy `template.mdx`.
+  https://handbook.polar.sh/engineering/design-documents/
 - **API guidelines**: https://handbook.polar.sh/engineering/rest-api-guidelines
 - **User/developer docs**: `docs/` (Mintlify) — `cd docs && pnpm dev` to serve locally.
+
+Mintlify API reference is generated from committed `docs/openapi/{version}.openapi.json`. After
+changing public endpoints or webhooks, from `sdk/generator/`:
+
+```bash
+just openapi        # server → sdk/generator/openapi/
+just docs-openapi   # public spec + SDK samples → docs/openapi/
+```
+
+Add new operations and webhooks to the matching groups in `docs/docs.json`; that file is not generated.
 
 ## Key Integrations
 
@@ -247,9 +267,8 @@ VM; don't remove it. The `ubuntu` user is in the `docker` group. Elsewhere the f
 exist and the daemon may run as root on `overlayfs`; check `docker info` rather than assuming.
 
 **Backend config artifacts.** Config import fails without the email renderer binary
-(`server/emails/bin/react-email-pkg`, built by `dev up` / `uv run task emails`) and
-`server/.jwks.json` (from `./dev/setup-environment` / `dev up`). Missing → pydantic
-`EMAIL_RENDERER_BINARY_PATH` / `JWKS` errors. `server/.env` is **not** among them for tests:
+(`server/emails/bin/react-email-pkg`, built by `dev up` / `uv run task emails`) → pydantic
+`EMAIL_RENDERER_BINARY_PATH` error. `server/.env` is **not** among them for tests:
 under `POLAR_ENV=testing` (which `tests/conftest.py` forces) `polar/config.py` loads the
 committed `server/.env.testing`. `server/.env` is still required before `docker compose up -d`,
 which interpolates it. `dev status` reports "Worker unknown (check manually)" by design —

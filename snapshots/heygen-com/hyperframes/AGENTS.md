@@ -9,7 +9,7 @@ This repo ships AI agent skills via [vercel-labs/skills](https://github.com/verc
 ```bash
 npx hyperframes skills update           # default: installs/refreshes the core set — workflows install on demand
 npx hyperframes skills                  # all 20 published skills at once
-npx skills add heygen-com/hyperframes   # interactive picker (terminal only; --all also pulls the repo-internal skills under .claude/skills)
+npx skills add heygen-com/hyperframes   # interactive picker (terminal only; repo-internal skills are excluded by default)
 ```
 
 **Creation workflows** route through one entry skill — read `/hyperframes` first: it orients you to the whole surface, confirms the brief up front (the intent layer), and maps "make me a…" intent — usually a video, but also a navigable deck (`/slideshow`) or a composition port (`/remotion-to-hyperframes`) — to a concrete workflow. Consult it before invoking a specific workflow:
@@ -81,7 +81,7 @@ skills/                 → AI agent skill definitions
 - **Package manager**: bun (not pnpm, not npm for workspace operations)
 - **Commit format**: Conventional commits (`feat:`, `fix:`, `docs:`, `refactor:`, `test:`)
 - **TypeScript**: Avoid `any` and `as T` assertions. Prefer type guards and narrowing.
-- **Compositions**: HTML files with `data-*` attributes. Clips need `class="clip"`. GSAP timelines must be paused and registered on `window.__timelines`.
+- **Compositions**: HTML files with `data-*` attributes. Clips need `class="clip"`. Register one paused GSAP root timeline per composition on `window.__timelines`. Scene timelines manually added to that root must not be paused, or they will not advance when the root is seeked.
 - **Frame Adapters**: Animation runtimes plug in via the seek-by-frame adapter pattern. GSAP is the primary adapter.
 - **Deterministic rendering**: No `Date.now()`, no unseeded `Math.random()`, no render-time network fetches.
 
