@@ -2,12 +2,6 @@
   "full_name": "WuKongIM/WuKongIM",
   "points": [
     {
-      "checked_at": "2026-08-20T04:01:46Z",
-      "commit_sha": "de10b078223d4b82f8e5da912b116747944cfc5b",
-      "pushed_at": "2026-08-16T02:48:13Z",
-      "stars": 4916
-    },
-    {
       "checked_at": "2026-08-21T04:04:13Z",
       "commit_sha": "de10b078223d4b82f8e5da912b116747944cfc5b",
       "pushed_at": "2026-08-16T02:48:13Z",
@@ -180,6 +174,12 @@
       "commit_sha": "fd0b64af1a8796edc9782db8fac44aa96fee197b",
       "pushed_at": "2026-09-16T06:29:10Z",
       "stars": 4944
+    },
+    {
+      "checked_at": "2026-09-19T08:07:22Z",
+      "commit_sha": "fd0b64af1a8796edc9782db8fac44aa96fee197b",
+      "pushed_at": "2026-09-16T06:29:10Z",
+      "stars": 4947
     }
   ],
   "repo_id": 638054601

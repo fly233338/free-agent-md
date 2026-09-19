@@ -2,12 +2,6 @@
   "full_name": "ultralytics/ultralytics",
   "points": [
     {
-      "checked_at": "2026-08-20T04:01:46Z",
-      "commit_sha": "4eb9d317b33b15239c93c34374e7d4c1dbf85a8a",
-      "pushed_at": "2026-08-20T03:49:20Z",
-      "stars": 60777
-    },
-    {
       "checked_at": "2026-08-25T04:02:47Z",
       "commit_sha": "e757c1ce1c2a079e06da8f3f8e9d180da92800a5",
       "pushed_at": "2026-08-25T03:56:02Z",
@@ -18,6 +12,12 @@
       "commit_sha": "c371882b3ba096ff03dc72c63710c4368fdecd31",
       "pushed_at": "2026-09-14T09:00:18Z",
       "stars": 61587
+    },
+    {
+      "checked_at": "2026-09-19T08:07:22Z",
+      "commit_sha": "7e633f91ce2f1d0ab0d0076b93a48e9620e88747",
+      "pushed_at": "2026-09-19T07:53:25Z",
+      "stars": 61771
     }
   ],
   "repo_id": 535360445

@@ -1,8 +1,8 @@
 # langgenius/dify instruction files
 
-Upstream: [langgenius/dify](https://github.com/langgenius/dify) · License: `NOASSERTION` · Commit: `b43889821d24636f23bd50a88e9612bd1e9b6ffe`
+Upstream: [langgenius/dify](https://github.com/langgenius/dify) · License: `NOASSERTION` · Commit: `fae098c6c0af58c23abf848b921b055255c8f729`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/langgenius/dify/AGENTS.md) | [Source](https://github.com/langgenius/dify/blob/b43889821d24636f23bd50a88e9612bd1e9b6ffe/AGENTS.md) | `b395220558d1ab59aeb658e76e334236b7feed1cef64080cb143232ef981e807` | 927 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/langgenius/dify/CLAUDE.md) | [Source](https://github.com/langgenius/dify/blob/b43889821d24636f23bd50a88e9612bd1e9b6ffe/CLAUDE.md) | `b395220558d1ab59aeb658e76e334236b7feed1cef64080cb143232ef981e807` | 927 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/langgenius/dify/AGENTS.md) | [Source](https://github.com/langgenius/dify/blob/fae098c6c0af58c23abf848b921b055255c8f729/AGENTS.md) | `b395220558d1ab59aeb658e76e334236b7feed1cef64080cb143232ef981e807` | 927 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/langgenius/dify/CLAUDE.md) | [Source](https://github.com/langgenius/dify/blob/fae098c6c0af58c23abf848b921b055255c8f729/CLAUDE.md) | `b395220558d1ab59aeb658e76e334236b7feed1cef64080cb143232ef981e807` | 927 B |

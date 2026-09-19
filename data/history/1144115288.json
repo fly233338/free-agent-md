@@ -2,12 +2,6 @@
   "full_name": "manaflow-ai/cmux",
   "points": [
     {
-      "checked_at": "2026-08-20T04:01:46Z",
-      "commit_sha": "35dc9c4f49801b7737fd1e63429b4b2fcf1938e0",
-      "pushed_at": "2026-08-20T04:01:47Z",
-      "stars": 26259
-    },
-    {
       "checked_at": "2026-08-24T04:08:25Z",
       "commit_sha": "53a60878a184d65e0ee2a00819a8d786bc9d7b37",
       "pushed_at": "2026-08-24T04:03:13Z",

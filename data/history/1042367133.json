@@ -2,12 +2,6 @@
   "full_name": "github/spec-kit",
   "points": [
     {
-      "checked_at": "2026-08-20T04:01:46Z",
-      "commit_sha": "ead30d9cfb99c07b3073afa73e7b40a64015f17f",
-      "pushed_at": "2026-08-19T22:25:02Z",
-      "stars": 130353
-    },
-    {
       "checked_at": "2026-08-21T04:04:13Z",
       "commit_sha": "17e773595e1a8ee598eb814ee70455ac883e4e99",
       "pushed_at": "2026-08-20T22:52:56Z",
@@ -180,6 +174,12 @@
       "commit_sha": "5e952140659287106580d32f242ba71365a3862b",
       "pushed_at": "2026-09-17T21:54:52Z",
       "stars": 137699
+    },
+    {
+      "checked_at": "2026-09-19T08:07:22Z",
+      "commit_sha": "d4229c071c7ea3885b43e8a7739847300f618f13",
+      "pushed_at": "2026-09-18T21:02:09Z",
+      "stars": 137879
     }
   ],
   "repo_id": 1042367133

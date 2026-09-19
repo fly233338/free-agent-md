@@ -10,6 +10,12 @@ The repository contains three products:
 
 Sections below marked "(TypeScript only)" apply to TypeScript code only; they do not apply to Rust code in `pnpm/` or `pnpr/`. Everything else applies repo-wide unless a nested `AGENTS.md` specializes it.
 
+## Project philosophy
+
+Apply [PHILOSOPHY.md](./PHILOSOPHY.md) when implementing, triaging, or reviewing
+changes. It defines the core requirements and the approach to existing
+capabilities, abstractions, compatibility, and releases.
+
 ## pnpm v12 and v11 development policy
 
 pnpm v12, implemented in Rust under `pnpm/`, is the target for new development. pnpm v11, implemented in TypeScript under `pnpm11/`, is maintained for bug fixes.
@@ -86,9 +92,20 @@ pnpm --filter pnpm run compile
 
 This runs `tsgo --build`, linting, and `pnpm run bundle` (which bundles all TypeScript packages into `pnpm11/pnpm/dist/pnpm.mjs`). Without this step, e2e tests will use a stale bundle and your changes won't be tested.
 
-## Testing (TypeScript only)
+## Testing
 
-Never run all tests in the repository as it takes a lot of time.
+Run the selection that covers what you changed, not the whole repository: the
+full suite takes a lot of time. This applies to every product here, TypeScript
+and Rust alike. Let CI run the rest — it runs the full Rust suite on
+Linux, macOS, and Windows and the full TypeScript suite for every pull request.
+The [`testing-changes`](./.agents/skills/testing-changes/SKILL.md) skill covers
+how to derive that selection from the diff in each product, and
+[`pnpm/CONTRIBUTING.md`](./pnpm/CONTRIBUTING.md#automated-checks) has the Rust
+workspace's checks, including the one case that does call for a full local run:
+a change whose affected set cannot be named, such as the workspace manifest,
+the lockfile, or the toolchain.
+
+The rest of this section is TypeScript only.
 
 Run tests for a specific project instead:
 
@@ -126,7 +143,7 @@ Do not dismiss a failing test as a "pre-existing" failure that is unrelated to y
 
 ## AI Review Guidance
 
-The repository's review framework lives in **[REVIEW_GUIDE.md](./REVIEW_GUIDE.md)** — how changes are accepted or rejected, the security-first / performance-second priorities, the security checklist and advisory regression themes, and the test/changeset/version-coverage expectations. Apply it when reviewing pull requests. (TypeScript-specific code style and engineering conventions for the CLI are documented in the "Code Style" section of this file; pacquet and pnpr follow their own `AGENTS.md` and style guides.)
+The repository's review framework lives in **[review-code review guide](./.agents/skills/review-code/references/REVIEW_GUIDE.md)** — how changes are accepted or rejected, the security-first / performance-second priorities, the security checklist and advisory regression themes, and the test/changeset/version-coverage expectations. Apply it when reviewing pull requests. (TypeScript-specific code style and engineering conventions for the CLI are documented in the "Code Style" section of this file; pacquet and pnpr follow their own `AGENTS.md` and style guides.)
 
 Security is the first review priority and performance the second. Surface only issues tied to the changed code, and explain the exploit path, impact, or hot path affected. See the guide's Security and Performance review sections for the full checklist.
 
@@ -341,9 +358,19 @@ try {
 
 ## Working with GitHub PRs, Issues, and Comments
 
--   **Open every PR with the repository template.** `gh pr create` does not apply `.github/pull_request_template.md` automatically, so read that file and pass its filled-in contents as the PR body (`--body`/`--body-file`). Keep every section (Summary, Squash Commit Body, Checklist), fill them in for this change, mark the checklist items, and remove only the lines the template says are inapplicable.
--   **Keep PR titles and descriptions current.** When pushing new changes to a PR, review the title and description and update them if they no longer accurately reflect what the PR does.
--   **Reply to and resolve review conversations.** Once a review comment has been addressed, reply to the thread with a description of the resolution including the commit hash that fixed it, then mark the conversation as resolved.
+The [`pull-requests`](./.agents/skills/pull-requests/SKILL.md) skill covers taking
+a change through a pull request: opening it from the template, waiting for the
+checks, and working the review rounds. Two rules hold whether or not it is loaded:
+
+-   **Open the PR as a draft.** CI runs on a draft in this repository and the
+    reviewers do not, so the checks and your own pass over the diff happen
+    before the first round of review. `gh pr ready <pr>` once the checks are
+    green and that pass is clean.
+-   **A push is not the end of the task.** Every push re-triggers CI and the
+    review bots. Wait for the checks and the new review round, investigate every
+    failure, verify each finding before acting on it, and push the fixes. Repeat
+    until the checks are green and a round produces nothing to act on. Handing
+    back a PR that has an unread round or a red check on it is unfinished work.
 -   **Sign all agent-authored content.** When posting a comment, creating an issue, or opening a PR, append a footer to the message indicating that it was written by an agent. The footer must include the name of the agent and the name of the model used. Example:
 
     ```markdown
@@ -353,13 +380,23 @@ try {
 
 ## Resolving Conflicts in GitHub PRs
 
-Use `shell/resolve-pr-conflicts.sh` to resolve PR conflicts:
+Use `.agents/skills/pull-requests/scripts/resolve-pr-conflicts.sh` to resolve PR conflicts:
 
 ```bash
-./shell/resolve-pr-conflicts.sh <PR_NUMBER>
+./.agents/skills/pull-requests/scripts/resolve-pr-conflicts.sh <PR_NUMBER>
 ```
 
 The script force-fetches the base branch (avoiding stale refs), rebases, auto-resolves `pnpm-lock.yaml` conflicts via `pnpm install`, force-pushes, and verifies GitHub sees the PR as mergeable. For non-lockfile conflicts it will pause and list the files that need manual resolution.
+
+## Agent Skills
+
+The repository's skills live in `.agents/skills/<name>/SKILL.md`, one directory per skill.
+
+Codex reads that directory as-is. Claude Code only looks in `.claude/skills`, so `.claude/skills` is a symlink to `../.agents/skills`. Git stores the symlink, and `.gitignore` keeps ignoring everything else under `.claude`, so a local `settings.local.json` stays untracked.
+
+Add a new skill under `.agents/skills`; nothing else needs to change.
+
+Git only writes a real symlink on Windows when the clone has `core.symlinks=true`, which needs Developer Mode or an elevated shell. Without it `.claude/skills` is checked out as a text file holding the target path, and Claude Code finds no skills. `CLAUDE.md` is a symlink to `AGENTS.md`, so such a clone loses the project instructions the same way.
 
 ## Key Configuration Files
 

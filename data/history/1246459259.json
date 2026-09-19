@@ -2,12 +2,6 @@
   "full_name": "MoonshotAI/kimi-code",
   "points": [
     {
-      "checked_at": "2026-08-20T04:01:46Z",
-      "commit_sha": "d96b4a0149f3ddf3d4910cc6eb87366dbb130ede",
-      "pushed_at": "2026-08-20T03:57:52Z",
-      "stars": 6939
-    },
-    {
       "checked_at": "2026-09-01T08:43:21Z",
       "commit_sha": "a26fca784dd726eda71e76660845b709dcf13b19",
       "pushed_at": "2026-09-01T08:41:49Z",
@@ -24,6 +18,12 @@
       "commit_sha": "53e5e3fca6bf377662bc4d61d220dde4ded8e7b7",
       "pushed_at": "2026-09-18T08:16:07Z",
       "stars": 7456
+    },
+    {
+      "checked_at": "2026-09-19T08:07:22Z",
+      "commit_sha": "7d3f88faa44d6d0294fc4964f235735e03582967",
+      "pushed_at": "2026-09-19T07:50:35Z",
+      "stars": 7494
     }
   ],
   "repo_id": 1246459259

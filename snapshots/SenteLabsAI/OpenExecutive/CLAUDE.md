@@ -210,7 +210,10 @@ cd evals && python run_evals.py --scenarios scenarios/ --output results/
 - Eval scenarios for new agents or prompt changes
 - `ruff check` and `mypy` must pass
 - Architecture docs updated per `## Architecture Docs` above (when integrations, scheduler, departments/people, caching, invariants, routing patterns, or top-level modules change)
-- Descriptive PR description explaining the change and rationale
+- PR description is three sections and nothing else: **Problem**, **Approach**,
+  **Checklist** (see `.github/PULL_REQUEST_TEMPLATE.md`). Rationale, review
+  findings and alternatives go in the commit message; open questions go in the
+  review thread. Keep the body short enough to read in one screen.
 
 ## Workflow
 

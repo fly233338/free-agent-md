@@ -2,12 +2,6 @@
   "full_name": "juicedata/juicefs",
   "points": [
     {
-      "checked_at": "2026-08-20T04:01:46Z",
-      "commit_sha": "1f6d877f8c80135f6e62b2400e79f1b817a55807",
-      "pushed_at": "2026-08-20T03:51:53Z",
-      "stars": 14343
-    },
-    {
       "checked_at": "2026-09-09T08:13:13Z",
       "commit_sha": "d5a5854c89356919439b9545ac6e7f85b7de6006",
       "pushed_at": "2026-09-09T08:08:04Z",

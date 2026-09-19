@@ -1,0 +1,12 @@
+{
+  "full_name": "hashcat/hashcat",
+  "points": [
+    {
+      "checked_at": "2026-09-19T08:07:22Z",
+      "commit_sha": "8b12054d0febd9a8477c5f6c79cabe43c0af6117",
+      "pushed_at": "2026-09-19T08:06:04Z",
+      "stars": 26804
+    }
+  ],
+  "repo_id": 47409672
+}

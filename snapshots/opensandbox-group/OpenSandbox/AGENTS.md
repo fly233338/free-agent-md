@@ -11,10 +11,11 @@ Use this file as the root router for the monorepo. Prefer the nearest `AGENTS.md
 - `components/internal/`: shared Go helpers used by runtime components
 - `sdks/`: sandbox, code-interpreter, and MCP SDKs plus generated clients
 - `specs/`: public OpenAPI contracts and examples
-- `kubernetes/`: Kubernetes operator, CRDs, task-executor, Helm charts, and Kind e2e tests
+- `kubernetes/`: Kubernetes operator, CRDs, task-executor, and Kind e2e tests
+- `manifests/charts/`: Helm charts (base, controller, server, ingress-gateway, node-agent, fast-sandbox, opensandbox umbrella)
 - `cli/`: `osb` command-line client and bundled CLI skills
 - `tests/`: cross-language end-to-end SDK tests
-- `docs/`, `examples/`, `sandboxes/`, `oseps/`: documentation, samples, images/environments, and proposals
+- `docs/`, `examples/`, `oseps/`: documentation, samples, and proposals
 
 ## Routing
 
@@ -106,7 +107,7 @@ docs/
 ### Docs conventions
 
 - Engine: VitePress. Config is a static `config.mts` with no build-time code generation.
-- All images go in `docs/public/images/`, referenced as `/images/filename` in markdown.
+- All images go in `docs/public/images/`. Reference them with a document-relative path to that directory (for example, `../public/images/filename` from `docs/guides/`) so they render in both repository previews and VitePress.
 - Every page must have YAML frontmatter with `title` and `description`.
 - Internal links use VitePress absolute paths (e.g., `/sdks/python`, `/guides/credential-vault`).
 - Links to source code or specs use full GitHub URLs.
