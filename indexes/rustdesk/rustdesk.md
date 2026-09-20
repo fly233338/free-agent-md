@@ -1,9 +1,9 @@
 # rustdesk/rustdesk instruction files
 
-Upstream: [rustdesk/rustdesk](https://github.com/rustdesk/rustdesk) · License: `AGPL-3.0` · Commit: `97811acbddf9d1e12c640bff99ea0c731b031291`
+Upstream: [rustdesk/rustdesk](https://github.com/rustdesk/rustdesk) · License: `AGPL-3.0` · Commit: `dd9b21cf866d3f67f651f0002445894ab1897530`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/rustdesk/rustdesk/AGENTS.md) | [Source](https://github.com/rustdesk/rustdesk/blob/97811acbddf9d1e12c640bff99ea0c731b031291/AGENTS.md) | `5cd3b106ea8c6e7da86b6dd5012e06ed198307ed93e96e2c02b6a12dfc916d0d` | 9,595 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/rustdesk/rustdesk/CLAUDE.md) | [Source](https://github.com/rustdesk/rustdesk/blob/97811acbddf9d1e12c640bff99ea0c731b031291/CLAUDE.md) | `336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49` | 11 B |
-| `GEMINI.md` | `GEMINI.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/rustdesk/rustdesk/GEMINI.md) | [Source](https://github.com/rustdesk/rustdesk/blob/97811acbddf9d1e12c640bff99ea0c731b031291/GEMINI.md) | `954ec5dad7eaf581ad4bfa090369b244ac0120b43722ef2efff5ba89fc52046f` | 10 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/rustdesk/rustdesk/AGENTS.md) | [Source](https://github.com/rustdesk/rustdesk/blob/dd9b21cf866d3f67f651f0002445894ab1897530/AGENTS.md) | `5cd3b106ea8c6e7da86b6dd5012e06ed198307ed93e96e2c02b6a12dfc916d0d` | 9,595 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/rustdesk/rustdesk/CLAUDE.md) | [Source](https://github.com/rustdesk/rustdesk/blob/dd9b21cf866d3f67f651f0002445894ab1897530/CLAUDE.md) | `336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49` | 11 B |
+| `GEMINI.md` | `GEMINI.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/rustdesk/rustdesk/GEMINI.md) | [Source](https://github.com/rustdesk/rustdesk/blob/dd9b21cf866d3f67f651f0002445894ab1897530/GEMINI.md) | `954ec5dad7eaf581ad4bfa090369b244ac0120b43722ef2efff5ba89fc52046f` | 10 B |

@@ -1,5 +1,34 @@
 # AutoRAG — Pi-Powered Librarian Agent
 
+## Git Workflow (binding)
+
+This checkout is one of several clones of the same repository. Those clones are the isolation boundary. **Never create a git worktree.** Do not run `git worktree add`, do not create a linked checkout, and do not isolate a PR, review, or feature in a new worktree.
+
+This section is the base workflow for this clone. If another agent skill, default, or habit (including worktree-based isolation) conflicts with it, follow this section.
+
+### Before any PR review, PR work, or new feature
+
+1. `git fetch origin`.
+2. Update local `main` to match `origin/main` (`git checkout main` then `git pull --ff-only origin main`).
+3. Check out the branch that belongs to the work, in this clone:
+   - Existing PR or existing feature branch: `git checkout <branch>` (or `gh pr checkout <n>`), then sync that branch with its remote upstream (`git pull --ff-only`).
+   - New feature: create the branch from the just-updated `main` (`git checkout -b <branch>`).
+4. Only then edit, review, or test.
+
+The work branch must be derived from latest `main`. Never start from a stale local branch, a leftover feature checkout, or detached HEAD.
+
+### After the work is finished
+
+Finished means the PR has been opened, or the review has been completed and no further edits remain in this checkout.
+
+1. Commit and push **tracked** changes only (`git add -u`, then commit, then push). This is a standing request to commit at finish — do not wait for a per-session "please commit."
+2. Do not add untracked files. `git add .` and `git add -A` are forbidden at this step. Untracked files stay untracked. If the finished work introduced new files that must ship, add those paths explicitly by name — never a recursive add of the working tree.
+3. If there is nothing tracked to commit, skip commit/push and still return to `main`.
+4. `git checkout main`.
+5. Sync local `main` with `origin/main` (`git pull --ff-only origin main`).
+
+Leave this clone on up-to-date `main` so the next session does not inherit a leftover feature branch.
+
 ## Developer Commands
 
 The repository root includes a `Makefile` for AutoRAG 2.0 validation:
@@ -11,35 +40,95 @@ The repository root includes a `Makefile` for AutoRAG 2.0 validation:
 - `make lint`, `make typecheck`, `make build` — run individual checks.
 - `make ci` — run the normal local lint, typecheck, complete test, and build sequence.
 
+## Fixed live-E2E environment (the supported procedure)
+
+Use the latest checkout's explicit, clone-local environment. Each clone owns its
+`.autorag-e2e` state, so five independent clones may run concurrently without
+sharing mutable state. Do not point two clones at the same `E2E_ROOT`.
+
+The live-E2E environment is coupled to AutoRAG's behavior. When a change
+modifies AutoRAG's major behavior or features — the agent tool surface,
+retrieval methods, datasource skills, MinSync/embedding configuration, result
+source identity rules, or the output contract — review whether the live-E2E
+environment must change too (`scripts/live-e2e/`, `test/live-e2e/`, the corpus
+manifest, preflight gates, and this procedure). A behavioral change that
+invalidates the existing cold/warm QA evidence requires regenerating that
+evidence; do not treat stale green evidence as proof for the new behavior.
+
+Prerequisites:
+
+- Node.js 24+, Bun, and the repository dependencies (`bun install --frozen-lockfile`).
+- A bootstrapped corpus root. Bootstrap is explicit; live targets never create
+  one implicitly:
+  `export AUTORAG_LIVE_E2E_ROOT="$PWD/scripts/live-e2e"`
+  `node scripts/live-e2e/runner.mjs bootstrap --root "$AUTORAG_LIVE_E2E_ROOT"`
+- The gateway profile pinned in the clone-local `.autorag-e2e` home. The
+  workflow self-ensures this via `autorag models prefetch --profile qwen3-embedding-0.6b`
+  before starting the gateway; no manual Ollama serve, TEI adapter, or model
+  pull is required.
+- `OPENAI_API_KEY` and `AUTORAG_OPENAI_API_KEY` unset. Embeddings are local
+  only; do not configure a remote embedding endpoint or send corpus text off
+  the machine.
+
+Run the cold path (fresh runner state and core local-file/MinSync verification):
+
+```bash
+make e2e-live-cold E2E_ROOT="$AUTORAG_LIVE_E2E_ROOT"
+```
+
+Run the warm path (reuse the same clone-local state after a successful cold run):
+
+```bash
+make e2e-live E2E_ROOT="$AUTORAG_LIVE_E2E_ROOT"
+```
+
+Datasource lanes run by default: with no `E2E_DATASOURCES` override the runner
+executes the `local` lane plus every native CLI lane (katok, discrawl, wacrawl,
+telecrawl, slacrawl, notcrawl, qmd, rclone, mailcrawl, and macOS Spotlight).
+`E2E_DATASOURCES` only narrows this default (e.g. `E2E_DATASOURCES=local`
+skips native lanes entirely). The summary separates the core MinSync result
+(`commandsSummary.core`) from `datasourceLanes`. Native lanes whose CLI or
+native store is missing are `SKIP` with a reason. An installed/configured
+lane whose native check fails, including a successful harness without a valid
+source-native identity, is `FAIL`; `SKIP` is never reported as PASS. On a
+host where a native store genuinely exists, its lane must run and PASS —
+leaving it `SKIP` by narrowing `E2E_DATASOURCES` is a QA gap, not a green
+run. Native lanes are expected to remain `SKIP` only when no native store is
+configured.
+Native stores, profiles, and keychains remain owned by their CLIs: the runner
+does not copy datasource data or force an AutoRAG workspace. Native datasource
+references and setup details are in `docs/manual-qa-datasources.md` and the
+individual scripts under `scripts/manual-qa/`, including the real katok harness
+at `scripts/manual-qa/run-qa-katok-live.ts`.
+
+Evidence is written to `.omo/evidence/task-6-fixed-live-e2e-environment.json`
+for this task and to the runner result directory (by default
+`.omo/evidence/live-core-cold/result.json` or `live-core-warm/result.json`).
+Evidence and diagnostics redact tokens, passwords, credentials, and absolute
+home paths. Assert local retrieval sources are absolute and readable; assert
+native datasource results retain source-native identities such as
+`/kakao/<instance>/chunks/<chunk>` (opaque slash-hierarchical, not an OS path),
+not a retired `kakao:<chat>/<sender>/<chunk>` scheme and not a fake OS-absolute
+filesystem path.
+
+Cleanup is limited to runner-owned state. The cold command removes and rebuilds
+`.autorag-e2e`; for manual cleanup, run `rm -rf .autorag-e2e` from this clone
+only. Leave katok, discrawl, crawler, qmd, rclone, mailcrawl, and Spotlight
+native stores untouched.
+Record the cleanup receipt in the task evidence; never stage `.debug-journal.md`.
+
 ## Required MinSync Live QA
 
-When validating local-file retrieval changes, run a real `minsync sync --full`
-and a semantic query with a local EmbeddingGemma model. Do not use OpenAI
-credentials or send corpus text to a remote embedding service.
+When validating local-file retrieval changes, run a real semantic query
+through the product default gateway path. Do not use OpenAI credentials or
+send corpus text to a remote embedding service.
 
-The MinSync release binary currently exposes a TEI-compatible embedder adapter
-(`tei:<model>`) while Ollama exposes `/api/embeddings` and
-`/v1/embeddings`. Start Ollama and make the local-only adapter available before
-the experiment:
+The default product path uses the AutoRAG-owned `autorag-gateway` with the
+`qwen3-embedding-0.6b` profile (1024 dimensions, no query/passage prefixes).
+The gateway is started on demand by the semantic MinSync path and stays
+loopback-only.
 
-```bash
-ollama pull embeddinggemma:latest
-ollama serve
-```
-
-Start the repository adapter, which translates MinSync's `POST /embed` request
-to Ollama's `POST /api/embeddings` request and returns the TEI response shape
-(a bare JSON array of embedding arrays):
-
-```json
-[[0.1, 0.2, "..."]]
-```
-
-```bash
-python3 scripts/manual-qa/ollama-tei-adapter.py
-```
-
-Run the isolated experiment with an EmbeddingGemma dimension of 768:
+Run the isolated experiment:
 
 ```bash
 WORKSPACE="$(mktemp -d)"
@@ -50,34 +139,63 @@ printf '%s\n' \
   > "$WORKSPACE/docs/refund-policy.txt"
 
 cd "$WORKSPACE"
-minsync init --force --format json --embedder tei:embeddinggemma:latest
-python3 - <<'PY'
-from pathlib import Path
+# Pin the model to the local cache (no Ollama, no adapter)
+AUTORAG_HOME="$WORKSPACE/.autorag-home" \
+  autorag models prefetch --profile qwen3-embedding-0.6b
 
-config = Path(".minsync/config.toml")
-text = config.read_text()
-text = text.replace(
-    "[embedder]\n",
-    '[embedder]\nbase_url = "http://127.0.0.1:18080"\n',
-)
-text = text.replace("dimension = 1536", "dimension = 768")
-config.write_text(text)
-PY
-minsync sync --full --format json
-minsync query --format json -k 5 'semantic question about refund approval'
-minsync status --format json
+# Init with the default gateway profile
+autorag init \
+  --search-paths "$WORKSPACE/docs" \
+  --force
+
+autorag refresh --method parsed,minsync --json
+autorag search --json "semantic question about refund approval"
 ```
 
 The QA gate is not complete until all of the following are observed:
 
-1. `sync --full` exits successfully and creates `.minsync/cursor.json`.
+1. `autorag refresh --method minsync` exits successfully and
+   `.minsync/cursor.json` exists under the workspace.
 2. The semantic query returns a hit for the fixture document.
 3. AutoRAG maps that hit to an OS-absolute original `source` path.
 4. `fs.existsSync(source)` and reading `source` succeed.
 5. `OPENAI_API_KEY` is unset and no request leaves the local machine.
 
-If Ollama, `embeddinggemma:latest`, or the local adapter is unavailable, report
-the exact blocking command and do not claim live MinSync verification.
+If the model prefetch fails, the gateway is unavailable, or MinSync reports a
+semantic failure, report the exact blocking diagnostic and do not claim live
+MinSync verification.
+
+### Legacy/manual variant (Ollama + TEI adapter)
+
+For an existing workspace pinned to Ollama's EmbeddingGemma (768 dimensions),
+keep the adapter available as a manually-started sidecar:
+
+```bash
+ollama pull embeddinggemma:latest
+ollama serve
+OLLAMA_EMBEDDINGS_URL=http://127.0.0.1:11434/api/embeddings \
+  python3 scripts/manual-qa/ollama-tei-adapter.py
+```
+
+Then initialize the workspace explicitly with the TEI endpoint:
+
+```bash
+cd "$WORKSPACE"
+autorag init \
+  --search-paths "$WORKSPACE/docs" \
+  --embedder-id tei:embeddinggemma:latest \
+  --embedder-base-url http://127.0.0.1:18080 \
+  --embedder-dimension 768 \
+  --minsync-max-chunk-size 1000 \
+  --force
+autorag refresh --method parsed,minsync --json
+autorag search --json "semantic question about refund approval"
+```
+
+The adapter translates MinSync's `POST /embed` request to Ollama's
+`POST /api/embeddings` request and returns the TEI response shape (a bare JSON
+array of embedding arrays). Do not use this variant as a fresh-install
+requirement or as an implicit fallback from the gateway.
 
 Docker can reproduce the Linux job on macOS, Linux, or Windows hosts. The
 `test-linux` target uses an isolated container volume for `node_modules`, so it
@@ -104,9 +222,33 @@ operations faster.
 **Primary target**: non-code document retrieval (manuals, legal docs, internal wikis, meeting notes, research literature).
 Code repositories work too. AutoRAG's value is in the exploration + retrieval methods + curation layer that sit *on top* of raw search.
 
+## Product Positioning
+
+Three core values drive every design decision. Features and PRs that conflict
+with any of them should be rejected or reshaped:
+
+1. **Never migrate your data to search it.** AutoRAG federates CLI-owned
+   stores (katok, discrawl, qmd, msgvault, rclone, …) in place. No forced
+   ingestion into a central index, no third-party server holding a copy of
+   the corpus. Results carry source-native identities
+   (`/kakao/<instance>/chunks/<chunk>`) and scope-checked access, and secrets
+   stay with the tool that owns them.
+2. **Just works — no RAG degree required.** A non-developer installs it and
+   it works: minimal configuration, no pipeline tuning, no vector-DB
+   operations, no OpenAI keys. The local embedder (EmbeddingGemma via Ollama)
+   and MinSync auto-install handle the "RAG plumbing" invisibly.
+3. **Fast by design.** One configured model owns the whole loop; retrieval
+   runs locally over MinSync CDC chunks (BM25 / vector / hybrid); interactive
+   search is optimized for low latency across several model turns.
+
+Rationale for value 1 comes from the competitive landscape study
+(see `docs/competitive-landscape-2026-09.md`): MCP-native, local-first, and
+hybrid retrieval are commoditized, while harness-free federation with
+source-native provenance is the durable differentiator.
+
 ## New CLI-backed datasource
 
-External datasource CLIs (katok, discrawl, slacrawl, qmd, rclone, himalaya,
+External datasource CLIs (katok, discrawl, slacrawl, qmd, rclone,
 crawlers) are driven **directly** with their own native stores. There is no
 AutoRAG-managed workspace/config forcing and no bash gate: the agent may run
 these CLIs through `bash` as well as through the datasource tools.
@@ -116,15 +258,16 @@ Contributors and agents adding a CLI-backed datasource must:
 - spawn the CLI with its own default store; never force
   `--workspace`/`--config`/env into an empty AutoRAG-managed directory unless
   the operator explicitly configured a workspace path;
-- keep result sources human-readable datasource identities (e.g.
-  `kakao:<chat>/<sender>/<chunk>`), never slash-prefixed fake filesystem
-  paths the agent could mistake for local files;
+- keep result sources as opaque slash-hierarchical datasource identities
+  (e.g. `/kakao/<instance>/chunks/<chunk>`), never OS-absolute fake filesystem
+  paths the agent could mistake for local files; they are not OS paths and
+  must not be passed to `bash`/`cat`;
 - provide a datasource skill with native command examples and `<binary>
   --help` guidance so the agent understands which CLI backs the datasource;
 - keep failure isolation per CLI (missing binary degrades to diagnostics,
   never crashes the search loop);
-- retain small, focused guards where they matter (e.g. katok's pre-spawn
-  remote-embedding env rejection, discrawl's user-token rejection);
+- retain small, focused guards where they matter (e.g. discrawl's user-token
+  rejection);
 - add focused tests and live manual QA where a local store exists before
   registering the datasource.
 
@@ -142,6 +285,11 @@ Raw search tools return file paths and matching lines. A human still has to open
 4. **Deliver** numbered knowledge units grounded in the sources
 5. **Learn** — remember which methods worked and adapt strategy over time
 
+The loop exists to serve the three core values above: it searches data where
+it already lives (value 1), hides the retrieval plumbing behind curated
+answers (value 2), and keeps every step local and latency-sensitive
+(value 3).
+
 ## Agent Tools
 
 The librarian agent owns the full workflow:
@@ -151,24 +299,32 @@ The librarian agent owns the full workflow:
 | `bash` | Filesystem discovery and document reading with real paths (`ls`, `find`, `grep`, `cat`, etc.) | Direct source verification |
 | `jikji_find` | Runs `jikji find ROOT "query"` and returns a policy-aware answer pack | Optional local discovery |
 | `search_all_documents` | Fan-out across configured retrieval methods and merge/rank candidates | Combined retrieval |
-| `lexical_search_local_docs` | Lexical BM25 ranking over parsed document mirrors | Exact-term retrieval |
 | `semantic_search_local_docs` | MinSync semantic/vector retrieval over parsed mirrors | Semantic retrieval |
 | `search_datasource_documents` | Search authorized external datasource skills | Server-bound datasource retrieval |
 | `check_memory` | Query past search outcomes | Adaptive strategy |
 | `load_datasource_skill` | Load instructions for an authorized datasource skill | Datasource-specific searches |
+| `scan_duplicate_documents` | Read-only dupey scan of configured local document roots | Duplicate-family review |
+| `web_search` | Internet web search through the oh-my-pi-style provider chain; credential-free by default, keyed providers via env vars with quota-fallback | Current/public web information |
+| `web_fetch` | Fetch a public http(s) URL and render it as markdown/text | Reading pages found via `web_search` or known URLs |
+| `recommend_peer_targets` | Rank local SimpleX peer personas by keyword overlap | P2P routing; never contacts peers |
+| `emit_fast_answer` | Internal non-terminating tool that delivers the fast-phase first answer | Two-phase progressive answers |
 | `emit_autorag_results` | Terminating tool that returns curated results | Final action |
+
+There is no `lexical_search_local_docs` tool. BM25 runs inside MinSync (and some datasource methods) and is reached through `search_all_documents`. `recommend_peer_targets`, `web_search`, and `web_fetch` are omitted in remote P2P sessions.
+
+`web_search`/`web_fetch` are ported from oh-my-pi's web module: a credential-free-only provider chain — model-native search reusing the agent's own model credentials (`gemini`/`anthropic`/`codex`/`xai`), the anonymous `perplexity` ask endpoint, Parallel's keyless MCP (`parallel`), then the scraped engines (`startpage`/`duckduckgo`/`ecosia`/`google`/`mojeek`, plus the `public` fan-out aggregate) with headless-browser escalation for bot challenges — where quota, auth, and bot-challenge failures automatically fall back to the next provider. No API key or signup is required; a self-hosted `SEARXNG_ENDPOINT` is the only env-gated, explicitly-advanced option. Web queries leave the machine: never include private corpus content or secrets in them.
 
 ## Architecture
 
 ```
 Agent Tools                 AutoRAGAgent (customized Pi agent)
 ┌──────────────────┐       ┌──────────────────────────────────┐
-│ bash read/search  │       │ Memory System (query history)     │
-│ retrieval tools   │  ───▶ │ Curation Layer (LLM extraction)   │
-│ search_bm25      │       │ check_memory (adaptive strategy)  │
-│ search_minsync   │       │ Manifest System (indexed stores)  │
-│ search_datasource│       │ Retrieval Registry (pluggable)    │
-│ check_memory     │       │ Result Merger (cross-method)      │
+│ bash / jikji_find │       │ Memory System (query history)     │
+│ search_all_docs   │  ───▶ │ Curation Layer (LLM extraction)   │
+│ semantic_search   │       │ check_memory (adaptive strategy)  │
+│ search_datasource │       │ Manifest System (indexed stores)  │
+│ scan_duplicates   │       │ Retrieval Registry (pluggable)    │
+│ peer_targets      │       │ Result Merger (cross-method)      │
 └──────────────────┘       │ Feedback Loop (learn from usage)  │
                            └──────────────────────────────────┘
 ```
@@ -193,7 +349,7 @@ Datasource skills are retrieval-method factories plus indexing hooks for externa
 
 CLI-backed datasources own their archive, lexical index, and vectors: KakaoTalk through the external `katok` CLI, and **Discord** through the external [`discrawl`](https://github.com/openclaw/discrawl) CLI. AutoRAG only spawns them and maps results. AutoRAG never reads KakaoTalk databases directly; failures surface as diagnostics, and remote embedding egress settings are rejected before the CLI is spawned.
 
-External crawler-backed skills cover **WhatsApp** (wacrawl), **Telegram** (telecrawl), **Slack** (slacrawl), and **Notion** (notcrawl); each crawler owns its archive, sync, credentials, and FTS search while AutoRAG provides bounded process execution, diagnostics, and retrieval mapping. The remaining connector-backed datasource skills use the shared framework (`src/datasource/connector.ts`, `chunk-store.ts`, `connector-skill.ts`): **GitHub**, **Google Drive**, **Gmail**, **local mail export**, **Obsidian** (vault via external `qmd` CLI: incremental + BM25 + semantic), **RSS/news**, and **Spotlight**. Results remain traceable and datasource access stays default-deny. Manual QA harnesses live in `scripts/manual-qa/` (see `docs/manual-qa-datasources.md`).
+External crawler-backed skills cover **WhatsApp** (wacrawl), **Telegram** (telecrawl), **Slack** (slacrawl), and **Notion** (notcrawl); each crawler owns its archive, sync, credentials, and FTS search while AutoRAG provides bounded process execution, diagnostics, and retrieval mapping. The remaining connector-backed datasource skills use the shared framework (`src/datasource/connector.ts`, `chunk-store.ts`, `connector-skill.ts`): **GitHub**, **Google Drive**, **local mail export**, **Obsidian** (vault via external `qmd` CLI: incremental + BM25 + semantic), **RSS/news**, and **Spotlight**. Gmail, IMAP, and Maildir retrieval is provided by **mailcrawl**. Results remain traceable and datasource access stays default-deny. Manual QA harnesses live in `scripts/manual-qa/` (see `docs/manual-qa-datasources.md`).
 
 ## Directory Access
 
@@ -201,10 +357,10 @@ The AutoRAG librarian navigates document collections directly with `bash`, using
 
 Model authentication stays with the configured provider or authenticated local runtime; corpus indexes remain workspace-local under `<workspace>/.autorag`.
 
-- **Tool surface** — the librarian owns `bash`, `check_memory`, `jikji_find`, the `search_*` retrieval tools, `load_datasource_skill`, and `emit_autorag_results`.
+- **Tool surface** — the librarian owns `bash`, `check_memory`, `jikji_find`, `search_all_documents`, `semantic_search_local_docs`, `search_datasource_documents`, `load_datasource_skill`, `scan_duplicate_documents`, `recommend_peer_targets` (local sessions), `emit_fast_answer`, and `emit_autorag_results`.
 - **Parsed mirrors** — `AutoRAGAgent.refresh()` parses supported files from configured source directories into `.autorag/parsed`; BM25 and MinSync index those parsed mirrors.
 - **Jikji discovery** — `jikji_find` runs `jikji find ROOT "query" --json` and returns the answer pack to the librarian; direct file reading remains available. `prepare`/`refresh` remain for indexing only; AutoRAG-managed prepare runs with `--no-agent-rules` by default so it never rewrites the consumer repo's `AGENTS.md`/`CLAUDE.md`/`.cursorrules`. An explicit `writeAgentRules: true` opt-in re-enables upstream routing-block injection.
-- **External tool auto-install** — MinSync and Jikji binaries are cached under `<workspace>/.autorag/bin`. MinSync auto-installs from verified GitHub release assets by default (`minSync.autoInstall: false` opts out). Jikji auto-installs the `jikji-cli` crate from crates.io via cargo by default (`jikji.autoInstall: false` opts out; requires the Rust toolchain). New `autorag init` configs enable Jikji by default (`jikji: {}`). The KakaoTalk `katok` and Discord `discrawl` CLIs remain manual, optional installs (`brew install openclaw/tap/discrawl`). All three degrade gracefully when missing.
+- **External tool auto-install** — MinSync and Jikji binaries are cached under `<workspace>/.autorag/bin`. MinSync auto-installs from crates.io via `cargo install minsync` by default, falling back to verified GitHub release assets when cargo is unavailable (`minSync.autoInstall: false` opts out). Jikji auto-installs the `jikji-cli` crate from crates.io via cargo by default (`jikji.autoInstall: false` opts out; requires the Rust toolchain). New `autorag init` configs enable Jikji by default (`jikji: {}`). The KakaoTalk `katok` and Discord `discrawl` CLIs remain manual, optional installs (`brew install openclaw/tap/discrawl`). All three degrade gracefully when missing.
 - **Datasource skills** — `AutoRAGAgent` can register `datasourceSkills`; their retrieval methods are merged with the normal retrieval pipeline, filtered before merging by trusted datasource access, and indexed during `refresh()`.
 
 ## Usage
@@ -253,7 +409,17 @@ AutoRAG remembers past search outcomes across sessions:
 |------|------|
 | `src/agent/agent.ts` | AutoRAGAgent class — the customized Pi agent and library API |
 | `src/agent/bash-tool.ts` | Direct filesystem discovery and document-reading tool |
+| `src/agent/fast-answer-tool.ts` | `emit_fast_answer` non-terminating tool for the fast-phase first answer |
 | `src/agent/emit-results-tool.ts` | `emit_autorag_results` terminating tool that returns curated results as typed details |
+| `src/agent/jikji-find-tool.ts` | `jikji_find` local-discovery tool |
+| `src/agent/search-all-tool.ts` | `search_all_documents` multi-method fan-out |
+| `src/agent/search-minsync-tool.ts` | `semantic_search_local_docs` MinSync vector tool |
+| `src/agent/web-search-tool.ts` | `web_search` internet search tool over the `src/web/search` provider chain |
+| `src/agent/web-fetch-tool.ts` | `web_fetch` URL reader over the `src/web/fetch` render pipeline |
+| `src/web/search/` | oh-my-pi-ported web search: provider chain, structured query parsing, keyed + credential-free providers |
+| `src/web/fetch/` | oh-my-pi-ported URL render pipeline: page loader, HTML→markdown reader chain, feeds, content negotiation |
+| `src/agent/dupey-tool.ts` | `scan_duplicate_documents` read-only dupey scan |
+| `src/agent/peer-target-tool.ts` | `recommend_peer_targets` local SimpleX persona ranking |
 | `src/agent/system-prompt.ts` | System prompt builder for the librarian agent |
 | `src/memory/memory.ts` | Feedback persistence and method priority scoring |
 | `src/memory/renderer.ts` | Memory context renderer for system prompt |
@@ -262,12 +428,16 @@ AutoRAG remembers past search outcomes across sessions:
 | `src/retrieval/types.ts` | Core retrieval type definitions |
 | `src/retrieval/registry.ts` | Method registry for multi-method orchestration |
 | `src/retrieval/merger.ts` | Cross-method result merging and deduplication |
-| `src/retrieval/methods/bm25.ts` | BM25 lexical RetrievalMethod over parsed mirrors |
+| `src/minsync/method.ts` | MinSync retrieval method (vector / BM25 / hybrid over shared CDC chunks) |
 | `src/datasource/` | Datasource skill contracts, trusted access context, result filtering, polling metadata, diagnostics, and KakaoTalk/katok skill implementation |
+| `src/p2p/` | SimpleX P2P sharing: policy, injection/PII gates, approval store, wire protocol |
+| `src/cli/commands/serve.ts` | `autorag serve` P2P peer query server |
+| `src/cli/commands/p2p.ts` | `autorag p2p` peer trust and request approval |
+| `src/cli/commands/p2p-policy.ts` | `autorag p2p policy` sharing-rule CLI |
 | `src/datasource/connector.ts` | Connector contract + opaque-text/id sanitizers for connector-backed skills |
 | `src/datasource/chunk-store.ts` | Persistent chunk store with BM25-style lexical search per skill instance |
 | `src/datasource/connector-skill.ts` | Shared DatasourceSkill base composing a connector with the chunk store |
-| `src/datasource/skills/` | Built-in skills: katok, discrawl (Discord), slack, notion, github, cloud-drive, gmail, mail-export, obsidian, rss, spotlight (+ config factory) |
+| `src/datasource/skills/` | Built-in skills: katok, discrawl, wacrawl, telecrawl, slack, clawgallery, notion, github, cloud-drive, mail-export, mailcrawl, obsidian, rss, spotlight (+ config factory) |
 | `src/agent/search-datasource-tool.ts` | `search_datasource_documents` tool with model-safe `{ query, topK?, scope? }` parameters |
 | `src/cli/commands/ui.ts` | `autorag ui` loopback dashboard for connecting and managing datasource skills |
 | `src/ui/` | Local datasource UI catalog, config store, probes, HTML, and 127.0.0.1 HTTP server |

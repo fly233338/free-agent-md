@@ -2,12 +2,6 @@
   "full_name": "ripienaar/free-for-dev",
   "points": [
     {
-      "checked_at": "2026-08-21T04:04:13Z",
-      "commit_sha": "b3c47f9b757d7b5eade495e1bc06345983c2f80a",
-      "pushed_at": "2026-08-20T14:57:38Z",
-      "stars": 132456
-    },
-    {
       "checked_at": "2026-08-22T03:58:42Z",
       "commit_sha": "7b1e6ff03ab269b364928692abe2eed1510d2cec",
       "pushed_at": "2026-08-21T14:08:38Z",
@@ -180,6 +174,12 @@
       "commit_sha": "b22af9f68e9a8ecd82a3224c4ddd6140f2ab001f",
       "pushed_at": "2026-09-18T18:29:20Z",
       "stars": 137759
+    },
+    {
+      "checked_at": "2026-09-20T08:40:26Z",
+      "commit_sha": "b22af9f68e9a8ecd82a3224c4ddd6140f2ab001f",
+      "pushed_at": "2026-09-18T18:29:20Z",
+      "stars": 137819
     }
   ],
   "repo_id": 32484381
