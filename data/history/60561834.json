@@ -2,12 +2,6 @@
   "full_name": "nextcloud/android",
   "points": [
     {
-      "checked_at": "2026-08-22T03:58:42Z",
-      "commit_sha": "50794f080e1c9132b8a7f6b97b79c2e18f068e8c",
-      "pushed_at": "2026-08-22T03:51:03Z",
-      "stars": 5520
-    },
-    {
       "checked_at": "2026-08-23T04:03:45Z",
       "commit_sha": "6ec4f5fb43393aadc02963618ea6a170978ef6e3",
       "pushed_at": "2026-08-23T03:34:55Z",

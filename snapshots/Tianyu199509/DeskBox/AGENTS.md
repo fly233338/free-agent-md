@@ -1,0 +1,11 @@
+# DeskBox development workflow
+
+- After changing application code, first stop any running `DeskBox.exe` whose executable path is under this repository, then build the affected project, and start a fresh instance from the current Debug build unless the user explicitly asks not to restart it. Stopping before the build avoids locking the output executable.
+- The canonical local development executable is `src/DeskBox/bin/Debug/net10.0-windows10.0.22621.0/DeskBox.exe`.
+- After starting DeskBox, verify that exactly the intended repository build is running and report the executable path.
+- Do not launch DeskBox from `Output`, `artifacts`, `.artifacts`, or `src/DeskBox/AppPackages` unless the user explicitly requests testing a packaged or published build.
+- Preserve unrelated user changes and release artifacts. Ask before deleting material output directories or installer packages unless the user explicitly authorizes their removal.
+- DeskBox is a packaged Windows application. Do not first run its tests with the default `AnyCPU` platform: MSIX packaging rejects a processor-neutral app-host executable. Run the test suite directly with `dotnet test .\tests\DeskBox.Tests\DeskBox.Tests.csproj --no-restore --verbosity:minimal -p:Platform=x64` (add `-p:RuntimeIdentifier=win-x64` when using architecture-specific restored assets).
+- For Release publishing, always specify a matching platform and runtime identifier from the start: `-p:Platform=x64 -p:RuntimeIdentifier=win-x64` for x64, or `-p:Platform=ARM64 -p:RuntimeIdentifier=win-arm64` for ARM64. Keep `SelfContained=false` and `WindowsAppSDKSelfContained=false` for the runtime-download installer workflow unless the user requests a self-contained build.
+- The explicit architecture rules above apply to tests and Release publishing. Continue using the canonical non-platform Debug output for the normal local restart workflow.
+- Commits and PRs carry only the user's identity (`Simon <1047078635@qq.com>`). Do not add `Co-Authored-By` trailers, `Generated with` lines, or any assistant/tool attribution to commit messages, PR bodies, or code comments. This is enforced, not advisory: the tracked `.githooks/commit-msg` hook rejects violating messages locally, and the CI `Commit message attribution check` fails the PR. On a fresh clone, activate the hooks once with `git config core.hooksPath .githooks`.

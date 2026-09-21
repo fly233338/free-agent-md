@@ -1,0 +1,12 @@
+{
+  "full_name": "prometheus/alertmanager",
+  "points": [
+    {
+      "checked_at": "2026-09-21T09:02:36Z",
+      "commit_sha": "cb3903582ab3c47a8a8a7dd4178758d2a7541716",
+      "pushed_at": "2026-09-21T08:54:23Z",
+      "stars": 8623
+    }
+  ],
+  "repo_id": 11452538
+}

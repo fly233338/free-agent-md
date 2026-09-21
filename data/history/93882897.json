@@ -2,12 +2,6 @@
   "full_name": "shader-slang/slang",
   "points": [
     {
-      "checked_at": "2026-08-22T03:58:42Z",
-      "commit_sha": "bec577b36efa6b3c6b9d3b26aa91c3e9717ee918",
-      "pushed_at": "2026-08-22T03:56:01Z",
-      "stars": 5562
-    },
-    {
       "checked_at": "2026-09-17T08:43:22Z",
       "commit_sha": "158dd4dafed857714d4107f970a97456599a3d5f",
       "pushed_at": "2026-09-17T08:43:14Z",

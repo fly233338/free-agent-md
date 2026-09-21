@@ -2,12 +2,6 @@
   "full_name": "VREMSoftwareDevelopment/WiFiAnalyzer",
   "points": [
     {
-      "checked_at": "2026-08-22T03:58:42Z",
-      "commit_sha": "725d527cb4d47f90f5b1f5e7a4d3ecad33453c2c",
-      "pushed_at": "2026-08-21T20:50:49Z",
-      "stars": 4913
-    },
-    {
       "checked_at": "2026-08-23T04:03:45Z",
       "commit_sha": "725d527cb4d47f90f5b1f5e7a4d3ecad33453c2c",
       "pushed_at": "2026-08-21T20:50:49Z",
@@ -180,6 +174,12 @@
       "commit_sha": "1cc5d9378e3935ad8b1ea50185228a105bd6ff98",
       "pushed_at": "2026-09-19T15:16:05Z",
       "stars": 4970
+    },
+    {
+      "checked_at": "2026-09-21T09:02:36Z",
+      "commit_sha": "198a70b4ea8d6a02791c9a13e5fb98b429bda476",
+      "pushed_at": "2026-09-20T21:04:53Z",
+      "stars": 4969
     }
   ],
   "repo_id": 47726042

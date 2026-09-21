@@ -2,12 +2,6 @@
   "full_name": "rust-lang/rust",
   "points": [
     {
-      "checked_at": "2026-08-22T03:58:42Z",
-      "commit_sha": "124c16e0de934595dfcdb0845cb39d2bcb8b970d",
-      "pushed_at": "2026-08-22T01:14:34Z",
-      "stars": 115752
-    },
-    {
       "checked_at": "2026-08-23T04:03:45Z",
       "commit_sha": "2f54787b636028a19294176d0fb27794452e6608",
       "pushed_at": "2026-08-23T04:01:49Z",
@@ -180,6 +174,12 @@
       "commit_sha": "feaadeeaca7db0594da854e7c8c07495341c7439",
       "pushed_at": "2026-09-20T08:38:17Z",
       "stars": 118981
+    },
+    {
+      "checked_at": "2026-09-21T09:02:36Z",
+      "commit_sha": "220b36c420c49c59923f54cd4a76634fac98a067",
+      "pushed_at": "2026-09-21T08:46:12Z",
+      "stars": 119007
     }
   ],
   "repo_id": 724712

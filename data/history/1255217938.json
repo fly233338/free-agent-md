@@ -1,5 +1,5 @@
 {
-  "full_name": "huangruiteng/loopx",
+  "full_name": "loopx-project/loopx",
   "points": [
     {
       "checked_at": "2026-08-24T04:08:25Z",
@@ -48,6 +48,12 @@
       "commit_sha": "f34671d82bfe841051095226c489aca81d47bd20",
       "pushed_at": "2026-09-16T08:37:56Z",
       "stars": 5864
+    },
+    {
+      "checked_at": "2026-09-21T09:02:36Z",
+      "commit_sha": "855c8ca0d37b0fa7a1ad9d4cff4cbb4ccd197590",
+      "pushed_at": "2026-09-21T08:55:46Z",
+      "stars": 5913
     }
   ],
   "repo_id": 1255217938
