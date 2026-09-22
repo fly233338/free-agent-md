@@ -2,12 +2,6 @@
   "full_name": "openai/openai-agents-python",
   "points": [
     {
-      "checked_at": "2026-08-23T04:03:45Z",
-      "commit_sha": "233467994fac7e7dbd868931573cc9a4302c0a16",
-      "pushed_at": "2026-08-23T04:00:15Z",
-      "stars": 28875
-    },
-    {
       "checked_at": "2026-09-20T08:40:26Z",
       "commit_sha": "4adad5e1d3ced4c8225d4b81556b6a9dca936238",
       "pushed_at": "2026-09-20T08:31:31Z",

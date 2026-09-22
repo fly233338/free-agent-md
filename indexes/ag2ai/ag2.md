@@ -1,7 +1,7 @@
 # ag2ai/ag2 instruction files
 
-Upstream: [ag2ai/ag2](https://github.com/ag2ai/ag2) · License: `Apache-2.0` · Commit: `a05ff1cb6ff4955ef252a4e0d4a27d3a32ad57f0`
+Upstream: [ag2ai/ag2](https://github.com/ag2ai/ag2) · License: `Apache-2.0` · Commit: `57814c91b568e3fe76e3478ee9d0c0229cdf5a6e`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/ag2ai/ag2/AGENTS.md) | [Source](https://github.com/ag2ai/ag2/blob/a05ff1cb6ff4955ef252a4e0d4a27d3a32ad57f0/AGENTS.md) | `b3aa0e039a718377f68f96e53b9288fe804dafa634cbfd52e3be6fd5f2c215be` | 15,478 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/ag2ai/ag2/AGENTS.md) | [Source](https://github.com/ag2ai/ag2/blob/57814c91b568e3fe76e3478ee9d0c0229cdf5a6e/AGENTS.md) | `b3aa0e039a718377f68f96e53b9288fe804dafa634cbfd52e3be6fd5f2c215be` | 15,478 B |

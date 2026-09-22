@@ -1,0 +1,12 @@
+{
+  "full_name": "strimzi/strimzi-kafka-operator",
+  "points": [
+    {
+      "checked_at": "2026-09-22T08:37:03Z",
+      "commit_sha": "477b4bed54fd264930e7a4f66b52a4ffee20d6e3",
+      "pushed_at": "2026-09-22T08:36:40Z",
+      "stars": 5937
+    }
+  ],
+  "repo_id": 58194180
+}

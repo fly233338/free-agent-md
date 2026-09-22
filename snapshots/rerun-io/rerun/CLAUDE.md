@@ -1,0 +1,227 @@
+# CLAUDE.md
+
+Guidance for LLMs working in this repo.
+
+## Project overview
+
+Rerun is a time-aware multimodal data stack and visualizations tool used in robotics, spatial AI, computer vision, and similar domains. It provides SDKs (Python, Rust, C++) for logging rich data (images, point clouds, tensors, etc.) and a Viewer for visualization.
+
+## Build system
+
+We use `pixi` for task management and dependency installation. Check `pixi.toml` for a full list of tasks.
+
+### Essential commands
+
+**Building:**
+- `pixi run py-build` - Build Python SDK into local .venv (uses uv)
+- `pixi run rerun-build` - Build native viewer (without web viewer)
+- `pixi run rerun-build-web` - Build web viewer (wasm)
+- `pixi run cpp-build-all` - Build all C++ artifacts
+
+**Running:**
+- `pixi run rerun` - Run the viewer
+- `pixi run uvpy script.py` - Run Python scripts with rerun SDK
+- `cargo run -p <package_name>` - Run specific Rust example (e.g., `cargo run -p dna`)
+
+**Code generation:**
+- `pixi run codegen` - Generate Rust/Python/C++ code from the `re_type_definitions` crate
+
+**Formatting:**
+- `pixi run rs-fmt` - Format all Rust files. Always run this after making changes.
+- `pixi run py-fmt` - Format Python files
+- `pixi run cpp-fmt` - Format C++ files
+- `pixi run toml-fmt` - Format TOML files
+
+**Testing:**
+- `cargo clippy -p <crate_name>` - Run rust checks before building
+- `cargo nextest run --all-features --no-fail-fast -p <crate_name>` - Run tests for specific crate
+  - Example: `cargo nextest run --all-features --no-fail-fast -p re_view_spatial`
+- Use `cargo nextest` (not `cargo test`) for better output + parallelism
+- Always use `--all-features` unless specific reason not to
+- Use `--no-fail-fast` to gather all failures in single run
+
+**Snapshots:**
+- **`insta` snapshots**: Text-based, run with regular Rust tests. On failure: `cargo insta review` (install: `cargo install cargo-insta`)
+- **Image comparison tests**: Render image vs checked-in reference. Uses `egui_kittest`'s `Harness::snapshot` + `TestContext` for mocking viewer.
+  - Results saved to `tests/snapshots/`, failures produce `diff.png`
+  - Update refs: `UPDATE_SNAPSHOTS=1`
+  - Update from failed CI run: `./scripts/update_snapshots_from_ci.sh`
+  - Best practices: see [egui_kittest README](https://github.com/emilk/egui/tree/master/crates/egui_kittest#snapshot-testing)
+
+### Driving a running egui UI (for agents)
+
+Two MCP servers let an agent see and click a running UI instead of guessing from code:
+
+- `rerun viewer-mcp` drives a running Rerun Viewer over gRPC. See `docs/content/reference/viewer/mcp.md`.
+- `egui-mcp` drives *any* egui app started with `EGUI_INSPECTION=1`, including our example apps and headless `egui_kittest` harnesses.
+  It exposes `attach`, `query_tree`, `click`, `type_text`, `screenshot`, `wait_for`, and friends.
+  Both are configured in the repo-root `.mcp.json`; install with `cargo install --git https://github.com/rerun-io/kittest_inspector egui_mcp`.
+
+Typical loop: start the app with `EGUI_INSPECTION=1`, call `attach` (host `127.0.0.1`, port `5719`), `query_tree` to find widgets, `click`/`type_text`, then `screenshot` with a `save_path` and look at the image.
+`egui-mcp` needs the app to paint frames: windowed apps must not be occluded on macOS, so prefer a headless harness where one exists.
+A headless `egui_kittest` harness can opt in with `egui_inspection::attach_from_env(&harness.ctx, label)`.
+Example: `EGUI_INSPECTION=1 cargo run -p re_agent_ui --example agent_app -- --headless`.
+
+## Code generation system
+
+**Critical: Never edit generated files directly.** All generated files are marked "DO NOT EDIT" at the top.
+
+### Type definition flow
+
+```
+re_type_definitions → pixi run codegen → Generated code (Rust/Python/C++) + docs (docs/content/reference/types/)
+```
+
+- Type definitions live in `crates/build/re_type_definitions/rerun/`
+  - `encodings/*.def.rs` - Low-level types (Vec3D, Mat4x4, etc.)
+  - `components/*.def.rs` - Component types (Position3D, Color, etc.)
+  - `archetypes/*.def.rs` - Archetypes (Points3D, Image, etc.)
+  - `blueprint/*.def.rs` - Blueprint system types
+- Codegen implementation is in `crates/build/re_types_builder/`
+- After modifying a definition, run `pixi run codegen` to regenerate code
+
+### Extension pattern
+
+To add custom functionality to generated types, create `_ext` files:
+- Rust: `filename_ext.rs` (automatically imported by codegen)
+- Python: `filename_ext.py` (mixed in with generated class)
+- C++: `filename_ext.cpp` (compiled and included automatically, parts of it may be marked for copy into the header by codegen)
+
+## Code conventions
+
+### General
+
+- use `…` instead of `...` <!-- NOLINT -->
+- validate various custom conventions via `pixi run lint-rerun <file>` (not passing any file will check everything)
+- Use `format!("{x}")` over `format!("{}, x)` (same in log calls etc)
+- Don't write trivial comments that add nothing new
+- In error and log messages, put the error first and any file path at the end (e.g. `Failed to import: {err}\nFile path: {path}`), never in the middle.
+  Paths can be long or sensitive, so trailing placement makes them easy to strip when copy-pasting.
+- Prose style (em vs en dash, sentence endings, casing) — see [`DESIGN.md`](DESIGN.md). In short: spaced em dash ` — `, never unspaced `word—word`, and don't use `–` as a sentence dash (it's for numeric ranges only) <!-- NOLINT -->
+- One sentence per line in markdown files.
+  Markdown joins consecutive lines into a paragraph, so rendering is unchanged — but diffs become much easier to review.
+
+## Architecture overview
+
+### Crate organization
+
+```
+crates/
+├── build/     # Code generation (re_types_builder)
+├── store/     # Data types, storage, querying
+├── top/       # User-facing SDKs and CLI
+└── viewer/    # Viewer UI and rendering
+```
+
+For more details about the architecture see `ARCHITECTURE.md`.
+
+**When adding, removing, or renaming a crate**, run `pixi run crate-graph`.
+It regenerates both the crate dependency diagram (`crate_graph.svg`) and the crate tables in `ARCHITECTURE.md` from `cargo metadata`.
+A crate's one-line description comes from the `description` field of its `Cargo.toml`.
+
+### Type system hierarchy
+
+The type system has three levels (generated from `re_type_definitions`):
+
+1. **Encodings** (`rerun.encodings.*`) - Basic types like Vec3D, Color
+2. **Components** (`rerun.components.*`) - Named semantic wrappers (Position3D, Radius)
+3. **Archetypes** (`rerun.archetypes.*`) - Collections of components (Points3D, Image)
+
+Each archetype specifies:
+- Required components (must be provided)
+- Recommended components (have good defaults)
+- Optional components (purely optional)
+
+Example: `Points3D` archetype requires `positions`, recommends `colors` and `radii`, allows optional `labels`.
+
+### Data flow
+
+```
+SDK (log archetype)
+    ↓ encode to Apache Arrow
+LogMsg (encoded data)
+    ↓ transport (gRPC/file/memory)
+re_chunk_store (indexed time series DB)
+    ↓ query
+Viewer (immediate mode rendering)
+```
+
+### Blueprint system
+
+The blueprint is the viewer's configuration layer:
+- Stored as a separate store (`re_entity_db`) with "blueprint" timeline
+- Defines: view layout, visibility, per-entity overrides, view properties
+- Uses the same type system as logged data
+- Basic blueprint path hierarchy: `/viewport/`, `/view/{uuid}/`, `/container/{uuid}/`
+
+### Visualizers
+
+Each view type (Spatial3D, TimeSeries, etc.) has registered visualizers:
+- Determine which entities/archetypes can be visualized
+- Execute per-frame: query data → process → generate render commands
+- Examples: Points3DVisualizer, LineStripsVisualizer, MeshVisualizer
+
+The viewer uses **immediate mode**: every frame, query the store and re-render from scratch.
+
+## Documentation snippets
+
+See [`docs/snippets/README.md`](docs/snippets/README.md) for running, building, finding snippets. Config in [`docs/snippets/snippets.toml`](docs/snippets/snippets.toml).
+
+## Python development workflow
+
+Python uses a separate uv-managed .venv (not pixi's conda env):
+
+```bash
+pixi run py-build              # Build rerun-sdk into .venv
+pixi run uvpy script.py        # Run Python scripts via uv
+pixi run uv run script.py      # Explicit uv run
+```
+
+The `uv` wrapper script unsets `CONDA_PREFIX` to ensure isolation from pixi's environment.
+
+## Important notes
+
+- **PyO3 Configuration**: If you see PyO3 config errors, run `pixi run ensure-pyo3-build-cfg`
+- **git-lfs**: Required for test snapshots. Install with your package manager and run `git lfs install`
+- **Immediate Mode**: The entire viewer is rendered from scratch each frame (no state management callbacks)
+- **Arrow Native**: Data is stored, transmitted, and queried as Apache Arrow arrays
+- **Multi-language**: Changes to `re_type_definitions` affect Rust, Python, and C++ simultaneously
+
+## Python docstring formatting
+
+Python API docs are built with **MkDocs + mkdocstrings** (NOT Sphinx). Never use reStructuredText (rST) syntax in Python docstrings or documentation. Use markdown instead:
+
+- **Cross-references:** Use `[`ClassName`][]` (mkdocstrings syntax), NOT `:class:`ClassName`` / `:func:` / `:meth:` (rST roles)
+- **Warnings/notes:** Use MkDocs admonitions (`!!! warning` with indented body), NOT `.. warning::` (rST directives)
+- **Deprecation notices:** Use the `@deprecated` decorator (mkdocstrings renders it automatically). Do NOT duplicate in the docstring with `.. deprecated::` or `**Deprecated:**`
+- **Code blocks:** Use markdown fenced blocks (`` ``` ``), NOT `.. code-block::`
+- **Parameter docs:** Use numpy-style sections (`Parameters`, `Returns` with `----------`), which is what the codebase already uses
+
+## Documentation system
+
+See [`docs/README.md`](docs/README.md) for the full documentation architecture.
+
+The docs span multiple sites: the main docs at `rerun.io/docs` (built from `docs/content/`), plus API reference sites for Python (MkDocs), C++ (Doxygen), and JS (TypeDoc) at `ref.rerun.io/docs/{python,cpp,js}/`.
+
+Key things to know:
+- **`docs/content/reference/types/`** is auto-generated by `pixi run codegen` from `re_type_definitions` - do not edit directly
+- **`docs/content/reference/cli.md`** is auto-generated by `pixi run man` - do not edit directly
+- **Code snippets** live in `docs/snippets/all/` with implementations in Python, Rust, and C++
+- `pixi run py-docs-serve` previews Python API docs locally
+- `pixi run -e cpp cpp-docs` builds C++ docs
+
+## Development references
+
+- [`ARCHITECTURE.md`](ARCHITECTURE.md) - Detailed architecture documentation
+- [`BUILD.md`](BUILD.md) - Full build instructions
+- [`CODE_STYLE.md`](CODE_STYLE.md) - Code style guidelines
+- [`CONTRIBUTING.md`](CONTRIBUTING.md) - Contribution guidelines
+- [`DESIGN.md`](DESIGN.md) - UI design guidelines (GUI, CLI, docs, log messages)
+- [`docs/README.md`](docs/README.md) - Documentation system (sites, builds, deployment)
+- [`rerun_py/README.md`](rerun_py/README.md) - Python SDK instructions
+
+## Contributing
+
+Don't open pull requests or issues unless explicitly asked.
+When opening or interacting with one, follow the [pull request template](.github/pull_request_template.md) or [issue templates](.github/ISSUE_TEMPLATE/), and disclose that you are an LLM.
+Let the user know that you included this disclosure.

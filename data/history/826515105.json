@@ -2,12 +2,6 @@
   "full_name": "CodebuffAI/freebuff",
   "points": [
     {
-      "checked_at": "2026-08-23T04:03:45Z",
-      "commit_sha": "fe73a0193f8a8756dbde02b877c7480155f3c6dd",
-      "pushed_at": "2026-08-23T03:56:09Z",
-      "stars": 10550
-    },
-    {
       "checked_at": "2026-08-25T04:02:47Z",
       "commit_sha": "c6113781e00c1845b2270b9f7de9e233c6983308",
       "pushed_at": "2026-08-25T04:00:51Z",
@@ -24,6 +18,12 @@
       "commit_sha": "af9dac8a6642068f146bdc4971630193409f851d",
       "pushed_at": "2026-09-18T08:13:35Z",
       "stars": 12293
+    },
+    {
+      "checked_at": "2026-09-22T08:37:03Z",
+      "commit_sha": "56bd047650b82cc87afe8a7c03876e137bd69b7d",
+      "pushed_at": "2026-09-22T08:34:57Z",
+      "stars": 12540
     }
   ],
   "repo_id": 826515105

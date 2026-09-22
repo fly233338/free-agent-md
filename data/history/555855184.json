@@ -2,12 +2,6 @@
   "full_name": "triwinds/ns-emu-tools",
   "points": [
     {
-      "checked_at": "2026-08-23T04:03:45Z",
-      "commit_sha": "0ac48e0ded57b3f8678503d4b96d076e6c52a847",
-      "pushed_at": "2026-08-23T01:49:45Z",
-      "stars": 4944
-    },
-    {
       "checked_at": "2026-08-24T04:08:25Z",
       "commit_sha": "0ac48e0ded57b3f8678503d4b96d076e6c52a847",
       "pushed_at": "2026-08-23T01:49:45Z",
@@ -179,6 +173,12 @@
       "checked_at": "2026-09-21T09:02:36Z",
       "commit_sha": "13962bd38a4b2a832fa7fc522845558360e3eb18",
       "pushed_at": "2026-09-20T04:52:29Z",
+      "stars": 4957
+    },
+    {
+      "checked_at": "2026-09-22T08:37:03Z",
+      "commit_sha": "13962bd38a4b2a832fa7fc522845558360e3eb18",
+      "pushed_at": "2026-09-21T16:06:46Z",
       "stars": 4957
     }
   ],

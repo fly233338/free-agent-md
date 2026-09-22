@@ -2,12 +2,6 @@
   "full_name": "ztxz16/fastllm",
   "points": [
     {
-      "checked_at": "2026-08-23T04:03:45Z",
-      "commit_sha": "b899da404116cedab4441206fbb36dccb573a4c8",
-      "pushed_at": "2026-08-21T10:39:19Z",
-      "stars": 4939
-    },
-    {
       "checked_at": "2026-08-24T04:08:25Z",
       "commit_sha": "b899da404116cedab4441206fbb36dccb573a4c8",
       "pushed_at": "2026-08-21T10:39:19Z",
@@ -108,6 +102,12 @@
       "commit_sha": "6d68c80c055957236459a0a324354f71f860433e",
       "pushed_at": "2026-09-09T06:22:38Z",
       "stars": 4991
+    },
+    {
+      "checked_at": "2026-09-22T08:37:03Z",
+      "commit_sha": "37fcad2bb0687b322a40e004ad55575868efede2",
+      "pushed_at": "2026-09-22T08:34:38Z",
+      "stars": 5071
     }
   ],
   "repo_id": 640177564
