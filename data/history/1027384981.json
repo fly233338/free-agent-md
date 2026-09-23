@@ -2,12 +2,6 @@
   "full_name": "langchain-ai/deepagents",
   "points": [
     {
-      "checked_at": "2026-08-24T04:08:25Z",
-      "commit_sha": "2c801537885ea511c91fc880f6f8daa0a71342be",
-      "pushed_at": "2026-08-24T04:07:58Z",
-      "stars": 28290
-    },
-    {
       "checked_at": "2026-08-26T04:05:28Z",
       "commit_sha": "9f3a1dd38f8b5dbd828d2f366e9b03dad359fadf",
       "pushed_at": "2026-08-26T04:02:27Z",
@@ -24,6 +18,12 @@
       "commit_sha": "d4e1fb3fedd56bb9bb43a3c1c4021c3340a8710f",
       "pushed_at": "2026-09-22T08:35:26Z",
       "stars": 29637
+    },
+    {
+      "checked_at": "2026-09-23T08:39:18Z",
+      "commit_sha": "786eac5b708499f36ee7d61ed6f6e1a288b74a75",
+      "pushed_at": "2026-09-23T08:36:34Z",
+      "stars": 29679
     }
   ],
   "repo_id": 1027384981

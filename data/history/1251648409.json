@@ -2,12 +2,6 @@
   "full_name": "opengeos/GeoLibre",
   "points": [
     {
-      "checked_at": "2026-08-24T04:08:25Z",
-      "commit_sha": "95ea999ed3c2d02604e2f7b42c7f13c49c0f919e",
-      "pushed_at": "2026-08-24T04:04:25Z",
-      "stars": 6648
-    },
-    {
       "checked_at": "2026-08-25T04:02:47Z",
       "commit_sha": "19f8e621bd9568d31ce21da48b4f590b68560eb5",
       "pushed_at": "2026-08-25T03:57:30Z",

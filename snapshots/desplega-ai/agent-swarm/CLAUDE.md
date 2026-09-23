@@ -1,0 +1,389 @@
+# Agent Swarm
+
+Multi-agent orchestration for Claude Code, Codex, Gemini CLI. Bun + TypeScript, `bun:sqlite` (WAL), Biome, Ink CLI.
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) to get set up. Start the server with `bun run start:http`.
+
+## Architecture invariants
+
+The API server (`src/http.ts`, `src/server.ts`, `src/tools/`, `src/http/`) is the **sole owner** of the SQLite database. Worker-side code (`src/commands/`, `src/hooks/`, `src/providers/`, `src/prompts/`, `src/cli.tsx`, `src/claude.ts`) must **never** import from `src/be/db` or `bun:sqlite`. Workers talk to the API over HTTP using the swarm API key + `X-Agent-ID` headers. Enforced by `scripts/check-db-boundary.sh` (CI).
+
+The swarm API key MUST be read via `getApiKey()` from `src/utils/api-key.ts` — never `process.env.API_KEY` / `process.env.AGENT_SWARM_API_KEY` directly. Precedence: `AGENT_SWARM_API_KEY` > `API_KEY`. Enforced by `scripts/check-api-key-boundary.sh` (CI).
+
+System prompt and task prompt text MUST go through the prompt-template registry in `src/prompts/`; do not hardcode new prompt sections with string concatenation in runners, hooks, or providers. Add or update a registered template, then resolve it from the call site.
+
+<important if="you are writing or modifying API-server code that reads or writes the database (src/be, src/http, src/tools, src/apps, src/workflows, src/heartbeat, src/scheduler)">
+
+All runtime DB access goes through the async seam: `getDbClient()` from `src/be/db.ts`. Use `await client.query<Row>(sql, params)` / `get<Row>` / `run`, and `await client.transaction(async (tx) => ...)`. Raw sync access (`getDb()`, `.prepare(`, `bun:sqlite` imports) is allowed only for the boot-path files listed in `scripts/check-async-db-seam.sh` (CI-enforced).
+
+- Client-level calls made inside a transaction callback join that transaction automatically (AsyncLocalStorage routing). Nested `transaction` calls become SAVEPOINTs.
+- `transaction` opens with `BEGIN IMMEDIATE` (write lock taken at BEGIN, with cross-process BUSY retry). Pass `{ readOnly: true }` only for SELECT-only callbacks. Boot-path code that still uses raw `db.transaction(fn)` must invoke it as `.immediate(...)`. A deferred BEGIN that reads before it writes fails with `SQLITE_BUSY_SNAPSHOT` ("database is locked") when a second process shares the file, and `busy_timeout` never retries that error.
+- Post-commit hooks (telemetry, workflow event-bus emits) MUST use `getDbClient().afterCommit(fn)`, never `queueMicrotask` or a bare `.then()`. Microtasks drain BEFORE COMMIT under async transaction callbacks, so they can observe or publish uncommitted state.
+- A missing `await` on an async DB call compiles clean in many positions and fails silently at runtime. CI catches this class via `bun scripts/check-floating-promises.ts` (statement position) and `bun scripts/check-promise-sinks.ts` (truthiness, serialization, object-literal sinks). Run both locally before pushing, next to the usual gates.
+
+</important>
+
+<important if="you are adding, changing, or using task/schedule/workflow model selection">
+
+Prefer portable `modelTier` (`smol` / `regular` / `smart` / `ultra`) for cross-harness task intent and reserve `model` for concrete provider-specific overrides. Tier defaults, env/JSON overrides, legacy alias normalization, and claim-time resolution are documented in [runbooks/model-tiers.md](./runbooks/model-tiers.md).
+
+</important>
+
+<important if="you are modifying scripts-runtime code (src/scripts-runtime/*, src/be/scripts/*, src/tools/script-*.ts, src/http/scripts.ts)">
+
+Architecture: API server owns the `scripts` + `script_versions` tables. Workers + the runtime invoke via HTTP. The runtime evaluates user-supplied TS in a `Bun.spawn` subprocess wrapped in `ulimit -v 524288 -t 60 -u 32 -f 65536 -n 64`, launched as `bun --no-orphans` (the harness dies with the API and SIGKILLs its whole descendant tree on exit; added by `buildSandboxedCommand` in `src/utils/sandboxed-process.ts`), a wall-clock AbortController (30s default; up to 5m where exposed), and a 1 MB stdout cap.
+
+Config injection: agent identity + bearer + mcpBaseUrl flow as a JSON `SwarmConfigPayload` over the subprocess **stdin** — NOT env vars. Bearer is wrapped in `Redacted<string>` inside the script; user code never unwraps. `process.env` carries only Node/Bun defaults. Loader reads the bearer via `getApiKey()` from `src/utils/api-key.ts` (never raw env).
+
+FS modes: `'none'` = per-run tmpdir (v1 only); `'workspace-rw'` returns 501 in v1 (worker dispatch is v2).
+
+SDK surface: derived from MCP tool registry at build time via `scripts/bundle-script-types.ts`. Curated allowlist in `src/scripts-runtime/sdk-allowlist.ts`.
+
+Typecheck: `script_upsert` runs `tsc --noEmit` against the generated `.d.ts`; rejects on diagnostics. Inline `script_run` skips typecheck (scratch hot path). The ambient `.d.ts` is assembled per call from a static base plus N **type contributors** (`src/be/scripts/type-contributors.ts` — connections API, MCP tools, per-app types); adding one is a parameter on `scriptSdkTypesWithGeneratedApis` / `scriptStdlibTypesWithGeneratedApis`, never a compiler-host change. Staleness posture: stored scripts are **not** re-typechecked when an app or connection changes.
+
+Boundaries: `src/scripts-runtime/` is on both `check-db-boundary.sh` (no `src/be/db` imports) and `check-api-key-boundary.sh` (must use `getApiKey()`) allowlists.
+
+Tests: `bun run test:root -- src/tests/scripts-*.test.ts`. Sandbox + timeout + abort + stdin-config + env-hygiene paths are the highest-risk surfaces — keep coverage tight.
+
+New MCP tools: when adding a tool, register it in `SDK_TOOL_NAME_MAP` (`src/scripts-runtime/sdk-allowlist.ts`) to expose it to scripts, or add it to `EXCLUDED_TOOLS` in `scripts/check-sdk-tool-registration.ts` with a reason. Enforced by CI.
+
+</important>
+
+<important if="you are modifying the extension system (src/extensions/*, src/be/extensions/*, src/http/extensions.ts, src/tools/extension-*.ts) or adding a pre/post event">
+
+Dispatch pre hooks only at entry points outside transactions. `dispatchPre()` uses `isInTransaction()` as a defensive guard.
+Add an event contract in `src/extensions/contract.ts`, then run `bun run build:extension-types`.
+Add one `dispatchPre` or `dispatchPost` call at the entry point.
+Add a fixture under `src/tests/fixtures/extensions/` and add the operator guide table row.
+Extension SDK calls use `callOrigin: "extension"`. This origin bypasses tool hooks and prevents recursion.
+Run `bun run test:root -- src/tests/extensions-*.test.ts`.
+Full rules: [runbooks/extensions.md](./runbooks/extensions.md).
+
+</important>
+
+<important if="you need to run commands to build, test, lint, start the server, or generate code">
+
+## Commands
+
+| Command | What it does |
+|---|---|
+| `bun install` | Install deps |
+| `bun run start:http` | MCP HTTP server (port 3013) |
+| `bun run dev:http` | Hot reload, portless: `https://api.swarm.localhost:1355` |
+| `bun run lint:fix` | Lint & format with Biome |
+| `bun run tsc:check` | Type check |
+| `bun run test:root` | Run root unit tests (`bun run test:root -- src/tests/<file>.test.ts` for one) |
+| `bun run e2e:ui` | Playwright UI suite: builds `apps/ui`, one seeded API per worker (`-- --grep @smoke`, `-- --no-build`) |
+| `bun run pm2-{start,stop,restart,logs,status}` | All services (API 3013, UI 5274, lead 3201, worker 3202) |
+| `bun run docker:build:worker` | Build Docker worker image (full) |
+| `bun run docker:build:worker:slim` | Build slim worker image (`--target worker-slim`, for CI/E2E) |
+| `bun run docker:build:api` | Build API server image |
+| `bun run docs:openapi` | Regenerate `openapi.json` |
+| `bun run docs:business-use` | Regenerate `BUSINESS_USE.md` (requires BU backend) |
+| `bun run build:pi-skills` | Regenerate `plugin/pi-skills/` from `plugin/commands/*.md` |
+| `bun run build:seed-skill-files` | Regenerate the seeded-skill bundled-file manifest from `templates/skills/*/files/` |
+| `docker compose -f docker-compose.local.yml up --build` | Local compose (API + lead + worker) |
+| `uvx business-use-core@latest server dev` | BU backend on :13370 |
+
+PM2: lead/worker run in Docker. On code changes: `bun run docker:build:worker && bun run pm2-restart`.
+
+</important>
+
+<important if="you are choosing between Bun and Node.js APIs, or writing shell/file/HTTP/SQLite code">
+
+Use Bun, not Node/npm/pnpm/vite:
+
+- `Bun.serve()` for HTTP/WebSocket (not express/ws)
+- `bun:sqlite` for SQLite (not better-sqlite3)
+- `Bun.file()` for file I/O (not `node:fs`)
+- `Bun.$` for shell (not execa)
+- Bun auto-loads `.env` — don't use dotenv
+
+</important>
+
+<important if="you are searching the codebase for code by intent, a symbol/identifier, or how something works">
+
+## Code Search
+
+Use `semble search` to find code by describing what it does or naming a symbol/identifier, instead of grep:
+
+```bash
+semble search "authentication flow" ./my-project
+semble search "save_pretrained" ./my-project
+semble search "save model to disk" ./my-project --top-k 10
+```
+
+Use `semble find-related` to discover code similar to a known location (pass `file_path` and `line` from a prior search result):
+
+```bash
+semble find-related src/auth.py 42 ./my-project
+```
+
+`path` defaults to the current directory when omitted; git URLs are accepted.
+
+If `semble` is not on `$PATH`, use `uvx --from "semble[mcp]" semble` in its place.
+
+If the `semble` MCP server is enabled, prefer its `search` / `find_related` tools over the CLI.
+
+To keep search output out of the main context, offload it to the `semble-search` subagent (`.claude/agents/semble-search.md`) via the `Task` tool — it runs the search/find-related loop and returns only the relevant findings.
+
+### Workflow
+
+1. Start with `semble search` to find relevant chunks.
+2. Inspect full files only when the returned chunk is not enough context.
+3. Optionally use `semble find-related` with a promising result's `file_path` and `line` to discover related implementations.
+4. Use grep only when you need exhaustive literal matches or quick confirmation of an exact string.
+
+</important>
+
+<important if="you are referencing Gemini models in tests, workflows, or examples">
+
+Default Gemini model: `google/gemini-3-flash-preview` (this is from OpenRouter).
+
+</important>
+
+<important if="you are adding or modifying database schema or migrations">
+
+File-based, forward-only SQL in `src/be/migrations/NNN_descriptive_name.sql`. Runner auto-applies on startup.
+
+Test against a fresh DB (`rm agent-swarm-db.sqlite && bun run start:http`) **and** an existing one. Never modify an applied migration — create a new one. No `down` migrations (SQLite rollbacks flake). Keep `AgentTaskSourceSchema` in `src/types.ts` in sync with SQL CHECK constraints.
+
+Before adding a migration, check its ordinal against `main`'s tail and every other open PR that adds one. `scripts/check-migration-conflicts.sh` (CI-enforced) checks uniqueness, base-branch immutability, **and** that every migration added since the base branch sorts strictly above the base branch's tail — so a migration numbered against a stale `main` fails CI instead of silently landing behind it. A duplicate ordinal is applied once and silently skipped by the runner; a gap is harmless, but a duplicate is dangerous.
+
+</important>
+
+<important if="you are adding or editing an agent skill (skills/, templates/skills/, or src/be/seed-skills/)">
+
+Full authoring guide, the four delivery paths, versioning semantics, and every enforced rule: [runbooks/skills.md](./runbooks/skills.md).
+
+**The rule that matters: one skill name must not be both seeded and baked.** `templates/skills/<name>/` (DB-seeded) and an image-baked skill (such as a pinned `npx skills` install) both write `~/.claude/skills/<name>/SKILL.md`. The DB copy wins, the baked content is silently discarded, and the FS writer then prunes any bundled file with no `skill_files` row. That truncated `artifacts` / `kv-storage` / `pages` and deleted their examples in production. `plugin/skills/` is retired for skills; `plugin/commands/`, `plugin/agents/`, and `plugin/pi-skills/` remain baked.
+
+**Public operator skills use the fourth delivery path:** `skills/<name>/SKILL.md`, installed with `npx skills add desplega-ai/agent-swarm`. They guide the operator's coding agent. Never seed or bake them.
+
+Keep `skills/agent-swarm/SKILL.md` valid and `skills/` nonempty. Otherwise, the installer's fallback scan exposes internal skills. Keep maintainer skills canonical in `.claude/internal-skills/`, with symlinks in harness skill directories. Run `bun run check:operator-skill` after changing public skills or their referenced files.
+
+**Prefer `templates/skills/`** — seeded skills are live-updatable (no image rebuild), listed by the skills API, editable in the UI, per-agent toggleable, and version-tracked with user-edit preservation.
+
+```
+templates/skills/<name>/
+  config.json          # name (= directory), description, runAllSeedersCandidate, systemDefault
+  content.md           # SKILL.md body — NO frontmatter (generated from config.json)
+  files/               # optional bundled files → skill_files rows
+```
+
+- New skill → add **static** `config.json` + `content.md` text-imports to `BUILT_IN_SKILL_SOURCES` in `src/be/seed-skills/index.ts`. Static because the API runs from a compiled binary and `templates/` only exists in the Dockerfile builder stage.
+- Touched `files/`? → `bun run build:seed-skill-files`, commit `bundled-files.generated.json` (never hand-edit it).
+- A `SKILL.md` beside a `content.md` is a generated artifact of `config.json` + `content.md`; never hand-edit it. `bun run build:skill-md` regenerates it and CI rejects drift via `check:skill-md`.
+- Edited `content.md` or `config.json` in a directory with a `SKILL.md`? → `bun run build:skill-md` and commit the generated file.
+- Verify: `bun run check:skill-sources && bun run check:skill-md && bun run check:seed-skill-files` (all CI-enforced via the **Seeded Skills Check** job).
+
+</important>
+
+<important if="you are adding or modifying CLI commands or CLI help text">
+
+CLI help lives in `src/cli.tsx` — plain `console.log`, not Ink. To add/modify: update `COMMAND_HELP`, add to the `commands` array in `printHelp()`, then route in the `App` switch (UI commands) or before `render()` (non-UI). Verify with `bun run src/cli.tsx help` and `bun run src/cli.tsx <command> --help`.
+
+</important>
+
+<important if="you are adding or modifying HTTP API endpoints or REST routes">
+
+Always use the `route()` factory from `src/http/route-def.ts` — auto-registers in OpenAPI. Do **not** use raw `matchRoute`.
+
+Every **non-GET** route must declare its RBAC posture on the def: `rbac: { permission: "<verb>" }` (handler gates via `can()`) or `rbac: { ungated: "<reason>" }`. Enforced by `bun run check:rbac-coverage` (CI); new verbs register in `src/rbac/permissions.ts` + `src/rbac/legacy-policy.ts`.
+
+Every **2xx** response (except bodiless 204/205) must declare `schema: <zod>` — sent via the handle's typed `<route>.respond(res, 200, data)`, never `json()` — or `unstructured: "<reason>"` for non-JSON bodies (SSE, binary, redirects, proxied payloads). Enforced by `bun run check:openapi-response-coverage` (CI). Reuse the named entity schemas from `src/types.ts` (they emit `$ref`s); untyped 4xx/5xx default to the shared `ErrorResponse` envelope automatically.
+
+After adding a handler FILE: also add the import to `src/http/all-routes.ts`, then run `bun run docs:openapi` and commit `openapi.json`.
+
+</important>
+
+<important if="you are adding or modifying MCP tools in src/tools/">
+
+Tools return a `SwarmToolResult` (`toolOk(message, extras?)` / `toolErr(message, extras?)` from `src/tools/utils.ts`) — **never** a raw `CallToolResult`. The registrar (`createToolRegistrar`) is the sole place that builds `content`/`structuredContent`/`isError`; a tool that hand-builds those fields bypasses the both-channels-consistency guarantee.
+
+- `message` summarizes the outcome (required, non-empty); `details` carries the payload the model actually needs to act on (diagnostics, stderr, a rendered table) — not just a count.
+- Declare `outputSchema` via `swarmToolOutputSchema(dataShape?)` — loose (`z.looseObject`), every data field optional, no `.uuid()`/`.email()`/format pins on OUTPUT fields (double-validated by our SDK + opencode's client; a strict/pinned schema rejects an honest response after the side effect already landed). Input schemas may stay strict.
+- Conditional one-sentence steers go in the central `NUDGES` map in `src/tools/utils.ts`, not ad-hoc per-tool strings.
+- Do not hand-truncate `details` or move a large payload to only one channel. For agent-facing calls, the registrar measures the composed wire result, spills overflow to 24-hour `mcp:overflow:<agentId>` KV, and puts the same bounded pointer on both channels. Calls made through `ctx.swarm.*` are marked as script-internal and bypass the model-context ceiling; the script SDK instead streams responses through a separate 64 MiB hard guard that throws on overflow. `kv-get` is spill-exempt (it's the retrieval path — big values come back whole and the harness truncates natively); steer big-value processing toward scripts via nudges, not server-side chunking.
+
+Full contract, the per-harness verified matrix, and the validation gate: [runbooks/mcp-tool-results.md](./runbooks/mcp-tool-results.md).
+
+</important>
+
+<important if="you are bumping the version in package.json">
+
+Two artifacts derive from `package.json`'s `version`: `openapi.json` + `docs-site/content/docs/api-reference/**` (embed it) and `charts/agent-swarm/Chart.yaml` (`version`/`appVersion` must match). CI fails the `OpenAPI Spec Freshness Check` and the chart-version sync check on a bump without regenerating them.
+
+On every version bump: run `bun run prepare-release` (runs `sync-chart-version` + `docs:openapi`) and commit ALL regenerated files alongside the bump. Releasing itself is automated — merging the bump to `main` publishes Docker/npm/E2B/GitHub release. Full flow: [runbooks/release.md](./runbooks/release.md).
+
+</important>
+
+<important if="you are creating or modifying workflows, or using the create-workflow tool">
+
+Workflows are DAGs of nodes connected via `next`. Common gotcha: upstream outputs are **not** available unless you declare an `inputs` mapping. The reusable scripts catalog is available through `swarm-script` nodes; keep it distinct from the existing inline `script` runner. Full reference — cross-node data, structured output, interpolation, agent-task config fields, `script` vs `swarm-script`: see [runbooks/workflows.md](./runbooks/workflows.md).
+
+</important>
+
+<important if="you are creating or modifying a workflow's triggerSchema, or writing tools/UI that author it">
+
+See [runbooks/workflows.md § Trigger schema](./runbooks/workflows.md#trigger-schema) for the supported JSON-Schema subset and authoring paths. Validator subset is `type` / `required` / `properties` / `enum` / `const` / `items`; other keywords (`oneOf`, `anyOf`, `$ref`, `pattern`, `format`, `additionalProperties`, …) are silently ignored.
+
+</important>
+
+<important if="you are adding business-use instrumentation or events">
+
+See [BUSINESS_USE.md](./BUSINESS_USE.md) for flow diagrams. Flows: `task` (runId = taskId), `agent` (runId = agentId), `api` (runId = per-boot ID).
+
+- Use `ensure()` (auto-picks act vs assert based on whether a validator is present).
+- Place calls **after** successful state mutations, **outside** transactions when possible.
+- Validators must be self-contained — only reference `data` and `ctx` params, never closure variables (they get serialized).
+- Worker-side events use `depIds` pointing at server-side events in the same flow.
+- SDK no-ops if `BUSINESS_USE_API_KEY` is missing.
+
+</important>
+
+<important if="you are editing Dockerfile or Dockerfile.worker, adding/bumping a global dep in /opt/global-deps, or trying to reduce image size">
+
+Rules + traps before you change anything: [runbooks/docker-images.md](./runbooks/docker-images.md).
+
+Top rules — internalize these before editing:
+- **`Dockerfile.worker` is multi-target**: `worker-base` → `worker-slim` (CI/E2E, published as `:slim`) and `worker-full-base` → `worker-full` (default `:latest`, MUST stay the last stage). Repo-artifact COPYs live in a duplicated "leaf block" in both leaf stages — keep the two blocks identical. New heavy tools go in `worker-full-base` unless boot-critical; guard full-only tools in `docker-entrypoint.sh` with `command -v`. The PR merge gate builds only `worker-slim` — build `worker-full` locally when you touch full-only stages.
+- **Skills install via pinned `npx skills`, not plugin marketplaces** (the context-mode claude/codex plugins are the only marketplace exception — they ship hooks). Pin sources to tags; keep the `test -e .../SKILL.md` asserts.
+- **Never `chown -R /home/worker` in its own layer** — it duplicates the full HOME (multi-GB layer). Either don't pollute HOME under `USER root`, or chown in the same RUN as the install.
+- **`ENV HOME=/home/worker` survives `USER root`** — `npm install` / `playwright install` / curl-pipe-bash under root will dump caches into `/home/worker/.{npm,cache}`. Override `HOME=/root` and redirect caches (`NPM_CONFIG_CACHE=/tmp/...`, `PLAYWRIGHT_BROWSERS_PATH=/opt/playwright`) inline, then clean in the same RUN.
+- **`npm overrides` only apply at the install root** — monorepo root overrides do NOT travel with packages published to npm. To stub a transitive bloater (e.g. chromadb, onnxruntime variants) for a globally-installed dep, put the override in `/opt/global-deps/package.json` (base) or `/opt/global-deps-full/package.json` (full extras) inside the Dockerfile, not in the source repo.
+- Always measure: `docker history <img> --format "{{.Size}}\t{{.CreatedBy}}" | sort -h -r | head -10`.
+
+</important>
+
+<important if="you are writing code that logs, prints, stores, or transports sensitive values (secrets, tokens, OAuth creds, API keys, DB URLs, webhook payloads)">
+
+Any path emitting to logs, stdout/stderr, the `session_logs` table, or `/workspace/logs/*.jsonl` MUST go through `scrubSecrets` from `src/utils/secret-scrubber.ts` at the **egress** point. Never print raw env values, credential-pool entries, OAuth payloads, webhook bodies, or tool output that may embed tokens.
+
+Cache refresh, coverage rules, and how to add a new secret shape: see [runbooks/secret-scrubbing.md](./runbooks/secret-scrubbing.md).
+
+</important>
+
+<important if="you are setting up local development, configuring environment variables, or running the server locally">
+
+Full setup — env files, env vars, OAuth flows (Linear/Jira/Codex), portless dev, secrets encryption, curl examples, Docker Compose: see [runbooks/local-development.md](./runbooks/local-development.md).
+
+Quick reference:
+- Auth: `Authorization: Bearer ${AGENT_SWARM_API_KEY}` (preferred — falls back to legacy `API_KEY`; default `123123`). Read it in code via `getApiKey()` from `src/utils/api-key.ts` — direct `process.env.API_KEY` access is rejected by `scripts/check-api-key-boundary.sh`.
+- Server URL: `MCP_BASE_URL` (default `http://localhost:3013`).
+- Provider: `HARNESS_PROVIDER=claude|pi|codex|devin|claude-managed`. `claude-managed` runs in Anthropic's cloud sandbox — requires `ANTHROPIC_API_KEY`, `MANAGED_AGENT_ID`, `MANAGED_ENVIRONMENT_ID`, an HTTPS-public `MCP_BASE_URL`, and the one-time `bun run src/cli.tsx claude-managed-setup` step. The `apps/ui/` integrations dashboard surfaces the same config (Phase 7). See [runbooks/local-development.md § Claude Managed Agents](./runbooks/local-development.md#claude-managed-agents).
+- Disable integrations: `SLACK_DISABLE` / `GITHUB_DISABLE` / `JIRA_DISABLE` / `LINEAR_DISABLE=true`.
+
+</important>
+
+<important if="you are adding a new operator-facing env var (feature flag, threshold, default), or modifying the dashboard /settings/configuration page">
+
+Operator-tunable env vars are surfaced on the dashboard **Settings → Configuration** page, driven by the catalog in `apps/ui/src/lib/configuration-catalog.ts`. When you add such a var:
+
+- Register it in the catalog: pick a group (Steering, Memory, Heartbeat, Harness, Integrations, Security, Workflows, Branding — or add a group), a `kind` (`boolean` / `enum` / `number` / `string`), `defaultValue`, description, and a `docsUrl` when a docs page covers it.
+- Values persist as **global-scope `swarm_config` rows** via PUT `/api/config`. Precedence: stored values win over the deployment env, both at boot and after reload (global upserts trigger a debounced auto-reload server-side); reserved keys stay env-only. If the var is only read at server startup, set `restartRequired: true`.
+- Constrained values should get a validator in `VALIDATED_KEYS` in `src/be/swarm-config-guard.ts`.
+- NEVER add secrets/credentials or reserved keys (`API_KEY`, `SECRETS_ENCRYPTION_KEY`) to the catalog — those belong on the Secrets/Integrations pages.
+- Update the docs page [docs-site/.../ui/configuration.mdx](./docs-site/content/docs/(documentation)/ui/configuration.mdx) in the same PR.
+
+</important>
+
+<important if="you are writing or running tests, drafting a plan with verification / E2E / QA steps, or preparing a frontend PR (apps/ui/, apps/templates-ui/)">
+
+Hub: [runbooks/testing.md](./runbooks/testing.md) — routes to LOCAL_TESTING.md, agent-browser UI verification, swarm-local-e2e skill, memory tests, Slack E2E.
+
+Hard rules:
+- Plan-mode verification steps MUST copy real commands from LOCAL_TESTING.md; don't paraphrase.
+- The black-box runner and optional `--harness` legs are documented in `LOCAL_TESTING.md` under `Black-box E2E`. The Playwright UI suite (`bun run e2e:ui`, `packages/ui-e2e`) is under `UI E2E`; its workflow `ui-e2e.yml` is informational.
+- Frontend PRs (`apps/ui/`, `apps/templates-ui/`) MUST include screenshots of the change running locally and a recording for interaction/flow changes (navigation, form, modal, drag, animation, or multi-step flow), captured with `agent-browser` and uploaded to agent-fs (signed URLs in the PR body). Screenshots remain required for static/layout changes. Never `qa-use` unless explicitly asked. This is a reviewer convention; no CI job enforces it. Commands: the `agent-browser` skill and [LOCAL_TESTING.md § When you need to verify a UI change](./LOCAL_TESTING.md#when-you-need-to-verify-a-ui-change).
+- E2E/test agents MUST use valid UUID agent IDs (e.g. `AGENT_ID=$(uuidgen)`), never slugs like `e2e-lead` — several MCP tool *output* schemas pin `yourAgentId`/`task.agentId` to UUID, so slug-ID agents get `MCP error -32602: Output validation error` on `get-tasks`/`get-task-details`/`store-progress`/`memory-search` **after the write already landed** (retrying double-writes).
+- Tests MUST NOT hard-code ports. CI runs `bun test --parallel=4` (one worker process per file), so two files with the same literal collide. Use `src/tests/test-net.ts`: `listenOnFreePort(server)` for in-process `node:http` servers, `port: 0` + `server.port` for `Bun.serve`, `getFreePort()` + `waitForServer()` for spawned `src/http.ts` children. No global test retry: a timing-sensitive test opts in with `test(name, fn, { retry: 2 })` plus a comment.
+
+</important>
+
+<important if="you are sending a task to the swarm, or testing Slack integration manually or via E2E">
+
+**Reaching the swarm depends on the target:**
+
+- **LOCAL / dev agent-swarm (Slack):** Dev channel `#swarm-dev-2` (`C0AR967K0KZ`), bot `@dev-swarm` (`U0ALZGQCF96`). Send `slack_send_message(channel_id: "C0AR967K0KZ", message: "<@U0ALZGQCF96> hi")` via the Slack MCP tool to trigger the bot handler → task-assignment flow.
+- **PRODUCTION / deployed swarm (MCP):** use the swarm-user MCP `mcp__agent-swarm-user__send-task` (creates an unassigned task in the production pool; read results with `mcp__agent-swarm-user__get-tasks`). Do **NOT** use the dev Slack channel for production swarm work. The MCP may not be enabled in every session — check for `mcp__agent-swarm-user__*` first.
+
+</important>
+
+<important if="you are preparing a commit, push, or pull request — or CI just failed and you need to know why">
+
+Mirror what `.github/workflows/merge-gate.yml` runs. Full job-by-job breakdown, drift checks, lockfile rules, and "why CI fails" list: [runbooks/ci.md](./runbooks/ci.md).
+
+Quick checklist (run from repo root):
+
+```bash
+bun install --frozen-lockfile
+bun run lint           # NOT lint:fix — CI runs `lint` (read-only)
+bun run tsc:check
+bun run test:root -- --parallel=4     # CI: 2 shards x --parallel=4, balanced by cached --timings
+bun run e2e                          # black-box contract suite: boots the API on a free port, no Docker, no LLM
+bun run e2e:ui                       # Playwright UI suite: seeded API per worker, headless Chromium, needs Node 22+
+bun run check:bun-version             # Dockerfile oven/bun tags == package.json packageManager
+bash scripts/check-db-boundary.sh
+bash scripts/check-test-spawn-sync.sh # tests must use runChild(), never Bun.spawnSync
+bash scripts/check-audit-columns.sh   # new tables need created_by/updated_by or a .non-audit-tables entry
+bun run check:dep-graph
+```
+
+Drift checks — run only if you touched the trigger files, MUST commit any regenerated output:
+
+- Edited `plugin/commands/*.md`? → `bun run build:pi-skills`
+- Edited `content.md` or `config.json` under `templates/skills/` in a directory with a `SKILL.md`? → `bun run build:skill-md` and commit the generated file
+- Added/edited a file under `templates/skills/*/files/`? → `bun run build:seed-skill-files` and commit `src/be/seed-skills/bundled-files.generated.json` (NEVER hand-edit that JSON)
+- Edited `src/be/scripts/typecheck.ts` or `src/scripts-runtime/sdk-allowlist.ts`? → `bun run build:script-types` and commit `src/scripts-runtime/types/*.d.ts` (NEVER edit those `.d.ts` files directly — they're generated from `typecheck.ts`)
+- Edited an HTTP route OR bumped `package.json` `version`? → `bun run docs:openapi` (regenerates `openapi.json` AND `docs-site/content/docs/api-reference/**`)
+- Touched `apps/ui/` — or root `bun.lock`/`package.json`/`bunfig.toml` (ui deps resolve from the root lock)? → `cd apps/ui && bun install --frozen-lockfile && bun run lint && bunx tsc -b` (CI uses `tsc -b`, not `--noEmit`)
+- Touched `Dockerfile` / `Dockerfile.worker` / `apps/evals/Dockerfile` / files they COPY (incl. `bunfig.toml`, member `package.json`s, `.dockerignore`)? → `docker build -f <Dockerfile> .` — CI builds all three images
+
+Frontend (`apps/ui/`, `apps/templates-ui/`) PRs additionally require screenshots (including static/layout changes) and a recording for interaction/flow changes (navigation, form, modal, drag, animation, or multi-step flow), uploaded to agent-fs with signed URLs in the PR body. This is a reviewer convention, not a CI gate. Commands: the `agent-browser` skill and [LOCAL_TESTING.md § When you need to verify a UI change](./LOCAL_TESTING.md#when-you-need-to-verify-a-ui-change).
+
+</important>
+
+<important if="you are modifying memory system code (src/be/memory/, src/be/embedding.ts, src/tools/memory-*.ts, src/http/memory.ts, or src/tools/store-progress.ts memory sections)">
+
+Architecture, key files, and full test commands: see [runbooks/memory-system.md](./runbooks/memory-system.md). Always run all four memory test files after any change.
+
+</important>
+
+<important if="you are modifying harness-provider code (src/providers/*, src/commands/runner.ts provider dispatch, src/prompts/*, docker-entrypoint.sh provider branches, or adding a new provider)">
+
+Same-PR doc-update rule + new-provider checklist: [runbooks/harness-providers.md](./runbooks/harness-providers.md). Canonical conceptual reference: [docs-site/.../guides/harness-providers.mdx](./docs-site/content/docs/(documentation)/guides/harness-providers.mdx).
+
+</important>
+
+<important if="you are modifying cost or context tracking code (src/providers/*-adapter.ts, src/utils/context-window.ts, src/be/seed-pricing.ts, src/http/session-data.ts, src/http/context.ts, or pricing/context columns in src/be/migrations/)">
+
+Adapter emits CostData + context_usage → API recomputes USD against the seeded `pricing` table → row tagged `costSource` ('harness' / 'pricing-table' / 'unpriced') → UI badge. Unified context formula is `input + cache_read + cache_create + output` (see `computeContextUsedUnified`).
+
+Same-PR doc-update rule: update [docs-site/.../guides/cost-and-context-computation.mdx](./docs-site/content/docs/(documentation)/guides/cost-and-context-computation.mdx) AND [src/providers/pricing-sources.md](./src/providers/pricing-sources.md) when the contract changes. The pricing-table comes from `src/be/modelsdev-cache.json` (symlinked into `apps/ui/src/lib/modelsdev-cache.json` for the UI model picker); refresh via `bun run scripts/refresh-modelsdev-pricing.ts` and commit the snapshot.
+
+</important>
+
+<important if="you are creating or modifying eval scenarios, rubrics, or fixtures (apps/evals/scenarios/*, apps/evals/scenarios/fixtures/*)">
+
+Full rulebook: [apps/evals/SCENARIO-AUTHORING.md](./apps/evals/SCENARIO-AUTHORING.md). Non-negotiables: **deterministic-first** (a judge is the last resort and never the tier discriminator); **never penalize MANDATORY behavior** (audit every negative check — can a correct run trip it?); **grade artifacts the MODEL controls** (child tasks, merged report — NOT config/timing-dependent system emissions); **de-risk pilot before building an axis** (prove discrimination on ONE dimension × TWO tiers, ~$4, read the dimension gap + whether its CI excludes 0). Validate with `cd apps/evals && bun src/cli.ts registry` + a rubric unit test against a synthetic JudgeContext; the deployed swarm proposes (never runs E2B itself — it costs money).
+
+</important>
+
+<important if="you are modifying heartbeat, crash-recovery, or task-assignment/routing logic (src/heartbeat/*, src/tasks/worker-follow-up.ts resume/remediation, the pool/claim path in src/http/poll.ts + src/be/db.ts, or any stall/liveness/reaper threshold)">
+
+[runbooks/heartbeat-crash-recovery.md](./runbooks/heartbeat-crash-recovery.md) is the canonical flow reference — the heartbeat sweep, the stalled-task classifier, and the crash-recovery routing heuristic, with mermaid diagrams + pseudocode. It stores **only the current behavior (no history)**. Update it in the **same PR** whenever you change any of this logic so the diagrams/pseudocode stay true.
+
+</important>
+
+## Related
+
+- [runbooks/db-retention.md](./runbooks/db-retention.md) — opt-in retention for non-critical SQLite log tables
+- [runbooks/extensions.md](./runbooks/extensions.md): extension lifecycle, dispatch, identity, and failure rules
+- [runbooks/](./runbooks/) — ci, release, local-development, testing, k8s-test-cluster, workflows, skills, memory-system, secret-scrubbing, harness-providers, seed-scripts, heartbeat-crash-recovery, extensions
+- [LOCAL_TESTING.md](./LOCAL_TESTING.md) — unit / E2E / entrypoint / MCP / UI testing recipes
+- [BUSINESS_USE.md](./BUSINESS_USE.md) — flow diagrams and instrumentation
+- [MCP.md](./MCP.md) — MCP tools reference
+- [DEPLOYMENT.md](./DEPLOYMENT.md) — production deployment
+- [CONTRIBUTING.md](./CONTRIBUTING.md) — dev setup
+- [docs-site/.../guides/](./docs-site/content/docs/(documentation)/guides/) — secrets encryption, harness providers, integrations

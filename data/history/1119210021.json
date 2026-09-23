@@ -2,12 +2,6 @@
   "full_name": "smol-machines/smolvm",
   "points": [
     {
-      "checked_at": "2026-08-24T04:08:25Z",
-      "commit_sha": "4bbc180174a8cccc1d6732cb98de64b88347dbed",
-      "pushed_at": "2026-08-24T03:58:15Z",
-      "stars": 5661
-    },
-    {
       "checked_at": "2026-09-06T07:57:27Z",
       "commit_sha": "de1a38993ef1b86bf417119d327adfd99934b6fd",
       "pushed_at": "2026-09-06T07:44:39Z",

@@ -1,7 +1,7 @@
 # earendil-works/pi instruction files
 
-Upstream: [earendil-works/pi](https://github.com/earendil-works/pi) · License: `MIT` · Commit: `95fbc04997eaee961eb673fa7923e9220609ebd5`
+Upstream: [earendil-works/pi](https://github.com/earendil-works/pi) · License: `MIT` · Commit: `b313731b80ff0b8616e327fdeb114f25addb91fc`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/earendil-works/pi/AGENTS.md) | [Source](https://github.com/earendil-works/pi/blob/95fbc04997eaee961eb673fa7923e9220609ebd5/AGENTS.md) | `253b9077f02686d4ed56aab0cf67c34e8f49da2e05fa847e0b722853a0307db1` | 8,277 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/earendil-works/pi/AGENTS.md) | [Source](https://github.com/earendil-works/pi/blob/b313731b80ff0b8616e327fdeb114f25addb91fc/AGENTS.md) | `5c77ccff59a6994654f21acc6ded3da99c366a47574fc5012e0d5e76f1696fd9` | 8,485 B |

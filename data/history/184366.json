@@ -2,12 +2,6 @@
   "full_name": "opal/opal",
   "points": [
     {
-      "checked_at": "2026-08-24T04:08:25Z",
-      "commit_sha": "aa27f642c27fc902bb857c111c66b170b3bfa82f",
-      "pushed_at": "2026-08-17T09:19:22Z",
-      "stars": 4927
-    },
-    {
       "checked_at": "2026-08-25T04:02:47Z",
       "commit_sha": "aa27f642c27fc902bb857c111c66b170b3bfa82f",
       "pushed_at": "2026-08-17T09:19:22Z",
@@ -117,6 +111,12 @@
     },
     {
       "checked_at": "2026-09-22T08:37:03Z",
+      "commit_sha": "3ee76d73433ef3e843ff918501e528818d3daf01",
+      "pushed_at": "2026-09-13T11:16:38Z",
+      "stars": 4926
+    },
+    {
+      "checked_at": "2026-09-23T08:39:18Z",
       "commit_sha": "3ee76d73433ef3e843ff918501e528818d3daf01",
       "pushed_at": "2026-09-13T11:16:38Z",
       "stars": 4926

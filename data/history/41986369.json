@@ -2,12 +2,6 @@
   "full_name": "pingcap/tidb",
   "points": [
     {
-      "checked_at": "2026-08-24T04:08:25Z",
-      "commit_sha": "6eff5759c9b96129c90917b8dfd1d5d8c0f65881",
-      "pushed_at": "2026-08-24T04:02:52Z",
-      "stars": 40462
-    },
-    {
       "checked_at": "2026-09-06T07:57:27Z",
       "commit_sha": "f2c346fe4f368ff855e17c1f62e28a89ba7f9723",
       "pushed_at": "2026-09-06T07:51:13Z",
