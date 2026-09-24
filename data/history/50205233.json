@@ -2,12 +2,6 @@
   "full_name": "debezium/debezium",
   "points": [
     {
-      "checked_at": "2026-08-25T04:02:47Z",
-      "commit_sha": "c385c030ffac8b2085ac27a51e3b325207f952f3",
-      "pushed_at": "2026-08-25T03:55:43Z",
-      "stars": 13044
-    },
-    {
       "checked_at": "2026-09-11T08:07:25Z",
       "commit_sha": "6b8196c8af18225945fc49e1497191122beb5431",
       "pushed_at": "2026-09-11T08:03:35Z",

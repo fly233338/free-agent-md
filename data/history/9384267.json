@@ -2,12 +2,6 @@
   "full_name": "electron/electron",
   "points": [
     {
-      "checked_at": "2026-08-25T04:02:47Z",
-      "commit_sha": "047dfc0086c3ae3bf1bc32cf77edea10be0059ac",
-      "pushed_at": "2026-08-25T03:00:52Z",
-      "stars": 122694
-    },
-    {
       "checked_at": "2026-08-26T04:05:28Z",
       "commit_sha": "ea3fe18fe1396ab7c818e69c601c793b2bdb7e9e",
       "pushed_at": "2026-08-26T03:55:47Z",
@@ -180,6 +174,12 @@
       "commit_sha": "b97cc269948315c40393a4ed16d668ca99064353",
       "pushed_at": "2026-09-23T08:12:21Z",
       "stars": 123204
+    },
+    {
+      "checked_at": "2026-09-24T08:32:01Z",
+      "commit_sha": "db6cb2d99d9f34a97f8f1d2c2d2fd7d5ab980d78",
+      "pushed_at": "2026-09-24T08:16:16Z",
+      "stars": 123228
     }
   ],
   "repo_id": 9384267

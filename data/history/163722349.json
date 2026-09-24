@@ -2,12 +2,6 @@
   "full_name": "pomerium/pomerium",
   "points": [
     {
-      "checked_at": "2026-08-25T04:02:47Z",
-      "commit_sha": "416fab08459e882705b76e5068865034f97df795",
-      "pushed_at": "2026-08-25T02:10:57Z",
-      "stars": 4972
-    },
-    {
       "checked_at": "2026-08-26T04:05:28Z",
       "commit_sha": "f9253ffbcd37a66dfcbec1a7d50859a72c9a058b",
       "pushed_at": "2026-08-26T02:15:15Z",

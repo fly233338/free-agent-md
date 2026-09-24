@@ -2,12 +2,6 @@
   "full_name": "nodejs/node",
   "points": [
     {
-      "checked_at": "2026-08-25T04:02:47Z",
-      "commit_sha": "4b5e86c4e279114c0911a3b23f27133be9fdb5af",
-      "pushed_at": "2026-08-25T02:52:18Z",
-      "stars": 119504
-    },
-    {
       "checked_at": "2026-08-26T04:05:28Z",
       "commit_sha": "7b6b21a8aaeac2e8409aaa4123f1535f6b07a306",
       "pushed_at": "2026-08-26T02:28:51Z",
@@ -180,6 +174,12 @@
       "commit_sha": "3d85c94cfaddf661b5fe7a859d4ee08a08797924",
       "pushed_at": "2026-09-23T01:42:25Z",
       "stars": 122047
+    },
+    {
+      "checked_at": "2026-09-24T08:32:01Z",
+      "commit_sha": "a2c8da59f2e319860985ff1275d66a6d16d611b0",
+      "pushed_at": "2026-09-23T21:41:50Z",
+      "stars": 122059
     }
   ],
   "repo_id": 27193779

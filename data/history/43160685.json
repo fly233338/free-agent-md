@@ -2,12 +2,6 @@
   "full_name": "zulip/zulip",
   "points": [
     {
-      "checked_at": "2026-08-25T04:02:47Z",
-      "commit_sha": "699b329e861e24acb1a66c6540169771149b7dff",
-      "pushed_at": "2026-08-25T03:53:29Z",
-      "stars": 25769
-    },
-    {
       "checked_at": "2026-09-07T08:24:13Z",
       "commit_sha": "fc6d57b801293505f9bdc30d9f51b1bcb70a252c",
       "pushed_at": "2026-09-07T08:20:39Z",

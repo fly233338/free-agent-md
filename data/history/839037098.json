@@ -2,12 +2,6 @@
   "full_name": "mastra-ai/mastra",
   "points": [
     {
-      "checked_at": "2026-08-25T04:02:47Z",
-      "commit_sha": "90570facf443b49db2a51d1d4c15e41eba6d18a0",
-      "pushed_at": "2026-08-25T03:49:47Z",
-      "stars": 27442
-    },
-    {
       "checked_at": "2026-08-31T09:50:53Z",
       "commit_sha": "4870d624b3caa1a5d155168c1ff9450cf425140f",
       "pushed_at": "2026-08-31T09:50:35Z",
@@ -36,6 +30,12 @@
       "commit_sha": "7485da663e898acf007464e0474562a9de4c0e2c",
       "pushed_at": "2026-09-23T08:38:04Z",
       "stars": 28278
+    },
+    {
+      "checked_at": "2026-09-24T08:32:01Z",
+      "commit_sha": "3529887829a741177669b9d9b326418a0cf8405e",
+      "pushed_at": "2026-09-24T08:30:05Z",
+      "stars": 28301
     }
   ],
   "repo_id": 839037098

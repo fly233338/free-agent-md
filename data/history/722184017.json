@@ -2,12 +2,6 @@
   "full_name": "assistant-ui/assistant-ui",
   "points": [
     {
-      "checked_at": "2026-08-25T04:02:47Z",
-      "commit_sha": "0064d1e859171e271c11cec07f4dcde7d0d023bc",
-      "pushed_at": "2026-08-25T04:02:30Z",
-      "stars": 11819
-    },
-    {
       "checked_at": "2026-09-06T07:57:27Z",
       "commit_sha": "238d94ab4366d342416ce164d0fc58d1a661a0f8",
       "pushed_at": "2026-09-06T07:49:50Z",

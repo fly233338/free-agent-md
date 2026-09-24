@@ -1,0 +1,409 @@
+# AGENTS.md
+
+This file provides guidance to AI Agents when working with code in this repository.
+
+## Project Overview
+
+Uno Platform is an open-source .NET UI cross-platform framework for building .NET applications from a single codebase using the WinUI 3 API. It targets Web (WebAssembly), Desktop (Windows, macOS, Linux via Skia), and Mobile (iOS, tvOS, Android).
+
+**Reference these instructions first**, then lean on skills (workflows) and the path-scoped rules below.
+
+#### Claude Code Skills (invoke via `/skill-name`)
+
+| Skill | Command | Use For |
+|-------|---------|---------|
+| Add Sample | `/add-sample` | Creating SamplesApp sample pages with correct registration |
+| Runtime Tests | `/runtime-tests` | Building and running Uno runtime tests (Skia Desktop/WASM) |
+| WinUI Runtime Tests | `/winui-runtime-tests` | Running runtime tests against native WinUI on Windows |
+| WinUI Porting | `/winui-port` | Porting WinUI C++ code to Uno Platform C# (full deep reference) |
+| DevServer | `/devserver` | DevServer CLI/Host build, test, MCP proxy, add-in discovery |
+| Docs Build | `/docs-build` | Building, previewing & validating the docs website (DocFX), incl. external-doc commit bumps in `import_external_docs.ps1` |
+
+#### Pre-commit review (invoke via `/review-panel`)
+
+`/review-panel [scope]` runs an eight-lens reviewer panel (architect, contract, skeptic, performance, operability, quality, security, jerome) in parallel and synthesizes one report with a `ship` / `fix-first` / `block-merge` verdict. Run it before you commit or open a PR — pass a scope (`master..HEAD`, a `#PR`, `HEAD~1`) or omit it to auto-detect uncommitted changes / branch-vs-`master`. The panel learns from corrections recorded in `specs/lessons.md`. Lenses, scopes, and loop recipes: `.claude/review-panel-cheatsheet.md`.
+
+#### Path-scoped rules (`.claude/rules/`)
+
+These load **automatically** when you touch matching files — you don't invoke them. They hold the non-obvious, subsystem-specific conventions so this always-loaded file stays lean:
+
+| Rule | Applies to | Covers |
+|------|-----------|--------|
+| `code-style.md` | `src/**/*.cs` | nullable, file headers (MUX/MIT), logging, `[Uno.NotImplemented]` |
+| `platform-targeting.md` | `src/**/*.cs` | file-suffix vs `#if` vs `OperatingSystem.IsX()` vs `ApiExtensibility` |
+| `debugging-discipline.md` | `src/**/*.cs` | full root-cause/validation/diagnosis-bias protocols |
+| `dependency-properties.md` | `src/Uno.UI/**` | `[GeneratedDependencyProperty]`, metadata, callbacks |
+| `runtime-tests.md` | `src/Uno.UI.RuntimeTests/**` | `[RunsOnUIThread]`, `[PlatformCondition]`, `UITestHelper` |
+| `unit-tests.md` | `src/Uno.UI.UnitTests/**` | MSTest, no-visual-tree logic tests |
+| `source-generators.md` | `src/SourceGenerators/**` | incremental gens, LOH/perf, cancellation |
+| `samples.md` | `src/SamplesApp/**` | `[Sample]`, theming, XamlStyler |
+| `build-system.md` | `src/**/*.{csproj,props,targets}` | TFMs, output paths, package versions |
+
+**Which to reach for:** the relevant `.claude/rules/*.md` is already in context (path-scoped) — use it as the checklist. Use a `/skill` for the actual build/run/scaffold/port workflow (and its deep reference).
+
+---
+
+## Quick Reference
+
+### Technology Stack
+
+| Technology | Purpose |
+|------------|---------|
+| .NET 10.0/9.0 | Multi-target framework |
+| C# & XAML | Primary languages |
+| TypeScript | WebAssembly/Web APIs only |
+| Skia | Cross-platform rendering |
+| MSBuild | Build orchestration |
+| Roslyn | Source generators |
+
+### Platform File Suffixes
+
+| Suffix | Platform |
+|--------|----------|
+| `.Android.cs` | Android |
+| `.iOS.cs` | iOS |
+| `.UIKit.cs` | iOS & tvOS |
+| `.wasm.cs` | WebAssembly |
+| `.skia.cs` | Skia |
+| `.reference.cs` | Reference implementation |
+| `.crossruntime.cs` | Skia + WebAssembly + Reference (shared) |
+
+Only projects that build per-platform variants compile the platform suffixes: the WinRT layer (`Uno.WinRT`, `Uno.Foundation`, `Uno.UI.Dispatching`) and platform-specific runtime or add-in projects. The `Uno.UI` project builds once, for Skia, and excludes `.Android.cs`, `.UIKit.cs` and `.wasm.cs` files by default. A platform runtime project can still link such a file from under `src/Uno.UI`: `Uno.UI.Runtime.Skia.WebAssembly.Browser` compiles the `NativeWebView` and TextBox input-scope `.wasm.cs` partials. Judge a file by the MSBuild project that compiles it, not by its path.
+
+### Key Source Directories
+
+- `src/Uno.UI/` - Core UI framework (WinUI controls, layout, XAML runtime)
+- `src/Uno.WinRT/` - Non-UI WinRT APIs (platform-specific assemblies)
+- `src/Uno.Foundation/` - Foundation APIs (platform-specific assemblies)
+- `src/Uno.UI.Runtime.Skia.*/` - Skia platform runtimes
+- `src/SourceGenerators/` - XAML parser, DependencyProperty generator
+- `src/SamplesApp/` - Sample app for validation and tests
+- `src/Uno.UI.RuntimeTests/` - Platform runtime tests
+- `src/Uno.UI.DevServer.Cli/` - DevServer CLI tool
+- `src/Uno.UI.RemoteControl.Host/` - DevServer Host process
+
+### Build Setup (Required)
+
+**1. Setup cross-targeting override:**
+```bash
+cd src
+cp crosstargeting_override.props.sample crosstargeting_override.props
+```
+
+**2. Edit `crosstargeting_override.props`** (recommended fast-iteration config):
+```xml
+<Project>
+  <PropertyGroup>
+    <!-- Choose ONE target: -->
+    <UnoTargetFrameworkOverride>net10.0</UnoTargetFrameworkOverride>              <!-- WebAssembly/Skia -->
+    <!-- <UnoTargetFrameworkOverride>net10.0-android</UnoTargetFrameworkOverride>  Android -->
+    <!-- <UnoTargetFrameworkOverride>net10.0-ios</UnoTargetFrameworkOverride>      iOS -->
+    <!-- <UnoTargetFrameworkOverride>net10.0-windows10.0.19041.0</UnoTargetFrameworkOverride> Windows -->
+
+    <!-- Disables analyzers + code-style enforcement for local builds. No effect on CI. -->
+    <UnoFastDevBuild>true</UnoFastDevBuild>
+  </PropertyGroup>
+</Project>
+```
+
+Or pass the same flags per-build instead of committing them:
+
+```bash
+dotnet build … -p:UnoTargetFrameworkOverride=net10.0 -p:UnoFastDevBuild=true
+```
+
+**Why these flags:**
+- `UnoTargetFrameworkOverride` — restricts cross-targeted projects to a single TFM, skipping the redundant net9.0 outputs while you iterate on net10.0 (or vice versa).
+- `UnoFastDevBuild` — disables `RunAnalyzersDuringBuild`, `EnforceCodeStyleInBuild`, and the `Microsoft.CodeAnalysis.NetAnalyzers` package for local builds. **Guarded by `ContinuousIntegrationBuild`, so CI is never affected** — analyzer-strict checks still run on every PR. Set persistently via the `UNO_FAST_DEV_BUILD=true` environment variable if you'd rather not edit the file.
+
+Combined impact on the `SamplesApp` desktop head (Windows, 32-core, warm NuGet cache): clean build ~3:23 → ~1:59, incremental rebuild after a Uno.UI edit ~2:23 → ~0:58. The `/runtime-tests` skill passes both flags by default (use `strict` to opt out for CI-equivalent coverage).
+
+**Do not commit `crosstargeting_override.props`** — it is per-developer config and is intentionally `.gitignore`d.
+
+**3. Use matching solution filter:**
+
+| Platform | Solution Filter |
+|----------|-----------------|
+| Skia (Desktop, WebAssembly, Android, iOS) | `Uno.UI-Skia-only.slnf` |
+| Windows | `Uno.UI-Windows-only.slnf` |
+| Reference API | `Uno.UI-Reference-Only.slnf` |
+| Unit Tests | `Uno.UI-UnitTests-only.slnf` |
+
+**4. Build commands:**
+```bash
+cd src
+dotnet restore Uno.UI-Skia-only.slnf                    # Restore (50-60s)
+dotnet build Uno.UI-Skia-only.slnf --no-restore         # Build (3-5min)
+dotnet test Uno.UI.UnitTests/Uno.UI.UnitTests.csproj    # Unit tests (40-60s)
+```
+
+**CRITICAL**: **NEVER CANCEL** builds. Set timeouts to 15+ minutes. Favor Skia desktop for faster builds.
+
+---
+
+## Architecture Overview
+
+### Platform Abstraction
+
+Single C#/XAML codebase → WinUI 3 API → Skia-rendered UI, hosted by a Skia runtime per platform (Desktop Win32/macOS/X11/framebuffer, Android, iOS/tvOS, WebAssembly)
+
+### Rendering Engine
+
+- **Skia** renders the UI on every target: Desktop Win32, macOS and Linux, plus Android, iOS/tvOS and WebAssembly.
+- The native renderers (Android Views, UIKit, WASM DOM) were removed in 7.0. A native view can still be embedded alongside the Skia tree through the host embedding APIs (`doc/articles/native-views.md`).
+
+### Development scope: Skia-only UI (IMPORTANT)
+
+**The UI layer (`Uno.UI` and everything built on it) is Skia-only.** There are no native UI renderers to maintain or extend. Don't reintroduce native-view inheritance, DOM rendering or per-platform UI partials. Put platform-specific UI behavior behind `OperatingSystem.IsX()` checks or `ApiExtensibility`, as described in `.claude/rules/platform-targeting.md`.
+
+This covers the UI rendering layer, *not* platform APIs. **Platform-specific non-UI WinRT APIs (in `Uno.WinRT`/`Uno.Foundation`) keep per-platform implementations and are still actively enhanced**, because the Skia targets consume them (e.g. Skia-on-Android uses the Android implementation of a file picker, sensor, contacts, etc.).
+
+### Platform Base Classes
+
+`UIElement` derives from `DependencyObject` on every target; there is no native view base class. Each element's composition `Visual` is drawn onto a Skia surface supplied by the platform's host.
+
+### XAML Compilation
+
+XAML files are parsed to C# via source generators (`XamlFileGenerator` in `Uno.UI.SourceGenerators`), not .xbf like WinUI. Generates `InitializeComponent()`, named fields, and x:Bind expressions.
+
+### DependencyObject
+
+`DependencyObject` is a **class** on every target, as in WinUI — inherit from it directly.
+
+Before 7.0 it was an *interface*, because the native Android/iOS renderers forced `UIElement` to inherit a native view class, and a `DependencyObjectGenerator` supplied the implementation. Rendering is Skia everywhere now, so the interface and that generator are both gone.
+
+### Project Organization
+
+The WinRT layer (`Uno.WinRT`, `Uno.Foundation`, `Uno.UI.Dispatching`) keeps per-platform variants: Reference, Skia, WebAssembly, NetCoreMobile. From `Uno.UI` upwards the UI layer ships a single Skia build, which also serves as the compile reference — there is no `.Reference` variant of those projects.
+
+### Runtime Target Selection
+
+For Skia, `RuntimeAssetsSelectorTask` ensures `Uno.UI` uses `netX` (generic) target for all Skia platforms. `Uno.WinRT` and `Uno.Foundation` use platform-specific assemblies. Use runtime checks like `OperatingSystem.IsAndroid()` for platform-specific behavior on Skia for libraries above and including `Uno.UI`, or use `ApiExtensibility` with platform-specific implementations in `Runtime.Skia` projects.
+
+### NotImplemented Stubs
+
+Auto-generated stubs marked with `[Uno.NotImplemented]` allow compilation but warn if used. Located in `Generated` folders - never edit these files.
+
+---
+
+## Development Workflow
+
+### Public Documentation and Spec References (MANDATORY)
+
+These rules cover files committed to the repo: specifications, documentation, and other repo-tracked design artifacts intended to be shareable. They do not cover pull request descriptions or PR and issue comments, which may link to private issues, pull requests, and repositories (see [Pull Requests & Issues](#pull-requests--issues)).
+
+When editing those files:
+
+1. **Do not reference private artifacts** from the document.
+   - Do not link to private issues, private pull requests, private boards, private docs, or private repositories.
+   - If related work is tracked privately, mention it only in generic terms.
+
+2. **Public specs are source-of-truth documents**.
+   - Public or repo-local specs may be referenced by private trackers.
+   - Private trackers must not be required to understand the public spec.
+
+3. **Keep the dependency direction one-way**.
+   - Allowed: private issues/PRs referencing a public spec in this repo.
+   - Not allowed: a public spec in this repo referencing a private issue/PR/doc as normative context.
+
+4. **If implementation follow-up exists in private repos**, describe it as alignment or downstream tracking work without identifiers or URLs.
+
+### Debugging & Validation (MANDATORY — summary)
+
+When fixing crashes, rendering, or selection/indexing bugs: **reproduce first → name the broken invariant → fix the root cause (and the mutation point) before adding guards → prove it with a test that fails-before/passes-after → validate at runtime, not compile-only.** Label every proposed change `root-cause fix` or `defensive hardening`; a guard-only change is never a complete resolution. Report validation evidence with explicit labels — **Code review** (by inspection) vs **Compile** (which project built) vs **Runtime** (which test/app ran) — and never present compile-only as runtime validation.
+
+The full protocol (root-cause steps, diagnosis-bias checks, evidence rules) auto-loads from `.claude/rules/debugging-discipline.md` when editing `src/**/*.cs`.
+
+### Validation Checklist
+
+Run these after making changes:
+
+1. **Build**: `dotnet build Uno.UI-UnitTests-only.slnf --no-restore`
+2. **Unit tests**: `dotnet test Uno.UI.UnitTests/Uno.UI.UnitTests.csproj --no-build`
+3. **Runtime tests** (UI changes): Use `/runtime-tests` skill (Skia Desktop default, pass test class/method name as argument)
+4. **WinUI parity** (validate against native WinUI): Use `/winui-runtime-tests` skill
+5. **Sample app** (visual changes): `dotnet run --project src/SamplesApp/SamplesApp -f net11.0-desktop`
+6. **XAML formatting** (SamplesApp changes): `dotnet xstyler -d src/SamplesApp -r`
+
+### SamplesApp: Add XAML files
+
+When adding XAML samples to the `SamplesApp`, drop the files anywhere under `src/SamplesApp/SamplesApp.Samples/` — they are auto-discovered by glob (no manual registration required).
+
+Sample creation checklist:
+1. Create your sample XAML and code-behind under an appropriate folder in `src/SamplesApp/SamplesApp.Samples/`.
+2. Add the `[Uno.UI.Samples.Controls.Sample]` attribute to the code-behind class.
+3. Format XAML: `dotnet xstyler -f src/SamplesApp/SamplesApp.Samples/YourFolder/YourSample.xaml`
+4. Build and run `SamplesApp` to verify the sample appears.
+
+Theming guideline (brief): prefer `{ThemeResource}` for backgrounds/foregrounds so samples work in light and dark themes.
+
+### Runtime Tests (Preferred for UI)
+
+Add tests to `Uno.UI.RuntimeTests`. Key helpers:
+- `WindowHelper.WindowContent` - Add elements to visual tree
+- `await WindowHelper.WaitForLoaded(element)` - Wait for load
+- `await WindowHelper.WaitForIdle()` - Wait for UI to settle
+
+**To build and run tests, use the `/runtime-tests` skill.** It handles build, filter encoding, execution, and result parsing for both Skia Desktop and WASM. Test-authoring conventions auto-load from `.claude/rules/runtime-tests.md`.
+
+### Common Build Issues
+
+| Issue | Solution |
+|-------|----------|
+| "Assets file doesn't have a target" | Delete `obj/`, `bin/`, restore |
+| "Windows XAML targets not found" | Use Skia/Wasm on Linux/macOS |
+| Solution filter fails | Ensure `crosstargeting_override.props` matches filter |
+| Persistent issues | Close VS, delete `src/.vs`, rebuild |
+| Last resort | `git clean -fdx` (close VS first) |
+
+### Key Build Properties
+
+| Property | Purpose |
+|----------|---------|
+| `UnoTargetFrameworkOverride` | Single platform target |
+| `UnoNugetOverrideVersion` | Debug with NuGet override |
+| `UnoUISourceGeneratorDebuggerBreak` | Attach debugger to generators |
+| `XamlSourceGeneratorTracingFolder` | Dump generator diagnostics |
+
+---
+
+## Code Conventions
+
+### Partial Classes
+
+Extensive use for:
+- Platform-specific code in per-platform projects: `MyApi.Android.cs`, `MyApi.UIKit.cs`
+- Generated code: `MyPage.xaml.g.cs`
+- Logical separation: `MyControl.Properties.cs` for DependencyProperties
+
+### DependencyProperty Pattern
+
+Prefer `[GeneratedDependencyProperty]` for new properties. Conventions auto-load from `.claude/rules/dependency-properties.md`; for full templates copy from existing controls (`Canvas`, `RangeBase`, `Button`).
+
+### Code Style
+
+Tabs, Allman braces (always), expression-bodied members for one-liners, `internal` extension methods in `[Type]Extensions.cs`, `#nullable enable` per-file, MUX/MIT headers on ported code. Comments only when they add value — short (a line or two, never a wall of text), explaining the non-obvious *why*, never narrating code removal/history; longer is OK only when explicitly requested, actually needed for code understanding, or carried verbatim from a WinUI port. Details auto-load from `.claude/rules/code-style.md`. Style is analyzer-enforced on CI even when `UnoFastDevBuild=true` skips it locally.
+
+### Events
+
+🚫 **NEVER declare `event Action` or `event Action<T>`**. Always use `EventHandler` or
+`EventHandler<TEventArgs>`. Raw `Action`/`Func` delegates as event fields bypass the
+standard `add`/`remove` contract and cannot be reliably subscribed across assembly
+boundaries.
+
+✅ Correct:
+```csharp
+public event EventHandler<MyEventArgs>? SomethingHappened;
+```
+
+🚫 Wrong — every agent must reject this:
+```csharp
+public event Action<MyData>? SomethingHappened; // NEVER
+```
+
+### XAML Formatting (SamplesApp)
+
+XAML files under `src/SamplesApp/` are formatted using [XamlStyler](https://github.com/Xavalon/XamlStyler).
+Configuration is in `src/SamplesApp/Settings.XamlStyler`.
+
+```bash
+# One-time setup (restore tools after cloning)
+dotnet tool restore
+
+# Format all SamplesApp XAML files
+dotnet xstyler -d src/SamplesApp -r
+
+# Format a single file
+dotnet xstyler -f src/SamplesApp/SamplesApp.Samples/MyFile.xaml
+
+# Check without modifying (CI mode)
+dotnet xstyler -d src/SamplesApp -r -p
+```
+
+A GitHub Actions workflow enforces formatting on PRs that touch SamplesApp XAML files.
+
+### Implementing New WinUI Features
+
+1. Find generated stub: `src/Uno.WinRT/Generated/3.0.0.0/Windows.*/ClassName.cs`
+2. Copy to non-generated location
+3. Remove implemented platforms from `[NotImplemented]` attribute
+4. Use platform suffix for platform-specific files
+
+---
+
+## Common Pitfalls
+
+1. **DependencyObject is a class** - inherit from it directly, as in WinUI
+2. **Generated files are regenerated** - never edit `Generated/` folders
+3. **The visual tree is the Skia rendering tree** on every target
+4. **Partial methods** used for extensibility: `OnLoaded()`, `OnUnloaded()`
+5. **NuGet cache corruption** - delete `%USERPROFILE%\.nuget\packages\uno.ui` if debugging fails
+6. **Long paths on Windows** - enable via registry if needed
+
+---
+
+## Commit Guidelines
+
+**MANDATORY**: All commits MUST follow [Conventional Commits](https://www.conventionalcommits.org/).
+
+### Format
+```
+<type>[optional scope]: <description>
+```
+
+### Common Types
+
+| Type | Purpose | Version Impact |
+|------|---------|----------------|
+| `fix` | Bug fixes | PATCH |
+| `feat` | New features | MINOR |
+| `docs` | Documentation | - |
+| `test` | Tests | - |
+| `chore` | Maintenance | - |
+| `feat!` | Breaking change | MAJOR |
+
+### Examples
+```bash
+git commit -m "chore: Initial work"
+git commit -m "fix: Resolve null reference in TextBox"
+git commit -m "feat(ios): Implement native picker control"
+git commit -m "feat!: Remove deprecated API methods"
+```
+
+Guidelines:
+- Keep description under 50 characters
+- Use imperative mood ("Add" not "Added")
+- Reference issues: `fix: Resolve layout issue (fixes #12345)`
+- **Commit cadence**: when the user asks, or when working autonomously on a larger feature, commit in **logical groups** — one focused, Conventional-Commit-formatted commit per coherent chunk that builds clean, rather than one batch at the end. On complex work, these incremental commits also let reviewers follow the progression of the change rather than facing one giant diff. For small one-off edits in an interactive session, leave changes uncommitted unless asked.
+
+### Pull Requests & Issues
+
+When asked to open a PR or file an issue, **base it on the repo's existing templates** (filled out accordingly) — don't free-form:
+- **PRs** → fill out every section of `.github/PULL_REQUEST_TEMPLATE.md` and submit it as the body (e.g. `gh pr create --body-file <filled>.md`).
+- **Issues** → pick the matching GitHub issue **form** under `.github/ISSUE_TEMPLATE/` (`bug-report`, `enhancement`, `documentation-issue`/`-request`, `samples-issue`/`-request`, `feedback`, `support-request`, `success-story`) and fill its required fields (`gh issue create --template <name>.yml`).
+- **Every PR must reference an associated issue** (unless it's a pure-documentation change). Before opening the PR, settle the issue: use the one identified in the conversation; else search for an existing match (`gh issue list --search "<keywords>"`); else create one from the forms above. Put its number on the template's first line — `**GitHub Issue:** closes #XYZ` — so merging the PR auto-closes the issue.
+- **The associated issue may live in a private repository.** Link it rather than creating a public duplicate, using the `owner/repo#N` form (e.g. `closes unoplatform/<private-repo>#123`) so GitHub resolves it across repositories. PR descriptions and comments may also link related private pull requests.
+
+---
+
+## References
+
+### Documentation
+- [Building Uno](https://platform.uno/docs/articles/uno-development/building-uno-ui.html)
+- [Contributing Guide](https://platform.uno/docs/articles/uno-development/contributing-intro.html)
+- [Creating Tests](https://platform.uno/docs/articles/contributing/guidelines/creating-tests.html)
+
+### In-Repo Docs
+- Build guide: `doc/articles/uno-development/building-uno-ui.md`
+- Samples guide: `doc/articles/uno-development/working-with-the-samples-apps.md`
+
+### Subsystem deep dives
+- `/winui-port` skill - WinUI C++ → C# porting
+- `/devserver` skill - DevServer CLI/Host maintenance
+- `/runtime-tests` skill + `.claude/rules/runtime-tests.md` - runtime test execution & authoring
+- `.claude/rules/dependency-properties.md` - DependencyProperty patterns
+- `.claude/rules/source-generators.md` - XAML/DependencyObject generators
+
+### Community
+- [Discord](https://platform.uno/discord)
+- [Samples App](https://aka.platform.uno/wasm-samples-app)
