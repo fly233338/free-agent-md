@@ -2,12 +2,6 @@
   "full_name": "certd/certd",
   "points": [
     {
-      "checked_at": "2026-08-26T04:05:28Z",
-      "commit_sha": "f8e492d6cb49257e56bbd06b28fd6eb32c923c28",
-      "pushed_at": "2026-08-25T15:51:31Z",
-      "stars": 4974
-    },
-    {
       "checked_at": "2026-08-27T14:17:09Z",
       "commit_sha": "f8e492d6cb49257e56bbd06b28fd6eb32c923c28",
       "pushed_at": "2026-08-27T14:09:25Z",

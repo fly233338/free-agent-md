@@ -2,12 +2,6 @@
   "full_name": "longbridge/gpui-kit",
   "points": [
     {
-      "checked_at": "2026-08-26T04:05:28Z",
-      "commit_sha": "26849e063f53a5d1c18a25d42bc6b34f75720176",
-      "pushed_at": "2026-08-26T04:04:47Z",
-      "stars": 13504
-    },
-    {
       "checked_at": "2026-08-29T10:10:12Z",
       "commit_sha": "9a64d865aab353cc98e031edfe72802f043953fb",
       "pushed_at": "2026-08-29T10:00:30Z",
@@ -18,6 +12,12 @@
       "commit_sha": "b79f4ce8fc110190d86392b7ffa361a186d19300",
       "pushed_at": "2026-09-07T08:16:39Z",
       "stars": 14098
+    },
+    {
+      "checked_at": "2026-09-25T08:53:43Z",
+      "commit_sha": "3403e25d5ca805490ae70f6059f4b4dd580b607b",
+      "pushed_at": "2026-09-25T08:52:08Z",
+      "stars": 14760
     }
   ],
   "repo_id": 814684486

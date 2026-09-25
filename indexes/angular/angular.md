@@ -1,7 +1,7 @@
 # angular/angular instruction files
 
-Upstream: [angular/angular](https://github.com/angular/angular) · License: `MIT` · Commit: `28ad39af2495086d69aff796f0dc4f2b49c787eb`
+Upstream: [angular/angular](https://github.com/angular/angular) · License: `MIT` · Commit: `846c73d52be8104aea826da5d4d95814fd24b117`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/angular/angular/AGENTS.md) | [Source](https://github.com/angular/angular/blob/28ad39af2495086d69aff796f0dc4f2b49c787eb/AGENTS.md) | `976858145dd91780f0389deb7dabe739606af1af586e07042c4dbeb348031ba1` | 1,594 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/angular/angular/AGENTS.md) | [Source](https://github.com/angular/angular/blob/846c73d52be8104aea826da5d4d95814fd24b117/AGENTS.md) | `976858145dd91780f0389deb7dabe739606af1af586e07042c4dbeb348031ba1` | 1,594 B |

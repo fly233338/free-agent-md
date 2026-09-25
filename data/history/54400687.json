@@ -2,12 +2,6 @@
   "full_name": "grafana/k6",
   "points": [
     {
-      "checked_at": "2026-08-26T04:05:28Z",
-      "commit_sha": "6b9cbaaa65bce5eadad0a1c5592fe8a1c2b91217",
-      "pushed_at": "2026-08-26T03:49:26Z",
-      "stars": 31322
-    },
-    {
       "checked_at": "2026-09-15T08:45:05Z",
       "commit_sha": "4bb65a26e979ea486077c672602dc94e1cf81557",
       "pushed_at": "2026-09-15T08:42:32Z",

@@ -1,5 +1,16 @@
 # FastLED AI Agent Guidelines
 
+> [!IMPORTANT]
+> Routine PR and `master` CI runs the explicit native/Python smoke inventories
+> in `ci/native_ci.py` and skips the board matrix. Use `ci-full` for complete
+> native, Python, example, and board validation before platform-sensitive
+> merges; hosted Intel and Apple
+> Silicon macOS run only with `ci-full` or release validation. Before choosing
+> a narrower board or test label, run `bash ci-labels list --json` and use an emitted
+> name. See [CI modes](docs/CI_MODES.md). A version bump on `master` is not
+> evidence that full CI passed. Dispatch the exact-SHA full sweep and run the
+> manual release evidence gate before tagging; see [CI modes](docs/CI_MODES.md).
+
 ## Read the Right File for Your Task
 
 **By what you're doing:**
@@ -108,10 +119,18 @@ See `agents/docs/build-system.md` for full command execution rules and forbidden
 ### Code Standards
 - **C++**: See `agents/docs/cpp-standards.md` (span convention, DMA patterns, naming, macros)
 - **C++ public settings**: New global setters MUST go on `CFastLED` (`FastLED.setX()`), not as bare `fl::set_*` free functions — see `agents/docs/cpp-standards.md` → "Public Settings Pattern"
+- **C++ pointer lifetime**: Long-lived pointers (stored, returned from an accessor, or held across async/reconfiguration) MUST be `fl::shared_ptr`; a raw pointer is OK only in sync code where the target provably outlives the use. Compile it out on small-memory tiers (`!FL_PLATFORM_HAS_LARGE_MEMORY`) — see `agents/docs/cpp-standards.md` → "Long-Lived Pointers Are `fl::shared_ptr`"
 - **JavaScript**: Run `bash lint --js` after modifying JS files
 
 ### Code Review Rule
 **ALL AGENTS: Run `/code-review` after making code changes.**
+Before opening a feature PR, show its real production path (in-repo or a named
+downstream integration) and end-to-end evidence for the claimed behavior. Do
+not add a broad, default-off prerequisite API for a niche feature with only
+fake users and call the issue done; justify why it must land separately or
+choose a smaller fix or an explicit limitation. Reviewers apply this value
+gate even when lint and unit tests pass (see
+`.claude/skills/code-review/review-rules.md`).
 
 ### Memory Refresh Rule
 **ALL AGENTS: Read the relevant agents doc before concluding work.**

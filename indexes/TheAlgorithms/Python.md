@@ -1,7 +1,7 @@
 # TheAlgorithms/Python instruction files
 
-Upstream: [TheAlgorithms/Python](https://github.com/TheAlgorithms/Python) · License: `MIT` · Commit: `ba2d8ef44e4ad8d8b8447bd402dc776b5c1ddf0a`
+Upstream: [TheAlgorithms/Python](https://github.com/TheAlgorithms/Python) · License: `MIT` · Commit: `b3233c9f49f705757ea1626891725af01473fa66`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/TheAlgorithms/Python/AGENTS.md) | [Source](https://github.com/TheAlgorithms/Python/blob/ba2d8ef44e4ad8d8b8447bd402dc776b5c1ddf0a/AGENTS.md) | `e3b0f4d586aff6de2246aead58874b6253d1ede57cd947058c4d76138a27f77a` | 2,902 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/TheAlgorithms/Python/AGENTS.md) | [Source](https://github.com/TheAlgorithms/Python/blob/b3233c9f49f705757ea1626891725af01473fa66/AGENTS.md) | `e3b0f4d586aff6de2246aead58874b6253d1ede57cd947058c4d76138a27f77a` | 2,902 B |

@@ -68,7 +68,7 @@ This file is the canonical project guidance for coding agents. Keep it short, du
 - Put determinism after interpretation: give the agent typed tools, then validate resolved identifiers, arguments, permissions, and invariants at the tool boundary.
 - If exact syntax is required, expose a structured interface such as a CLI flag, typed tool, button action, or schema.
 - In a workflow, prose inside a node is model reasoning. Prose passed between nodes as a token to parse is an invented protocol; use structured output, typed inputs, exit status, or another explicit engine channel.
-- Third-party output classification is different. It is valid to classify git, SDK, or vendor errors that Archon does not control.
+- Vendor output is prose too. Classifying git, SDK, or vendor error text with a pattern is a last resort, not a carve-out: prefer the structured channel (exit code, typed error class, `--json` or porcelain output), then agent classification into a typed value, then an honest unclassified failure carrying the original evidence. A match that survives anchors to a machine token embedded in the message (an errno, an error code) and may enrich a report — never gate retry, fallback, or suppression, where a vendor rewording silently changes behavior.
 
 ### Do not guess lifecycle ownership
 
@@ -168,8 +168,8 @@ what you changed — a thin brief is cheaper to correct before a run than after 
 - Bun's module mocks pollute the process cache. Use the package test scripts that preserve isolation; do not run `bun test` from the repository root.
 - Always run lint through `bun run lint` or `bun run lint:fix`; the wrapper isolates packages to keep typed lint within its memory budget.
 - Run the narrow checks that prove the changed behavior while iterating.
-- Run `bun run validate` before opening a pull request. CI may contain additional environment-dependent checks; inspect changed-path workflows and run applicable checks when practical.
-- Schema changes also require the PostgreSQL upgrade check documented in the contributor docs and CI.
+- Run `bun run validate` before opening a pull request. It runs every pull-request gate except the ones needing something a contributor may not have — a live PostgreSQL, a Docker daemon, an unshallowed checkout, Node for the docs site, GitHub API quota — because `scripts/validate.ts` owns the check list and the workflows call that script rather than restating it.
+- Those excluded jobs are listed in [`CONTRIBUTING.md`](CONTRIBUTING.md) with the command to run each one yourself. Schema changes require the PostgreSQL upgrade check from that list.
 - For visual or runtime behavior, add direct evidence when static tests cannot prove the outcome.
 - Destructive verification, including DDL, migrations, and data writes, runs only against a scratch database you create and drop. A configured live DSN is read-only at most; when only a live resource exists, stop and surface it to the operator.
 

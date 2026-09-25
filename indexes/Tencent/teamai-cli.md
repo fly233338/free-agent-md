@@ -1,8 +1,8 @@
 # Tencent/teamai-cli instruction files
 
-Upstream: [Tencent/teamai-cli](https://github.com/Tencent/teamai-cli) · License: `NOASSERTION` · Commit: `57afe768105b9be534f4a69867850bc1d11828a5`
+Upstream: [Tencent/teamai-cli](https://github.com/Tencent/teamai-cli) · License: `NOASSERTION` · Commit: `f558b9461492a2a94e790f1935976036909b12dc`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Tencent/teamai-cli/AGENTS.md) | [Source](https://github.com/Tencent/teamai-cli/blob/57afe768105b9be534f4a69867850bc1d11828a5/AGENTS.md) | `62b5157aecc96488337bfa61d7639a0afaf330cfd301ff035aa5a32ad65715c0` | 3,440 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Tencent/teamai-cli/CLAUDE.md) | [Source](https://github.com/Tencent/teamai-cli/blob/57afe768105b9be534f4a69867850bc1d11828a5/CLAUDE.md) | `52b342210bde3801f2d335d5eb30a79f2c5c39b76582b3f643cb40e4bf74f0dd` | 2,095 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Tencent/teamai-cli/AGENTS.md) | [Source](https://github.com/Tencent/teamai-cli/blob/f558b9461492a2a94e790f1935976036909b12dc/AGENTS.md) | `9e135c722c36af98ca993cf7932c68893d0d18b7aaf86c2252313c4cbfff5670` | 5,018 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Tencent/teamai-cli/CLAUDE.md) | [Source](https://github.com/Tencent/teamai-cli/blob/f558b9461492a2a94e790f1935976036909b12dc/CLAUDE.md) | `285188d1c08d5c51ba4eec003c1946ffc37672fcafae5c636c45a76a96d50cff` | 2,387 B |

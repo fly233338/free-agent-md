@@ -2,12 +2,6 @@
   "full_name": "coder/coder",
   "points": [
     {
-      "checked_at": "2026-08-26T04:05:28Z",
-      "commit_sha": "bd4af31f78024daeb512921a40cbf12d2bda31ce",
-      "pushed_at": "2026-08-26T04:00:34Z",
-      "stars": 14252
-    },
-    {
       "checked_at": "2026-08-27T14:17:09Z",
       "commit_sha": "debe8e51bb12700ae1835cf95020a2f05902b335",
       "pushed_at": "2026-08-27T14:15:04Z",
@@ -42,6 +36,12 @@
       "commit_sha": "e38861d631416e447f620d72cfabb408a155faae",
       "pushed_at": "2026-09-18T08:14:36Z",
       "stars": 14985
+    },
+    {
+      "checked_at": "2026-09-25T08:53:43Z",
+      "commit_sha": "f64ccfb836e3f60f0e0938bd1201d73ef323d3f8",
+      "pushed_at": "2026-09-25T08:52:07Z",
+      "stars": 16683
     }
   ],
   "repo_id": 440752086
