@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Perry is a native TypeScript compiler written in Rust that compiles TypeScript source code directly to native executables. It uses SWC for TypeScript parsing and LLVM for code generation.
 
-**Current Version:** 0.5.1519
+**Current Version:** 0.5.1654
 
 
 ## TypeScript Parity Status
@@ -52,6 +52,11 @@ A `--module` selector scopes `--check`/`--update-baseline` to just that slice (a
 **Known categorical gaps**: `console.dir`/`console.group*` formatting, lone surrogate handling (WTF-8). (Lookbehind regex is NOT a gap anymore: `perry-runtime/src/regex.rs` falls back from the `regex` crate to `fancy-regex` for lookbehind/backreferences, with capture-group translation and replacement expansion.)
 
 ## Workflow Requirements
+
+**Auditing and landing the open-PR queue: `MERGE_GUIDE.md`.** The merge-train protocol, the per-PR audit
+checklist, how to resolve Rust merge conflicts by shape, and the validation/landing traps that have bitten
+this repo (stale PR heads, stale `.a` archives, the rebase-merge coherence stamp). Read it before picking up
+a queue of PRs.
 
 **Default flow is PR-based.** `main` is protected: pushes require a pull request, CI must pass, and only squash or rebase merges are allowed (no merge commits, linear history enforced). **The single required status context is `pr-gate`** — the fan-in of `test.yml`'s PR tier (`lint`, `check`, `warnings`, scoped `cargo-test`, the 6-shard fast-mode gap suite, `gc-stress`, `e2e-scoped`, and `security-audit` when a lockfile/manifest changed). What runs in which tier is decided by `scripts/ci_plan.py` (`--table`), documented in `docs/src/testing/ci-tiers.md`: **pr** (every PR push, ~11 jobs, must be green on `main`), **sweep** (every push to `main`, coalesced), **full** (nightly / tags / dispatch / `run-extended-tests` label — parity, compile-smoke, doc-tests, package smokes, the auto-optimize gap shards). Releases wait for a `full-suite-gate` on the release SHA. The satellite GC/perf gates run on PRs only with the `run-extended-tests` label; their six-hourly `main` sweeps are unchanged. Admins can bypass for hotfixes/version bumps, but the standard path is:
 
@@ -148,6 +153,8 @@ A "GC value live but not rooted across a collection point" bug is invisible at c
 | `PERRY_GC_SCHEDULE_RATE=<0..1>` (default `0.05`) | **only** the threshold `PERRY_GC_SCHEDULE_SEED`'s hash is compared against — the expected fraction of handled safepoints that collect. Out-of-range values clamp (a `2` reads as 1.0); unparseable and NaN fall back to the default. | do anything at all without a seed. It is inert alone. `=0` is an on-but-selects-nothing control (banner and reporters still install), `=1` collects at every handled safepoint — the maximum-density endpoint, where the seed stops mattering because every ordinal is selected whatever it hashes to. There is deliberately **no allocation-point level**: the alloc-point arm forces a conservative stack scan, which makes the copying minor ineligible, so an "every allocation" density would run non-moving minors and move nothing. |
 | `PERRY_GC_SCHEDULE_ALLOC_KB=N` (default 4) | how much NEW nursery material must accumulate before a loop back-edge poll becomes a candidate the seed may select (#7728). A high-water mark measured AFTER each collection, not a delta, so a collection that frees nothing cannot loop. `0` restores the literal every-poll candidate set — right for a small fixture or a window that executes once, and far slower. | change the schedule itself: the seed still decides which candidates collect, so `(seed, counter)` replay is unaffected. Nor apply to microtask-pump safepoints — it paces the loop arm only. |
 
+**These instruments (plus `PERRY_GC_CENSUS`, `PERRY_GC_FROMSPACE_SCAN*`, `PERRY_ALLOC_SITE_SAMPLE`) are compiled in only with perry-runtime's `gc-instruments` feature**, which auto-optimize adds when one of the knobs or `PERRY_GC_INSTRUMENTS=1` is set *at compile time*; a binary built without it aborts at startup if a knob is set, rather than silently running nothing.
+
 `PERRY_GC_SCHEDULE_SEED=<u64> PERRY_GC_PROTECT_FROMSPACE=1` together is the pairing that turns a #7154 bug into an immediate precise fault. Loop polls are default-ON since #7721, so in-loop coverage no longer needs a flag — check `loop_polls=` in the exit verdict rather than assuming. If a hunt needs maximum sensitivity on a small program, add `PERRY_GC_SCHEDULE_ALLOC_KB=0`.
 
 ### GC knob kill-policy (binding)
@@ -206,6 +213,7 @@ to the same physical root still deduplicate by canonical path.
 ### LLVM Type Mismatches
 - Loop counter optimization produces i32 — always convert before passing to f64/i64 functions
 - Constructor parameters always f64 (NaN-boxed) at signature level
+- A new `PERRY_*` environment variable read in codegen must be added to `BUILD_CACHE_ENV_VARS` in `crates/perry/src/commands/compile/build_cache.rs`, or to `BUILD_CACHE_ENV_EXCLUSIONS` with a reason it cannot change emitted code. Otherwise cached objects can silently serve a different setting. Run `cargo test -p perry codegen_env_vars_are_build_cache_inputs` to check registration.
 
 ### Async / Threading
 - Thread-local arenas: JSValues from tokio workers invalid on main thread

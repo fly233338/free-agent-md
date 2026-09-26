@@ -39,7 +39,7 @@ bun run tsc
 bun run test
 
 # Run a specific test file
-bunx dotenv-cli -e .env.test -- bunx --bun vitest run --project server path/to/test.ts
+bunx dotenv run -f .env.test -- bunx --bun vitest run --project server path/to/test.ts
 ```
 
 ### Building
@@ -59,6 +59,20 @@ bun gen:migrations
 bunx drizzle-kit generate --custom --name=fix-timestamps-to-ms
 
 ```
+
+### Configuration Export Schema Changes
+
+Configuration exports are permanent recovery artifacts. When a durable transferable field, backend, relationship, or serialized meaning changes, add a new config-transfer wire version. Do not modify a released version's schema, model, codec, fixture, or migration.
+
+For a new version:
+
+- Add a self-contained versioned payload schema, model, and codec under `app/server/modules/system/config-transfer/vN/`. Historical schemas may reuse only immutable wire fragments, never live application schemas.
+- Add exactly one adjacent `vN-1` to `vN` model migration with concrete input and output types. Compose these functions explicitly in the version branches in `payload.ts` so every historical version reaches the current model. Keep every historical decoder and migration so old exports remain importable.
+- Make the new version current in `payload.ts`; export only the current version while retaining every import branch.
+- Add a permanent fixture and tests for wire round-tripping, migration defaults/semantic conversions, current-model import, and the clear update-required error for newer unsupported exports.
+- Keep the exact type-equality check between the current transfer model and the current encoded model so new transferable fields cannot be silently omitted.
+
+Changes that do not affect transferable meaning, such as database indexes, internal IDs, caches, UI state, and refactors that preserve the wire representation, do not require a new version.
 
 ### API Client Generation
 

@@ -261,6 +261,7 @@ cpus/mem:   CLI flag > Smolfile > defaults (4 CPU, 8192 MiB)
 - `--allow-host` and `--allow-cidr` can be combined and used multiple times
 - `--outbound-localhost-only` restricts to 127.0.0.0/8 and ::1 (implies `--net`)
 - `-p HOST:GUEST` forwards a host port to the VM (TCP)
+- `--guest-subnet 10.200.0.0/30` moves the guest link off the default `100.96.0.0/30` (gateway and resolver `.1`, guest `.2`; implies `--net`, virtio-net). Use it when the guest runs Tailscale, another VPN or carrier NAT that claims `100.64.0.0/10`, which otherwise routes the gateway away and breaks DNS. API: `guestSubnet` on create. Not combinable with `--network`
 - Smolfile: use `[network] allow_hosts` and `[network] allow_cidrs`
 
 ### Proxy Support
@@ -599,7 +600,7 @@ OpenAPI spec: `smolvm serve openapi`
 
 ## Important Defaults
 
-- Machine name defaults to `"default"` when `--name` is omitted
+- Machine name defaults to `$SMOLVM_MACHINE_NAME` when set, else `"default"`, when `--name` is omitted. An explicit `--name` always wins. Meant for per-workspace tooling (direnv); `machine run`, `machine checkpoint`, and `machine branch` deliberately ignore the variable
 - Network is **off** by default (security-first)
 - CPUs: 4, Memory: 8192 MiB, Storage: 20 GiB, Overlay: 2 GiB
 - Packed binaries use the same defaults (CPUs: 4, Memory: 8192 MiB)

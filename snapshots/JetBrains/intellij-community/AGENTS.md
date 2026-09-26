@@ -38,7 +38,7 @@ Read the referenced rules before you edit or review a file under these roots. Th
   - Tests: run `bun run build` and `bun test`.
   - Bazel: do not run a Bazel build or test here.
 - **Eel / IJent** (`platform/eel*/`, `platform/ijent/`): read `platform/eel/AGENTS.md` first.
-- **PyCharm** (`./python`): use `./python/.ai/index.md`.
+- **PyCharm** (`./python`): start a PY-NNNNN issue at `./python/.ai/index.md`.
 
 ## Mandatory Rules
 
@@ -72,7 +72,7 @@ Never use the `code-search` skill. The search tools below replace it. Recipes, t
 
 Use `search_symbol` for a class, a method, or a field. Use `search_file` to find a file by glob. Use `search_text` and `search_regex` for a string, a comment, or another match that is not a symbol.
 
-Codex exposes these as `mcp__ijproxy__<name>`. Inspect the deferred tool catalog (`ALL_TOOLS`) for them before you use a shell or a non-ijproxy fallback.
+These are `mcp__ijproxy__<name>`. Look them up in the harness deferred-tool catalog before you use a shell or a non-ijproxy fallback.
 
 ### IDE-backed semantic tools
 

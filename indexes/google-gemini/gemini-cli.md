@@ -1,7 +1,7 @@
 # google-gemini/gemini-cli instruction files
 
-Upstream: [google-gemini/gemini-cli](https://github.com/google-gemini/gemini-cli) · License: `Apache-2.0` · Commit: `bedef96ef42905bd84a86dbec021c706168e7e2f`
+Upstream: [google-gemini/gemini-cli](https://github.com/google-gemini/gemini-cli) · License: `Apache-2.0` · Commit: `2fe7c2d3f065dc40ad573d50b2091116f8a4aa18`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `GEMINI.md` | `GEMINI.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/google-gemini/gemini-cli/GEMINI.md) | [Source](https://github.com/google-gemini/gemini-cli/blob/bedef96ef42905bd84a86dbec021c706168e7e2f/GEMINI.md) | `74dab8e16a1ac9ea84d061a61944eab80b2991412daf02ab98e319ea61f49688` | 4,610 B |
+| `GEMINI.md` | `GEMINI.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/google-gemini/gemini-cli/GEMINI.md) | [Source](https://github.com/google-gemini/gemini-cli/blob/2fe7c2d3f065dc40ad573d50b2091116f8a4aa18/GEMINI.md) | `74dab8e16a1ac9ea84d061a61944eab80b2991412daf02ab98e319ea61f49688` | 4,610 B |

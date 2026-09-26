@@ -41,6 +41,66 @@ When the user types any of these commands, read the corresponding SKILL.md file 
 
 Bundled agents live in `src/ouroboros/agents/`. When a skill references an agent (e.g., `ouroboros:socratic-interviewer`), read its definition from `src/ouroboros/agents/{name}.md` and adopt that role. Use `OUROBOROS_AGENTS_DIR` or `.Codex-plugin/agents/` only for explicit custom overrides.
 
+## Pull Request Boundary Policy
+
+Before implementing or reviewing a PR, read [Review Boundary Contract](CONTRIBUTING.md#review-boundary-contract). Treat the PR description as the review contract.
+
+Contributors MUST declare the user problem, supported inputs and execution conditions, observable contract, touched subsystem and owner, non-goals, and verification evidence. Do not silently widen these while responding to review. A declared boundary narrows implementation scope but cannot waive an existing public or repository contract, an approved issue or RFC requirement, or a maintainer decision; conflicts require maintainer approval or RFC review.
+
+Review agents MUST evaluate every finding in this order:
+
+1. Reproduce it under the PR's promised inputs and execution conditions.
+2. Determine whether it violates the PR's promised contract.
+3. Determine whether the fix requires a new subsystem or ownership boundary.
+4. Determine whether the original user problem can be solved without the subsystem introduced by the PR.
+5. Determine whether splitting the scope leaves an immediate user-data or security risk.
+
+Outcomes are strict:
+
+- Questions 1 and 2 are yes: **Changes Requested**.
+- Questions 3 and 5 are yes: stop the PR and ask a maintainer to revisit the RFC; do not silently absorb the new subsystem or owner.
+- Questions 3 and 4 are yes while question 5 is no: non-blocking follow-up with a named owner and link.
+- Question 5 is yes without the Q3 + Q5 escalation: **Changes Requested** for the immediate user-data or security risk.
+- Outside the declared boundary and no contract violation: not a blocker; record only as a valid, actionable, owned follow-up.
+
+Review severity alone never expands PR scope. Maintainers own scope-expansion decisions.
+
+## Shipping a change (read before you commit)
+
+**The code you edit is not the code that runs, by default.** The checked-in
+`.mcp.json` points at the published PyPI package, so edits to this working tree
+have no effect on a client until you repoint it at local source. See
+[docs/contributing/developing.md](docs/contributing/developing.md).
+
+`main` is protected: direct pushes are rejected with `GH006`, for everyone,
+including the owner. Every change lands through a squash-merged PR, so a
+release tag must be created on the merged `main` commit — not before.
+
+Four checks are required to merge — reproduce them locally first:
+
+```bash
+uv run ruff format src/ tests/ && uv run ruff check src/ tests/ --fix
+uv run mypy src/ouroboros
+uv run pytest
+```
+
+(`Ruff Lint`, `MyPy Type Check`, `Test Python 3.12`, `Bridge TypeScript`.)
+
+Other gates fire conditionally and are easy to trip blind:
+
+- **Issue link present** — every PR needs `Refs #123` in the body. Exempt via
+  the `no-issue` label, or a title starting `chore(deps)` / `chore(release)` /
+  `release:`. Note `chore: release vX.Y.Z` does *not* match the prefix.
+- **enforce-module-size** — 2000-line cap per module; grandfathered modules may
+  shrink, never grow, and no new entries.
+- **enforce-boundary** — no domain keywords (`github`, `jira`, `slack`, …) in
+  `src/ouroboros/auto/`.
+- **enforce-perf-budget** — PRs touching `src/ouroboros/auto/` need the R-run
+  table filled in the PR body.
+
+Full reference, including every escape hatch and the release sequence:
+**[docs/contributing/ci-gates.md](docs/contributing/ci-gates.md)**.
+
 <!-- ooo:START -->
 <!-- ooo:VERSION:0.26.0 -->
 # Ouroboros — Specification-First AI Development
@@ -92,4 +152,7 @@ Loaded on-demand — not preloaded.
 
 **Core**: socratic-interviewer, ontologist, seed-architect, evaluator, qa-judge, contrarian
 **Support**: hacker, simplifier, researcher, architect
+**Analysis**: analysis-agent, ontology-analyst, codebase-explorer, research-agent, breadth-keeper
+**Execution**: code-executor, seed-closer, consensus-reviewer, semantic-evaluator
+**Specialist**: advocate, judge
 <!-- ooo:END -->

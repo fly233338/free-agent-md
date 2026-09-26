@@ -42,6 +42,66 @@ When the user types any of these commands, read the corresponding SKILL.md file 
 
 Bundled agents live in `src/ouroboros/agents/`. When a skill references an agent (e.g., `ouroboros:socratic-interviewer`), read its definition from `src/ouroboros/agents/{name}.md` and adopt that role. Use `OUROBOROS_AGENTS_DIR` or `.claude-plugin/agents/` only for explicit custom overrides.
 
+## Pull Request Boundary Policy
+
+Before implementing or reviewing a PR, read [Review Boundary Contract](CONTRIBUTING.md#review-boundary-contract). The PR description is the review contract, not an informal suggestion.
+
+Require contributors to declare: the one user problem; supported inputs and execution conditions; observable contract and invariants; changed subsystem, data/security boundary, and owner; non-goals; and evidence. Do not absorb new lifecycle, rollback, concurrency, filesystem-authority, or other ownership requirements without a maintainer decision.
+
+For every review finding, ask:
+
+1. Does it reproduce under the promised inputs and execution conditions?
+2. Does it break the promised contract?
+3. Does fixing it require a new subsystem or ownership boundary?
+4. Can the original user problem be solved without the subsystem introduced by this PR?
+5. If scope is split, does immediate user-data or security risk remain?
+
+Use these decisions:
+
+- Q1 + Q2: **Changes Requested**.
+- Q3 + Q5: stop and revisit the RFC with the maintainer; do not silently absorb the new subsystem or owner.
+- Q3 + Q4 and not Q5: owned follow-up, not a blocker; require a named owner and link.
+- Q5 without Q3 + Q5 escalation: **Changes Requested** for the immediate user-data or security risk.
+- Outside the declared boundary without a contract violation: not a blocker; record a valid, actionable finding only as an owned follow-up with a named owner and tracking link; do not expand the PR.
+
+Only the maintainer decides scope expansion. Keep review comments tied to the declared boundary and directly evidenced behavior. The declared boundary cannot waive existing public or repository contracts, approved issue or RFC requirements, or maintainer decisions.
+
+## Shipping a change (read before you commit)
+
+**The code you edit is not the code that runs, by default.** The checked-in
+`.mcp.json` points at the published PyPI package, so edits to this working tree
+have no effect on a client until you repoint it at local source. See
+[docs/contributing/developing.md](docs/contributing/developing.md).
+
+`main` is protected: direct pushes are rejected with `GH006`, for everyone,
+including the owner. Every change lands through a squash-merged PR, so a
+release tag must be created on the merged `main` commit — not before.
+
+Four checks are required to merge — reproduce them locally first:
+
+```bash
+uv run ruff format src/ tests/ && uv run ruff check src/ tests/ --fix
+uv run mypy src/ouroboros
+uv run pytest
+```
+
+(`Ruff Lint`, `MyPy Type Check`, `Test Python 3.12`, `Bridge TypeScript`.)
+
+Other gates fire conditionally and are easy to trip blind:
+
+- **Issue link present** — every PR needs `Refs #123` in the body. Exempt via
+  the `no-issue` label, or a title starting `chore(deps)` / `chore(release)` /
+  `release:`. Note `chore: release vX.Y.Z` does *not* match the prefix.
+- **enforce-module-size** — 2000-line cap per module; grandfathered modules may
+  shrink, never grow, and no new entries.
+- **enforce-boundary** — no domain keywords (`github`, `jira`, `slack`, …) in
+  `src/ouroboros/auto/`.
+- **enforce-perf-budget** — PRs touching `src/ouroboros/auto/` need the R-run
+  table filled in the PR body.
+
+Full reference, including every escape hatch and the release sequence:
+**[docs/contributing/ci-gates.md](docs/contributing/ci-gates.md)**.
+
 <!-- ooo:START -->
 <!-- ooo:VERSION:0.26.0 -->
 # Ouroboros — Specification-First AI Development

@@ -1,7 +1,7 @@
 # neovim/neovim instruction files
 
-Upstream: [neovim/neovim](https://github.com/neovim/neovim) · License: `NOASSERTION` · Commit: `378128aab90558d729117a2b0fc948e682f6ab01`
+Upstream: [neovim/neovim](https://github.com/neovim/neovim) · License: `NOASSERTION` · Commit: `521eddec7c243a8166609bf1734cb940e9510fc5`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/neovim/neovim/AGENTS.md) | [Source](https://github.com/neovim/neovim/blob/378128aab90558d729117a2b0fc948e682f6ab01/AGENTS.md) | `b7564c75ac9835a6c3b84c4b9462bb055238a33ddabed34d9a7679cc83ab8edc` | 242 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/neovim/neovim/AGENTS.md) | [Source](https://github.com/neovim/neovim/blob/521eddec7c243a8166609bf1734cb940e9510fc5/AGENTS.md) | `b7564c75ac9835a6c3b84c4b9462bb055238a33ddabed34d9a7679cc83ab8edc` | 242 B |
