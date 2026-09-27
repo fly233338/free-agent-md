@@ -2,12 +2,6 @@
   "full_name": "pollinations/pollinations",
   "points": [
     {
-      "checked_at": "2026-08-27T14:17:09Z",
-      "commit_sha": "fe74f248d7d50d6e6c11943e8c7711db93837664",
-      "pushed_at": "2026-08-27T14:14:19Z",
-      "stars": 5000
-    },
-    {
       "checked_at": "2026-09-08T08:09:08Z",
       "commit_sha": "aa354a27bb00e957669c9324e3f131d8aa986d28",
       "pushed_at": "2026-09-08T08:05:18Z",

@@ -2,12 +2,6 @@
   "full_name": "langgenius/dify",
   "points": [
     {
-      "checked_at": "2026-08-27T14:17:09Z",
-      "commit_sha": "458c96d5baf31ad8e812ceae6bba95f532da25ca",
-      "pushed_at": "2026-08-27T14:13:51Z",
-      "stars": 153664
-    },
-    {
       "checked_at": "2026-08-28T15:27:11Z",
       "commit_sha": "f8dd276e2c96d3cc722b9609bf887a81e6eb9cac",
       "pushed_at": "2026-08-28T15:05:45Z",
@@ -186,6 +180,12 @@
       "commit_sha": "3960b5710292c584102b918b982481c252b3be6f",
       "pushed_at": "2026-09-26T08:31:36Z",
       "stars": 157241
+    },
+    {
+      "checked_at": "2026-09-27T09:20:24Z",
+      "commit_sha": "725611b2e9a425519e9fcb4dcc579bafea936d27",
+      "pushed_at": "2026-09-26T18:41:17Z",
+      "stars": 157303
     }
   ],
   "repo_id": 626805178

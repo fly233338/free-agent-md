@@ -2,12 +2,6 @@
   "full_name": "affaan-m/ECC",
   "points": [
     {
-      "checked_at": "2026-08-27T14:17:09Z",
-      "commit_sha": "d8409a4b0813771235555e32e3d8046a73988bfa",
-      "pushed_at": "2026-08-25T21:27:27Z",
-      "stars": 243650
-    },
-    {
       "checked_at": "2026-08-28T15:27:11Z",
       "commit_sha": "5eddf1a3ffd311423be2d4ba7d26f7209c91b033",
       "pushed_at": "2026-08-28T01:14:39Z",
@@ -186,6 +180,12 @@
       "commit_sha": "e482e579415fde18357cafce70f177ae19fd7f03",
       "pushed_at": "2026-09-24T16:52:48Z",
       "stars": 267654
+    },
+    {
+      "checked_at": "2026-09-27T09:20:24Z",
+      "commit_sha": "e482e579415fde18357cafce70f177ae19fd7f03",
+      "pushed_at": "2026-09-24T16:52:48Z",
+      "stars": 268069
     }
   ],
   "repo_id": 1136590548

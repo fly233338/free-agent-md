@@ -2,12 +2,6 @@
   "full_name": "nibzard/awesome-agentic-patterns",
   "points": [
     {
-      "checked_at": "2026-08-27T14:17:09Z",
-      "commit_sha": "388b55dcc8bf7685b80c4d9a830e825e1a0cc81e",
-      "pushed_at": "2026-08-25T21:28:11Z",
-      "stars": 4917
-    },
-    {
       "checked_at": "2026-08-28T15:27:11Z",
       "commit_sha": "388b55dcc8bf7685b80c4d9a830e825e1a0cc81e",
       "pushed_at": "2026-08-25T21:28:11Z",
@@ -78,6 +72,12 @@
       "commit_sha": "388b55dcc8bf7685b80c4d9a830e825e1a0cc81e",
       "pushed_at": "2026-08-25T21:28:11Z",
       "stars": 4945
+    },
+    {
+      "checked_at": "2026-09-27T09:20:24Z",
+      "commit_sha": "a3b328f557291e480ad87686dbacd848cd58bf3c",
+      "pushed_at": "2026-09-26T18:00:59Z",
+      "stars": 4995
     }
   ],
   "repo_id": 993717808

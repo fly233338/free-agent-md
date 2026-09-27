@@ -1,8 +1,8 @@
 # vinta/awesome-python instruction files
 
-Upstream: [vinta/awesome-python](https://github.com/vinta/awesome-python) · License: `NOASSERTION` · Commit: `3f5e5d4d272a259459ff6495a4c9766f6dca4ea6`
+Upstream: [vinta/awesome-python](https://github.com/vinta/awesome-python) · License: `NOASSERTION` · Commit: `ec4fd5dd7e377d134b1977ee329c7a4e0d05d2b5`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/vinta/awesome-python/AGENTS.md) | [Source](https://github.com/vinta/awesome-python/blob/3f5e5d4d272a259459ff6495a4c9766f6dca4ea6/AGENTS.md) | `6190952945cc679049f81a553f8edcb40b20bdc0d7675691fe2b5858a9ed1fc7` | 1,771 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/vinta/awesome-python/CLAUDE.md) | [Source](https://github.com/vinta/awesome-python/blob/3f5e5d4d272a259459ff6495a4c9766f6dca4ea6/CLAUDE.md) | `a086f3e71549d888ea5e19f296e45c1dd7103fce0e0df752e4c6941a14ce4898` | 1,771 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/vinta/awesome-python/AGENTS.md) | [Source](https://github.com/vinta/awesome-python/blob/ec4fd5dd7e377d134b1977ee329c7a4e0d05d2b5/AGENTS.md) | `727d4faa930796a329ffc93bdb622fd71b4a270f68c5dd7cf681912819dba72a` | 3,235 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/vinta/awesome-python/CLAUDE.md) | [Source](https://github.com/vinta/awesome-python/blob/ec4fd5dd7e377d134b1977ee329c7a4e0d05d2b5/CLAUDE.md) | `20112b630a4884b30565320dcbe7ade72a5640e2d1cf023cbf36b5dd58eee7e3` | 3,235 B |
