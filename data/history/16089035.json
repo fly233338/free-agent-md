@@ -2,12 +2,6 @@
   "full_name": "wekan/wekan",
   "points": [
     {
-      "checked_at": "2026-08-28T15:27:11Z",
-      "commit_sha": "63c9e1385eac0253d6318e598782549ae6ca3b03",
-      "pushed_at": "2026-08-28T15:21:02Z",
-      "stars": 21067
-    },
-    {
       "checked_at": "2026-08-29T10:10:12Z",
       "commit_sha": "464e51d3b463baeec51c6940105db301f51a17eb",
       "pushed_at": "2026-08-29T09:54:20Z",
@@ -18,6 +12,12 @@
       "commit_sha": "75fd2bef2f21faff31266b5801702532d2850dc3",
       "pushed_at": "2026-09-11T08:04:02Z",
       "stars": 21074
+    },
+    {
+      "checked_at": "2026-09-28T09:53:40Z",
+      "commit_sha": "ee2f5a9f722e72833d3504420003754d5c4308ee",
+      "pushed_at": "2026-09-28T09:51:25Z",
+      "stars": 21097
     }
   ],
   "repo_id": 16089035

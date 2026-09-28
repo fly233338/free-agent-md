@@ -2,12 +2,6 @@
   "full_name": "metabase/metabase",
   "points": [
     {
-      "checked_at": "2026-08-28T15:27:11Z",
-      "commit_sha": "7e3ab7a682f2f3f13e1e054d8f4517a9b7bf8153",
-      "pushed_at": "2026-08-28T15:25:58Z",
-      "stars": 48978
-    },
-    {
       "checked_at": "2026-09-02T07:57:56Z",
       "commit_sha": "fc3927c030fbc1ca4512f4f81a5db9c366a4c66e",
       "pushed_at": "2026-09-02T07:51:34Z",

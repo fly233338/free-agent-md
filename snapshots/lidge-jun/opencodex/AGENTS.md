@@ -14,8 +14,9 @@ Bun-native TypeScript with no separate server compile step.
 - `src/` — proxy runtime: routing, provider adapters, config, management API.
 - `tests/` — Bun tests in domain directories that mirror `src/`
   (`tests/<domain>/*.test.ts`; `providers/` and `adapters/` have one more
-  level for the larger vendors). The map is `scripts/test-layout/layout.json`
-  and `tests/test-layout.test.ts` enforces it: every file resolves to a
+  level for the larger vendors). The explicit map is
+  `scripts/test-layout/layout.json`, with regex seeds and migration state in
+  `scripts/test-layout/seeds.json`; `tests/test-layout.test.ts` enforces that every file resolves to a
   domain and sits in it, and only the two layout guards live at the root.
   Shared helpers in `tests/helpers/`, fixtures in `tests/fixtures/`, broader
   scenarios in `tests/e2e-style/`. Source-oracle tests resolve the repository
@@ -24,7 +25,7 @@ Bun-native TypeScript with no separate server compile step.
   test file lands in its domain directory and needs an entry in both
   `layout.json` `explicit` and `tests/fixtures/test-layout-expected.json`
   (`tests/test-layout-tooling.test.ts` names the missing one); the regex
-  seeds in `layout.json` place a conventionally named file until then.
+  seeds in `seeds.json` place a conventionally named file until then.
   History: `devlog/_fin/260905_test_modularization_and_windows/`.
 - `gui/` — React + Vite dashboard; packaged output is served from `gui/dist`.
 - `app/` — native macOS WidgetKit extension bundled into the Tauri desktop app;
@@ -339,9 +340,16 @@ than nudged.
   issues, so there is no freeform fallback).
 - **Opening a pull request:** fill every section of
   `.github/PULL_REQUEST_TEMPLATE.md` (Summary, Verification, Checklist).
-  `enforce-target` rejects empty, thin, or malformed descriptions, and a PR
-  whose title or description mentions `gui` must include a screenshot of the
-  UI change in the description. When the PR resolves an issue, add
+  `enforce-target` rejects empty, thin, or malformed descriptions. If the PR
+  changes files under `gui/`, include a screenshot of the UI change in the
+  description; the check re-runs on description edits until the screenshot is
+  present. Drag the image into the description editor rather than committing it:
+  an image on your branch rides the squash merge into `dev`. Maintainers
+  uploading from the command line use the `pr-assets` branch and link by commit
+  SHA. Never commit screenshot evidence to the PR branch — the squash merge carries
+  it into `dev`, which is how `docs/pr-assets/` and its siblings grew until
+  they were deleted; `tests/ci-workflows/repo-hygiene.test.ts` now rejects
+  those folders. When the PR resolves an issue, add
   `Closes #<number>` to link it. GitHub auto-closes the linked issue only
   when the PR merges into the default branch (`main`); PRs here target
   `dev`, so close the issue manually once the change is on `dev`.
@@ -379,8 +387,11 @@ commits in the description.
 
 The **`enforce-target`** CI check rejects pull requests whose head
 ancestry sits on the **`main`** tip while far behind **`dev`**, and rejects
-empty, thin, or malformed descriptions; PRs whose title or description
-mentions `gui` must include a screenshot of the UI change in the description.
+empty, thin, or malformed descriptions. If changed paths include files under
+`gui/`, include a screenshot of the UI change in the description; the check
+re-runs on description edits until the screenshot is present. Drag the image
+into the description editor rather than committing it, or, when uploading from
+the command line, use the `pr-assets` branch and link by commit SHA.
 Contributor PRs (authors without repository push permission) open in draft and
 stay there until a four-box review-readiness checklist in the description is
 complete: required local validation passed with its scope documented, branch

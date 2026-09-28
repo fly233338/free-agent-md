@@ -1,7 +1,7 @@
 # openclaw/openclaw instruction files
 
-Upstream: [openclaw/openclaw](https://github.com/openclaw/openclaw) · License: `NOASSERTION` · Commit: `0ce91c7963587e3f83fe11ead9ec943c558dada2`
+Upstream: [openclaw/openclaw](https://github.com/openclaw/openclaw) · License: `NOASSERTION` · Commit: `81a840ad3d12124b5fcb901f6805e6410ca5dc2a`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/openclaw/openclaw/AGENTS.md) | [Source](https://github.com/openclaw/openclaw/blob/0ce91c7963587e3f83fe11ead9ec943c558dada2/AGENTS.md) | `dbf7ce12f54ce62ab963408ef67072a4b0510248eb3ed17b7f9b85a11f18f549` | 26,380 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/openclaw/openclaw/AGENTS.md) | [Source](https://github.com/openclaw/openclaw/blob/81a840ad3d12124b5fcb901f6805e6410ca5dc2a/AGENTS.md) | `6998e935bbca22c27160093b193ee989eb9e9229cf651be10173652cebfd063b` | 27,918 B |

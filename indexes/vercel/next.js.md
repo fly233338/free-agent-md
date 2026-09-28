@@ -1,9 +1,9 @@
 # vercel/next.js instruction files
 
-Upstream: [vercel/next.js](https://github.com/vercel/next.js) · License: `MIT` · Commit: `0423222b7eb3a1373b5bff4c939fd69858928993`
+Upstream: [vercel/next.js](https://github.com/vercel/next.js) · License: `MIT` · Commit: `705a28453296df17c5d269a4248ca36758a6fce2`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/vercel/next.js/AGENTS.md) | [Source](https://github.com/vercel/next.js/blob/0423222b7eb3a1373b5bff4c939fd69858928993/AGENTS.md) | `b092e770678a51d3f979e213c2adccaa2adcff2ea4fa862653716c068b7abab3` | 29,546 B |
-| `AGENTS.md` | `.github/AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/vercel/next.js/.github/AGENTS.md) | [Source](https://github.com/vercel/next.js/blob/0423222b7eb3a1373b5bff4c939fd69858928993/.github/AGENTS.md) | `2249a2aa51b311a478c9fb3281499f83e8583c98618879833b2ce27ca5ff14ad` | 2,925 B |
-| `CLAUDE.md` | `.github/CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/vercel/next.js/.github/CLAUDE.md) | [Source](https://github.com/vercel/next.js/blob/0423222b7eb3a1373b5bff4c939fd69858928993/.github/CLAUDE.md) | `2249a2aa51b311a478c9fb3281499f83e8583c98618879833b2ce27ca5ff14ad` | 2,925 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/vercel/next.js/AGENTS.md) | [Source](https://github.com/vercel/next.js/blob/705a28453296df17c5d269a4248ca36758a6fce2/AGENTS.md) | `b092e770678a51d3f979e213c2adccaa2adcff2ea4fa862653716c068b7abab3` | 29,546 B |
+| `AGENTS.md` | `.github/AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/vercel/next.js/.github/AGENTS.md) | [Source](https://github.com/vercel/next.js/blob/705a28453296df17c5d269a4248ca36758a6fce2/.github/AGENTS.md) | `2249a2aa51b311a478c9fb3281499f83e8583c98618879833b2ce27ca5ff14ad` | 2,925 B |
+| `CLAUDE.md` | `.github/CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/vercel/next.js/.github/CLAUDE.md) | [Source](https://github.com/vercel/next.js/blob/705a28453296df17c5d269a4248ca36758a6fce2/.github/CLAUDE.md) | `2249a2aa51b311a478c9fb3281499f83e8583c98618879833b2ce27ca5ff14ad` | 2,925 B |

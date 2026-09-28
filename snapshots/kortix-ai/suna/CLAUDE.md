@@ -1,12 +1,5 @@
 # Kortix project
 
-## Linear tracking
-
-Capability-page work uses Team `Jay`, project `customize`, and the milestone that
-matches the active phase. Search before creating issues. Move the active issue to
-`In Progress` before editing. Mark it `Done` only after the change is merged,
-deployed to dev, and verified there.
-
 ## What "ownership" means
 
 The words "can you own this?", "are you on it?", and "can you take care of this?"
@@ -111,15 +104,90 @@ and actual Merit/Skill. It's hard, because you have to not only be very smart bu
 also crazy driven to push like a motherfucker and want to feel every edge and
 corner to make sure the output is good.
 
-## Learnings: incident rules live in the `learnings` skill
+## Skills live in `.agents/skills/`
 
-`.claude/skills/learnings/SKILL.md` is the append-only register of rules paid
-for with real downtime — each with the incident that taught it and the
-automation that enforces it. Load it before writing or reviewing a DB
-migration, touching deploy/release workflows, planning a promote, or responding
-to a prod incident. After resolving ANY incident or near-miss, append its rule
-there in the same session — an incident that leaves no learning behind is not
-finished.
+Every repo skill is a directory in `.agents/skills/<name>/`. `.claude/skills/<name>` is a
+symlink to it. Add a skill in `.agents/skills/`, then add the symlink. Third-party skills come
+from `npx skills add` and are pinned in `skills-lock.json`. The PR procedure is the
+**contributing** skill. Browser work is the **agent-browser** skill.
+
+The repository has no `docs/` tree. Put a runbook or spec in the skill that owns the
+surface (`.agents/skills/<name>/references/`). Put an incident rule in the learnings
+ledger. Put design detail and RCAs in the PR body. Never cite a repo path that does
+not exist. The pre-commit hook and `tests/unit/no-docs-tree.test.ts` reject a new
+`docs/` file and any citation of one.
+
+## Ponytail is on by default
+
+Every code change runs through the **ponytail** skill at level `full`. Load it before you
+write, fix, refactor, or review code, and before you add a dependency. Level switch:
+`/ponytail lite|full|ultra`. Off: "stop ponytail". **ponytail-review** audits a diff for
+over-engineering, **ponytail-audit** audits the whole repo, and **ponytail-debt** lists
+every `ponytail:` shortcut comment. Ponytail cuts code, never the verification,
+documentation, or ownership bar in this file. The skills come from
+`DietrichGebert/ponytail`, pinned to `v4.10.0` in `skills-lock.json`.
+
+## Learnings: the episodic ledger in the `learnings` skill
+
+`.agents/skills/learnings/` is the append-only, timestamped ledger of rules paid
+for with real downtime. `MEMORY.md` indexes it newest first, and each entry is
+one file in `entries/`: the rule, the incident that taught it, and the
+automation that enforces it. Search it before writing or reviewing a DB
+migration, touching deploy/release workflows, planning a promote, or
+responding to a prod incident. After resolving ANY incident or near-miss,
+record a new entry in the same session with `scripts/new-entry.sh`. An incident
+that leaves no entry behind is not finished.
+
+## NEVER write customer data or PII into anything we publish or commit
+
+This is a hard rule. No exceptions, no "just this once", no "it's only
+internal".
+
+**Never write any of these:**
+
+- customer or company names, and the names of their people;
+- email addresses, phone numbers, or other personal data;
+- real account, project, session, user, or sandbox IDs from prod, staging, or
+  a customer deployment;
+- customer repository names, hostnames, or URLs that contain any of the above;
+- customer prompts, messages, files, or log lines;
+- screenshots of a real customer workspace.
+
+**Never write them into:**
+
+- commits, commit messages, or branch names;
+- PR titles, PR bodies, PR comments, or review comments;
+- issues;
+- code comments, test names, or test fixtures;
+- docs, runbooks, skills, `AGENTS.md`, changelogs, or release notes;
+- artifacts, Slack posts, or any public or team-visible text.
+
+**Write the class instead:** "a customer reported", "an enterprise
+workspace", "a prod session", `<session_id>`. Build test data from synthetic
+values. Evidence that contains real data stays local: the gitignored
+`output/` folder, your scratchpad, or the private agent memory. It never goes
+into a tracked file.
+
+**If you find customer data** in the tree or in a PR, remove it in the same
+branch and say so. Do not rewrite history on `main`. Report the SHA to the user
+instead.
+
+**A guard enforces this on every commit and push.**
+`scripts/check-blocked-terms.sh` runs from `.githooks/pre-commit`,
+`.githooks/commit-msg`, and `.githooks/pre-push`. It refuses any added line,
+commit message, or pushed branch name that contains a blocked term. Matching is
+case-insensitive and whole-word. The list is itself customer data, so it lives
+encrypted in `apps/api/.env` as `BLOCKED_COMMIT_TERMS`, comma-separated.
+
+- Add a customer the day they sign: `dotenvx set BLOCKED_COMMIT_TERMS
+  "<existing>,<new>" -f apps/api/.env`. Read the current value first with
+  `dotenvx get BLOCKED_COMMIT_TERMS -f apps/api/.env`.
+- In a worktree the guard decrypts with the primary checkout's
+  `apps/api/.env.keys`. Without a key it warns and allows.
+- Deleting a line that contains a term is always allowed.
+- Never bypass the guard with `--no-verify`. If it fires, remove the term.
+- The hooks do not see PR titles, PR bodies, or comments. Those stay your
+  responsibility.
 
 ## How to communicate: precise, technically accurate, no fluff
 
@@ -156,61 +224,103 @@ technical precision with zero filler. Apply these rules:
 This standard governs how you talk. It does not override the technical rules
 below; it is how you report on them.
 
-## First, at session start: where do you work?
+## First, at session start: which canonical branch are you in?
 
-Before starting any non-trivial change, **ask the user which environment to work
-in** — don't assume. Three choices:
+Every change belongs to **one canonical branch** — the branch for whatever is
+being worked on. One canonical branch, one worktree. Establish which one you are
+in before any non-trivial change. **Do not create a branch by reflex.**
 
-1. **A new isolated worktree** (`pnpm worktree`) — the default for any feature,
-   bugfix, refactor, or experiment beyond a one-line edit. Own branch, own port
-   block, own `node_modules`, own tunnel; runs in parallel without touching the
-   primary web/API stack. By default it reuses the primary checkout's standard
-   local Supabase DB for fast setup and consistent auth. Provision non-blocking with
-   `pnpm worktree create --name <feat> --yes --no-start`, then do all edits/runs
-   under the sibling checkout `../suna-<feat>`. If the change needs database
-   migrations, destructive data work, schema drift, or independent auth/storage
-   state, opt into the full isolated data plane with
-   `pnpm worktree create --name <feat> --db --yes --no-start`. See the
-   **worktree** skill.
-2. **Straight in this primary checkout** via `pnpm dev` (web `3000` / api `8008`)
-   — on `main` or whatever branch is already checked out here. Simplest; fine
-   for small or quick iterative work where isolation isn't needed.
-3. **An existing worktree** — list them with `git worktree list` and work in the
-   one the user names.
+1. **Join the canonical branch that already exists** for this work. List them
+   with `git worktree list` and `git branch -r`. If the work continues, extends,
+   fixes, or cleans up something already in flight, it belongs on that branch.
+   Ask the user which branch when it is not obvious.
+2. **Start a new canonical branch** only when the work is genuinely a new thing.
+   Give it its own worktree: `pnpm worktree create --name <slug> --yes
+   --no-start`, then do all edits and runs under `../suna-<slug>`. Add `--db`
+   only when the work needs migrations, destructive data work, schema drift, or
+   independent auth/storage state. See the **worktree** skill.
+3. **The primary checkout** (`pnpm dev`, web `3000` / api `8008`) is for running
+   and investigating. Do not park feature work there.
 
-Carve-outs where you don't need to ask — just proceed: read-only
-investigation/questions, and trivial single-file typo/comment fixes on the
-current branch.
+**Pack more into one branch, not less.** A follow-up fix, a rename cleanup, a
+stale-reference sweep, and the change that caused them all belong on the same
+branch and land together. Splitting one objective across several branches is how
+a half-finished cutover reaches `main` in pieces — each piece green alone, the
+whole thing broken.
 
-## Default delivery: PR, merge to main, then prove it on dev
+Sub-branches are allowed. Agents may cut working branches off the canonical
+branch and merge back into it. **A sub-branch never opens a PR against `main`.**
+Only the canonical branch does.
 
-Unless the user explicitly asks for a different delivery path, complete every
-non-trivial change through this full lifecycle:
+Carve-outs where you just proceed: read-only investigation and questions, and
+trivial single-file typo/comment fixes on the current branch.
 
-1. Work on a dedicated branch in an isolated worktree and keep the commit scoped
-   to that change.
-2. Run the relevant local unit, type, integration, and end-to-end checks with
-   real inputs and outputs.
-3. Push the branch, open a PR against `main`, wait for required checks, and merge
-   it. Do not leave finished work only on a branch or stop after opening the PR.
-4. Dev **auto-deploys on merge to `main`** — every push builds the surfaces that
-   changed vs dev's live SHA and cancels any superseded in-flight deploy. Follow
-   the resulting **Deploy Dev** run through completion. Confirm the deployed
-   artifact contains the merged SHA; a successful `/health` response alone is not
-   deployment proof. A newer push cancels an older run by design — if yours was
-   cancelled before it deployed, the next push re-picks-up your still-stale
-   surface, or force it with `gh workflow run deploy-dev.yml -f surface=all`.
-   Full procedure, surfaces, and verification: `docs/runbooks/deploy-dev.md`.
-5. Re-run the user-visible behavior against `https://dev.kortix.com` and/or
+## Default delivery: share by preview, self-merge to `main` when verified
+
+`main` auto-deploys to dev, so **merging to `main` publishes to the whole team.**
+It is not a save point, and it is not how you show someone your work.
+
+1. Work on the canonical branch in its worktree. Commit as often as you want.
+2. Open a **draft PR against `main` on the first commit** and apply the
+   `preview` label. Follow the **contributing** skill: it fills the PR template,
+   finds the preview origin, records the demo video with agent-browser, and
+   attaches it with `gh pr edit --attach`. Every PR body carries that video.
+   The `preview` label builds a complete self-host preview for the branch — its
+   own PostgreSQL, Supabase, API, gateway, frontend, and HTTPS origin. This is how
+   work is shared and reviewed internally. **Sharing never requires merging.**
+   The `preview` label also runs the six-lane `Tests` suite on the PR.
+3. Run the relevant local unit, type, integration, and end-to-end checks with
+   real inputs and outputs. **CI does not run the local suite on a PR into
+   `main`** — run it yourself (narrowest command first, then `pnpm test`), or
+   add the `test` label to get the six CI lanes (~8 min, no push needed). Keep
+   the PR green as you go, not at the end.
+4. Merge `main` into the canonical branch daily. A branch that diverges for weeks
+   detonates on merge exactly like a 1,500-line PR does.
+5. **Self-merge to `main` when the change is verified. Do not wait for the
+   user's approval.** Speed matters: a verified change that sits unmerged is
+   waste. Verified means all of these are true:
+   - the relevant local checks ran with real inputs and outputs (rule 3), and
+     they passed;
+   - the PR is mergeable, and the `Tests` lanes are green (the `preview` or
+     `test` label runs them);
+   - rule 6 holds when the change touches a client-facing runtime contract.
+   A failing or skipped check blocks the merge until you fix it or state why it
+   is unrelated (for example, the same test fails on `main`). Squash-merge
+   (`gh pr merge <pr> --squash`), then finish rules 7 and 8. A merge is not
+   the end of the work: dev verification is still yours.
+   The only machine-enforced rule is that every change reaches `main` and
+   `staging` through a pull request — no required approvals, no required status
+   checks, no bypass actors. The discipline is yours, not the ruleset's, so the
+   bar is what you verified, not what CI let through.
+   **The release gates do not change.** Merging into `staging` or `prod`,
+   running Promote to Production, and moving the `:stable` tag each need the
+   user's explicit approval (the **kortix-release** skill).
+6. **A change to a client-facing runtime contract** — the `@kortix/sdk` public
+   surface, session/thread transport, the streaming protocol — merges only after
+   the whole objective ran on its own preview origin through a real session.
+   Green tests are not the bar. Someone used it.
+7. After the merge, wait for the **Live on dev** comment on your pull request.
+   Deploy Dev posts it when `/health` on every surface it changed serves the
+   deployed commit, with the time since merge; "Not live on dev yet" names the
+   surface that failed. A successful `/health` response alone is not
+   deployment proof — the comment checks the commit. Deploys queue, they never
+   cancel: a run in flight finishes, then the newest waiting push deploys, so
+   a merge is live within about two deploy lengths. Force a full redeploy with
+   `gh workflow run deploy-dev.yml -f surface=all`. The surfaces and their
+   checks are in `.github/workflows/deploy-dev.yml`. The same push runs the
+   `Tests` suite on the merge commit in parallel. It does not gate the deploy.
+   A red run comments on the commit and names the failing lanes — read it.
+8. Re-run the user-visible behavior against `https://dev.kortix.com` and/or
    `https://dev-api.kortix.com`. Prefer the real Kortix CLI configured for the
    dev API for CLI/project/session flows, and direct authenticated HTTP calls for
    API contracts. For web behavior, drive the deployed UI and assert its network
    request plus visible result.
 
-Local verification and dev verification are both required. A local pass does
-not replace the deployed check, and a dev smoke test does not replace focused
-local tests. Record the PR, merge SHA, deploy run, deployed SHA evidence, and
-exact dev command or interaction in the final response.
+Preview verification, local verification, and dev verification are all required.
+A local pass does not replace the preview origin, and a dev smoke test does not
+replace focused local tests. Record the branch, PR, preview origin, merge SHA,
+deploy run, deployed SHA evidence, and the exact dev command or interaction in
+the final response.
 
 ## Architecture: `@kortix/sdk` is the source of truth
 
@@ -221,8 +331,7 @@ and auth-token plumbing. The apps
 (`apps/web`, `apps/whitelabel-demo`, `apps/mobile`) are **thin consumers**. Treat
 these as standing rules whenever you touch the data/runtime layer:
 
-> **Editing `packages/sdk` itself? Read `packages/sdk/PROGRESS.md` (current state,
-> claim your task) and `packages/sdk/AGENTS.md` (the rules) first.** It is a
+> **Editing `packages/sdk` itself? Load the **sdk** skill (the rules) first.** It is a
 > **published npm package** with its own hard rules that have no analogue
 > elsewhere in this repo: **TDD is mandatory** (failing test first, run it, watch
 > it fail, then implement — and every turn ends with the gates run, the real
@@ -284,10 +393,12 @@ mocked internals when a real surface exists.
   same flags and stdin a user or agent would use. Assert exit code, stdout,
   stderr, and any files/API calls/commits it should create. Do not rely only on
   importing command functions.
-- **Web changes:** drive the real page in Chromium/Playwright/chrome-devtools.
-  Click/type/toggle the actual controls, intercept or observe the network
-  request, and assert the visible UI state plus the outgoing payload. Screenshots
-  are useful evidence, but assertions on DOM and network data are required.
+- **Web changes:** drive the real page with **agent-browser** (the primary
+  browser; `agent-browser skills get core` loads its guide). Click/type/toggle
+  the actual controls, observe the network request (`agent-browser network`),
+  and assert the visible UI state plus the outgoing payload. Record the flow
+  (`agent-browser record start`) for the PR's demo video. Screenshots and video
+  are evidence, but assertions on DOM and network data are required.
 - **Cross-surface features:** verify each exposed surface independently. If the
   same feature ships on API + CLI + web + mobile, each gets its own black-box
   assertion for the inputs users can make and the outputs they receive.
@@ -349,13 +460,16 @@ See `tests/e2e/helpers/session-auth.ts` for the exact calls.
 ### One local testing system
 
 - `pnpm test` is the only repository-level test command. It runs local REST and
-  CLI flows, SDK tests, runner unit tests, route coverage, and worktree tests
-  concurrently.
+  CLI flows, SDK tests, PostgreSQL-backed suites (`db-suites`), runner unit
+  tests, route coverage, and worktree tests concurrently.
 - `pnpm test -- --id ACC-4` runs one flow. `--domain access` runs one domain.
 - `pnpm test -- --sdk-only` runs only `packages/sdk` tests.
+- `pnpm test -- --db-only [path-filter]` runs only the PostgreSQL-backed suites
+  (`integration-*.test.ts`, `*.integration.test.ts`, `tests/migration`), each
+  file against its own fresh migrated database. A skipped DB suite fails.
 - `pnpm test -- --browser-only` runs Playwright browser journeys. It starts the
   deterministic local stack.
-- Local browser runs use two Playwright workers. CI browser shards use one.
+- Browser runs use two Playwright workers, locally and in each CI shard.
 - `pnpm test -- --packages-only` runs every app/package test and publish check.
 - `pnpm test -- --full` adds browser journeys and every app/package test. It
   starts the deterministic local stack.
@@ -370,28 +484,59 @@ See `tests/e2e/helpers/session-auth.ts` for the exact calls.
 - Every root run writes lane and total timings to
   `tests/test-results/local/benchmark-<timestamp>.json`.
 - Every Linux CI job runs on Blacksmith through `runs-on: ${{ vars.CI_RUNNER_<tier>
-  || '<label>' }}`. Tiers, the kill switch back to GitHub-hosted runners, and
-  the Docker layer cache: `docs/runbooks/ci-runners.md`.
-- GitHub Actions runs four lanes — `core`, `browser-1`, `browser-2`, `packages` —
-  natively, one Blacksmith runner each (`CI_RUNNER_L`), through
-  `.github/workflows/tests.yml`. The two browser lanes are halves of one sharded
-  run (`--browser-shard=1/2` and `2/2`). The slowest lane defines the gate
-  duration. Each lane is the unchanged root command at the exact PR head SHA;
-  browser lanes install Chromium and prestart Supabase first. Do not add
-  CI-only test logic. (The Platinum/Daytona sandbox-worker path was removed on
-  2026-08-26; only `deploy-preview.yml` still uses a cloud sandbox.)
+  || '<label>' }}`. Setting a `CI_RUNNER_<tier>` repository variable to a
+  GitHub-hosted label is the kill switch back to GitHub-hosted runners.
+- GitHub Actions runs six lanes — `core`, `browser-1` … `browser-4`, `packages`
+  — natively, one Blacksmith runner each (`CI_RUNNER_L`), through
+  `.github/workflows/tests.yml`. The four browser lanes are quarters of one
+  sharded run (`--browser-shard=N/4`, Playwright's native `--shard`). The suite
+  measures 8m17s wall clock; `packages` (~8 min) is the slowest lane, so a fifth
+  browser shard buys nothing and the concurrency settings in
+  `tests/bin/package-quality.ts` must not be raised. Each lane is the unchanged
+  root command at the exact requested SHA; browser lanes install Chromium and
+  prestart Supabase first. Do not add CI-only test logic. (The Platinum/Daytona
+  sandbox-worker path was removed on 2026-08-26; only `deploy-preview.yml` still
+  uses a cloud sandbox.)
+- The suite runs on every push to `main`, on a pull request into `staging`, on a
+  pull request labelled `test` or `preview`, and on manual dispatch. The label
+  re-triggers an open pull request without a push. A plain pull request into
+  `main` skips it, and its check shows as skipped. A push-to-`main` run
+  blocks nothing: a red run comments the failing lanes on the commit, a cancelled
+  run means a newer commit superseded it. A pull request into `prod` runs
+  `tests-release.yml` against deployed staging instead.
+- Run the suite locally before merging into `main`: the narrowest relevant
+  command first, then `pnpm test`. The old per-pull-request gate cost ~11 min
+  median and 68 min worst case and gated nothing, because `main` and `staging`
+  require no status check.
 - Release tests run `pnpm test -- --target-full` against deployed staging. They block
   production when API or gateway health reports a SHA other than
   `RELEASE_SOURCE_SHA`, when any API flow is excluded, or when a configured
   Playwright journey fails.
 - The `preview` label creates one full self-host preview in a persistent warm
-  Platinum sandbox. `auto` uses Daytona only for a Platinum infrastructure
-  failure. The preview has its own PostgreSQL, Supabase, API, gateway, frontend,
-  Mailpit, and HTTPS origin.
-- Preview CI runs `pnpm test -- --target-full` against that origin. The sticky
-  pull request comment links the origin and its `/_tests/` HTML report.
-- A preview head change deletes the sandbox and removes the stale `preview`
-  label. Unlabel, close, and scheduled reconciliation also delete the sandbox.
+  Platinum sandbox. Previews run on Platinum only: the preview host and every
+  session inside it. A Platinum failure fails the preview; there is no Daytona
+  fallback. Daytona code remains only to delete previews created before
+  2026-09-22. The preview has its own PostgreSQL, Supabase, API, gateway,
+  frontend, Mailpit, and HTTPS origin.
+- The `preview` label deploys; it does not run `--target-full`. A deploy takes
+  about 7 min. The sticky pull request comment links the origin as soon as the
+  stack serves the commit ("live; NOT tested").
+- `gh workflow run deploy-preview.yml -f pr_number=<N>` redeploys and runs
+  `pnpm test -- --target-full` against that origin (40–80 min). The comment then
+  gives the result and its `/_tests/` HTML report. Run it only for a deployed-only
+  surface: managed Git, Platinum sessions, Stripe. It gates no merge.
+- A deploy that waited in the per-PR queue re-checks the head SHA, the label, and
+  the branch. When any one changed, the run cancels itself and deploys nothing.
+- A push to a `preview`-labelled branch redeploys its environment in place; the
+  label stays. Removing the label or deleting the branch tears it down. Closing
+  the pull request does not. An hourly reconciler deletes environments whose
+  branch no longer exists (`deploy-preview.yml` `teardown`, `teardown-branch`,
+  `reconcile`). It also stops (never deletes) a host whose pull request is not
+  an open `preview` pull request, or that idled over 1 hour. A stopped host
+  keeps its disk; a redeploy or the next request to its URL starts it again.
+- A preview suite waits up to 45 min before it starts until the Platinum pool
+  has 64 GB free and the managed org saw at most 100 new repositories in the
+  last hour (`PREVIEW_SUITE_*`). It then stops the session boxes it created.
 - Preview warm images contain dependencies and Docker layers only. They never
   contain a database or runtime secret.
 - Preview Mailpit handles authentication and invite email. The dedicated
@@ -441,18 +586,27 @@ See `tests/e2e/helpers/session-auth.ts` for the exact calls.
   `dev-api.kortix.com`, treat that as a broken staging setup, not a passing
   staging gate.
 
-### Driving the real UI (chrome-devtools MCP)
+### Driving the real UI (agent-browser)
 
+- **agent-browser is the browser for every agent task in this repo.** Use it
+  before chrome-devtools MCP, Playwright MCP, or any other built-in browser
+  tool. Playwright stays the engine of the committed browser test suite only.
+- The installed skill is a stub. Load the guide that matches the CLI version:
+  `agent-browser skills get core` (`--full` adds the command reference).
+- Use one named session per worktree:
+  `agent-browser session id --scope worktree --prefix <task>`, then pass
+  `--session <id>` on every command. Keep every `AGENT_BROWSER_*` variable the
+  same for all commands in a session. A per-command change relaunches the
+  browser and drops the open page.
 - Routes are auth-gated (`/dashboard`, `/projects/*` → redirect to `/auth`
   unauthenticated); sign in first (seed a user as above, then log in via the
-  `/auth` form, or inject the Supabase session).
-- The MCP uses a dedicated Chrome profile at
-  `~/.cache/chrome-devtools-mcp/chrome-profile` (separate from your normal
-  browser). If launch fails with "browser is already running for … profile",
-  kill the orphaned Chrome using that profile and remove
-  `chrome-profile/Singleton{Lock,Cookie,Socket}`, then retry.
+  `/auth` form). On a PR preview, the magic link arrives in the preview's Mailpit API
+  (`<origin>/_mailpit/api/v1`)
+  (the **contributing** skill has the script).
 - Next.js dev compiles routes on first hit — first navigation to a cold route
   can take 30–60s; warm it with `curl` or use a generous navigation timeout.
+- `agent-browser doctor` diagnoses launch and recording problems. Recording
+  needs ffmpeg with libvpx and libx264.
 
 ### Frontend type/lint gate
 
@@ -471,10 +625,38 @@ See `tests/e2e/helpers/session-auth.ts` for the exact calls.
 
 ### Frontend design standard — Jay/Kortix bar
 
+#### Desktop parity is a UI gate
+
+The Electron app loads `apps/web`. Keep product components, routes, tokens,
+and data behavior shared. Put native window geometry in the shell's explicit
+titlebar classes. Never apply titlebar height or drag rules to generic ARIA
+roles, all sidebars, or page content.
+
+For every shared UI change, verify the affected controls on web and in Electron
+before handoff. Check the outgoing request or route and the visible result.
+Check both themes, the minimum supported window (720 × 480), sidebar collapse,
+fullscreen overlays, and browser zoom. Window controls must not overlap app
+controls. Lists must not overlap or clip their last row. Keyboard focus and
+scrolling must remain usable.
+
+Add regressions to the existing Playwright journeys. The desktop journey runs
+in `pnpm test -- --browser-only` and supports the actual Electron shell:
+`E2E_DESKTOP_NATIVE=1 E2E_GREP='27 — desktop parity' pnpm test -- --browser-only`.
+Run the native journey when changing shell CSS, navigation, settings, agents,
+or connectors. A desktop user-agent test does not prove native hit testing.
+Report any unverified desktop behavior explicitly. Do not promise that tests
+prevent every future regression.
+
 When touching any visual surface in `apps/web`, treat brand fit as a release
 gate, not polish:
 
-- Read `.claude/skills/kortix-design-system/SKILL.md` first and compose existing
+- Read `.agents/skills/kortix-brand-guidelines/SKILL.md` before writing the first
+  `className`. It is the value law: the complete allowlist of every color,
+  spacing step, type rung, radius, elevation, and duration you may use. Note
+  `--spacing: 0.23rem` — Tailwind's scale is 8% tighter here, so a 16px mockup
+  padding is `p-4`, never `p-[16px]`. Run its `audit.sh` over your changed paths
+  before opening the PR; it must be clean on files you touched.
+- Read `.agents/skills/kortix-design-system/SKILL.md` next and compose existing
   primitives from `@/components/ui/*` before inventing local chrome.
 - Match the current Jay Suthar / Kortix product aesthetic: calm neutral surfaces,
   dense-but-legible UI, black/white plus one earned accent, token-driven spacing,

@@ -2,12 +2,6 @@
   "full_name": "mock-server/mockserver-monorepo",
   "points": [
     {
-      "checked_at": "2026-08-28T15:27:11Z",
-      "commit_sha": "55f480655408d7502b9c276c142947ca08747a4d",
-      "pushed_at": "2026-08-28T03:27:55Z",
-      "stars": 4956
-    },
-    {
       "checked_at": "2026-08-29T10:10:12Z",
       "commit_sha": "eb5e2af85b56f48c9f4363c3092380223872dbc4",
       "pushed_at": "2026-08-29T09:05:32Z",
@@ -185,6 +179,12 @@
       "checked_at": "2026-09-27T09:20:24Z",
       "commit_sha": "be2545e0b358b99edfc7fafae9ffb77bdcf69a3f",
       "pushed_at": "2026-09-27T09:09:35Z",
+      "stars": 4976
+    },
+    {
+      "checked_at": "2026-09-28T09:53:40Z",
+      "commit_sha": "007f80481a7ca8e001c1bd90d84e2d17b2fd8947",
+      "pushed_at": "2026-09-28T08:27:08Z",
       "stars": 4976
     }
   ],

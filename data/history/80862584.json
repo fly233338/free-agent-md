@@ -2,12 +2,6 @@
   "full_name": "WordPress/gutenberg",
   "points": [
     {
-      "checked_at": "2026-08-28T15:27:11Z",
-      "commit_sha": "3debfd6f47436ba4ccf34934b0bd81afacc35185",
-      "pushed_at": "2026-08-28T15:26:16Z",
-      "stars": 11749
-    },
-    {
       "checked_at": "2026-09-01T08:43:21Z",
       "commit_sha": "453e7eee9c53054565ac068ca9e7ec21987a68e6",
       "pushed_at": "2026-09-01T08:37:29Z",
