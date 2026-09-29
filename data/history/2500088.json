@@ -2,12 +2,6 @@
   "full_name": "gitlabhq/gitlabhq",
   "points": [
     {
-      "checked_at": "2026-08-30T09:18:21Z",
-      "commit_sha": "6cdbb2b8e0813655c6df9f82ba3d87d4daa61913",
-      "pushed_at": "2026-08-30T09:07:53Z",
-      "stars": 24546
-    },
-    {
       "checked_at": "2026-09-27T09:20:24Z",
       "commit_sha": "c8c0c71a33ba497a1ecdb3f18470732a4caec43e",
       "pushed_at": "2026-09-27T09:10:46Z",

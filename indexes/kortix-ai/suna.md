@@ -1,8 +1,8 @@
 # kortix-ai/suna instruction files
 
-Upstream: [kortix-ai/suna](https://github.com/kortix-ai/suna) · License: `NOASSERTION` · Commit: `545aa01eaae944279b08fa05c91dda8d3a4abafb`
+Upstream: [kortix-ai/suna](https://github.com/kortix-ai/suna) · License: `NOASSERTION` · Commit: `c4c7c757fa78a83e000f6c8e0b00df28000a3e05`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/kortix-ai/suna/AGENTS.md) | [Source](https://github.com/kortix-ai/suna/blob/545aa01eaae944279b08fa05c91dda8d3a4abafb/AGENTS.md) | `b3ba3fe4b4918f8742b889b0a80efaa334fcbdde35e267342b9f7b10b2173d7e` | 39,381 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/kortix-ai/suna/CLAUDE.md) | [Source](https://github.com/kortix-ai/suna/blob/545aa01eaae944279b08fa05c91dda8d3a4abafb/CLAUDE.md) | `b3ba3fe4b4918f8742b889b0a80efaa334fcbdde35e267342b9f7b10b2173d7e` | 39,381 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/kortix-ai/suna/AGENTS.md) | [Source](https://github.com/kortix-ai/suna/blob/c4c7c757fa78a83e000f6c8e0b00df28000a3e05/AGENTS.md) | `3efa341417fe882e83ab69d7745bd50828f95f053abe1f5afe621ceaa551a8cf` | 39,869 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/kortix-ai/suna/CLAUDE.md) | [Source](https://github.com/kortix-ai/suna/blob/c4c7c757fa78a83e000f6c8e0b00df28000a3e05/CLAUDE.md) | `3efa341417fe882e83ab69d7745bd50828f95f053abe1f5afe621ceaa551a8cf` | 39,869 B |

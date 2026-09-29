@@ -1,0 +1,63 @@
+# AI-DLC — one core, many harnesses
+
+This directory contains a native implementation of the AI-DLC (AI-Driven
+Development Life Cycle) methodology that ships to many CLI harnesses — today
+Claude Code, Kiro CLI, Kiro IDE, Codex CLI, Cursor, opencode, and GitHub Copilot, and any capable CLI you port it to — from
+a single hand-authored source.
+
+## Project Structure
+
+- `core/` — **The hand-authored, harness-neutral source of truth.** Tools, stages (`aidlc-common/`), agents, memory (the rule/method layer), scopes, sensors, knowledge, hooks, and the 3 session skills. Prose names the harness directory with the `{{HARNESS_DIR}}` token; the packager substitutes `.claude`/`.kiro`/`.codex`/`.aidlc`/`.cursor` per tree.
+- `harness/<name>/` — **The thin per-harness authored surface.** Each holds `manifest.ts` (how to project `core/` into that harness's dist) plus the orchestrator skill and harness-specific files; `harness/codex/`, `harness/opencode/`, and `harness/copilot/` add an `emit.ts` (per-shell emissions). `claude/`, `kiro/`, `kiro-ide/`, `codex/`, `cursor/`, `opencode/`, `copilot/`.
+- `plugins/<name>/` — **Optional, owned AIDLC plugins** (the plugin mechanism; design in the single chapter `docs/reference/18-plugin-mechanism.md`, authoring guide `docs/harness-engineering/10-authoring-a-plugin.md`). Each holds `.aidlc-plugin/plugin.json` (the declarative manifest) + core-shaped subtrees (`stages/`, `contributions/`, `sensors/`, `tools/`, …) + `tests/`. `bun scripts/package.ts` emits a real host plugin per harness at `dist/plugins/<name>/{claude,codex,copilot,cursor,kiro,kiro-ide,opencode}/`; a compose hook merges the plugin into an install (new stages + the additive contribution seam). Plugins add, the install selects: `tools/data/harness.json` `plugins` filters the enabled graph/scope/runner surfaces while keeping installed files re-enableable. `plugins/test-pro/` is the reference fixture. Guarded by `tests/integration/t188-plugin-compose.serial.test.ts` (mechanism) + `plugins/test-pro/tests/` (content, wired into the integration tier).
+- `scripts/package.ts` — **The build entry.** `bun scripts/package.ts` materializes every local `dist/<harness>/` and `dist-release/<harness>/`; `bun scripts/package.ts --check` builds twice in independent temp roots and byte-compares the results as the determinism guard. `manifest-types.ts` is the shared manifest contract.
+- `dist/` and `dist-release/` — **GENERATED, ignored local outputs.** They are never committed or hand-edited. CI, tests, binary builds, and release packaging regenerate them before use. Native users install release assets; copy-channel users take `runtime/<harness>/` from the versioned `aidlc-runtime.tar.gz` release asset.
+- `tests/` — All-TypeScript test suite (`t*.test.ts`, run via bun), four levels (smoke/unit/integration/e2e). Run `bash tests/run-tests.sh --help` for levels and profiles.
+- `docs/guide/` — User Guide: getting started, workflows, scopes, agents, customization, troubleshooting
+- `docs/harness-engineering/` — Harness Engineer Guide: reshaping AIDLC through configuration (stages, agents, scopes, rules, sensors, knowledge) without code, plus porting AIDLC to a new harness
+- `docs/reference/` — Developer Reference: architecture, orchestrator, stage protocol, hooks, testing, contributing
+
+## How It Works
+
+The hand-authored source lives in `core/` (harness-neutral) + `harness/<name>/`
+(per-CLI surfaces); `bun scripts/package.ts` regenerates the `dist/<harness>/`
+trees. The core uses the same building blocks in every harness:
+
+- **Skills** (`skills/aidlc/`) — Orchestrator (`SKILL.md`), stage protocol, and 33 stage files across 5 phases (initialization, ideation, inception, construction, operation)
+- **Agents** (`agents/`) — 14 `aidlc-<role>-agent.md` files: 11 domain-expert personas (product, design, delivery, architect, aws-platform, compliance, devsecops, developer, quality, pipeline-deploy, operations), 2 review-only agents (product-lead, architecture-reviewer), and the adaptive-workflows composer (aidlc-composer-agent)
+- **Method/rules** (`memory/`) — Layered config in the space memory layer: `org.md` (framework defaults), `team.md` (affirmed practices), `project.md` (project overrides), and `phases/<phase>.md` for ideation/inception/construction/operation
+- **Sensors** (`sensors/`) — Deterministic verification manifests (advisory): `aidlc-claim-sources.md`, `aidlc-required-sections.md`, `aidlc-upstream-coverage.md`, `aidlc-traceability.md`, `aidlc-linter.md`, `aidlc-type-check.md`
+- **Knowledge** (`knowledge/`) — Methodology reference. Per-agent under `aidlc-<agent>-agent/`; cross-agent material in `aidlc-shared/`
+- **Tools** (`tools/`) — TypeScript CLI tools, all prefixed `aidlc-*.ts` and run via bun
+- **Hooks** (`hooks/`) — 17 framework hooks, all prefixed `aidlc-*.ts`, covering audit emission, sensor dispatch, stage-graph rebuild, session lifecycle, state validation, subagent tracking, statusline rendering, human-turn recording, exact stage-rule delivery, forwarding-loop enforcement, reviewer read-scope enforcement, review-receipt write-freeze enforcement, code-generation plan-approval enforcement, direct state-transition enforcement, and token-usage folding (the Claude-only usage-ledger producer)
+
+## Working on This Project
+
+- **Edit `core/` (or `harness/<name>/`), never `dist*`.** After editing, run `bun scripts/package.ts` to materialize local projections and `bun scripts/package.ts --check` to confirm the generator emits byte-identical results from two clean builds.
+- **Markdown block structure has one interpreter:** `markdownBlocks` in `core/tools/aidlc-lib.ts`, backed by the built-in `Bun.markdown` renderer, supplies block visibility, containers, link reference definitions, and claim-splitting structure; `visibleMarkdownLines` projects it. Do not add a Markdown dependency, another block scanner, or a definition grammar. The security-sensitive `Bun.markdown.render` review-authority check is a deliberately separate code path.
+- The orchestrator skill (`harness/<name>/skills/aidlc/SKILL.md`) is per-harness; the engine and methodology live in `core/`.
+- User-facing onboarding uses two skeletons: `core/templates/onboarding.md` is marker-free neutral guidance; `core/templates/onboarding-harness.md` carries each harness's `onboarding.fills.ts`. Edit the neutral template for shared project guidance and the harness skeleton/fills for native setup. Kiro, Kiro IDE, Codex, Cursor, and opencode share byte-identical root `AGENTS.md` content and ship native onboarding inside their harness directories; Claude concatenates both parts in `.claude/CLAUDE.md`, and Copilot in its exclusive root `AGENTS.md`.
+- "harness" has three senses in this repo: `harness/` (top-level, the per-CLI distribution surfaces — this effort), `docs/harness-engineering/` (the Harness Engineer Guide), and `tests/harness/` (test-suite helper library) — unrelated.
+- See `docs/guide/` (User Guide), `docs/harness-engineering/` (Harness Engineer Guide), and `docs/reference/` (Developer Reference) for full documentation
+
+## Test Suite
+
+Run `bash tests/run-tests.sh --help` for levels and flags. See `docs/reference/09-testing.md` for full strategy.
+
+## Utility Handler Checklist
+
+See `docs/reference/11-contributing.md` § "Adding a Utility Handler" before implementing a new `/aidlc --*` command.
+
+## Documentation Policy
+
+IMPORTANT: When adding, removing, or renaming files, directories, commands, or flags — grep `docs/` and `README.md` for stale references and update them in the same commit.
+
+## Release Metadata Policy
+
+IMPORTANT: Feature, fix, documentation, refactor, and test PRs do NOT bump `core/tools/aidlc-version.ts`, change the README version badge, or add a release entry to `CHANGELOG.md`. Those coordinated updates belong to the release-preparation PR, which summarizes the user-visible changes merged since the previous release. Every PR must preserve existing changelog entries.
+
+The release-preparation PR updates `core/tools/aidlc-version.ts` (the authored source; the per-harness `dist/<harness>/.../tools/aidlc-version.ts` copies are regenerated by `bun scripts/package.ts`), the README badge, and a matching `## [X.Y.Z] - YYYY-MM-DD` heading in `CHANGELOG.md` in the same commit. The pin in `tests/unit/t68-version-changelog-sync.test.ts` enforces that these three release surfaces agree and that changelog headings remain unique.
+
+Each release entry follows the shape: `## [N.N.N] - YYYY-MM-DD` heading, one-paragraph summary that includes any upgrade instruction, then a flat bullet list focused on what users actually invoke (commands, flags, errors they see, breaking changes for CI/scripts).
+
+If concurrent release-preparation branches choose the same version, the later one must rebase and select the next intended release version before merging. CHANGELOG version link references were removed in v0.6.9 because a distributed file should not embed a repository host; `t68` guards that none reappear.

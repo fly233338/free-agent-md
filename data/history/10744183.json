@@ -2,12 +2,6 @@
   "full_name": "netdata/netdata",
   "points": [
     {
-      "checked_at": "2026-08-29T10:10:12Z",
-      "commit_sha": "cd99b8324aa9b9ac8a0d7079bbe1bee37a43d803",
-      "pushed_at": "2026-08-29T09:52:49Z",
-      "stars": 80343
-    },
-    {
       "checked_at": "2026-09-01T08:43:21Z",
       "commit_sha": "b2bd5af6f0e5c055fe708d3bf44c4f2d7fb88915",
       "pushed_at": "2026-09-01T08:40:34Z",

@@ -2,18 +2,6 @@
   "full_name": "neovim/neovim",
   "points": [
     {
-      "checked_at": "2026-08-29T10:10:12Z",
-      "commit_sha": "cbb0775fb6309b4798e7a9c8671e5031ac85eed6",
-      "pushed_at": "2026-08-29T09:17:53Z",
-      "stars": 102003
-    },
-    {
-      "checked_at": "2026-08-30T09:18:21Z",
-      "commit_sha": "87474c88aa73b04e689e9a45476cc8780b9259a2",
-      "pushed_at": "2026-08-30T08:57:11Z",
-      "stars": 102019
-    },
-    {
       "checked_at": "2026-08-31T09:50:53Z",
       "commit_sha": "2b6a09c2f13e4afaf75b1a947dc03b09fd77a023",
       "pushed_at": "2026-08-31T09:26:10Z",
@@ -186,6 +174,12 @@
       "commit_sha": "d7848ccb3dd7a711459e62c05d4fefd165f34947",
       "pushed_at": "2026-09-28T09:14:18Z",
       "stars": 102636
+    },
+    {
+      "checked_at": "2026-09-29T09:56:38Z",
+      "commit_sha": "eddadd7ab33ece402ea43e9c0823f817404dc012",
+      "pushed_at": "2026-09-29T05:26:58Z",
+      "stars": 102668
     }
   ],
   "repo_id": 16408992

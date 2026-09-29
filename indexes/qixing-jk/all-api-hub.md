@@ -1,8 +1,8 @@
 # qixing-jk/all-api-hub instruction files
 
-Upstream: [qixing-jk/all-api-hub](https://github.com/qixing-jk/all-api-hub) · License: `AGPL-3.0` · Commit: `8d2c8120dafe13e2c07982e94cbb3c48ec814717`
+Upstream: [qixing-jk/all-api-hub](https://github.com/qixing-jk/all-api-hub) · License: `AGPL-3.0` · Commit: `12bfc23e16c593627e0524da26074c5ef4795dda`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/qixing-jk/all-api-hub/AGENTS.md) | [Source](https://github.com/qixing-jk/all-api-hub/blob/8d2c8120dafe13e2c07982e94cbb3c48ec814717/AGENTS.md) | `3bc73185a8a3b1cbdda4a9c08c3bb75365909dc3a62d0b9cafbb2685b56c0b6b` | 3,645 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/qixing-jk/all-api-hub/CLAUDE.md) | [Source](https://github.com/qixing-jk/all-api-hub/blob/8d2c8120dafe13e2c07982e94cbb3c48ec814717/CLAUDE.md) | `918b1c90559355ef78f33fdf3562f2b021ef8bdfd8a5c8415e5decd44934de55` | 10 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/qixing-jk/all-api-hub/AGENTS.md) | [Source](https://github.com/qixing-jk/all-api-hub/blob/12bfc23e16c593627e0524da26074c5ef4795dda/AGENTS.md) | `a5982a7a446e1c65b63863a1f4e9e4f67bfc52b7dac4231b6a18b280ae1679e2` | 3,943 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/qixing-jk/all-api-hub/CLAUDE.md) | [Source](https://github.com/qixing-jk/all-api-hub/blob/12bfc23e16c593627e0524da26074c5ef4795dda/CLAUDE.md) | `918b1c90559355ef78f33fdf3562f2b021ef8bdfd8a5c8415e5decd44934de55` | 10 B |

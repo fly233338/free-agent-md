@@ -18,11 +18,12 @@ Single-context layout: read root `CONTEXT.md` and root `docs/adr/` when present.
 
 Read only the guidance relevant to the current task; reuse unchanged material already read. These links are task routes, not a startup reading list.
 
-- Site registration, detection, capabilities, authentication, or upstream compatibility: [site integrations](docs/agents/site-integrations.md).
+- Adding a site integration or deciding whether a deployment needs a new type: use the project [`add-site-integration` skill](.agents/skills/add-site-integration/SKILL.md), then the [site integration guidance](docs/agents/site-integrations.md). For a narrow fix to an existing site, read the relevant site guidance directly.
 - Dependencies, UI primitives, settings navigation, analytics, or user-facing errors: [product guidance](docs/agents/product.md).
 - Persistent stores, storage keys, or writes that cross extension contexts: [storage guidance](docs/agents/storage.md).
 - Translation keys, resources, or language behavior: [i18n guidance](docs/agents/i18n.md). Use `add-app-language` only when adding a supported application language.
 - Sponsor catalog changes or audits use the project `sponsor-catalog` skill, not ordinary documentation edits.
+- Live dev extension UI automation, real accounts, or CDP control: use project skill `live-extension-ui-automation`.
 - Development setup, test harnesses, or hook troubleshooting: [CONTRIBUTING.md](CONTRIBUTING.md). Commands and versions belong to `package.json`, `.nvmrc`, and hooks.
 
 ## Project boundaries

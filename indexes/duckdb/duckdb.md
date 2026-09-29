@@ -1,0 +1,8 @@
+# duckdb/duckdb instruction files
+
+Upstream: [duckdb/duckdb](https://github.com/duckdb/duckdb) · License: `MIT` · Commit: `f00a187d3c33ff0b0a98a37d4287c6237258dd8d`
+
+| Type | Path | Snapshot | Fixed source | SHA-256 | Size |
+|---|---|---|---|---|---:|
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/duckdb/duckdb/AGENTS.md) | [Source](https://github.com/duckdb/duckdb/blob/f00a187d3c33ff0b0a98a37d4287c6237258dd8d/AGENTS.md) | `33f1305578c1ced4b565ebc0efd76da7f42d349977912793c067244555243caa` | 17,911 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/duckdb/duckdb/CLAUDE.md) | [Source](https://github.com/duckdb/duckdb/blob/f00a187d3c33ff0b0a98a37d4287c6237258dd8d/CLAUDE.md) | `918b1c90559355ef78f33fdf3562f2b021ef8bdfd8a5c8415e5decd44934de55` | 10 B |
