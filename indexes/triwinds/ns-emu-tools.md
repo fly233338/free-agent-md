@@ -1,8 +1,8 @@
 # triwinds/ns-emu-tools instruction files
 
-Upstream: [triwinds/ns-emu-tools](https://github.com/triwinds/ns-emu-tools) · License: `AGPL-3.0` · Commit: `4b30b7622e22d332f6797f30cacd107ce050854a`
+Upstream: [triwinds/ns-emu-tools](https://github.com/triwinds/ns-emu-tools) · License: `AGPL-3.0` · Commit: `c4a39519e53270dff9961a642e5b77800c911a54`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/triwinds/ns-emu-tools/AGENTS.md) | [Source](https://github.com/triwinds/ns-emu-tools/blob/4b30b7622e22d332f6797f30cacd107ce050854a/AGENTS.md) | `6e510d5145f69d6c47c0e0c6452f3305bab0414b2b0084a948098ac0b4756766` | 640 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/triwinds/ns-emu-tools/CLAUDE.md) | [Source](https://github.com/triwinds/ns-emu-tools/blob/4b30b7622e22d332f6797f30cacd107ce050854a/CLAUDE.md) | `f168c2e41ba979a0df20687277416dd9fa68cbddf8e88383a1188c7c84eb83be` | 480 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/triwinds/ns-emu-tools/AGENTS.md) | [Source](https://github.com/triwinds/ns-emu-tools/blob/c4a39519e53270dff9961a642e5b77800c911a54/AGENTS.md) | `6e510d5145f69d6c47c0e0c6452f3305bab0414b2b0084a948098ac0b4756766` | 640 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/triwinds/ns-emu-tools/CLAUDE.md) | [Source](https://github.com/triwinds/ns-emu-tools/blob/c4a39519e53270dff9961a642e5b77800c911a54/CLAUDE.md) | `f168c2e41ba979a0df20687277416dd9fa68cbddf8e88383a1188c7c84eb83be` | 480 B |

@@ -27,7 +27,7 @@ cloudflare-docs/
 │   ├── layouts/            # Page layout components
 │   ├── pages/              # Dynamic route pages (changelog, llms.txt, RSS, etc.)
 │   ├── schemas/            # Zod schemas for all content collections
-│   ├── plugins/            # Satteri hast pipeline plugins, Algolia DocSearch config
+│   ├── plugins/            # Satteri hast pipeline plugins
 │   ├── scripts/            # Client-side scripts (analytics, mermaid, webmcp, etc.)
 │   ├── styles/             # CSS (Tailwind 4)
 │   ├── icons/              # Product SVG icons (~110)
@@ -37,16 +37,26 @@ cloudflare-docs/
 ├── public/                 # Static files served as-is (images, redirects, robots.txt)
 ├── worker/                 # Cloudflare Worker for serving the site
 ├── bin/                    # Build scripts and CI helpers
-│   └── fetch-skills.ts     # Downloads skills.tar.gz from middlecache, extracts to skills/
+│   ├── fetch-skills.ts     # Downloads skills.tar.gz from middlecache, extracts to skills/
+│   └── fetch-logpush-datasets.ts  # Downloads generated Logpush dataset pages from middlecache
 ├── skills/                 # Agent Skills served at /.well-known/skills/ — GENERATED, do not edit
 │                           # Fetched from https://middlecache.ced.cloudflare.com/v1/cloudflare-skills/skills.tar.gz
 │                           # by bin/fetch-skills.ts, which runs automatically via prebuild/predev hooks.
 │                           # skills/ is in .gitignore and is NOT committed to the repository.
 ├── .flue/                  # Flue cloudflare-docs-bot — see .flue/AGENTS.md
 ├── astro.config.ts         # Astro + Nimbus configuration
+├── openapi.lock.json       # Pinned Cloudflare API schema version (see "OpenAPI schema pinning")
 ├── package.json
 └── tsconfig.json
 ```
+
+## OpenAPI schema pinning
+
+`<APIRequest>` renders against the Cloudflare API OpenAPI schema pinned by the repo-root `openapi.lock.json` (an upstream [`cloudflare/api-schemas`](https://github.com/cloudflare/api-schemas) commit SHA plus the snapshot's sha256). `prebuild`/`predev` download and verify the pinned snapshot from middlecache; a weekly workflow (`.github/workflows/bump-openapi-schema.yml` + `bin/bump-openapi-lock.ts`) opens a PR when a newer snapshot exists. Source: `src/util/openapi-schema.ts`.
+
+- Builds fail if an `<APIRequest>` path/method does not exist in the pinned schema. Fix the page to match the current API, or merge the pending bump PR.
+- Set `OPENAPI_SCHEMA=latest` to render against the newest published snapshot (escape hatch; CI always uses the pin).
+- Snapshots expire after 365 days. A build that 404s on the pinned snapshot is on a stale branch — rebase onto `production`.
 
 ## Content — writing and editing docs
 
@@ -75,14 +85,14 @@ pcx_content_type: how-to # Page type (see below)
 sidebar:
   order: 1 # Sort order in sidebar
   label: Custom Label # Override sidebar text
-products: # References to src/content/products/ entries
+products: # References to src/content/directory/ entries
   - workers
 difficulty: Beginner # For tutorials: Beginner | Intermediate | Advanced
 reviewed: 2025-01-15 # YYYY-MM-DD of last content review
 ---
 ```
 
-Valid `pcx_content_type` values: `changelog`, `concept`, `configuration`, `design-guide`, `example`, `faq`, `get-started`, `how-to`, `integration-guide`, `implementation-guide`, `learning-unit`, `navigation`, `overview`, `reference`, `reference-architecture`, `reference-architecture-diagram`, `release-notes`, `solution-guide`, `troubleshooting`, `tutorial`, `video`.
+Valid `pcx_content_type` values: `changelog`, `concept`, `configuration`, `design-guide`, `example`, `faq`, `get-started`, `how-to`, `integration-guide`, `learning-unit`, `navigation`, `overview`, `reference`, `reference-architecture`, `reference-architecture-diagram`, `troubleshooting`, `tutorial`, `video`.
 
 ### Writing and style rules
 
@@ -176,13 +186,13 @@ A separate Semgrep workflow checks style guide compliance (dates, "coming soon" 
 7. **Wrong image location** — images go in `src/assets/images/`, never in `src/content/`.
 8. **Skipping heading levels** — H2 then H4 without H3 will violate style guide rules.
 9. **`$` prefix in terminal commands** — the copy button copies verbatim, including the `$`.
-10. **Invalid changelog product folders** — the product directory must exist in `src/content/products/`.
+10. **Invalid changelog product folders** — the changelog folder name must match a `directory` entry id in `src/content/directory/`.
 11. **Redirect issues** — source URLs in `public/__redirects` must end in `/` (or `*`, `.xml`, `.json`, `.html`). No fragments in source URLs. No infinite loops.
 12. **Hand-crafted directory entry IDs** — never manually write `id` values in `src/content/directory/` files. Always run `node tools/directory-entry-ids --fix` to generate them.
 
 ## Content collections
 
-The site defines 20 content collections in `src/content.config.ts` with schemas in `src/schemas/`. The major ones:
+The site defines 19 content collections in `src/content.config.ts` with schemas in `src/schemas/`. The major ones:
 
 | Collection          | Location                         | Description                              |
 | ------------------- | -------------------------------- | ---------------------------------------- |
@@ -190,8 +200,6 @@ The site defines 20 content collections in `src/content.config.ts` with schemas 
 | `partials`          | `src/content/partials/`          | Reusable content snippets (MDX)          |
 | `changelog`         | `src/content/changelog/`         | Product changelogs (MDX)                 |
 | `glossary`          | `src/content/glossary/`          | Glossary terms (YAML)                    |
-| `products`          | `src/content/products/`          | Product metadata (YAML)                  |
-| `plans`             | `src/content/plans/`             | Plan/pricing data (YAML)                 |
 | `workers-ai-models` | `src/content/workers-ai-models/` | AI model definitions (JSON)              |
 | `directory`         | `src/content/directory/`         | Product/feature directory entries (YAML) |
 | `fields`            | `src/content/fields/`            | Ruleset engine field definitions (YAML)  |
@@ -275,6 +283,10 @@ Shared reference files in `.agents/references/`:
 | `style-guide.md` | Canonical writing and formatting rules for all content work |
 | `components.md`  | Full MDX component catalog with props and usage examples    |
 | `procedures.md`  | Rules for writing step-by-step procedural instructions      |
+
+## Terminology and naming preferences
+
+- **Do not use "PayGo" in public-facing documentation.** Instead use the term **"Free"** when referring to standalone Free accounts that can be created from the dashboard.
 
 ## Commit conventions
 

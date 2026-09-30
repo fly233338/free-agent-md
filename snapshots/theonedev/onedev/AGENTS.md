@@ -10,8 +10,14 @@ files and files under
 `server-core/src/main/java/io/onedev/server/web/translation/`. Translation
 files are generated automatically.
 
+Do not add tests for trivial or minor changes unless the user explicitly asks
+for them.
+
 For local development, start the OneDev server with `./dev.sh run` from the
 repository root. The server can hot-load changed classes. Use `./dev.sh build`
 to compile them; the first run performs a full compile, while subsequent runs
 compile only the changes. Watch the server console for reload errors and
 restart the server if one occurs.
+
+If you start the development server for a task, stop it with `./dev.sh stop`
+when the task is finished.

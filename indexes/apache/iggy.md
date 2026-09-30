@@ -1,8 +1,8 @@
 # apache/iggy instruction files
 
-Upstream: [apache/iggy](https://github.com/apache/iggy) · License: `Apache-2.0` · Commit: `caebce72a38f55b6bf44378228e9dc718148d479`
+Upstream: [apache/iggy](https://github.com/apache/iggy) · License: `Apache-2.0` · Commit: `cf4cccac015ec377eb1441f476cea9912c937f74`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/apache/iggy/AGENTS.md) | [Source](https://github.com/apache/iggy/blob/caebce72a38f55b6bf44378228e9dc718148d479/AGENTS.md) | `be609b05f562cb656a4028f4470860d886df3990eeb81ecd8d8ffb13c2e38d3d` | 14,290 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/apache/iggy/CLAUDE.md) | [Source](https://github.com/apache/iggy/blob/caebce72a38f55b6bf44378228e9dc718148d479/CLAUDE.md) | `be609b05f562cb656a4028f4470860d886df3990eeb81ecd8d8ffb13c2e38d3d` | 14,290 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/apache/iggy/AGENTS.md) | [Source](https://github.com/apache/iggy/blob/cf4cccac015ec377eb1441f476cea9912c937f74/AGENTS.md) | `0f0cc3b750771b61628085fa2bad6fcfd0ed7a84887281ef13bfcd288b089ece` | 14,411 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/apache/iggy/CLAUDE.md) | [Source](https://github.com/apache/iggy/blob/cf4cccac015ec377eb1441f476cea9912c937f74/CLAUDE.md) | `0f0cc3b750771b61628085fa2bad6fcfd0ed7a84887281ef13bfcd288b089ece` | 14,411 B |
