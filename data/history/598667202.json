@@ -2,12 +2,6 @@
   "full_name": "lightpanda-io/browser",
   "points": [
     {
-      "checked_at": "2026-09-01T08:43:21Z",
-      "commit_sha": "a43db3cbd2d56bb9596d60c57437230332add6c0",
-      "pushed_at": "2026-09-01T08:41:42Z",
-      "stars": 34350
-    },
-    {
       "checked_at": "2026-09-08T08:09:08Z",
       "commit_sha": "57d6436a46a69a70766cb3c1d2ee8a048c55f791",
       "pushed_at": "2026-09-08T08:01:19Z",

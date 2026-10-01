@@ -2,12 +2,6 @@
   "full_name": "entireio/cli",
   "points": [
     {
-      "checked_at": "2026-09-01T08:43:21Z",
-      "commit_sha": "a107087b9ea4795aae40b3a53a641973d120a3d6",
-      "pushed_at": "2026-09-01T08:33:52Z",
-      "stars": 5042
-    },
-    {
       "checked_at": "2026-09-11T08:07:25Z",
       "commit_sha": "ca473b9a66c5a3155396d24c545136dfd7d723fc",
       "pushed_at": "2026-09-11T07:59:57Z",

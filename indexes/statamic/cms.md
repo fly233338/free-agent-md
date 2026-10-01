@@ -1,7 +1,7 @@
 # statamic/cms instruction files
 
-Upstream: [statamic/cms](https://github.com/statamic/cms) · License: `NOASSERTION` · Commit: `31be955368ba46aee80e0e02eae75d34656480db`
+Upstream: [statamic/cms](https://github.com/statamic/cms) · License: `NOASSERTION` · Commit: `15b522fd4513b26bafdafe09b754675d6cb38967`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/statamic/cms/CLAUDE.md) | [Source](https://github.com/statamic/cms/blob/31be955368ba46aee80e0e02eae75d34656480db/CLAUDE.md) | `9e192955ec68600e4c3f57189aa3d3d917f8fcdadfbeac20e02a2706fe85c252` | 6,147 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/statamic/cms/CLAUDE.md) | [Source](https://github.com/statamic/cms/blob/15b522fd4513b26bafdafe09b754675d6cb38967/CLAUDE.md) | `9e192955ec68600e4c3f57189aa3d3d917f8fcdadfbeac20e02a2706fe85c252` | 6,147 B |

@@ -2,12 +2,6 @@
   "full_name": "matomo-org/matomo",
   "points": [
     {
-      "checked_at": "2026-08-31T09:50:53Z",
-      "commit_sha": "b2a8f40cce253bc7021136ad6b2e5501e02bdc26",
-      "pushed_at": "2026-08-31T09:38:57Z",
-      "stars": 21825
-    },
-    {
       "checked_at": "2026-09-29T09:56:38Z",
       "commit_sha": "51c6e29bcc1532528b3cbfd74258995d1aec2ba5",
       "pushed_at": "2026-09-29T09:49:51Z",

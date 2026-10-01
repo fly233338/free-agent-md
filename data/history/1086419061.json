@@ -2,18 +2,6 @@
   "full_name": "vectorize-io/hindsight",
   "points": [
     {
-      "checked_at": "2026-08-31T09:50:53Z",
-      "commit_sha": "3b5188761936fce423aaf77824ed6b4ca37e5196",
-      "pushed_at": "2026-08-31T09:50:31Z",
-      "stars": 21945
-    },
-    {
-      "checked_at": "2026-09-01T08:43:21Z",
-      "commit_sha": "4fa110dd59ced67189051f3cf2ff60cf4081c2dc",
-      "pushed_at": "2026-09-01T08:40:56Z",
-      "stars": 22047
-    },
-    {
       "checked_at": "2026-09-07T08:24:13Z",
       "commit_sha": "7e17a120e2dfb04934768f7ada813bceba43ad15",
       "pushed_at": "2026-09-07T08:20:58Z",
@@ -60,6 +48,12 @@
       "commit_sha": "f2f24887c751566c2049f697cf2cd9ea832d093b",
       "pushed_at": "2026-09-29T09:51:01Z",
       "stars": 41821
+    },
+    {
+      "checked_at": "2026-10-01T10:13:57Z",
+      "commit_sha": "c71cd043749a4172978a3ca5144ae27dab1b0f26",
+      "pushed_at": "2026-10-01T10:06:19Z",
+      "stars": 44085
     }
   ],
   "repo_id": 1086419061

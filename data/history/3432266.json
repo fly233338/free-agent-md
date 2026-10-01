@@ -2,12 +2,6 @@
   "full_name": "JetBrains/kotlin",
   "points": [
     {
-      "checked_at": "2026-09-01T08:43:21Z",
-      "commit_sha": "cc0884b911b9a589233656b428a9ee3e5bfd1157",
-      "pushed_at": "2026-09-01T08:43:22Z",
-      "stars": 53370
-    },
-    {
       "checked_at": "2026-09-30T09:47:04Z",
       "commit_sha": "a3d033d2297ee870af8b7a6f68f56c9c5c5e1b3e",
       "pushed_at": "2026-09-30T09:46:57Z",

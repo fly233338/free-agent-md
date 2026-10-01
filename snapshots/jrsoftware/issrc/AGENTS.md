@@ -44,14 +44,17 @@ Under `ISHelp/ISHelpGen/`:
 - Append a project name, such as `compile.bat x64 ISCC`, to compile only that project.
 - Compiler path is configured in `compilesettings.bat`.
 - `build.bat` orchestrates full release builds.
-- If a release build binary under `Files\` reports "Signature file is not valid", run `issig.bat embed`, then rerun the relevant compile command, usually `compile.bat x64`, and retry the failed command. This recovery step is required even though it updates `Components\TrustFunc.AllowedPublicKeys.inc`.
+- In a fresh worktree, run `issig.bat embed` before the first compile. This updates the tracked files `Components\TrustFunc.AllowedPublicKeys.inc` and `def02.ispublickey`. Leave them in place.
+- If a release build binary under `Files\` reports "Signature file is not valid", run `issig.bat embed`, then rerun the relevant compile command, usually `compile.bat x64`, and retry the failed command.
 
 ## Code Conventions
 - `**/*.iss`: see `.claude/rules/iss.md`.
 - `**/*.pas`, `**/*.dpr`, `**/*.inc`: see `.claude/rules/pascal.md`.
 - `**/*Test.pas`, `**/*Test.iss`: see `.claude/rules/test.md`.
-- `Components/UniPs/**`: see `.claude/rules/unips.md`.
 - `Files/Languages/*.isl`, `Files/Languages/Unofficial/*.isl`: see `.claude/rules/isl.md`.
+- `Components/UniPs/**`: see `.claude/rules/unips.md`.
+- `Projects/Src/Compression.LZMACompressor/islzma/**`, `Projects/Src/Compression.LZMADecompressor/Lzma2Decode/**`: see `.claude/rules/islzma.md`.
+- Indentation: see `.claude/rules/indentation.md`.
 
 ## Documentation Conventions
 - `whatsnew.htm`, `ISHelp/isetup.xml`, `ISHelp/ispp.xml`, `ISHelp/isx.xml`, `ISHelp/isxfunc.xml`, `ISHelp/isxclasses.header*`, `ISHelp/isxclasses.footer`: see `.claude/rules/docs.general.md`.

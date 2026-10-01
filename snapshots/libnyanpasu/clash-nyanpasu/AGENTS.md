@@ -132,8 +132,11 @@ Project rules:
 - Put infrastructure access behind adapter traits. Inject Tauri, OS, filesystem, network, process, and logging adapters into the actor or pure service that needs them.
 - The composition root spawns actors, wires dependencies, and returns `NyanpasuClient`. Do not use a ractor registry, actor name lookup, or raw `ActorRef` map as a replacement for dependency injection.
 - `NyanpasuClient` and typed actor clients should expose ordinary async Rust methods. Most callers should not use ractor APIs directly.
-- Prefer finite timeouts for cross-actor request/reply calls when the caller can report failure or degraded state.
+- In-process request/reply calls wait for the real result (no timeout). Only adapters that perform network IO define deadlines; IPC deadlines belong to the IPC client layer, not to its callers.
 - Avoid synchronous cross-actor cycles such as `StateActor -> CoreActor -> StateActor`.
+- A panic means the code reached a state it must not reach, so it interrupts execution. Do not write `catch_unwind` in production code, and do not turn a panicking task's `JoinError` into an ordinary error.
+- Run UI-thread work through the injected `MainThreadExecutor`; clients and actors do not call Tauri's main-thread APIs themselves.
+- Notifications flow downstream only, one domain's slice from that domain's serial owner. An owner never reads or forwards a sibling domain's snapshot, so dependencies form a tree, not a graph.
 
 If a mature ractor actor client already exists for a capability, use it instead of adding a new global singleton, raw channel loop, or direct Tauri-coupled service call.
 
@@ -235,7 +238,10 @@ Actor implementation rules:
 - Use request/reply for fallible operations and queries.
 - Use fire-and-forget only for events, notifications, or best-effort work.
 - Avoid cross-actor synchronous cycles.
-- Prefer finite timeouts for cross-actor RPCs where a caller can recover or report degradation.
+- Do not add in-process RPC timeouts; deadlines belong to network IO adapters and the IPC client layer.
+- The mailbox is the actor's only serialization. Do not build a second queue, scheduler, priority, or admission layer inside an actor; the handler awaits the whole command. State that is not an actor's uses a lock.
+- Waiters do not own operations: dropping a caller does not cancel work the owner has started; the owner runs it to a terminal state.
+- Shutdown is one root `CancellationToken` plus each owner's own cleanup: the handler refuses new work once the token is cancelled, and cleanup runs in `post_stop`. There is no global shutdown phase or budget.
 - Actor startup arguments must contain all dependencies required to build the actor state.
 - Do not share actor-owned mutable state with `Arc<Mutex<_>>` or `Arc<RwLock<_>>` unless it is a narrowly scoped implementation detail with a clear comment.
 
@@ -334,7 +340,7 @@ Preferred direction:
 1. Move state ownership into `StateActor` or a state manager owned by `StateActor`.
 2. Keep schema and patch operations in pure services or domain types.
 3. Generate runtime config from snapshots rather than mutating runtime globals.
-4. Commit state first, then trigger side effects through actor messages.
+4. Commit state first, then trigger side effects through actor messages. A Required participant (the runtime) is a vote before the commit, not a side effect; this rule covers ordinary side effects.
 5. Report post-commit side-effect failures as degraded results instead of silently rolling back persisted state.
 
 Avoid preserving old global configuration APIs. Prefer a migratable breaking change that updates callers to the new injected client/service API.
@@ -546,6 +552,66 @@ git worktree list
 ```
 
 Removal reclaims only the worktree's own files and its symlinks (pointers back to main) — it never touches the main checkout's real `sidecar/` / `resources/`.
+
+## 18. Git Commit Rules
+
+### Stage only related files
+
+Before committing, run `git status` to review the changes, stage only the files related to this change with explicit paths (`git add <specific-path>`), then verify with `git diff --cached --stat`.
+
+Never use blanket staging such as `git add .`, `-A`, `--all`, or `*`. If something was staged by mistake, unstage it with `git reset HEAD <path>`.
+
+### One commit does one thing
+
+Every commit must be atomic, complete, and buildable.
+
+- One indivisible task is one commit.
+- Multiple independent tasks are split into multiple commits.
+- Do not commit code you know is broken.
+- Do not make fix-up (patch-style) commits on a development branch.
+
+If a commit on a development branch is flawed and has not been pushed, fix it with `git reset --soft HEAD~1` and recommit. If it has already been pushed, any rewrite, amend, or force push requires explicit consent first.
+
+Self-check before committing: does this change complete or correct the previous commit? If yes, fold it into the previous commit with `git reset --soft HEAD~1` and recommit instead of creating a new one. Even when two commits are each individually clean, a later commit that completes an earlier one is still a fix-up commit.
+
+Exploratory work may live on `temp/`, `wip/`, or `scratch/` branches. Do not merge those directly; create a clean branch and reorganize the work into atomic commits.
+
+### Commit message content
+
+The subject states what changed; the body explains why when the problem or the fix is not obvious.
+
+Subject rules:
+
+- Use the imperative mood, stay within 72 characters, and do not end with a period.
+- Describe the behavior or capability.
+
+Body rules:
+
+- A non-trivial change must have a body; the body may be omitted only when the subject is fully self-explanatory.
+- Explain the root cause and the rationale for the fix: why this is a bug and why this change is needed.
+- Do not enumerate changes file by file, and do not restate implementation steps that the diff already shows.
+- Describe only the final state relative to the parent commit, not differences between intermediate versions of the same patch (e.g. "v2 fixes X").
+
+### Trust the reader
+
+Assume the reader is a competent developer familiar with the project; do not explain what they already know:
+
+- How to build the project — that belongs in documentation, not in a commit message.
+- Obvious statements of usage. Counter-example:
+
+  ```text
+  Example usage:
+    # use mkv container:
+    ffmpeg -hwaccel d3d12va -hwaccel_output_format d3d12 -i input.mp4 -c:v av1_d3d12va output.mkv
+  ```
+
+- "Build succeeded" or "all tests green" — the commit's existence already implies it passed.
+
+Mention these only when they are genuinely non-obvious:
+
+- New test commands or tools that do not yet exist in the project.
+- Non-standard configuration required to reproduce the result.
+- Unusual constraints that affect how the data should be interpreted.
 
 ---
 

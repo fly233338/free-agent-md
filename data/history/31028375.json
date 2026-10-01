@@ -2,18 +2,6 @@
   "full_name": "DefectDojo/django-DefectDojo",
   "points": [
     {
-      "checked_at": "2026-08-31T09:50:53Z",
-      "commit_sha": "34de3923d7af3e6060a13d4b948f37832bb34bc0",
-      "pushed_at": "2026-08-31T09:42:21Z",
-      "stars": 4914
-    },
-    {
-      "checked_at": "2026-09-01T08:43:21Z",
-      "commit_sha": "897becafea4839aa636ea916ac52eb7b37f3c243",
-      "pushed_at": "2026-09-01T05:19:03Z",
-      "stars": 4917
-    },
-    {
       "checked_at": "2026-09-02T07:57:56Z",
       "commit_sha": "897becafea4839aa636ea916ac52eb7b37f3c243",
       "pushed_at": "2026-09-02T05:13:19Z",
@@ -174,6 +162,12 @@
       "commit_sha": "8b12d80ae30904fed44f5a84ff71f28da14bebaf",
       "pushed_at": "2026-09-30T08:04:02Z",
       "stars": 4971
+    },
+    {
+      "checked_at": "2026-10-01T10:13:57Z",
+      "commit_sha": "8b12d80ae30904fed44f5a84ff71f28da14bebaf",
+      "pushed_at": "2026-10-01T05:13:43Z",
+      "stars": 4975
     }
   ],
   "repo_id": 31028375

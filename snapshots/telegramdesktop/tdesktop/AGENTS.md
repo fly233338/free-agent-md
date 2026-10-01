@@ -2,6 +2,68 @@
 
 This guide defines repository-wide instructions for coding agents working with the Telegram Desktop codebase.
 
+## AI Tasks
+
+In this repository "task" is a specific term. It always means one work record in
+the sibling `ai-tdesktop` repository, never a `TODO` comment, a checklist item,
+or a unit of work invented during the current conversation. "The tasks", "the
+queue", "the board", "what's most pressing", and a bare task slug all refer to
+that queue.
+
+- The queue lives in `../ai-tdesktop`, a sibling of this checkout, with one
+  record per directory under `tasks/YYYY/MM/DD/<slug>/`. A task id is that dated
+  path, for example `2026/07/18/fix-community-forward`, and it is the only
+  durable link between a source commit and its task. Linked slot worktrees live
+  in `../ai-tdesktop-worktrees`. Read `../ai-tdesktop/AGENTS.md` before doing
+  anything inside that repository.
+- Each record holds `task.md` — one `# ` title line, then one self-contained
+  paragraph that is the task's description wherever it is summarized — and
+  `state.yaml` with `status`, `type`, `depends_on`, `claimed_by`, and dates.
+  Open statuses are `todo`, `in-progress`, `blocked`, and `split-required`;
+  `approved` is completed history, and `split.yaml` / `superseded.yaml` mark
+  retired records.
+- To browse the queue, read those files directly. Do not run `python3 ai.py`: it
+  is a full-screen browser for the user's own terminal and refuses to run in a
+  pipe. A compact open listing:
+
+```bash
+cd ../ai-tdesktop && for state in tasks/*/*/*/*/state.yaml; do
+  status=$(sed -n 's/^status: //p' "$state")
+  case "$status" in todo|in-progress|blocked|split-required)
+    dir=$(dirname "$state")
+    printf '%-14s %-70s %s\n' "$status" "${dir#tasks/}" \
+      "$(sed -n '1s/^# //p' "$dir/task.md")";;
+  esac
+done | sort
+```
+
+- When ranking open work by urgency, use `in-progress`, then `blocked`, then
+  `split-required`, then ready `todo` (no `claimed_by`, and every `depends_on`
+  already `approved`), then `todo` still waiting on a dependency. Say who owns
+  claimed work. This checkout's tag is the `Telegram/build/ai-machine-tag` value
+  plus the checkout folder name, such as `macbook-tdesktop`, and work claimed by
+  another checkout is never taken over without an explicit human reassignment.
+- Browsing is read-only. Listing, summarizing, comparing, or recommending tasks
+  never edits `state.yaml`, publishes a lifecycle commit, or starts
+  implementation, no matter how small the task looks.
+- Acting on an existing queue task goes through the workflow skills instead of
+  by hand: `perform-task <slug or full id>` starts or resumes and performs
+  exactly one known task, and `continue` drains eligible shared work. Source
+  commits owned by a task use the three-line form described under `## Commits`.
+- A request the user makes in conversation is ordinary work: do it directly in
+  this checkout. Do not write it to the ignored `../ai-tdesktop/inbox/inbox.md`,
+  and do not run `process-inbox` or `continue` over it, unless the user asks for
+  that. The queue's planning, review and evidence campaign costs hours, so
+  spending it on a request the user expected you to just do is a real error, not
+  thoroughness.
+- You may *offer* the queue when the work genuinely earns it: a large or
+  ambiguous change, one whose correctness needs a real testing campaign, or one
+  that is safety-, security- or data-safety-critical. Make the offer in one
+  line, say why, and route it only after the user approves. Absent approval,
+  implement it directly and say what you skipped.
+- Never guess between similarly named tasks. Report the matching full ids and
+  let the user choose.
+
 ## Working from Codex on Windows + WSL
 
 This checkout may be opened in Codex Desktop through the Windows UNC path `\\wsl.localhost\{distro}\home\{user}\Telegram\tdesktop`, while the real Linux path is `/home/{user}/Telegram/tdesktop`. Treat it as a WSL/Linux checkout first, not as a native Windows checkout.
@@ -75,7 +137,19 @@ cmake --build "l:\Telegram\tx64\out" --config Debug --target Telegram
 ### macOS
 - Requires Xcode
 - Dependencies: `../Libraries/local/Qt-*`
-- Set `QT` environment variable: `export QT=6.8`
+- First-time configure of a new `out/` tree: set the `QT` environment variable
+  to the Qt version this checkout actually has, for example `export QT=6.11.1`
+  when `../Libraries/local/Qt-6.11.1` is the installed one. The value names a
+  directory, so it is the checkout's version, not a constant.
+- Reconfiguring an existing `out/` tree: do **not** export `QT`. Run
+  `env -u QT cmake -S . -B out` instead. `cmake/external/qt/package.cmake`
+  writes an exported `QT` into the `qt_requested` cache entry with `FORCE`, so
+  it overwrites the version the tree was already configured with instead of
+  being ignored. A value that disagrees with the configured tree then fails the
+  regeneration, and the generated project keeps the source list it was last
+  generated with: newly added sources are never compiled — which surfaces later
+  as undefined-symbol link errors rather than as a configure error — and newly
+  added `.style` modules leave the generated `style_*.h` includes stale.
 
 ### Linux
 - Build dependencies in `../Libraries`
@@ -141,34 +215,44 @@ its path if the run stops before verification. Then rerun the same test once.
 If the signature persists after that clean rebuild, continue normal crash
 diagnosis or report the blocker. Do not loop clean rebuilds.
 
-### Build fails with PDB or EXE access errors
+### Build output locks
 
-**âš ï¸ CRITICAL: DO NOT RETRY THE BUILD. STOP AND WAIT FOR USER.**
+For builds owned by the autonomous `continue` / `perform-task` workflow, read
+and follow `.agents/shared/build-lock-recovery.md`. PDB, EXE, OBJ, and other
+build-output lock errors are recoverable: stop only the exact checkout
+executable or verified build-tree holders, delete only exact named artifacts
+inside that checkout's build tree, and retry within the bounded recovery
+budget. Never stop an installed Telegram client, another checkout, an IDE, or
+an unknown process.
 
-If the build fails with ANY of these errors:
-- `fatal error C1041: cannot open program database`
-- `cannot open output file 'Telegram.exe'`
-- `LNK1104: cannot open file`
-- Any "access denied" or "file in use" error
-
-**STOP IMMEDIATELY.** These errors mean files are locked by a running process (Telegram.exe or debugger).
-
-**What to do:**
-1. Do NOT attempt another build - it will fail the same way
-2. Do NOT try to delete files - they are locked
-3. Do NOT try any workarounds or fixes
-4. IMMEDIATELY inform the user:
-
-> "Build failed - files are locked. Please close Telegram.exe (and any debugger) so I can rebuild."
-
-**Then WAIT for user confirmation before attempting any build.**
-
-Retrying builds wastes time and context. The ONLY fix is for the user to close the running process.
+Outside that autonomous workflow, an exact checkout executable may be running
+because the user is testing it. Do not terminate it or delete locked build
+outputs without explicit permission. Report the exact locked path and ask the
+user to close that checkout's Telegram/debugger before rebuilding.
 
 ## Best Practices
 
 1. **Always use Debug builds** - Release builds are extremely heavy
 2. **Don't build Release configuration** - it's too heavy for testing
+
+## Debug-Only Code
+
+Production translation units stay free of debug machinery. The permanent test
+harness lives in `Telegram/SourceFiles/test/`, and the disposable `-testagent`
+overlay owns per-task instrumentation; production code carries at most a thin
+single-call seam (a `Test::Fire()`-style waitpoint or a live-object
+publication at a construction seam).
+
+- Do not add `#ifdef _DEBUG` blocks, debug-only types, debug state, mutexes,
+  counters, or observation structs to production headers or sources. When a
+  behavior cannot be observed without such machinery, that is a harness gap:
+  extend the `test/` helpers or the overlay instead.
+- Never commit debugging machinery interleaved with working code in the same
+  translation unit. A permanent helper belongs under `test/`; a temporary one
+  belongs in the overlay and is never retained.
+- Exceptions exist — a few `#ifdef _DEBUG` hooks are deliberately kept in
+  production files — but they are exceptions and each new one needs a solid,
+  stated reason. "The test needed it" is not one.
 
 ## Text File Format
 
@@ -179,6 +263,21 @@ Retrying builds wastes time and context. The ONLY fix is for the user to close t
 ## Commits
 
 - Subject: one concise, plain-language line summarizing the change, ~50-60 characters, matching the style of recent `git log` subjects. This is usually the entire message.
+- Decide the `[ai] ` prefix separately for each commit. Use it only when every
+  retained change in that commit, and the commit's purpose, are exclusively
+  about the AI workflow: the agent harness, skills, prompts, custom commands,
+  agent documentation, or AI testing infrastructure. Typical qualifying paths
+  include `Telegram/SourceFiles/test/`, `.agents/`, `.claude/`, `.grok/`,
+  `AGENTS.md`, `CLAUDE.md`, and `GROK.md`, but paths alone do not decide the
+  prefix. Product-specific test seams, app code, and build-system integration do
+  not qualify merely because agents use them for verification. Split mixed
+  workflow and product work into separate commits when practical; otherwise the
+  mixed commit must not use `[ai] `. Do not count the disposable test overlay or
+  external AI task artifacts. Every other commit must not contain `[ai]`
+  anywhere.
+- The `[ai] ` prefix marks the commit's scope, never its authorship. It does
+  not mean "authored by an AI": an AI-authored product fix takes a plain
+  subject, and a workflow-only commit takes the prefix no matter who wrote it.
 - For ordinary work not associated with an AI task, add a short plain-language body only when the subject can't carry it (what was done, not the technical how) — a line or two at most.
 - Never add a `Co-Authored-By:` line or any tool/assistant attribution trailer.
 - Never add `Autotask:`/attempt or other internal run markers. A commit owned by
@@ -203,9 +302,11 @@ Both app-level (`Core::Settings`) and session-level (`Main::SessionSettings`) us
 
 ## Coding Style
 
-**Do NOT write comments in code:**
+**Comments are rationed:**
 
-This is important! Do not write single-line comments that describe what the next line does - they are bloat. Comments are allowed ONLY to describe complex algorithms in detail, when the explanation requires at least 4-5 lines. Self-documenting code with clear variable and function names is preferred.
+A comment is one line; two or three only when the block opens with `// WHY:`. A commit may add two comment lines plus one such exception, and a trailing comment is a line too; only `} // namespace X` closers and `#endif // X` labels are free. Say why, never what. Hooks enforce it, and `Telegram/SourceFiles/test/` is exempt.
+
+Do not remove existing comments just to satisfy this rule. Preserve comments unless your change makes them incorrect or truly obsolete; when moving or refactoring code, move the useful comment with it. Inline comments that label positional arguments for generated or schema-driven APIs (for example TL/MTP constructors) are useful because the field names are not visible in the call itself.
 
 ```cpp
 // BAD - don't do this:
@@ -218,15 +319,19 @@ if (user->isPremium()) {
 auto name = user->name();
 if (user->isPremium()) {
 
-// ACCEPTABLE - complex algorithm explanation (4+ lines):
-// The algorithm works by first collecting all visible messages
-// in the viewport, then calculating their intersection with
-// the clip rectangle. Messages are grouped by date headers,
-// and we need to account for sticky headers that may overlap
-// with the first message in each group.
+// ACCEPTABLE - one line, and it carries a reason:
+_limit = kDefaultLimit; // the server rejects anything larger
+
+// ACCEPTABLE - the exception: opens with WHY, three lines at most,
+// once per commit.
+// WHY: the server sends the id before the peer exists, so the row is
+// created empty and filled on the next update, or the list flickers
+// on every reconnect.
 ```
 
 **Style and formatting rules** are in `REVIEW.md` — see that file for empty-line-before-closing-brace, operator placement in multi-line expressions, if-with-initializer, and other mechanical style rules.
+
+**Never discard a result with a cast:** `static_cast<void>(...)` and `(void)expr` are banned; instead of silencing `[[nodiscard]]`, fix the design.
 
 **Use `auto` for type deduction:**
 
@@ -548,7 +653,7 @@ primaryButton: MyButtonStyle(defaultButton) {
 - `pixels` - Pixel values with `px` suffix (e.g., `10px`)
 - `color` - Named colors from `ui/colors.palette`
 - `icon` - Inline icon definition: `icon{{ "path/stem", color }}`
-- `margins` - Four values: `margins(top, right, bottom, left)`
+- `margins` - Four values: `margins(left, top, right, bottom)`
 - `size` - Two values: `size(width, height)`
 - `point` - Two values: `point(x, y)`
 - `align` - Alignment: `align(center)`, `align(left)`
@@ -750,3 +855,30 @@ The `Error` template parameter defaults to `rpl::no_error`: `rpl::producer<Type,
 - Pass `rpl::lifetime` to `on_...` methods or store returned lifetime
 - Use `rpl::duplicate(producer)` to reuse a producer multiple times
 - Combined producers automatically unpack tuples in lambdas (works with `rpl::map`, `rpl::filter`, and `rpl::on_next`)
+
+### Per-subscription state
+
+`rpl::on_next` stores the handler by value. Each emission invokes a *copy* of that stored handler, so a nested emit does not re-enter the running callable. Writes a `mutable` lambda makes to its own captures land on the copy and are discarded, so they never become per-subscription state.
+
+```cpp
+// BAD - compiles, runs, and grew is just value > 0 every time:
+events | rpl::on_next([last = 0](int value) mutable {
+    const auto grew = (value > last);
+    last = value;
+    if (grew) {
+        // ...
+    }
+}, lifetime);
+
+// GOOD - state lives beside the handler:
+const auto last = lifetime.make_state<int>(0);
+events | rpl::on_next([=](int value) {
+    const auto grew = (value > *last);
+    *last = value;
+    if (grew) {
+        // ...
+    }
+}, lifetime);
+```
+
+Keep per-subscription state in `lifetime.make_state<T>()`, behind a `shared_ptr`, or on the object that owns the subscription. A `mutable` lambda that is one-shot — `rpl::take(1)`, a self-destroying subscription, a `crl::on_main` or `crl::async` callback, a `done` or `error` callback — is not this trap.

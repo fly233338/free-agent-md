@@ -2,18 +2,6 @@
   "full_name": "openclaw/mcporter",
   "points": [
     {
-      "checked_at": "2026-08-31T09:50:53Z",
-      "commit_sha": "9a4cfc7f6363a68b825126760fd230563f376d0b",
-      "pushed_at": "2026-08-31T07:54:24Z",
-      "stars": 4972
-    },
-    {
-      "checked_at": "2026-09-01T08:43:21Z",
-      "commit_sha": "ab0c27f03fd7d27aa5b48774ac749a4548836234",
-      "pushed_at": "2026-08-31T12:35:55Z",
-      "stars": 4973
-    },
-    {
       "checked_at": "2026-09-02T07:57:56Z",
       "commit_sha": "ab0c27f03fd7d27aa5b48774ac749a4548836234",
       "pushed_at": "2026-08-31T12:35:55Z",
