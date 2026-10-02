@@ -114,7 +114,9 @@ RetroArch-based cores live in `CoresRetro/RetroArch/` and use `PVCoreBridgeRetro
   (`PVCoreBridgeRetro/Sources/PVLibRetro/PVThinLibretroFrontend.mm`
   + `PVThinLibretroCore*.swift`). dlopen + function pointers against
   the libretro buildbot dylibs; no full RetroArch runtime.
-- **PPSSPP** is force-routed to the thick wrapper (`PVCoreFactory.swift`). Its GLES path spawns an emu thread + GPU-init pump whose GL-context/FBO ordering doesn't line up with the thin wrapper's deferred `context_reset`; thin still hangs on boot. `setupHardwareRenderCallback:` eagerly makes `_glContext` current (helps other HW cores) but that alone doesn't fix PPSSPP. Needs runtime trace of the boot hang to resolve thin.
+- **PPSSPP runs on the THIN wrapper, on Vulkan** (no force-route since `2f09fd7802`, 2026-05-28). On GLES, PPSSPP spawns its own render thread (`useEmuThread = GPUCORE_GLES`) that never has a current EAGL context, so GL can't work on thin; `GET_PREFERRED_HW_RENDER` returns Vulkan for PSP and GL is rejected (`e66b2a28a4`, `79a091c4b2`), with `context_reset` deferred until after `retro_load_game`. A failed deferred Vulkan setup now fails the load, and fence waits are bounded (`f87b9d17e1`).
+- **Thin `rendersToOpenGL` is true for every HW-render core, Vulkan included.** `PVThinLibretroFrontend` returns `_hwRenderRequested`, so a Vulkan core takes the "OpenGL" branch of `PVMetalViewController.draw(in:)` and never reaches the software-upload path. `rendersToVulkan` is the one that distinguishes them.
+- **Thin core options are replayed at boot, not read on demand.** The frontend holds option values only in memory; `PVThinLibretroCore.applyPersistedCoreOptions()` pushes the saved ones in from `afterCoreInitBlock` (after `retro_init`, before `retro_load_game`). The UI stores a switch state or a choice *label*; `ThinCoreOptionDefinition.rawValue(forStored:)` maps it to the core's value. A replay that never finishes booting is skipped once on the next launch.
 - The thick RetroArch wrapper (`CoresRetro/RetroArch/PVRetroArchCore/`) is available as an opt-in escape hatch via `Defaults[.useLegacyRetroArchWrapper]` in Settings > Advanced.
 - **Thin wrapper gaps:** deferred Vulkan context setup (GL is now eagerly activated; Vulkan still deferred). BIOS files synced from `BIOSPath` into system directory before `retro_load_game`. `ScalingMode` integration works (via `PVMetalViewController` + DeltaSkin skin container). Fast-forward wired (`setGameSpeed:` override syncs `_speedMultiplier` + `_audioPaused`).
 
@@ -157,6 +159,7 @@ RetroArch-based cores live in `CoresRetro/RetroArch/` and use `PVCoreBridgeRetro
 
 - **RetroArch submodule edits need two commits.** The RA fork at `CoresRetro/RetroArch/RetroArch/` is a real git submodule. To ship a change: (1) `cd` into the submodule, commit on a `Provenance/<feature>` branch, push to the `Provenance` remote; (2) `cd` back to the parent, `git add CoresRetro/RetroArch/RetroArch && git commit` to bump the pointer. Skipping (2) leaves develop pointing at the old SHA.
 - **PVRetroArch.xcodeproj is not file-system-synced for source files.** Only the `scripts/` folder is in a `PBXFileSystemSynchronizedRootGroup`. New `.mm`/`.m`/`.h` files under `CoresRetro/RetroArch/PVRetroArchCore/Core/` MUST be added explicitly to `project.pbxproj` in 4 spots: PBXBuildFile, PBXFileReference, group children, Sources build phase. Use `C0C0CAFE...`-prefixed UUIDs.
+- **Most workspace `.xcodeproj`s list sources explicitly** (e.g. `PVCoreBridgeRetro.xcodeproj`), so a new file compiles in SwiftPM yet breaks the archive build. `Scripts/check_pbxproj_sources.py` (CI: `xcode-project-sources.yml`) flags a source file sitting beside compiled ones that its project doesn't reference.
 - **`gh issue list` has no `--sort` flag.** Use `gh issue list --search "sort:created-desc"` or `gh issue list --json number,title,createdAt --jq '.'` for sorted/filtered queries.
 
 ### Metal rendering gotchas
@@ -167,6 +170,8 @@ RetroArch-based cores live in `CoresRetro/RetroArch/` and use `PVCoreBridgeRetro
 
 ### Debugging emulator cores
 
+- **"Black screen" reports: ask for the `[NO-FRAME]` log line.** Five seconds after a successful boot with nothing presented, `PVEmulatorViewController+FirstFrameWatchdog` logs the presenter, render path, pause state, geometry and the GPU view's frame/visibility. Cores that draw to their own view (native Dolphin, PPSSPP, RetroArch `skipLayout`) trip it by design.
+- **Per-game core options depend on `CoreOptionsContext.currentGameMD5`.** It is set in `initCore()` before the core initializes and cleared in `quit`; `CoreOptional.currentGameMD5` defaults to it. Without it a core reads only the core-wide key and per-game overrides are silently ignored.
 - **flycast cannot be debugged with Xcode attached.** It installs `signal(SIGSEGV, ...)` for VRAM lazy-mapping; Xcode catches SIGSEGV and pauses, breaking the core. Use Console.app (filter `Process = Provenance`) for live logs OR `iOS Settings → Privacy & Security → Analytics → Analytics Data` for `.ips` crash files post-mortem.
 - **Sentry's `enableCrashHandler` is disabled** at `SentryBootstrapTask.swift:48` because its SIGSEGV handler conflicts with flycast's MMU path. Do NOT re-enable it. Crash telemetry flows through MetricKit instead.
 - **iPad MoltenVK surface_caps lie.** On iPadOS 26 with Stage Manager / adaptive scaling, `VkSurfaceCapabilitiesKHR.currentExtent` / `minImageExtent` / `maxImageExtent` ALL report `view.bounds × contentScaleFactor`, NOT the actual `CAMetalLayer.drawableSize`. They can differ (e.g. 2732×2048 vs 2092×1568). The authoritative source for iOS Vulkan is `metalLayer.drawableSize`. Never clamp against MoltenVK surface caps on iOS — see the iOS-gated branch in `gfx/common/vulkan_common.c::vulkan_create_swapchain`.
@@ -197,6 +202,23 @@ cd PV<Module> && swift build
 
 # Test a standalone SPM module
 cd PV<Module> && swift test
+
+# PVUI unit tests (PVUIBaseTests + PVSwiftUITests). Use the committed
+# PVUI-UnitTests scheme, not the auto-generated PVUI one: that also builds the
+# snapshot suite, whose Prefire-generated code doesn't compile. On Xcode 26.6
+# realm-core needs `-xcconfig` with OTHER_CFLAGS/OTHER_CPLUSPLUSFLAGS =
+# $(inherited) -Wno-invalid-specialization (CI's Xcode 26.3 doesn't).
+cd PVUI && xcodebuild test -scheme PVUI-UnitTests \
+  -destination 'platform=iOS Simulator,name=iPhone 17' \
+  CODE_SIGNING_ALLOWED=NO -skipPackagePluginValidation -skipMacroValidation
+
+# PVCoreBridgeRetro (thin wrapper) tests: the PVLibRetroTests target of
+# PVCoreBridgeRetro.xcodeproj. SwiftPM can't build that package (mixed
+# Swift/ObjC target). Ad-hoc signing is required — the bundle embeds MoltenVK.
+xcodebuild test -workspace Provenance.xcworkspace -scheme PVCoreBridgeRetro \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' \
+  CODE_SIGN_IDENTITY=- CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM= \
+  -skipPackagePluginValidation -skipMacroValidation
 
 # Xcode simulator build (full app, slow)
 xcodebuild build -workspace Provenance.xcworkspace \

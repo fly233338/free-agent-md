@@ -47,7 +47,7 @@ Treat `main` as pull-request-only. Perform maintainer edits on a topic branch or
 
 Use the skill's end-to-end sequence: complete triage, repair mergeable source PRs, run checks in parallel, merge source PRs in conflict-aware order, perform one canonical synchronization after the source batch, use the scripted protected-release flow when requested, and verify final `main`, tag, GitHub Release, npm package, CI, and live public surfaces. For changed `SKILL.md` files, distinguish a real Tessl `review` from `manual-review-required`; the latter means Tessl was unavailable or did not produce a passing result and requires a maintainer review attested to the exact full head SHA. If neither an installed skill nor the repository-canonical copy is available and readable, stop before making repository changes and report that blocker explicitly.
 
-Every stable or prerelease version must finish with the full-release-alignment gate in the maintainer skill. Do not declare a release complete until clean local `main` equals `origin/main`; canonical generated state is drift-free; every Codex and Claude plugin mirror, editorial bundle, manifest, compatibility report, and marketplace is regenerated and version-aligned; the tag, GitHub Release, npm version and intended dist-tag agree; CI, CodeQL, and the release-only Pages deployment for the exact released commit are green; live catalog and legacy-bridge surfaces match; and every already-configured local AAS MCP host is pinned to and actually running the released version. A release request authorizes updating existing AAS host entries only, never creating an absent host configuration.
+Every stable or prerelease version must finish with the full-release-alignment gate in the maintainer skill. Do not declare a release complete until clean local `main` equals `origin/main`; canonical generated state is drift-free; every Codex and Claude plugin mirror, editorial bundle, manifest, compatibility report, and marketplace is regenerated and version-aligned; the tag, GitHub Release, npm version and intended dist-tag agree; CI, CodeQL, and the release-tag Pages deployment for the exact released commit are green; live catalog and legacy-bridge surfaces match; and every already-configured local AAS MCP host is pinned to and actually running the released version. A release request authorizes updating existing AAS host entries only, never creating an absent host configuration.
 
 #### Skill Content Review Gate
 
@@ -58,3 +58,20 @@ Reviewed fork bundle exceptions are restricted to the protected-base ledger in
 bind a complete previously reviewed skill tree and still require exact-current-head
 attestation, all required checks and strict protection; no general script allowlist
 or PR-controlled ledger is authorized.
+
+## Learned User Preferences
+
+- For maintainer sweeps, PR merges, issue closure, and releases, follow the canonical `antigravity-maintainer-batch-release` skill together with `.github/MAINTENANCE.md`; do not substitute a generic Git or GitHub workflow.
+- When executing an attached plan, implement the plan without editing the plan file; use existing todos instead of recreating them.
+- Optional TypeSafe Jev tooling must accelerate triage and quality; never add mandatory steps to `merge:batch`, CI, or branch protection.
+- Keep Jev usage within a small monthly TypeSafe budget by capping skills per run and treating output as advisory only.
+- Store TypeSafe API keys only in gitignored `.env.local`; rotate any key exposed in chat, logs, or commits.
+- Before committing new maintainer tooling, run a full validation round on a real open skill PR (worktree, deterministic checks, and Jev smoke when applicable).
+- Release changelog and GitHub release notes must match the actual tag diff (skill counts, catalog totals, contributor thanks); emphasize catalog skills in user-facing notes, not maintainer-only tooling.
+- Respond in Italian when the user writes maintainer or release requests in Italian.
+
+## Learned Workspace Facts
+
+- `npm run maintainer:jev-hints` evaluates skill content from the `--head` git ref via `git show`; pass `--repo` with a PR worktree when changed skills are not present on the current checkout.
+- Jev hints default to five skills per run, exit 0 with a skip message when `TYPESAFE_API_KEY` is unset, and never satisfy Tessl or `--reviewed-head` skill review.
+- Maintainer documentation for Jev lives in `docs/maintainers/jev-hints.md`; the upstream TypeSafe agent skill is installed under `.agents/skills/typesafe-ai/` via `npx skills add typesafe-ai/skills --skill typesafe-ai`.

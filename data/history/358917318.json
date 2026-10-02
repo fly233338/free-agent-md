@@ -2,12 +2,6 @@
   "full_name": "apache/datafusion",
   "points": [
     {
-      "checked_at": "2026-09-02T07:57:56Z",
-      "commit_sha": "3a4c310da72ea419e777bf56bbedaf1fb83e087e",
-      "pushed_at": "2026-09-02T07:55:05Z",
-      "stars": 9263
-    },
-    {
       "checked_at": "2026-09-10T08:12:06Z",
       "commit_sha": "0015a7521c5f6936a7e359b34dc36554870c297e",
       "pushed_at": "2026-09-10T08:04:14Z",

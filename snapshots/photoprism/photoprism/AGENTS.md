@@ -1,0 +1,183 @@
+# PhotoPrism Repository Guidelines
+
+**Last Updated:** October 1, 2026
+
+## Purpose
+
+Entry point for agents. Humans read [`README.md`](README.md).
+
+## Sources of Truth
+
+- Makefile: https://github.com/photoprism/photoprism/blob/develop/Makefile
+- Setup guide: https://docs.photoprism.app/developer-guide/setup/
+- Test guide: https://docs.photoprism.app/developer-guide/tests/
+- Contributing: https://github.com/photoprism/photoprism/blob/develop/CONTRIBUTING.md
+- Security: https://github.com/photoprism/photoprism/blob/develop/SECURITY.md
+- REST API: https://docs.photoprism.dev/ and https://docs.photoprism.app/developer-guide/api/
+- Code maps: [`CODEMAP.md`](CODEMAP.md), [`frontend/CODEMAP.md`](frontend/CODEMAP.md)
+- Package docs: `README.md` files under `internal/`, `pkg/`, `frontend/`, and `frontend/src/`
+- Frontend dependency pins, override layer, and orphan-audit pattern: [`frontend/README.md`](frontend/README.md) (read before bumping any non-caret pin or adding/removing a top-level dep)
+- AI/Vision docs: [`internal/ai/face/README.md`](internal/ai/face/README.md), [`internal/ai/onnx/README.md`](internal/ai/onnx/README.md), [`internal/ai/vision/README.md`](internal/ai/vision/README.md), [`internal/ai/vision/openai/README.md`](internal/ai/vision/openai/README.md), [`internal/ai/vision/ollama/README.md`](internal/ai/vision/ollama/README.md)
+- Glossary: [`GLOSSARY.md`](GLOSSARY.md)
+- When dependencies change, regenerate `NOTICE` files with `make notice`; do not edit `NOTICE` or `frontend/NOTICE` manually.
+
+## Subtree Guides
+
+- [`internal/AGENTS.md`](internal/AGENTS.md): internal Go rules.
+- [`internal/api/AGENTS.md`](internal/api/AGENTS.md): API rules.
+- [`internal/config/AGENTS.md`](internal/config/AGENTS.md): config rules.
+- [`internal/commands/AGENTS.md`](internal/commands/AGENTS.md): CLI rules.
+- [`internal/entity/migrate/AGENTS.md`](internal/entity/migrate/AGENTS.md): database migration rules.
+- [`internal/photoprism/AGENTS.md`](internal/photoprism/AGENTS.md): import and index rules.
+- [`internal/service/cluster/AGENTS.md`](internal/service/cluster/AGENTS.md): cluster rules.
+- [`frontend/AGENTS.md`](frontend/AGENTS.md): frontend rules.
+- [`pkg/AGENTS.md`](pkg/AGENTS.md): `pkg/*` security and test rules.
+
+Optional nested repositories such as `plus/`, `pro/`, `portal/`, and `specs/` may contain their own `AGENTS.md` files. Each nested Git repository starts a separate Codex instruction chain, so read this guide and the nested repository guide before working there; Codex does not load this file automatically when a session starts inside a nested repository.
+
+## Local Agent Progress
+
+- Use `.agents/TODO.md` for actionable tasks and `.agents/DONE.md` for completed work.
+- These files are local workflow aids and may not exist in every workspace.
+
+## Style Notes
+
+### Commit Messages
+
+- Use concise imperative subjects with a one-word prefix, for example `Config: Add tests for "darktable-cli" path detection`.
+- Append issue or PR IDs when relevant.
+- Commit messages must not exceed 80 characters.
+- Do not add `Co-Authored-By` or any other AI-authorship trailer.
+
+### GitHub Issues
+
+- Titles MUST be concise, imperative, and start with one capitalized prefix plus `: `, for example `Search: Add filter for RAW image formats`. A `Bug` title states what does not work instead, for example `PWA: Unable to download or share files`.
+- Choose the type by what the code was already supposed to do: `Bug` (implemented, but not working as documented), `Enhancement` (new capability on working functionality), `Feature` (entirely new), or `Task` (never fully developed, needs refinement, or an update). The title is a quick test: if it reads naturally as a failure, it is a `Bug`; once the type is chosen, word the title to match it.
+- Descriptions MUST begin with a one-sentence bold user story: `**As a <role>, I want <goal>, so that <outcome>.**`
+- Use level-3 Markdown headings for sections within issue descriptions, for example `### Acceptance Criteria`.
+- Follow with behavior, rationale, technical considerations, and constraints.
+- End with `- [ ]` checklist items for the acceptance criteria, each using `MUST`, `SHOULD`, or `MAY`.
+  - Keep the checklist current: once the work for a criterion is implemented **and verified**, mark it done (`- [x]`).
+  - Leave items that are unverified, not yet implemented, or skipped optional (`MAY`) enhancements unchecked.
+  - An issue is complete only when every `MUST` is checked; never tick a box on the strength of a plan alone or an unrun test.
+  - When referencing an issue from a commit that fulfills some of its criteria, update the matching boxes first.
+- Agents MUST create, edit, close, reopen, relabel, or otherwise modify GitHub issues only when explicitly requested by the user.
+
+### Specifications & Documentation
+
+- Markdown headings use a Chicago-style title case, with additional code- and path-aware normalization rules (see *Title Case rules* below). Always spell the product name as `PhotoPrism`.
+- Put option flags before positional arguments unless the command requires another order.
+- Name environment variables in full in user-facing docs, READMEs, examples, and templates (`PHOTOPRISM_DETECT_NSFW`, not `DETECT_NSFW`), since readers copy them verbatim. CLI flags (`--detect-nsfw`) and YAML option keys keep their own names.
+- Use RFC 3339 UTC timestamps and valid ID, UID, and UUID examples in docs and tests.
+- The nested `specs/` repository may be absent. Do not add main-repo `Makefile` targets that depend on it; when present, you may run its tools manually.
+- Testing guides live at `specs/dev/backend-testing.md` and `specs/dev/frontend-testing.md`.
+- Do not read, analyze, or modify `specs/generated/`; refer humans to `specs/generated/README.md` when regeneration is needed.
+- Refresh `**Last Updated:**` when you change document contents, but leave it unchanged for whitespace-only or formatting-only edits.
+- Nested Git repositories may appear ignored; change into them before staging or committing updates.
+
+Title Case rules (Chicago-style, with code- and path-aware normalization):
+- Capitalize the first word, the first word after a colon, dash, or end punctuation, and all major words, including the second part of a hyphenated major word.
+- Lowercase only articles, short conjunctions, and short prepositions of three letters or fewer when they are not in one of those positions.
+- Preserve known acronyms (for example, API, CLI, HTTP, JSON) and slash-separated acronym groups (for example, CSV/TSV) as uppercase.
+- Preserve RFC 2119 / RFC 8174 normative keywords (MUST, SHOULD, MAY, SHALL, REQUIRED, RECOMMENDED, OPTIONAL) as uppercase when used in their normative sense.
+- Preserve inline code spans (`` `foo` ``), file paths (e.g. `docs/foo-bar.md`), and slash commands (e.g. `/grill-me`) verbatim; do not recase their contents.
+- Use `&` instead of `And`/`Or` in headings.
+
+## Safety & Data
+
+- If `git status` shows unexpected changes, assume a human may be editing; ask before using reset-style commands.
+- Do not run `git config` at either the global or repository level.
+- Do not run destructive commands against production data; prefer ephemeral volumes and test fixtures for acceptance tests.
+- Never commit secrets, local configurations, or cache files; use environment variables or a local `.env`.
+- Ensure `.env`, `.config`, `.local`, `.codex`, and `.gocache` are ignored in `.gitignore` and `.dockerignore`.
+- Prefer existing caches, workers, and batching strategies already referenced by the code and `Makefile`.
+- Consider CPU and memory impact; only suggest profiling or benchmarks when justified.
+- If anything here conflicts with the `Makefile` or the sources of truth, ask for clarification before proceeding.
+
+## Project Layout & Shared Rules
+
+- Backend: Go in `internal/`, `pkg/`, and `cmd/`, backed by MariaDB or SQLite.
+- Frontend: Vue 3 plus Vuetify 4 under `frontend/`.
+- Local development uses Docker Compose; Traefik provides local TLS via `*.localssl.dev`.
+- Code in `pkg/*` must not import from `internal/*`. If you need config, entity, or DB access, add code under `internal/`.
+- Shared Go rules:
+  - After Go edits, run `make fmt-go` and keep `gofmt` tab indentation.
+  - Every added/modified Go function, including unexported helpers, must have focused test coverage in the corresponding `*_test.go` files; update existing tests or add new ones as needed.
+  - Every Go package must contain a root `<package>.go` file with the standard license header and a short package description comment.
+  - Use `pkg/fs` permission constants: `fs.ModeDir`, `fs.ModeFile`, `fs.ModeConfigFile`, `fs.ModeSecretFile`, and `fs.ModeBackupFile`.
+  - When importing the stdlib `io/fs`, alias it to avoid collisions, for example `iofs "io/fs"` or `gofs "io/fs"`.
+  - Do not pass stdlib `io/fs` mode flags where permission bits are expected.
+  - Prefer `filepath.Join` for filesystem paths and `path.Join` only for URL paths.
+  - Normalize slash-based logical paths stored in DB, config, or API payloads with `clean.SlashPath(...)`.
+- Shared JS/Vue rules:
+  - Added/modified JavaScript functions, including helpers, should be tested whenever practical; update existing tests or add new ones as needed.
+  - Added/modified Vue components should have component-test coverage, and existing component tests should be updated as needed when behavior changes.
+- When adding a metadata source such as `SrcOllama` or `SrcOpenAI`, update both `internal/entity/src.go` and `frontend/src/common/util.js` so backend and UI stay aligned.
+
+### JS/Go Code Comments
+
+A doc comment is **required** for every function (including unexported helpers), as well as for every non-trivial Vue `methods:` / `computed:` / watcher:
+- Keep comments **compact** and default to one line for "what" in the format `// Name does X.`. Skip trivial getters (`isOpen: () => this.open`).
+- Add 1-2 follow-up lines (`// …`) **only** if the "why" is non-obvious: a hidden invariant, a workaround that would otherwise be undone by a future cleanup, a contract a reader can't infer from the code. If readers can infer the "why" from the function body or a nearby line, then omit it. Three follow-up lines are the hard limit; compact a longer comment you touch.
+- Multi-paragraph explanations belong in `specs/`, package `README.md` files, or GitHub issues — never in the source itself.
+
+Doc comments for packages and exported identifiers must be complete sentences that begin with the name of the thing being described and end with a period. For short examples in comments, indent code instead of using backticks.
+
+Use US English spelling in all code comments (`parameterized`, `behavior`, `color`, `serialize`, `normalize`, `optimize`, …) — not the British `-ised`/`-our`/`-re` variants.
+
+> **Don't include in code comments:** Issue / PR numbers, "previously…" history, alternatives considered, what the function used to do, references to old commits, names of subsequent reviewers, or any narrative that names the change rather than the steady-state behavior. That context belongs in commit messages, specs, or handover notes.
+
+## Agent Runtime
+
+- Detect container mode by checking for `/.dockerenv`. This orients you in the development environment only; scripts that ship in images read `PHOTOPRISM_CONTAINER` instead, since the file is absent during image builds and under other container runtimes.
+- If the repo path is `/go/src/github.com/photoprism/photoprism` and `/.dockerenv` is absent, treat the environment as host mode with a bind mount and prefer host-side Docker commands.
+- Bash check: `[ -f "/.dockerenv" ] && echo container || echo host`
+- Node.js check: `require("fs").existsSync("/.dockerenv")`
+- Inside the container, prefer `npm exec --yes <agent> -- --help` or `npx <agent> ...`; if a global npm install is unavoidable, install it only inside the container.
+- The `photoprism/develop` base image and the repo `Makefile` both set `NPM_CONFIG_IGNORE_SCRIPTS=true`, so `npm ci`/`npm install` via `make` targets skip install scripts out of the box. When running npm directly in an environment that does not set or inherit that default, pass `--ignore-scripts` explicitly to mitigate supply-chain attacks. Rebuild native addons with `npm rebuild --ignore-scripts=false <pkg>` — a bare `npm rebuild` is a silent no-op wherever the env default is active.
+- On the host, use the vendor-recommended install method and run from the repository root so agent discovery sees this file.
+
+## Build, Format & Test
+
+- Run `make help` for an overview of the most common targets, and `make list` to see all of them.
+- Host mode:
+  - `make docker-build`
+  - `docker compose up` or `docker compose up -d`
+  - `docker compose logs -f --tail=100 photoprism`
+  - `docker compose exec photoprism ./photoprism help`
+  - `docker compose exec -u "$(id -u)" photoprism <command>` to avoid root-owned files; a bare UID keeps the account's supplementary groups, such as `ssl-cert`, which adding `:$(id -g)` drops
+  - `make terminal`
+  - `docker compose --profile=all down --remove-orphans` or `make down`
+- Container mode:
+  - `make dep`
+  - `make build-js` and `make build-go`
+  - `make watch-js` or `cd frontend && npm run watch`
+  - `./photoprism start`
+  - Local URLs: `http://localhost:2342/` and, with Traefik, `https://app.localssl.dev/`
+  - Local compose defaults to `admin` / `photoprism`; inspect `compose.yaml` if they differ.
+  - Do not use the Docker CLI inside the container; manage Compose from the host instead.
+- The public CLI name is always `photoprism`; development-only side-by-side binaries may use edition-specific names.
+- Our command examples assume a Linux or Unix shell on 64-bit AMD64 or ARM64; see the Developer Guide FAQ for Windows-specific notes.
+
+Formatting and test entry points:
+- Full suite: `make test`, `make lint`. `make test` runs on SQLite without the opt-in `integration` build tag; use `make test-mariadb` for MariaDB, `make test-integration` for the integration matrices, and `make test-short` for a quick pass.
+- After renaming or removing a Makefile target, run `make check-make-help` (also included in `make lint`) so that no `make help` overview keeps advertising it.
+- Go-specific lint, format, and package-test rules live in [`internal/AGENTS.md`](internal/AGENTS.md).
+- Frontend lint, Vitest, acceptance, and Playwright rules live in [`frontend/AGENTS.md`](frontend/AGENTS.md).
+- Go tests live next to their sources; use PascalCase `t.Run(...)` names for related subtests. Keep consecutive subtests inside the same `Test*` function back-to-back without blank lines so the cases read as a compact table; reserve blank lines for separating distinct setup blocks.
+- Do not run multiple test commands in parallel; suites share fixtures, assets, and database state.
+- Prefer focused test runs such as `go test ./path/to/pkg -run Name -count=1` while iterating.
+- Use `mariadb -D photoprism` inside the dev shell when you need to inspect MariaDB state directly.
+- Run `shellcheck <file>` on edited shell scripts, or use the corresponding `make` target.
+
+### Continuous Integration
+
+- **GitHub Actions is not enabled for this repository.** The workflow files under `.github/workflows/` do not execute, so pushes and pull requests produce no check runs. Treat them as dormant configuration: do not diagnose the absence of runs as a broken workflow, do not propose enabling Actions, and do not add workflows or bot configuration that assumes they will run. Ask a maintainer before changing anything under `.github/workflows/`.
+- The `make` targets above are the authoritative build, format, and test gate. Run them locally and report the output rather than relying on a hosted runner.
+
+### Container Image Builds
+
+- **Never mix Debian and Ubuntu `apt` repositories in the same image:**
+  - Don't add a Debian source to an Ubuntu base (or vice versa) to install a single missing package — the transitive deps drift, apt's solver pulls newer libraries from the foreign distro, and other build steps in the same `RUN` (e.g. `install-libheif.sh` running `apt-get install libavcodec-dev`) silently link against the wrong soname.
+  - Symptoms surface much later as `dlopen: libfoo.so.N: cannot open shared object file` at image runtime, with the binary referencing a soname that exists only in the foreign distro.
+  - If a package isn't available in the host distro's repos, prefer (a) a same-distro PPA / backports source, (b) a vendor-supplied .deb (e.g. Google Chrome from `dl.google.com`), or (c) a from-source build pinned to a known version.

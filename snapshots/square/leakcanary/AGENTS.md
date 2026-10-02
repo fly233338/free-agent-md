@@ -42,6 +42,11 @@ Java 8 have to be able to use the artifacts.
 ./gradlew siteDokka                   # regenerate docs/api
 ```
 
+`docs/api/` — the `siteDokka` output — is git ignored, not committed. The release process
+regenerates it just before publishing the site (see `docs/releasing.md`), so a public API change
+means updating the ABI dump and nothing else. If you do run `siteDokka`, don't edit what it writes;
+fix the KDoc in the source.
+
 Instrumentation tests need a device or emulator and only cover `leakcanary-android`,
 `leakcanary-android-core`, `leakcanary-android-instrumentation` and `leakcanary-android-test`. CI
 runs them on one emulator per major Android release, from the minSdk to the newest API level with a
@@ -67,9 +72,6 @@ from KGP and therefore exist *only on the JVM modules* — they silently skip ev
 module, which is most of the published ones. A green `updateLegacyAbi` means less than half the repo
 was covered.
 
-**`docs/api/` is generated.** It's Dokka output committed to the repo, produced by
-`./gradlew siteDokka`. Never hand-edit those files; fix the KDoc in the source instead.
-
 **Some dependency versions are deliberately old.** The `compileOnly` AndroidX versions in
 `gradle/libs.versions.toml` are pinned to the *lowest* version LeakCanary supports, so that apps
 resolve to their own newer version without needing a resolution strategy. The inline comments say
@@ -83,6 +85,22 @@ before adjusting the expected values, and say in the PR why the new number is co
 **detekt runs on pre-push and in CI**, config at `config/detekt-config.yml`. The hook installs itself
 via the `assemble` and `clean` tasks, so a fresh clone gets it after the first build. Run `detekt`
 before pushing rather than discovering it at push time.
+
+**`gh pr merge --auto` does not wait for CI here — it merges on the spot.** Auto-merge is enabled on
+the repo, but `main` is deliberately left unprotected, so there are no required status checks for
+auto-merge to gate on. GitHub sees a mergeable pull request with nothing to wait for and merges
+immediately, exiting zero and printing nothing, which reads exactly like it armed. Nothing in the
+repo will stop a merge while CI is red — `main` is open on purpose — so waiting for green is your
+job, not the platform's. Wait explicitly and let the exit code decide:
+
+```bash
+gh pr checks <number> --watch --fail-fast && gh pr merge <number> --merge
+```
+
+`gh pr checks` exits zero only once every check has passed, so the `&&` is what makes this safe;
+`--fail-fast` returns as soon as one fails instead of sitting through the rest. A run takes 9 to 13
+minutes, nearly all of it the emulator matrix, so start that command detached — a foreground call
+that gives up at ten minutes will usually be killed just before the last emulator reports.
 
 ## Changelog
 
@@ -99,6 +117,12 @@ crashed. Breaking changes are ⚠️; when one needs more than a bullet, write i
 **The changelog is for changes that matter to the people consuming LeakCanary**, not a record of
 every diff. Refactors, internal cleanups and test-only changes usually don't need an entry.
 
+**`docs/changelog.md` is the only changelog in this repo, and it covers the libraries.** Shark Dive is
+released separately and has **no changelog**, because it has had no release — so a change to
+`shark/shark-dive/` gets no entry anywhere, and **don't create a file for one**. There was one, and it
+was a hundred unreleased bullets describing the app to nobody; `docs/releasing-shark-dive.md` has why it
+went and when starting one would be right.
+
 ## Conventions
 
 - When a function's parameters don't fit on one line, put **each on its own line** — the existing
@@ -107,6 +131,12 @@ every diff. Refactors, internal cleanups and test-only changes usually don't nee
   the documentation site". Explain *why* in the body when it isn't obvious.
 - Don't leave test-only or unused code in the committed tree. If scaffolding was needed to get
   somewhere, remove it before the PR lands.
+- **The prose conventions in this repo are for the repo, not for the screen.** The guides, the KDoc and
+  the `notes/` files are written at length on purpose — the reader is someone about to change the code,
+  and the cost of a paragraph there is nothing. What a *user interface* says is governed by the opposite
+  rule: a label is one or two words, and the paragraph explaining it lives somewhere the reader goes
+  looking for it. `shark/shark-dive/AGENTS.md` has that rule and the mechanism, and Shark Dive is the
+  only substantial UI in this repo, so it is the only place it applies.
 - Test heap dumps are built with the `dump { }` DSL from `shark-hprof-test` (see `docs/dev-env.md`)
   rather than committed as binary fixtures. Never hand-assemble hprof bytes. For a large realistic
   dump, drive a real JVM via `HotSpotDiagnosticMXBean.dumpHeap`.

@@ -2,12 +2,6 @@
   "full_name": "RfidResearchGroup/proxmark3",
   "points": [
     {
-      "checked_at": "2026-09-02T07:57:56Z",
-      "commit_sha": "d1e047627835e787e37d40e7c997b4988580a71f",
-      "pushed_at": "2026-09-02T07:51:46Z",
-      "stars": 6012
-    },
-    {
       "checked_at": "2026-09-10T08:12:06Z",
       "commit_sha": "82c726dd9b6cd78dcfb61844e6fb7f8e8eb43408",
       "pushed_at": "2026-09-10T08:05:14Z",
