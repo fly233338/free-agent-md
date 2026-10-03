@@ -2,12 +2,6 @@
   "full_name": "ollama/ollama",
   "points": [
     {
-      "checked_at": "2026-09-03T08:07:06Z",
-      "commit_sha": "b79067b0db7417f20108363bc22adb97f35c966a",
-      "pushed_at": "2026-09-03T03:39:26Z",
-      "stars": 180014
-    },
-    {
       "checked_at": "2026-09-04T08:02:17Z",
       "commit_sha": "b68365a0a4e2546f23cb3e87280b4cde6c2d117f",
       "pushed_at": "2026-09-04T00:29:09Z",
@@ -180,6 +174,12 @@
       "commit_sha": "b0c1ca4f7549d7acdfa52a7dcffc934bc63a43ce",
       "pushed_at": "2026-10-02T06:12:46Z",
       "stars": 182046
+    },
+    {
+      "checked_at": "2026-10-03T09:14:01Z",
+      "commit_sha": "42e911bc3d05798cad729cb474bf62f378cb2e26",
+      "pushed_at": "2026-10-03T04:09:34Z",
+      "stars": 182079
     }
   ],
   "repo_id": 658928958

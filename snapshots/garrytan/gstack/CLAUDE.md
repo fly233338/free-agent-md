@@ -92,9 +92,10 @@ shard processes, serial within each, packed by recorded per-file durations
 when `scripts/free-test-durations.json` exists — refresh occasionally with
 `bun run test:free --record-durations`; strict-output classification per
 shard: a shard without bun's terminal summary line FAILS — silent truncation
-cannot report green). The former trailing serial tree-mutating shard is
-gone: `TREE_MUTATING` is empty (gen-skill-docs has a main() guard and
-`--out-dir` renders every host, so tests render into mkdtemps — see
+cannot report green). `TREE_MUTATING` lists the files that still run in their
+own trailing serial shard (today only `test/bootstrap-retention.test.ts`, for
+host-wide procfs visibility); gen-skill-docs tests no longer need it (main()
+guard, and `--out-dir` renders every host into mkdtemps — see
 docs/TESTING_INTERNALS.md). Never type bare `bun test` for the suite: it
 walks the whole repo, loading paid eval files and missing the strict
 classifier.
@@ -121,7 +122,18 @@ engine's own tests run everywhere.
 
 New or changed tests follow the [test value bar](docs/test-value-bar.md): each one
 protects behavior a real regression would break, and contract tests (SKILL.md
-goldens, prompt bytes) stay. The bar's source is `scripts/resolvers/test-value.ts`.
+goldens, and prompt bytes that are a contract as defined below) stay. The bar's
+source is `scripts/resolvers/test-value.ts`.
+
+In this repo, prompt bytes are a contract only when software reads them (a
+parser, hook, grader or another skill consumes the exact text) or a recorded
+eval shows the wording matters. Tests on skill templates and generated SKILL.md
+pin structure, step order, routing tables, machine-read markers and
+safety-critical lines; check safety lines case-insensitively, on meaning rather
+than capitals. Leave behavior to E2E cases and judges. Don't pin emphasis,
+capitalization, issue numbers, or a sentence a behavioral check already covers,
+and when a rewrite changes a pinned sentence, replace the pin with a structural
+or meaning-level check instead of pinning the new sentence.
 Projects tune `/ship`'s coverage gate with optional CLAUDE.md `## Test Coverage`
 keys, all absent by default: `Minimum:`, `Target:`, `Generation cap:` (default 5),
 `Base control:` (`auto` or `off`), `Base control budget:` (seconds, default 90) and
@@ -188,7 +200,8 @@ or as a reference doc, (3) only compress carefully-tuned prose as a last resort 
 cuts to the coverage audit, review army, or voice directive have real quality cost.
 
 A second, harder ceiling guards the DISCOVERY surface: `test/catalog-budget.test.ts`
-caps the aggregate frontmatter `name` + `description` across all skills at 1,171
+caps the aggregate frontmatter `name` + `description` across all skills at
+`CATALOG_BUDGET_TOKEN_EQUIVALENTS` (1,194 today; each new skill ratchets it)
 token-equivalents (260-byte per-skill sub-cap), counted through the shared census
 in `test/helpers/skill-census.ts`. This one is enforced, not a warning — every
 host loads the full catalog every session, so growth here taxes every
@@ -246,8 +259,9 @@ Rules:
 ## Writing style (V1)
 
 Default output from every tier-≥2 skill follows the Writing Style section in
-`scripts/resolvers/preamble.ts`: jargon glossed on first use (curated list in
-`scripts/jargon-list.json`, baked at gen-skill-docs time), questions framed in
+`scripts/resolvers/preamble/generate-writing-style.ts`: jargon glossed on first
+use (curated list in `scripts/jargon-list.json`, which the skill Reads at runtime
+on the first jargon term), questions framed in
 outcome terms ("what breaks for your users if...") not implementation terms,
 short sentences, decisions close with user impact. Power users who want the
 tighter V0 prose set `gstack-config set explain_level terse` (binary switch,
@@ -702,19 +716,6 @@ regenerated SKILL.md shifts prompt context.
 
 "Pre-existing" without receipts is a lazy claim. Prove it or don't say it.
 
-## Long-running tasks: don't give up
-
-When running evals, E2E tests, or any long-running background task, **poll until
-completion**. Use `sleep 180 && echo "ready"` + `TaskOutput` in a loop every 3
-minutes. Never switch to blocking mode and give up when the poll times out. Never
-say "I'll be notified when it completes" and stop checking — keep the loop going
-until the task finishes or the user tells you to stop.
-
-The full E2E suite can take 30-45 minutes. That's 10-15 polling cycles. Do all of
-them. Report progress at each check (which tests passed, which are running, any
-failures so far). The user wants to see the run complete, not a promise that
-you'll check later.
-
 ## Running evals as an agent: always detach (SIGTERM-proof)
 
 When **you (an agent/harness)** launch a long eval/benchmark run, run it through
@@ -737,7 +738,8 @@ the run can also die to idle-sleep. `gstack-detach` fixes both: a fresh session
   (stray `claude`/`codex` grandchildren included), a per-shard
   `GSTACK_EVAL_DIR=<evalDir>/shards/<slug>/` honored by the `EvalCollector`
   constructor, and an aggregate that separates failed vs timed-out vs
-  never-started shards — the detach timeouts (47340s gate / 67380s periodic;
+  never-started shards — the detach timeouts (the `--timeout` values on
+  package.json's `eval:bg:gate` / `eval:bg:periodic`;
   floor enforced against the live shard census by
   test/eval-detach-timeout-floor.test.ts)
   are sized against worst-case shard wall clock. `EVALS_JOBS` sets the shard
@@ -750,7 +752,10 @@ the run can also die to idle-sleep. `gstack-detach` fixes both: a fresh session
 - Then **poll the printed logfile** with a death-aware watcher: break on the
   guaranteed `### gstack-detach EXIT=<code> ###` sentinel (success AND failure are
   both marked, so silence is never mistaken for success). The detached run survives
-  even if your watcher gets reaped, so re-checking the log always works.
+  even if your watcher gets reaped, so re-checking the log always works. Keep
+  checking until the sentinel appears or the user tells you to stop; a long run is
+  expected, and a promise to check later is not a result. At each check, report
+  which tests passed, which are still running, and any failures so far.
 - Why the lock: a shared dev box with several Conductor worktrees will rate-limit
   the model API if two eval suites run at once (15-way concurrency each), which
   mass-times-out E2E tests. The lock makes the second run WAIT, not collide.

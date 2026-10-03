@@ -2,12 +2,6 @@
   "full_name": "vendurehq/vendure",
   "points": [
     {
-      "checked_at": "2026-09-03T08:07:06Z",
-      "commit_sha": "03bd174309d712cfb504dd26d78c8458ea296dcb",
-      "pushed_at": "2026-09-03T08:02:21Z",
-      "stars": 8395
-    },
-    {
       "checked_at": "2026-09-30T09:47:04Z",
       "commit_sha": "4b055cbabdc16d98ae5d3aec813890234f237cec",
       "pushed_at": "2026-09-30T09:45:38Z",
