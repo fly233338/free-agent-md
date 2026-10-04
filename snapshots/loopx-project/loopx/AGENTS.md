@@ -36,6 +36,21 @@ dependency and why the boundary improves verification or rollback. Reuse or
 update an existing successor; do not create ceremonial follow-up tasks for a
 completed request. Real authorization, cost and operational stop gates remain.
 
+When a change introduces or extends a state classification, protocol literal,
+Enum, `Literal`, named closed set, or TypeScript `as const` vocabulary, answer
+whether it reuses an existing owner, extends a registered vocabulary, remains
+local, or creates a new shared contract. Before the full-tree semantic check,
+run the development-time advisory over the current diff:
+
+```bash
+uv run python scripts/generate_semantic_inventory.py --changed-from HEAD
+```
+
+Pass each intentional untracked source with `--include-untracked loopx/path.py`;
+the probe never scans untracked or ignored files automatically. Findings are
+review prompts, not a gate or proof of semantic equivalence, and an empty result
+does not cover dynamic construction or unsupported syntax.
+
 For multi-Agent changes, qualify the relationship the user needs: dependency
 artifacts, receiver adoption, claim/lease handling, independent acceptance and
 result return as applicable. Sending a message or registering workers does not
@@ -166,6 +181,18 @@ manual holds, and why the coverage is enough. One hand-picked smoke is not
 enough for runtime, quota/status, scheduler, todo, install, dashboard,
 benchmark-boundary, or public/private evidence changes.
 
+### Personal Feishu Release Guide
+
+Every named public release must include an illustrated Feishu release guide
+owned by the maintainer's verified personal user account. Follow the
+[release guide procedure](docs/product/release-readiness.md#personal-feishu-release-guide)
+before calling release communication complete. Verify account and document
+ownership, use public-safe screenshots of the released UI, teach upgrade and
+capability use, and read back the published text and images. Do not substitute a
+corporate account or bot, claim a candidate is released, or infer authorization
+for chat announcements or other social channels. Keep account identifiers,
+private reference documents, drafts, and validation logs out of the repository.
+
 ### Release Contributor Attribution
 
 Keep the shipped product changes as the primary release narrative. When the tag
@@ -234,17 +261,32 @@ while planning. Inspect existing settings and capability editors before calling
 a configuration change backend-only; include necessary companion work in the
 same delivery plan, reusing the existing configuration owner and projection.
 
-Before PR handoff, verify the affected user interaction, state readback and
-feedback, including the packaged frontend when shipped. State which entry
-points changed and the validation performed. If no frontend change is needed,
-give a concrete, verified reason; if companion work remains, label delivery
-partial and link it. These are agent-owned completion checks, not new approval
-gates.
+Every new or materially extended caller-facing capability must enter the
+shipped frontend through an existing appropriate surface: users can discover
+its purpose, perform the authorized user operation, see unavailable/error states,
+and read back the result. A CLI command, catalog row, static description or
+"copy this command" button alone does not complete frontend delivery. Reuse the
+same typed owner; frontend presence does not require a duplicate configuration
+switch or automatic execution of privileged tools. Internal helpers and providers
+belong to their owning capability's interaction rather than a separate screen.
+
+Before PR handoff, validate that journey in the packaged frontend alongside the
+real owning rule/backend, including a relevant failure or recovery case. State
+which frontend/Lark/CLI entrypoints changed and what was verified. A staged CLI
+or backend prerequisite may be proposed as partial, with its remaining frontend
+journey and linked owner; do not mark the capability complete or use "developer
+only" as an automatic exemption. These are agent-owned completion checks, not
+new approval gates.
 
 ## UI Design Standard
 
 Apply the whole-viewport attention review in `docs/development/design.md`
 ("Earn The User's Attention") before implementation and in PR visual evidence.
+For production-bound interactive UI changes, carry one ordinary user task through
+`docs/development/frontend-delivery.md`: compare the shortest authorized journey
+before coding, validate the packaged interaction and owning state, and distinguish
+proposed changes from installed behavior. For documentation and prototypes, name
+the simulated boundary without claiming packaged or installed readback.
 
 Before changing or reproducing any LoopX UI, read and follow the repository-root
 `docs/development/design.md`. This includes websites, dashboards, desktop applications,

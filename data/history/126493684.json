@@ -2,12 +2,6 @@
   "full_name": "gotenberg/gotenberg",
   "points": [
     {
-      "checked_at": "2026-09-04T08:02:17Z",
-      "commit_sha": "9c5acd7418b47262bc1652ba973e493ec0a294c7",
-      "pushed_at": "2026-09-04T08:01:30Z",
-      "stars": 13003
-    },
-    {
       "checked_at": "2026-09-13T08:22:51Z",
       "commit_sha": "8e850b1c932452627fba397f2005dd6fd57b9617",
       "pushed_at": "2026-09-13T08:16:33Z",

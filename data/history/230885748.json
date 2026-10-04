@@ -2,12 +2,6 @@
   "full_name": "goauthentik/authentik",
   "points": [
     {
-      "checked_at": "2026-09-04T08:02:17Z",
-      "commit_sha": "acd0eb754e8fbed97560277c82106931c9917dcb",
-      "pushed_at": "2026-09-04T07:56:48Z",
-      "stars": 25346
-    },
-    {
       "checked_at": "2026-09-16T08:39:32Z",
       "commit_sha": "9c23cb9e452410c77cd251e28f08386e14e180aa",
       "pushed_at": "2026-09-16T08:37:45Z",

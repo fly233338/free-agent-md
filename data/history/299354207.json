@@ -2,12 +2,6 @@
   "full_name": "rustdesk/rustdesk",
   "points": [
     {
-      "checked_at": "2026-09-04T08:02:17Z",
-      "commit_sha": "d5c6d0f6b7dbf914c396ab62a430ecec838f8b00",
-      "pushed_at": "2026-09-04T08:01:05Z",
-      "stars": 122557
-    },
-    {
       "checked_at": "2026-09-05T07:43:14Z",
       "commit_sha": "3fc11c0f814379bc3ed6a067d20326ad42404eca",
       "pushed_at": "2026-09-05T07:07:53Z",
@@ -180,6 +174,12 @@
       "commit_sha": "e5bc204fe4dacc4db9c3cdb1f1338813986c89e7",
       "pushed_at": "2026-10-02T22:51:34Z",
       "stars": 125040
+    },
+    {
+      "checked_at": "2026-10-04T09:52:51Z",
+      "commit_sha": "e5bc204fe4dacc4db9c3cdb1f1338813986c89e7",
+      "pushed_at": "2026-10-04T09:28:51Z",
+      "stars": 125089
     }
   ],
   "repo_id": 299354207

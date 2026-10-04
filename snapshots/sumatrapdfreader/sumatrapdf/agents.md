@@ -34,7 +34,7 @@ When launching SumatraPDF.exe for ad-hoc testing, always pass the `-for-testing`
 
 After making a change to a .cpp, .c or .h file under `src/` (and before running build.ts), run clang-format on those files to reformat them in place. Do **not** clang-format third-party / vendored code (`ext/`, etc.) — keep edits there minimal and match the existing local style.
 
-After changing a .ts file under `cmd/` or `tests/`, run `bun cmd/format.ts` — it runs prettier over `cmd/**/*.ts` and `tests/**/*.ts` and then clang-formats the C/C++ sources. Use `bun cmd/format.ts -ts` to run only the prettier pass (no Visual Studio / clang-format needed). Prettier settings live in `.prettierrc.json` (`printWidth` 120, `endOfLine` lf) and `.prettierignore` (vendored code, build output, scratch `tmp/` dirs, and the generated `docs/md/Advanced-options-settings.md`). For other prettier-owned files (.js / .json / .md) run `bunx prettier --write <files>` on the files you touched.
+After changing a .ts file under `cmd/` or `tests/`, run `bun cmd/format.ts` — it runs prettier over `cmd/**/*.ts` and `tests/**/*.ts` and then clang-formats the C/C++ sources. Use `bun cmd/format.ts -ts` to run only the prettier pass (no Visual Studio / clang-format needed). Prettier settings live in `.prettierrc.json` (`printWidth` 120, `endOfLine` lf) and `.prettierignore` (vendored code, build output, scratch `tmp/` dirs). For other prettier-owned files (.js / .json / .md) run `bunx prettier --write <files>` on the files you touched.
 
 Never commit changes automatically. Always wait for explicit command to commit changes.
 
@@ -206,16 +206,16 @@ across calls) — keep the caller's stable string instead.
 To add a new advanced setting:
 
 - add definition in cmd/gen-settings.ts
-- run "bun cmd/gen-code.ts" (or "bun cmd/gen-settings.ts") to regenerate src/Settings.h (it also re-emits the settings docs)
+- run "bun cmd/gen-code.ts" (or "bun cmd/gen-settings.ts") to regenerate src/Settings.h and src/Settings.cpp (it also re-emits the settings docs)
 
 ## Adding a new command
 
 To add a new command:
 
-- add to cmd/gen-commands.ts, always at the end of the list (before the "CmdNone" command)
+- add to cmd/gen-commands.ts, always at the very end of the list (after the last command, not before "CmdNone"): ids are assigned by position, so inserting earlier renumbers every command after it and bloats the src/Commands.h diff
 - run "bun cmd/gen-code.ts" (or "bun cmd/gen-commands.ts") to regenerate src/Commands.h and src/Commands.cpp
-- document in docs/md/Commands.md
-- add an entry to the **New commands** list at the end of the **next** section in docs/md/Version-history.md (see below)
+- document in `www/docs/Commands.md`
+- add an entry to the **New commands** list at the end of the **next** section in `www/docs/Version-history.md` (see below)
 
 ## DocProp name maps are generated
 
@@ -228,10 +228,16 @@ To add a new cmd-line flag:
 - add to cmd/gen-flags.ts
 - run "bun cmd/gen-code.ts" (or "bun cmd/gen-flags.ts") to regenerate src/Flags.cpp
 - implement handling in Flags.cpp
-- document in docs/md/Command-line-arguments.md when appropriate
-- add an entry to the **New command-line arguments** list at the end of the **next** section in docs/md/Version-history.md (see below)
+- document in `www/docs/Command-line-arguments.md` when appropriate
+- add an entry to the **New command-line arguments** list at the end of the **next** section in `www/docs/Version-history.md` (see below)
 
-## Version history (docs/md/Version-history.md)
+## User docs (www/docs)
+
+User docs live in the sumatra-website repo, in `../hack/webapps/sumatra-website/www/docs` (called `www/docs` below); it is the source of truth. `bun cmd/gen-docs.ts` copies the pages reachable from `SumatraPDF-documentation.md` into `.work/docs` for the in-app manual; without a website checkout (CI) it skips and the exe ships without the manual. `cmd/gen-settings.ts` and `cmd/gen-js-reference-md.ts` write their generated pages there. Commit doc changes in the website repo.
+
+When writing or restructuring a feature page in `www/docs`, follow `docs/writing-docs.md`.
+
+## Version history (www/docs/Version-history.md)
 
 When documenting a release (usually the **next** section at the top):
 
@@ -250,7 +256,7 @@ When documenting a release (usually the **next** section at the top):
 - New `-print-settings` tokens belong under **New command-line arguments** (e.g. `-print-settings` tokens: `stretch`, `center`, …).
 - Command **changes** (renames, removals, new arguments on existing commands, shortcut rebinding) stay in the main bullets, not in **New commands**.
 - Removed flags can be noted in the main bullets; do not list them under **New command-line arguments**.
-- **Embedded app data (`IDR_EMBEDDED_PAK`):** everything the exe embeds is one LzSA archive, staged and packed by the VS / ninja prebuild `cmd/pack-embedded-prebuild.cmd <staging dir> <archive> [file[:name] ...]` (cmd + `MakeLZSA.exe` only, no bun). It copies `.work/translations.txt`, `ext/marked.min.js`, `ext/mermaid.min.js` and the in-app manual from `.work/docs/` (gen-docs output; skipped with a note when missing) into the staging dir and packs it (in-archive names are relative to the staging dir). `SumatraPDF-static` stages `out/<cfg>/embedded-static/` and packs `out/<cfg>/embedded-static.lzsa`; `SumatraPDF` stages `out/<cfg>/embedded/` and packs `out/<cfg>/embedded.lzsa` = staging + `libsumatrapdf.dll`, `PdfFilter.dll`, `PdfPreview.dll`, `sumatrapdf-tool.exe` (the installer payload, passed as extra files). `src/SumatraPDF.rc` gets the archive path via the `EMBEDDED_PAK` resource define set in `premake5.lua` (and `cmd/ninja.ts`) and errors without it. `MakeLZSA.exe out.lzsa <dir> [file[:name] ...]` packs a directory plus extra files. After editing manual sources, run `bun cmd/gen-docs.ts` and rebuild the exe before testing help/markdown mermaid locally; CI/release builds run gen-docs automatically. The app renders markdown on demand in WebView2 via `docs/gen_docs.render.js` and markdown-it. Use `bun cmd/gen-docs.ts --preview` to also emit pre-rendered HTML under `.work/www/` for offline browser preview.
+- **Embedded app data (`IDR_EMBEDDED_PAK`):** everything the exe embeds is one LzSA archive, staged and packed by the VS / ninja prebuild `cmd/pack-embedded-prebuild.cmd <staging dir> <archive> [file[:name] ...]` (cmd + `MakeLZSA.exe` only, no bun). It copies `.work/translations.txt`, `ext/marked.min.js`, `ext/mermaid.min.js` and the in-app manual from `.work/docs/` (gen-docs output; skipped with a note when missing) into the staging dir and packs it (in-archive names are relative to the staging dir). `SumatraPDF-static` stages `out/<cfg>/embedded-static/` and packs `out/<cfg>/embedded-static.lzsa`; `SumatraPDF` stages `out/<cfg>/embedded/` and packs `out/<cfg>/embedded.lzsa` = staging + `libsumatrapdf.dll`, `PdfFilter.dll`, `PdfPreview.dll`, `sumatrapdf-tool.exe` (the installer payload, passed as extra files). `src/SumatraPDF.rc` gets the archive path via the `EMBEDDED_PAK` resource define set in `premake5.lua` (and `cmd/ninja.ts`) and errors without it. `MakeLZSA.exe out.lzsa <dir> [file[:name] ...]` packs a directory plus extra files. `bun cmd/build.ts` (and `cmd/run-unit-tests.ts`, `cmd/dbg.ts`, the CI / daily builds) runs gen-docs before building, so a rebuilt exe always embeds the current manual; only a raw msbuild / ninja invocation packs whatever `.work/docs` holds. gen-docs writes to `.work/docs.tmp` and swaps it in, so a concurrent prebuild never sees a missing or half-written manual. The ninja build re-packs the archive on every invocation (`cmd/ninja.ts` adds an always-dirty pack edge with `restat`; the premake prebuild stamp alone ran once per clean build and left a stale archive). The app renders markdown on demand in WebView2 via `docs/gen_docs.render.js` and markdown-it.
 
 ## Bug reproduction / test files
 
