@@ -1,7 +1,7 @@
 # DietrichGebert/ponytail instruction files
 
-Upstream: [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail) · License: `MIT` · Commit: `c982cd411abb53323c4baa1baa3c2f020b8d0b08`
+Upstream: [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail) · License: `MIT` · Commit: `e15862bb04d04285233a164460ced063941d9ef5`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/DietrichGebert/ponytail/AGENTS.md) | [Source](https://github.com/DietrichGebert/ponytail/blob/c982cd411abb53323c4baa1baa3c2f020b8d0b08/AGENTS.md) | `b57f736a83ddab7111d752008c3e131a157e646a6b47c9eb223f076c494685a8` | 2,593 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/DietrichGebert/ponytail/AGENTS.md) | [Source](https://github.com/DietrichGebert/ponytail/blob/e15862bb04d04285233a164460ced063941d9ef5/AGENTS.md) | `b57f736a83ddab7111d752008c3e131a157e646a6b47c9eb223f076c494685a8` | 2,593 B |

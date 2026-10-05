@@ -2,12 +2,6 @@
   "full_name": "storybookjs/storybook",
   "points": [
     {
-      "checked_at": "2026-09-05T07:43:14Z",
-      "commit_sha": "32f2a8baa675bfc6d6fba1f68b7d237f5f5d083a",
-      "pushed_at": "2026-09-05T07:43:13Z",
-      "stars": 91010
-    },
-    {
       "checked_at": "2026-09-22T08:37:03Z",
       "commit_sha": "d879b8d357981131ffb7c313907bc2ebfff5397d",
       "pushed_at": "2026-09-22T08:35:58Z",
@@ -24,6 +18,12 @@
       "commit_sha": "16efdfc44728a8614822236dfc2e5d60418ac6fa",
       "pushed_at": "2026-09-29T09:49:42Z",
       "stars": 91178
+    },
+    {
+      "checked_at": "2026-10-05T10:33:57Z",
+      "commit_sha": "537a549d4f591278186a1692c176c8b7a85a11a8",
+      "pushed_at": "2026-10-05T10:32:24Z",
+      "stars": 91199
     }
   ],
   "repo_id": 54173593

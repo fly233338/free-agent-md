@@ -1,0 +1,12 @@
+{
+  "full_name": "nginx/kubernetes-ingress",
+  "points": [
+    {
+      "checked_at": "2026-10-05T10:33:57Z",
+      "commit_sha": "70208d4bcd650177fbb7d08fb1b1b353236c3b31",
+      "pushed_at": "2026-10-05T10:33:20Z",
+      "stars": 5082
+    }
+  ],
+  "repo_id": 53553027
+}

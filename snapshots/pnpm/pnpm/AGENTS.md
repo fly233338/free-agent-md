@@ -2,7 +2,7 @@
 
 This document provides context and instructions for AI agents working on the pnpm codebase.
 
-The repository contains three products:
+The repository contains these products:
 
 - The **TypeScript pnpm v11 CLI** — `pnpm11/`.
 - The **Rust pnpm v12 CLI (pacquet)** — `pnpm/`. pnpm v12 is the target for new feature development. See [`pnpm/AGENTS.md`](./pnpm/AGENTS.md) for pacquet-specific rules; it adds to (and never contradicts) the conventions below.
@@ -27,6 +27,14 @@ For bug fixes, first determine which versions contain the bug. If the bug is pre
 When a shared bug fix cannot be completed in both stacks in the same PR, call out the missing implementation in the PR description so it can be added before the PR lands.
 
 The pacquet-side version policy is in [`pnpm/AGENTS.md`](./pnpm/AGENTS.md#version-policy).
+
+## Website documentation
+
+User documentation lives in `pnpm/docs/` for v12, `pnpm11/docs/` for v11,
+and `pnpr/docs/` for the registry. Update
+the affected version's docs and sidebar in the same PR as a behavior change.
+See [DOCUMENTATION.md](./DOCUMENTATION.md) for local previews and release publishing.
+The blog and website application remain in pnpm/pnpm.io.
 
 ## Repository Structure
 
@@ -185,7 +193,7 @@ You can confirm the hooks are active with `git config core.hooksPath` (it should
 
 **Do not write a bare `#NNN` (a `#` followed by digits) anywhere in a commit message.** A `commit-msg` hook (`.husky/reject-bare-issue-refs.mjs`) rejects them.
 
-GitHub turns any `#NNN` into a link to issue/PR `NNN` of *this* repo, which is almost never what a bare reference means. This is a frequent AI mistake in two forms:
+GitHub turns any `#NNN` into a link to issue/PR `NNN` of *this* repo, which is almost never what a bare reference means. This is a frequent AI mistake, in these forms:
 
 -   Using `#1`, `#2`, `#3`, … to enumerate items in a list. GitHub instead links them to unrelated issues `#1`, `#2`, `#3` of this repo. **Fix:** don't use `#` for enumeration — write `item 1`, `(1)`, `1.`, or rephrase.
 -   Referring to issue `#NNN` of a *different* repository. GitHub instead links it to issue `NNN` of this repo. **Fix:** use qualified syntax `owner/repo#NNN` or an absolute URL `https://github.com/owner/repo/issues/NNN`.
@@ -308,6 +316,45 @@ Write a comment only when:
 
 Before adding a comment, ask: "Could I rename, restructure, or extract instead?" If yes, do that. The bar for prose-in-code is high; the bar for prose-that-restates-code is "don't."
 
+### Register
+
+The readers are engineers. Write for them:
+
+-   **Concise.** State each fact once, in the shortest form that is still precise. Text that repeats information stated elsewhere links to it instead. Length is not thoroughness.
+-   **Structured.** Prefer a list, a table, or a labelled item over prose. Do not write long paragraphs. A doc block of several paragraphs is cut to the contract.
+-   **One word per concept.** A synonym signals a distinction, and a reader who meets one goes looking for it. Spell a value the way the code or the message spells it.
+
+### Prose that cannot go stale
+
+A sentence that repeats a fact the code states has no test. Write the form that cannot go stale:
+
+-   No count over a list that can grow ("three products"). Name the list, not its size.
+-   A predicate a reader can grep for ("every crate that depends on `pnpm-lockfile`") instead of a hand-maintained roster. A roster that helps is marked "for example".
+-   No verbatim quotation of another file's heading or prose. Link the section by anchor; in Rust, link the item.
+-   One home per fact. A limit, a default, a path, or a setting name is stated once and linked from everywhere else. A default is documented on the field that has it, never on the field's type or on an enum variant.
+-   Fake names in guide examples. Code copied from a live item drifts when the item changes.
+-   A statement about behaviour is a claim. Verify it with a test, a compiler experiment, or a measurement, or leave it out. Say in the pull request what could not be verified.
+-   A deliberate exception to the surrounding pattern gets a one-line comment at the site, so the next reader does not take it for an oversight. A parameter every caller passes with the same value either says why or goes.
+-   A document that describes planned work states its status at the top and is deleted when the work lands. Grep for its name to find the references that would dangle.
+
+### User-facing text
+
+Most documentation in this repository is internal. The user-facing text is:
+
+-   the website documentation under `pnpm/docs/`, `pnpm11/docs/`, and `pnpr/docs/`;
+-   changesets;
+-   doc comments on clap commands and arguments, which are the `--help` output;
+-   the `@pnpm/napi` type declarations in `pnpm/npm/napi/index.d.ts`;
+-   diagnostics and log messages;
+-   the READMEs of published npm packages.
+
+User-facing text names only what the user can reach: their project, their config, the `pnpm` command, npm, Node.js. It does not name a crate, a module, a Rust or TypeScript item, the other implementation, the in-repo package name `pacquet`, a workflow, or a `just` recipe. It states a limitation by what the user sees, not by the mechanism behind it. Everything else is contributor text and says what helps a contributor.
+
+### Reviewing documentation and comments
+
+-   A review does not increase verbosity. For a nitpick, prefer removal over addition.
+-   A fix for a nitpick follows the same rule: remove rather than add.
+
 ## Code Style (TypeScript only)
 
 This repository uses [Standard Style](https://github.com/standard/standard) with a few modifications:
@@ -326,6 +373,15 @@ To ensure your code adheres to the style guide, run:
 pnpm run lint
 ```
 
+### Size and shape limits
+
+`@pnpm/eslint-config` ports the perfectionist rules that the Rust workspace enforces through [`dylint.toml`](./dylint.toml), with the limits stated in the [pacquet style guide](./pnpm/CODE_STYLE_GUIDE.md#guides). It also enforces:
+
+-   Variables, parameters, and type parameters have descriptive names, not single letters.
+-   Every `eslint-disable` directive gives a reason after `--`.
+
+Tests are exempt from the length, local-name, and chain limits, as they are in Rust. Meet a limit by refactoring, not by disabling the rule: extract a helper named for what it does, return early, or name a predicate. Packages that do not pass the size limits yet are listed in `PENDING_SIZE_AND_SHAPE_REFACTOR` in [`eslint.config.mjs`](./eslint.config.mjs). When you refactor a package to pass them, remove it from that list.
+
 ### Conventions
 
 Recurring engineering conventions in this codebase — the rules reviewers most often enforce:
@@ -340,25 +396,28 @@ Recurring engineering conventions in this codebase — the rules reviewers most 
 
 ## Common Gotchas
 
-### Error Type Checking in Jest (TypeScript only)
+### Error Type Checking (TypeScript only)
 
-When checking if a caught error is an `Error` object, **do not use `instanceof Error`**. Jest runs tests in a VM context where `instanceof` checks can fail across realms.
-
-Instead, use `util.types.isNativeError()`:
+When checking if a caught value is an `Error`, use `isError()` from `@pnpm/error`. Do not use `instanceof Error` or `util.types.isNativeError()` alone. Jest runs tests in a VM context where `instanceof` fails across realms. StackBlitz WebContainers reject async `fs` calls with errors that `util.types.isNativeError()` does not recognize. `isError()` accepts both.
 
 ```typescript
-import util from 'util'
+import { isError } from '@pnpm/error'
 
 try {
   // ... some operation
 } catch (err: unknown) {
-  // ❌ Wrong - may fail in Jest
+  // ❌ Wrong - fails in Jest
   if (err instanceof Error && 'code' in err && err.code === 'ENOENT') {
     return null
   }
-  
-  // ✅ Correct - works across realms
+
+  // ❌ Wrong - fails in WebContainers
   if (util.types.isNativeError(err) && 'code' in err && err.code === 'ENOENT') {
+    return null
+  }
+
+  // ✅ Correct
+  if (isError(err) && 'code' in err && err.code === 'ENOENT') {
     return null
   }
   throw err

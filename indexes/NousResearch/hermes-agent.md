@@ -1,7 +1,7 @@
 # NousResearch/hermes-agent instruction files
 
-Upstream: [NousResearch/hermes-agent](https://github.com/NousResearch/hermes-agent) · License: `MIT` · Commit: `8b66a51036c1e20920a17cdd049fdf55c968d683`
+Upstream: [NousResearch/hermes-agent](https://github.com/NousResearch/hermes-agent) · License: `MIT` · Commit: `7157422022ff06f3e632d1dd394ee1253b17ad37`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/NousResearch/hermes-agent/AGENTS.md) | [Source](https://github.com/NousResearch/hermes-agent/blob/8b66a51036c1e20920a17cdd049fdf55c968d683/AGENTS.md) | `fa7afef44219f955bad41e6e3a87a2637eb06697dab88d47ac4de067a8b36119` | 38,400 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/NousResearch/hermes-agent/AGENTS.md) | [Source](https://github.com/NousResearch/hermes-agent/blob/7157422022ff06f3e632d1dd394ee1253b17ad37/AGENTS.md) | `a8948f7bf162528ec9f2a9ca5f007e77f0c5f0901a428c92d0f77ef1185cfb38` | 11,952 B |

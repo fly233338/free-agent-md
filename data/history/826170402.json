@@ -2,12 +2,6 @@
   "full_name": "elizaOS/eliza",
   "points": [
     {
-      "checked_at": "2026-09-05T07:43:14Z",
-      "commit_sha": "4afe6286bf74617f17ac91d7d3aaf1dc6186e9de",
-      "pushed_at": "2026-09-05T07:42:10Z",
-      "stars": 19257
-    },
-    {
       "checked_at": "2026-09-06T07:57:27Z",
       "commit_sha": "cd821540d73c4e7370a9407c07be19020a3b810b",
       "pushed_at": "2026-09-06T07:57:13Z",
@@ -48,6 +42,12 @@
       "commit_sha": "c85d355c9be2786e43138ed41d4ed5ed094e6f78",
       "pushed_at": "2026-10-04T09:52:24Z",
       "stars": 19536
+    },
+    {
+      "checked_at": "2026-10-05T10:33:57Z",
+      "commit_sha": "6e993bdb5e41f3895b288c118cce645c04e723f1",
+      "pushed_at": "2026-10-05T10:33:18Z",
+      "stars": 19538
     }
   ],
   "repo_id": 826170402
