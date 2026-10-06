@@ -1,0 +1,2276 @@
+# Project Instructions
+
+This file contains architectural insights, conventions, and operational knowledge to assist AI agents working on the wxMaxima codebase. **Agents are explicitly permitted and encouraged to update this file with new findings that improve context and safety.**
+
+## Branches and pull requests
+
+**One branch per feature or bugfix, cut fresh from `main`, and a pull request
+once that feature is finished.** Give the branch a name that says what it is
+(`claude/publish-portable-zip`, `claude/fix-qa-disabled-link`), not a name
+that just identifies the agent or the session.
+
+**Do not reuse one long-lived branch for a series of unrelated changes.** This
+is worth stating because it has already gone wrong: a single branch was reused
+for roughly twenty successive PRs, and because each PR's content reached `main`
+under different commit ids (so the branch itself was never fast-forwarded), it
+silently drifted about sixty commits behind. What it still carried then *looked*
+like unmerged work but was entirely duplicated in `main` already -- costing real
+time to establish before anything could safely be pushed to it. A branch taken
+fresh from `main` per change cannot get into that state.
+
+Two consequences worth keeping in mind:
+
+- If an agent's own configuration names a fixed branch to develop on (some
+  session templates do), that instruction conflicts with this one. Prefer this
+  file's workflow, and say so, rather than silently reusing the fixed branch --
+  but note that a fresh session will start from that template again, so the
+  template itself is what needs changing.
+- Keep an unrelated fix out of an existing PR's branch. If something needs
+  fixing while a PR is open, that is a new branch and a new PR, even when the
+  fix is one line.
+
+## A red CI is everyone's to fix
+
+**Who turned CI red does not matter, and a test going red is not a lapse --
+it is the test doing the job it was written for.** Any test fails
+eventually; that is the point of having one. So there is nothing to
+apologise for in causing a red build, nobody is disappointed by it, and
+there is no reason to spend effort establishing whose change it was except
+where that genuinely helps fix it.
+
+**What matters is that a red CI gets fixed, by whoever is in a position to
+fix it, whether or not they caused it.** Picking up someone else's failure
+is welcome, not an intrusion or a criticism of them. The alternative is
+what otherwise happens by default: everyone correctly recognises the
+failure as not-theirs, nobody owns it, and it stays red for weeks.
+
+That last part is not hypothetical here. `wxmaxima_version_string` was red
+on `main` on essentially every push from 2026-08-15 until 2026-09-18 -- a
+month in which the minGW job's red cross said nothing about whatever change
+it had just run against, so a genuinely new Windows regression would have
+landed behind it unnoticed. **A permanently red job is not a warning anyone
+still reads**, which is the real cost of leaving one standing, and it is why
+that one was eventually settled by narrowing the assertion to the platforms
+where it is meaningful rather than by leaving it standing indefinitely. The
+`wxmaxima-packaging` skill has the whole story, including what that cost and
+what is still unexplained.
+
+Three things this does not license:
+
+- **Never make a test pass by getting rid of it.** Skipping, disabling,
+  quarantining, or loosening its assertion until it can't fail converts a
+  red signal into no signal, which is strictly worse than red: red is at
+  least visible. If a test is genuinely wrong, that is a case to argue in
+  its own PR, on the merits, not something to do quietly while fixing
+  something else.
+- **Check whose failure it actually is before fixing it.** Some red here
+  is neither the tree's nor the change's -- see the sandbox notes under
+  Build System for the missing `maxima-index.lisp` and absent `gnuplot`,
+  either of which produces a broad, topically-scattered batch of failures
+  that looks like a serious regression and is not. Establishing that a
+  failure reproduces on an unmodified `main` costs one worktree and
+  settles it.
+- **It is still its own branch and its own PR**, per the section above,
+  even when it is a one-line fix found while something else was open.
+
+## Build System
+
+Configure once (a Debug build is the default), then build and run without
+installing:
+
+```sh
+cmake -S . -B build -G Ninja
+ninja -C build
+./build/wxmaxima-local
+```
+
+For a release build (more optimization, log window hidden by default) add
+`-DCMAKE_BUILD_TYPE=Release` to the `cmake` line.
+
+Run the tests -- most of them need Maxima installed:
+
+```sh
+ctest --test-dir build                        # everything
+ctest --test-dir build -R <name-of-the-test>  # one test; names in test/CMakeLists.txt
+xvfb-run ctest --test-dir build               # headless, no X server
+```
+
+The sanitizer build (ASan + UBSan) is what CI runs on every push. Run it
+locally before merging changes to cell lifetime, layout or parsing:
+
+```sh
+cmake -S . -B build-asan -G Ninja -DWXM_SANITIZE=address,undefined
+ninja -C build-asan
+ASAN_OPTIONS=detect_leaks=0:check_initialization_order=1:strict_string_checks=1:suppressions=test/asan_suppressions.txt \
+    UBSAN_OPTIONS=print_stacktrace=1 \
+    xvfb-run ctest --test-dir build-asan
+```
+
+Leak detection stays off (`detect_leaks=0`) because GTK/Pango leak noise drowns
+out real findings. **The `suppressions=test/asan_suppressions.txt` is not
+optional -- omitting it makes `imageFormat` fail every single time**, with an
+`AddressSanitizer: strncpy-param-overlap` inside `wxXPMDecoder::ReadFile`
+(confirmed via `md5sum` that the test's XPM fixture is byte-identical to what
+CI uses, and confirmed deterministic here across 6 repeated runs -- it is not
+the tutorial_10Minutes-style rare race it might look like at first). This is a
+real, pre-existing bug inside wxWidgets' own XPM decoder (not wxMaxima's code,
+confirmed by the stack trace bottoming out in `libwx_gtk3u_core`), already
+known and already suppressed -- see `test/asan_suppressions.txt`'s own
+comment and `compile_ubuntu.yml`'s `run_tests` step, which sets exactly this
+`ASAN_OPTIONS` string. Running the shorter, suppressions-less command from
+memory (as opposed to copying it from here or from the workflow file) will
+reliably misreport this pre-existing, already-triaged third-party issue as a
+regression in whatever change you're actually testing.
+
+Other useful targets: `ninja -C build Doxygen` builds the source documentation
+(note the capital D, and the target only exists when Doxygen is installed), and
+`ninja -C build update-locale` refreshes the translation files.
+
+**Build speed: what actually helps, measured rather than assumed.** Numbers
+below are `ninja wxmaxima` from scratch, Debug, Ninja, 4 cores; repeat them
+before trusting them on different hardware, but the ratios are the point.
+
+| configuration | clean | touch one .cpp | touch `cells/Cell.h` |
+|---|---|---|---|
+| neither | 208s | 20s | 129s |
+| `WXM_ENABLE_PRECOMPILED_HEADERS=YES` (the default) | 135s | 12s | 82s |
+| `CMAKE_UNITY_BUILD=ON` (batch 16) | 51s | 14s | 40s |
+| both | 53s | -- | -- |
+
+- **Precompiled headers are on by default and are the safe win.** They were an
+  option long before that, and until 2026-09 that option did *nothing*:
+  `precomp.h`'s entire body sits behind `#ifdef USE_PRECOMP_HEADER`, which
+  `BuildConfig.h` defines through a `#cmakedefine` -- and the enabling branch
+  in `src/CMakeLists.txt` never `set()` that variable, so the header that got
+  precompiled included nothing at all. A build with the option on took
+  *exactly* as long as one with it off (202s vs 202s), which is the symptom to
+  recognise: same class of bug as the `WXM_USE_AI_TOOLS` plumbing the
+  `wxmaxima-ai-tools` skill documents, and the same way to check it -- look
+  for `#define
+  USE_PRECOMP_HEADER` in the generated `BuildConfig.h` rather than trusting the
+  CMake option.
+- **One CI job must build without them**, and `compile_with_non_default_options`
+  is it. A precompiled header hands every source file the whole of wx whether
+  it included it or not, so a missing `#include` compiles everywhere else and
+  fails only there. Don't "tidy" that `=NO` away.
+- **Unity builds are not the default for a local build, but CI does them and
+  the tree has to stay able to.** `cmake -DCMAKE_UNITY_BUILD=ON
+  -DCMAKE_UNITY_BUILD_BATCH_SIZE=16` works and is by far the fastest clean
+  build. Three things have broken it so far, all of them real here:
+  a header with no include guard (`wxMaximaArtProvider.h` had none, which is a
+  latent bug regardless); two files defining the same name in their own
+  anonymous namespaces -- `U8`/`FromU8` existed identically in `AiProvider.cpp`
+  and `McpTools.cpp` and now live once, as `wxm::ToUtf8`/`wxm::FromUtf8` in
+  `StringUtils.h`; and a file that has to be its own translation unit getting
+  batched with one that contradicts it, which is
+  `test/unit_tests/groupcell_test_stubs.cpp` and its
+  `SKIP_UNITY_BUILD_INCLUSION` property -- see the entry on it below.
+  **Correcting this entry's own earlier claim that "nothing in CI guards
+  this": since the build-speed work landed, `compile_latest_and_test` and the
+  sanitizer job both pass `-DCMAKE_UNITY_BUILD=ON`, so a collision of this
+  shape now turns CI red rather than lying latent.** That is the point of
+  running it there, but it also means such a break is no longer something to
+  discover at leisure: check a unity build locally before adding a source file
+  whose symbols deliberately stand in for another file's.
+- **Combining the two buys nothing** (51s vs 53s): they remove the same cost,
+  which is parsing the same headers once per translation unit. Don't stack them
+  and expect to add up the savings.
+- **`test/unit_tests/groupcell_test_stubs.cpp` carries
+  `SKIP_UNITY_BUILD_INCLUSION`, and removing it turns CI red immediately.**
+  That file supplies the `main.cpp` symbols the app references but the test
+  harness excludes, among them `wxGetApp()`, which it defines as returning
+  `MyApp&`. Nearly every file in that directory declares its own via
+  `wxDECLARE_APP(TestApp)` -- the same function returning `TestApp&` -- and
+  the two are only compatible because they are compiled apart. Batch them
+  into one translation unit and the compiler rejects it outright:
+  `error: ambiguating new declaration of 'MyApp& wxGetApp()'`. This is a
+  genuine conflict, not a warning to paper over, so the fix is to keep the
+  stub in a translation unit of its own rather than to rename anything. It
+  surfaced the moment CI started building with unity on, failing
+  `test_WorksheetLayout` and `test_EditorCellWrapping` on `main`, and it is
+  the shape to expect from any future file whose whole job is to stand in for
+  symbols another file would otherwise define.
+
+`CheckPo4aVersion.cmake` (included from `info/CMakeLists.txt` and
+`locales/manual/CMakeLists.txt`, the only two places that invoke `po4a`)
+refuses `po4a` older than 0.70 -- pre-0.70 parses text encodings loosely and
+can silently corrupt non-ASCII translated text with no warning of its own,
+confirmed directly with Ubuntu 24.04's own `po4a` 0.69 package turning a
+German manual paragraph into mangled English on nothing more than a plain
+reconfigure. `PO4A` ends up `PO4A-NOTFOUND` (falsy) in that case, same
+contract `find_program()` itself has, so existing `if(PO4A)` guards keep
+working without extra checks.
+
+- **Sandbox: missing `maxima-index.lisp` and its knock-on ctest failures.**
+  In this sandbox's container image, `/etc/dpkg/dpkg.cfg.d/*` has
+  `path-exclude=/usr/share/doc/*` (a common image-slimming policy), so every
+  package's `/usr/share/doc/*` content is silently dropped on install --
+  `apt-get install --reinstall maxima maxima-doc` does not bring it back.
+  `maxima`'s own package ships `/usr/share/doc/maxima/info/maxima-index.lisp.gz`
+  (confirmed by extracting the real `.deb` with `dpkg-deb -x`), so its absence
+  here is this sandbox's doc-stripping, not a missing dependency -- the actual
+  wxMaxima `.deb` (`CPACK_DEBIAN_PACKAGE_DEPENDS "maxima, maxima-doc"` in
+  `src/CMakeLists.txt`) already hard-`Depends:` on both, and a normal install
+  on a normal system is unaffected. Workaround for this sandbox only (not a
+  repo change): `apt-get download maxima && dpkg-deb -x maxima_*.deb
+  /tmp/x && gunzip -c /tmp/x/usr/share/doc/maxima/info/maxima-index.lisp.gz >
+  /usr/share/doc/maxima/info/maxima-index.lisp`. Without it, Maxima logs
+  `Warning: SIMPLE-WARNING: Maxima is unable to set up the help system` on
+  every startup, and `ctest` targets that use `--exit-on-error`
+  (`openMacFiles`, `openMacFiles2`, and most of the `*_cmdline_wxmathml`/
+  `tutorial_*`/similar batch tests in `test/CMakeLists.txt`) fail near-instantly
+  on that warning alone. With the workaround applied they pass; the
+  `openMacFiles`/`openMacFiles2` timeouts recorded here on 2026-09-14 no
+  longer reproduce (GH #2350: 24 loaded runs, none hung, on `main` and on a
+  build from before the 2026-09-18 batch-startup race fix). `openMacFiles`
+  legitimately takes 75-130 s, mostly gnuplot rendering a 60-frame
+  animation, so a ctest `--timeout` below that reads as a hang. Don't burn
+  time re-diagnosing the help-system symptom from scratch; it is
+  sandbox-only, not something a code change here broke. **Neither this workaround nor `gnuplot`'s installation (below)
+  persists across sandbox instances** -- confirmed directly: a session that
+  applied both earlier came back to a broad `ctest -E
+  "tutorial|openMacFiles|_cmdline_wxmathml|wxmaxima_version"` run showing 66
+  of 194 tests failing (`boxes`, `lisp`, `threadtest`, `autosave`,
+  `printf_*`, `multiplication`, `config_dialogue_sample`, ... -- a broad,
+  cross-cutting spread with no relation to whatever code change was
+  actually being tested that session), which briefly looked like a real
+  regression until re-running a handful of the failing tests in isolation
+  showed the exact `maxima-index.lisp`/`--exit-on-error` symptom above.
+  **A second, independent gap found the same way, same session: `gnuplot`
+  itself was not installed at all** (`threadtest` failed with `/bin/sh: 1:
+  gnuplot: not found`, no relation to the maxima-index.lisp issue). Plain
+  `apt-get install gnuplot`/`gnuplot-nox` failed here with an unmet
+  `libgd3` dependency -- this sandbox's apt sources include a `ppa:ondrej/
+  php` entry offering a newer `libgd3` build than Ubuntu's own archive, and
+  that PPA's package host was blocked by this sandbox's proxy (`403` on
+  `ppa.launchpadcontent.net`), while the plain Ubuntu-archive `libgd3`
+  (also present as a candidate, just lower-priority) was fetchable fine.
+  Fixed with `apt-get install libgd3=2.3.3-9ubuntu5 gnuplot-nox` (the exact
+  archive version may drift; `apt-cache policy libgd3` shows both
+  candidates and which one is blocked) -- pinning the plain-archive version
+  explicitly sidesteps the blocked PPA instead of needing the PPA fixed.
+  **Moral for future sessions:** if a broad ctest run shows a large,
+  topically-scattered batch of failures all at once (rather than one
+  focused area related to the change being tested), suspect a fresh
+  sandbox instance missing one of these two pre-existing workarounds
+  before suspecting a real regression -- re-run 2-3 of the failing tests
+  in isolation and check their actual output for these exact symptoms
+  first, per the "don't burn time re-diagnosing from scratch" note above.
+
+- **Two intermittent CI failures -- `tutorial_10Minutes` and `lisp_mode` --
+  are documented in full in the `wxmaxima-maxima-protocol` skill.**
+  **Both are fixed, and by the same change**: the statement
+  `tutorial_10Minutes` saw silently dropped (GH #2196) was a knock-on of the
+  batch-startup race behind `lisp_mode` -- the document started evaluating
+  before the Maxima that replaced the startup one had prompted, so the queue
+  ran one prompt out of step with Maxima. 5c3627d (2026-09-18) fixed that
+  race; measured on the same machine and load, 10 of 300 tutorial runs
+  failed before it and 0 of 600 after, and all 10 failures showed the race's
+  signature. Two things to know before touching either: **an
+  unloaded machine is the one condition guaranteed to hide the `lisp_mode`
+  race** -- it needs CPU contention, not repetition -- and **"cannot
+  reproduce" means nothing for `tutorial_10Minutes` under ~50 attempts.**
+  Read the skill before re-investigating either: most of its length is
+  theories already disproven by hard evidence.
+
+- **macOS translation files never reaching the app bundle (GH #1711, closed
+  as fixed) -- two independent bugs, neither of which this sandbox (Linux, no
+  `.app`/`MACOSX_BUNDLE`/DragNDrop support at all) can actually build or
+  verify.** `Dirstructure::LocaleDir()`/`wxFileTranslationsLoader` (see
+  `main.cpp`) look specifically under
+  `Contents/Resources/locale/<lang>/LC_MESSAGES/wxMaxima.mo` at runtime.
+  1. `locales/wxMaxima/CMakeLists.txt`'s `copy_mo_file_${LANG}_for_wxmaxima_local`
+     target -- the only thing that populates
+     `${CMAKE_BINARY_DIR}/share/locale/<lang>/LC_MESSAGES/wxMaxima.mo` with
+     that exact nesting, `ALL`-tagged so it runs on every normal build -- was
+     unconditionally skipped `if(NOT APPLE)`, per a comment saying it
+     "does not work with Apple XCode." Confirmed live (Linux, but the CMake
+     logic itself doesn't depend on the platform): a plain `ninja` in this
+     sandbox, having never explicitly invoked `update-locale`, still produces
+     a fully populated `build/share/locale/*/LC_MESSAGES/*.mo` from this
+     target alone -- so on macOS it was producing nothing, full stop. The
+     macOS CI job that actually ships the DMG passes `-G Ninja`, not Xcode
+     (only a separate, non-packaging smoke-test job uses Xcode) -- narrowed
+     the guard to `if(NOT (APPLE AND CMAKE_GENERATOR STREQUAL "Xcode"))`
+     instead of excluding all of Apple.
+  2. Separately, `src/CMakeLists.txt`'s macOS bundle resource list tried to
+     `file(GLOB ${CMAKE_BINARY_DIR}/locale/*.mo)` into the `RESOURCE` target
+     property. Two bugs stacked here too: `file(GLOB)` freezes its result at
+     *configure* time, before a single build step has run and generated any
+     `.mo` file at all (confirmed empirically the same way as above -- this
+     glob's directory doesn't exist yet on a fresh configure); and even if
+     the files existed, this pattern is non-recursive and wouldn't match
+     their actual `locale/<lang>/LC_MESSAGES/wxMaxima.mo` nesting, and
+     CMake's `RESOURCE` property flattens whatever it *does* match directly
+     into `Contents/Resources` with no way to reproduce a subdirectory
+     structure. Fixed by dropping the glob and instead copying the
+     (now-populated, already-correctly-nested) `share/locale` directory into
+     `Contents/Resources/locale` via a plain `file(COPY ...)` inside the
+     existing `install(CODE ...)` block that already runs `fixup_bundle` --
+     the same "has to be a separate step, everything the build produces is
+     only guaranteed to exist by then" reasoning that block's own comment
+     already gives for deferring `fixup_bundle` itself.
+  Verified as much as is possible without a Mac: the CMake configure and a
+  full build succeed unaffected on Linux (the `if(NOT (APPLE AND ...))`
+  change is a no-op there, `CMAKE_GENERATOR` is never `"Xcode"` outside
+  Apple), `share/locale` still populates correctly, and the exact
+  `file(COPY ...)` logic (including its `if(EXISTS ...)` guard, which fails
+  *silently* rather than breaking the build if this is somehow still wrong)
+  was validated standalone via `cmake -P` against a fake
+  `share/locale/<lang>/LC_MESSAGES/*.mo` tree, confirming it reproduces the
+  nesting correctly. The actual Apple-only code paths themselves remain
+  unverified -- if a real macOS build still doesn't get translations, check
+  here first before re-deriving any of the above from scratch.
+
+## Architecture & GUI
+
+wxMaxima is a GUI front-end to the Maxima CAS; it talks to a Maxima process over
+a local TCP socket.
+
+- **MCP server and AI chat sidebar (`src/mcp/`, `src/ai/`,
+  `src/sidebars/AiChatSidebar.{h,cpp}`, `src/sidebars/AiConnectionMonitor.{h,cpp}`)
+  -- see the `wxmaxima-ai-tools` skill.** An MCP server that lets an external
+  AI tool read the current worksheet, and a docked sidebar that chats with
+  one of several providers using a pasted API key. Both share `McpTools` --
+  the actual worksheet-reading logic -- so a change to what an AI can see
+  usually belongs there rather than in either front end. Gated at compile
+  time by `WXM_USE_AI_TOOLS`, and the sidebar again at runtime by whether an
+  OS secret store is actually reachable (`AiProvider::SecretStoreAvailable()`;
+  API keys live in `wxSecretStore`, never in the config file).
+  **The rule worth carrying without reading the skill: every tool is
+  read-only except `watch_variable`/`unwatch_variable`**, which the
+  maintainer approved explicitly because they only change what the Variables
+  sidebar displays. A write- or evaluate-capable tool is a separate decision,
+  not a natural next step: Maxima has no sandbox around it, so an
+  `evaluate_cell` would amount to letting an AI run arbitrary code on the
+  user's machine.
+- **wxAuiManager:** The application uses `wxAuiManager` for its complex layout (sidebars, toolbars, worksheet).
+  - **Linux/GTK Timing:** On Linux (especially KDE Plasma with Global Menus), calling `m_manager.Update()` can disrupt the menu bar if it's already attached. This is a known environmental issue in the interaction between wxWidgets, GTK3, and the KDE Global Menu proxy.
+    - **Automated Fix:** On systems with wxWidgets <= 3.2 running on KDE, Unity, or with `appmenu-gtk-module` enabled, wxMaxima automatically sets `UBUNTU_MENUPROXY=0` at startup in `main.cpp` to force menus to remain within the window and prevent disappearance.
+    - If the menu still disappears, clearing `GTK_MODULES` (e.g., `GTK_MODULES=""`) can also restore local menus.
+  - **Center pane must have dock layer/row/position all 0 (found via a
+    third-party GTK4 wxWidgets port hitting the assert in
+    `framemanager.cpp`'s `wxAuiPaneInfo::IsValid()`; the underlying bug is
+    wxMaxima's own, not that port's, and not GTK4-specific).**
+    `wxMaximaFrame.cpp` declared the worksheet/console pane with both
+    `.Center()` *and* `.Row(2)` -- twice: once in the initial `AddPane()`
+    call, and again in the post-`LoadPerspective()` "the loaded perspective
+    might be broken, force sane values back" defensive block (both added in
+    2019's "Try harder to make broken perspectives work again", apparently
+    meant to distinguish the console pane's row from the other sidebars'
+    `.Row(1)`). Per `wxAuiPaneInfo::IsValid()`'s own contract, a center
+    pane's `dock_layer`/`dock_row`/`dock_pos` must all be exactly 0 --
+    `Row(2)` violates that unconditionally. This most likely went unnoticed
+    on the then officially-supported wxWidgets 3.0.5-3.2.x/GTK3 combination
+    either because that older `IsValid()` didn't check this for center
+    panes, or because assertions are compiled out (`NDEBUG`) in the release
+    builds most users and CI actually run -- `IsValid()`'s own fallback
+    return value (`dock_layer==0 && dock_row==0 && dock_pos==0`, i.e.
+    `false` here even without the assert firing) suggests this was already
+    silently making the pane report itself invalid, just never loudly
+    enough to notice. Since only one pane is ever `.Center()`, row ordering
+    is meaningless for it regardless (the center pane always fills
+    whatever space the docked side panes don't use, irrespective of a row
+    number that has no other center pane to be ordered against) -- so
+    `.Row(2)` never had any real layout effect to lose. Fixed by dropping
+    `.Row(2)` from the initial `AddPane()` call, and by making the
+    post-`LoadPerspective()` defensive block explicitly force `.Layer(0)
+    .Row(0).Position(0)` (matching its own "overwrite whatever the loaded
+    perspective got wrong" stated purpose, rather than only partially
+    addressing the same invariant `LoadPerspective()` could equally well
+    have clobbered).
+- **An old config's stored AUI perspective silently loses the worksheet's
+  layout, and aborts an assertions-enabled build outright
+  (`RepairAuiPerspective()`, `src/AuiPerspectiveRepair.{h,cpp}`).** The
+  centre-pane entry above fixed the *code* that wrote `.Center().Row(2)` --
+  but every perspective saved before that fix still says `row=2`, and those
+  sit in users' config files indefinitely. `wxAuiManager::LoadPerspective()`
+  hands each stored pane to `wxAuiPaneInfo::SafeSet()`, which is
+  `if (source.IsValid()) *this = source;` -- so an invalid pane is not
+  corrected, it is **dropped**: the worksheet's stored geometry is silently
+  thrown away in a release build, and `IsValid()`'s `wxFAIL_MSG` aborts
+  startup in a debug one. **The existing post-`LoadPerspective()` defensive
+  block cannot help**, and this is the part worth remembering: by the time
+  it runs, `LoadPerspective()` has already rejected the pane. The repair has
+  to happen on the *string*, before wxAUI ever sees it.
+  Found via the maintainer's assertions-enabled GTK4 build, where it aborted
+  seven ctests (`autosave`, `noautosave`, `config_from_19.11`, `longnum_*`,
+  `testbench_simple.wxmx`); the backtrace is
+  `wxMaximaFrame` -> `LoadPerspective` -> `SafeSet` -> `IsValid`. Those test
+  fixtures' `.cfg` files still contain the bad `row=2` **on purpose** -- they
+  are now the regression coverage for exactly this, so don't "fix" them.
+  `RepairAuiPerspective()` is deliberately a pure string transform over
+  wxAUI's own saved format (`|`-separated entries of `;`-separated
+  `key=value` fields; the centre pane is the one with `dir=5`), needing no
+  AUI and no GUI, so `test/unit_tests/test_AuiPerspectiveRepair.cpp` can pin
+  it directly -- including that it leaves a *sidebar's* legitimate non-zero
+  row alone, and that a caption containing text like `row=2` is not mistaken
+  for a geometry field.
+  **Still failing afterwards, and unrelated (GH #2349):** `testbench_simple.wxmx`
+  aborts inside GTK4's own widget allocation (`gtk_widget_allocate` /
+  `gtk_scrolled_window_set_vadjustment`, reached through
+  `wxPizza::size_allocate_child`). The assert used to abort that test before
+  it ever got that far, so fixing the assert exposed it rather than causing
+  it -- confirmed by reproducing it with a completely fresh `HOME` and no
+  stored perspective at all, and with both `GSK_RENDERER=cairo` and the
+  default renderer.
+
+- **Dockable "Find and Replace" (GH #2249, `Configuration::FindDialogDockable()`):**
+  `FindReplaceDialog`/`FindReplacePane` were already split apart (a `wxDialog`
+  wrapper around a `wxPanel` holding the actual controls) specifically
+  anticipating this feature -- `FindReplacePane` climbs to the top-level
+  window and queues its search/replace events there
+  (`while(topLevelWindow->GetParent()) ...`), so it already works correctly
+  regardless of whether it's embedded in the floating dialog or registered
+  directly as an AUI sidebar pane; no changes were needed to
+  `FindReplacePane.cpp`'s event-firing logic. `Worksheet::GetActiveFindPane()`
+  is the single place that decides which presentation is live right now (the
+  dockable pane if `Configuration::FindDialogDockable()` is set, otherwise the
+  floating dialog's own pane if one is open) -- every call site that used to
+  reach into `m_findDialog` directly (the incremental-search idle task,
+  `OnFind`/`OnReplace`/`OnReplaceAll`, the wrapped-search warning dialog's
+  parent) goes through it instead. The dockable pane is registered once,
+  eagerly, in `wxMaximaFrame`'s constructor (like every other sidebar, so its
+  docked position/size persists via the AUI perspective) and is backed by its
+  own `wxMaximaFrame::m_findPaneData` member -- it can't reuse
+  `wxMaxima::m_findData` because `wxMaximaFrame`'s constructor body (where
+  `AddPane()` runs) executes *before* `wxMaxima`'s own members are
+  constructed, a plain base-before-derived C++ ordering issue. The two data
+  objects don't need to be the same instance: `FindReplacePane` already
+  persists its own live flags straight to `wxConfig` on every change, so each
+  just seeds itself independently via the new
+  `FindReplacePane::FindReplaceData::LoadFromConfig()`. Un-hiding the pane
+  from the Ctrl+F handler (`MaximaCommandMenus.cpp`) needs the base class's
+  `wxMaximaFrame::ShowPane(int, bool)` explicitly qualified as
+  `m_wxMaxima.wxMaximaFrame::ShowPane(...)` -- `wxMaxima` declares its own,
+  unrelated `ShowPane(wxCommandEvent&)` (a menu-event handler) which hides
+  the *entire* base-class overload set from lookup on `m_wxMaxima.ShowPane(...)`
+  per ordinary C++ derived-class member-hiding rules; this exact qualification
+  is already the established idiom elsewhere in the same file and in
+  `MaximaResponseReader.cpp` for the same reason. Going through the generic
+  `ShowPane()`/`IsPaneDisplayed()` (shared by every `EventIDs::menu_pane_*`
+  sidebar) is what makes Ctrl+F correctly un-minimize the pane and focus it
+  even when it starts out closed/hidden -- confirmed live in Xvfb, this was
+  the specific risk the issue itself called out ("does that still work if
+  the sidebar is minimized?").
+- **The worksheet can have child windows now: native scrollbars for matrices
+  too large for the window** (`Configuration::OversizedMatrices::scroll`,
+  `src/worksheet/MatrixScrollbars.{h,cpp}`, `src/cells/MatrixScrollHost.h`).
+  Until this, everything inside the worksheet was drawn by the cells, and
+  code may quietly assume so. The rules that keep it sane:
+  - **Cells never own widgets.** A `MatrCell` only knows its viewport,
+    scroll offset and where its scrollbars belong; it reports each draw to
+    `Configuration::GetMatrixScrollHost()`, which only the worksheet's own
+    configuration has set (the copy constructor deliberately doesn't copy
+    it). Printing and export configurations therefore have no host, and a
+    matrix laid out under one is elided instead -- which is also the right
+    thing for paper.
+  - **No window is created, moved or shown inside the paint handler.**
+    `MatrixDrawn()` only takes note; `EndPaint()` schedules `Sync()` via
+    `CallAfter()`, and every call in `Sync()` is made only if it changes
+    something, because each can trigger a repaint that comes straight back.
+  - **A scrollbar disappears when the place its matrix was drawn at is
+    repainted without the matrix** -- that single rule covers deletion,
+    re-evaluation, folding and hidden output alike, where tracking each
+    explicitly would miss one. Dead cells are caught by `CellPtr`.
+  - **Only the outermost matrix scrolls.** A nested one (flagged once, in
+    `MatrCell::AddNewCell()`, since cells have no parent pointer) is shown in
+    full. Letting both scroll was tried first and looked broken: two stacked
+    pairs of bars for one output, and the inner bars -- windows -- can't be
+    clipped to the outer viewport.
+  - **That rule makes every paint-time cull load-bearing.** A repaint that
+    covers a matrix but skips drawing it reads as "the matrix is gone", so
+    its scrollbars hide, the hide repaints it, they show again -- a blink
+    loop that also breaks dragging. The first case found: an output line
+    starts `GetLineIndent()` right of its `GroupCell`, but the group's width
+    and `m_outputRect` were computed without that indent, so a repaint of
+    just the vertical scrollbar's strip (Wayland repaints the parent under a
+    hovered child) fell outside the group and never reached the matrix.
+    Fixed by `GroupCell::DrawThisCell()` also accepting `m_outputRect`, which
+    `UpdateOutputPositions()` now widens to where the lines really end.
+    **Not** by adding the indent to the group's `m_width`: that feeds the
+    worksheet's scroll extent and gave every oversized matrix a stray
+    horizontal worksheet scrollbar. Reproducible here with a nested weston
+    (`weston --backend=x11` inside Xvfb, `GDK_BACKEND=wayland`, xdotool
+    driving the pointer) and a matrix needing both scrollbars; plain X11
+    never repaints the parent on hover and hides it.
+  - Verified live on GTK only (drag, hide/unhide, re-evaluate, wheel over
+    the matrix, nesting). **The focus behaviour is the untested part on MSW/macOS**:
+    the scrollbars override `AcceptsFocus()` so a click can't leave the arrow
+    keys scrolling the matrix, but whether a native Windows scrollbar honours
+    that on a click wasn't checkable here. Tracked as GH #2352, with steps
+    for whoever has a Windows or macOS build.
+- **A second `Worksheet` on a copy of the configuration -- the matrix
+  viewer (GH #2344, `src/dialogs/MatrixViewer.{h,cpp}`) -- has two traps,
+  both found only by a test failing for the wrong reason.**
+  1. **`Worksheet`'s constructor calls `ReadConfig()` on the configuration
+     it is given**, so anything set on a copied `Configuration` before the
+     worksheet exists is silently replaced by what the config file says.
+     Configure the copy *after* constructing its worksheet.
+  2. **A `Configuration` writes all its settings to the config file when it
+     is destroyed**, unless it is `temporary` -- and the copy constructor
+     copies that, so a copy of the worksheet's configuration is not
+     temporary. The viewer's copy hides labels and code cells and shows
+     every matrix in full; without `Configuration::MakeTemporary()` closing
+     the viewer made those the user's own settings. `DiffFrame`'s
+     per-pane copies are not made temporary either; they change nothing
+     after `ReadConfig()`, so they only write back what they read, but a
+     setting changed in the main window while a diff is open would be
+     overwritten when the diff closes -- untested, and a separate fix
+     (GH #2356).
+     per-pane copies are temporary for the same reason: they only wrote
+     back what they read, but that overwrote any setting changed in the
+     main window while a diff was open (GH #2356,
+     `test_DiffFrameConfig.cpp`).
+  The viewer copies its matrix through `ToXML()` and `MathParser` rather
+  than `Cell::Copy()`, because a copied cell keeps pointing at the original
+  cell's configuration, not the viewer's.
+- **Cursors:** The worksheet has 2 types of Cursor: A standard cursor in an EditorCell or a hCaret between two worksheet cells (`m_hCaretPosition`, the horizontal bar that marks a position *between* group cells, used for inserting and for selecting whole cells). Only one cursor is active at a time.
+- **Key Classes:**
+  - `wxMaxima` (`src/wxMaxima.cpp`): The main application class (subclass of `wxMaximaFrame`). Holds most of the program logic -- Maxima process management, parsing incoming XML, menu and toolbar actions, file I/O.
+  - `wxMaximaFrame` (`src/wxMaximaFrame.cpp`): The base frame class handling layout and sidebars (TOC, variables, history, symbols, draw), the toolbars and the central worksheet.
+  - `Worksheet` (`src/worksheet/Worksheet.cpp`): The scrollable document view. Owns the cell tree (`m_tree`) and handles drawing, keyboard and mouse input, the cursors, the selection and the evaluation queue.
+  - `GroupCell` (`src/cells/GroupCell.cpp`): The top-level container cell that bundles an input `EditorCell` with its output. The worksheet is a linked list of `GroupCell`s.
+  - `Cell` (`src/cells/Cell.cpp`): Base class of all maths display cells -- `TextCell`, `FracCell`, `SqrtCell`, `IntCell`, `MatrCell`, `AnimationCell` and friends.
+  - `EditorCell`: Handles text and code input, including Markdown-like formatting (bullet lists).
+  - `MathParser` (`src/MathParser.cpp`): Parses the MathML-like XML Maxima produces (via `wxMathML.lisp`) into a tree of `Cell` objects.
+  - `Maxima` (`src/Maxima.cpp`): Owns the TCP socket to the Maxima process and emits `EVT_MAXIMA` events carrying incoming data.
+  - `Variablespane`: Manages the list of defined variables and their values.
+  - `AutoComplete`: Handles the autocomplete logic for commands, variables, and files.
+- **`wxLogMessage`/`wxLogWarning`/`wxLogError` are NOT reliably visible to the
+  user in this app -- don't reach for them when something needs to actually
+  be seen.** `main.cpp` installs a `wxLogWindow` with `passToOld=false`
+  (both branches of its `#if (DEBUG==1)`), which means every `wxLogXXX` call
+  goes *only* to that custom log window and nowhere else -- not to wx's
+  stock `wxLogGui` popups, which is what raises the "but wxLogError usually
+  shows something" intuition. The log window itself is constructed with
+  `show=false` in a normal (non-`DEBUG`) build, i.e. hidden until the user
+  explicitly picks View -> Toggle Log Window or passes `--logtostderr`.
+  Confirmed live while building the gnuplot-popout-warning feature below: a
+  real `wxLogWarning()` call reached the log window's backing store (visible
+  once the window was forced to raise) but the window itself never mapped
+  on screen on its own, even for a Warning-level message -- a user running
+  a normal release build would never see it. When a message genuinely needs
+  to reach the user, use `LoggingMessageBox`/`LoggingMessageDialog`
+  (`src/dialogs/LoggingMessageDialog.h`) instead: it logs the same way
+  `wxLogMessage` does *and* shows a real modal dialog, and it already
+  honors `LoggingMessageDialog::IsNonInteractive()` so batch/test runs
+  don't block on it. This is already the established pattern (~40 call
+  sites across `wxMaxima.cpp`, `MaximaFileIO.cpp`, `MaximaCommandMenus.cpp`,
+  `WXMXformat.cpp`, ...) -- `wxLogXXX` alone is for the debug-messages
+  sidebar, not for anything the user is expected to act on.
+- **Gnuplot "Pop out interactively" now warns about gnuplot errors/warnings
+  (GH #1973):** the popout handler (`MaximaCommandMenus.cpp`,
+  `popid_popup_gnuplot`) launches a *second*, independent gnuplot process
+  alongside the real interactive one, running the identical script with
+  `set term unknown` instead of a real terminal so it needs no display and
+  exits immediately once the script finishes executing.
+  `MaximaProcessManager::OnGnuplotPopoutCheckClose` (`wxEVT_END_PROCESS` for
+  `EventIDs::gnuplot_popout_check_id`) reads back its stdout+stderr and, if
+  anything survives filtering, shows it via `LoggingMessageBox`. The real
+  interactive process (`m_gnuplotProcess`) is deliberately **never**
+  `Redirect()`ed: doing so would replace its console's actual stdin/stdout
+  with pipes wx owns, silently breaking the "type further gnuplot commands
+  into the popped-out console" feature the manual documents (Windows'
+  `wgnuplot.exe` specifically) -- since `set term unknown` needs no console
+  at all, redirecting *that* one is free of this tradeoff. **Filtering
+  gotcha, confirmed against a real gnuplot 6.0, not assumed:** `set term
+  unknown` makes gnuplot print `WARNING: Plotting with 'unknown'
+  terminal.\nNo output will be generated. Please select a terminal with
+  'set terminal'.` to stderr on *every single* `plot`/`replot` statement,
+  even for a script with nothing else wrong with it -- these two lines are
+  a side effect of the diagnostic's own terminal choice, not a finding
+  about the user's script, and must be filtered out (matched by substring,
+  not exact string, since gnuplot's exact wording could vary by version) or
+  every popout would raise a spurious warning. Verified end-to-end in a
+  live Xvfb session with a real Maxima+gnuplot: a `wxdraw2d` with a bad
+  `user_preamble` (`set y2tics out` with no y2 data, reproducing the
+  original bug report) raises a "Warning" dialog quoting gnuplot's actual
+  `"...gnuplot" line NN: warning: y2 axis range undefined or overflow,
+  resetting to [0:0]"` message, while the same plot without the bad
+  preamble raises nothing -- and the real interactive popout window (a
+  separate, still-running, reparented-to-init process once its short-lived
+  wx-tracked launcher process exits -- a pre-existing, unrelated forking
+  detail of how gnuplot/`--persist` behaves under X11) keeps working
+  exactly as before in both cases.
+- **The draw list is computed, not stored (2026-08, closes GH #1445):** `Cell`
+  used to carry a `mutable CellPtr<Cell> m_nextToDraw` member -- a second
+  always-present `CellPtr` on *every* cell, threaded by hand via a virtual
+  `SetNextToDraw()` override on each 2D-capable compound cell (`FracCell`,
+  `ParenCell`, `SqrtCell`, `AbsCell`, `BoxCell`, `ConjugateCell`, `ListCell`,
+  `ExptCell`, `SumCell`, `IntCell`, `LimitCell`, `IntervalCell`, `DiffCell`,
+  `FunCell`, `NamedBoxCell`, `LongNumberCell`) whenever `BreakUp()`/`Unbreak()`
+  ran. `CellDrawListIterator` (`src/cells/CellIterators.h`) now computes the
+  same flattened "line" sequence on the fly instead: it walks `GetNext()` for
+  ordinary siblings, and when a cell `IsBrokenIntoLines()` it descends into
+  `GetBrokenCellCount()`/`GetBrokenCell()` (an explicit stack in the iterator
+  remembers where to resume once a nested expansion is exhausted -- normal
+  documents nest only a few levels deep, so this stays empty, with zero
+  allocation, for any line containing no broken cell). `GetBrokenCellCount()`/
+  `GetBrokenCell()` default to the existing `GetInnerCellCount()`/
+  `GetInnerCell()` (the *semantic*-children interface, previously used only
+  for `ResetSize_Recursively()`/`CollectWideCells()`/tooltip fallback), which
+  turned out to already match the draw sequence exactly for 11 of the 15
+  classes above (confirmed by direct comparison against each `BreakUp()`,
+  not assumed). **Four classes needed a real, separate override**, because
+  their structural inner-cell set and their actual linear draw sequence
+  diverge under runtime conditions: `IntCell` (the linear form omits the
+  lower/upper limit slots entirely when `HasLimits()`), `SumCell` (shows
+  `Base()` -- the bare, unwrapped content -- instead of the `ParenCell`
+  wrapper `GetInnerCell()` reports, and conditionally omits the upper-limit
+  pieces when `over` is empty), `IntervalCell` and `LimitCell` (both have
+  structural slots -- bracket glyphs, the "lim" name label -- that exist only
+  for the 2D form and are never part of the linear one). Getting one of
+  these four wrong is a real rendering bug, not just a wrong tree-shape for
+  an unrelated recursive walk, since there is no longer a separate
+  hand-threaded pointer chain to cross-check the sequence against -- treat
+  any future change to a class's `GetInnerCellCount()`/`GetInnerCell()` (or
+  `GetBrokenCellCount()`/`GetBrokenCell()` override) as a rendering-order
+  change and re-verify it against that class's actual `BreakUp()` logic.
+  A 2020 attempt at this same removal (branch
+  `feature/KubaO/remove-nexttodraw`, never merged) shipped visible
+  regressions in exactly this class of nested-breaking scenario (a broken
+  fraction inside a broken fraction/paren/diff cell) because it didn't
+  account for this divergence; this attempt was verified against it
+  directly -- both with a dedicated nested-broken-cell unit test
+  (`test/unit_tests/test_CellPtr.cpp`, `SCENARIO("DrawListIterator works")`)
+  and by running the real batch tests (`absCells`, `boxCells`, `diffCells`,
+  `conjugateCells`, `exptCells`, `fracCells`, `intCells`, `intervals`,
+  `limitCells`, `matrixCells`, `parenthesisCells`, `sumCells`) against a real
+  Maxima, plus a manual Xvfb+ImageMagick screenshot of
+  `diff(abs(f(x)/g(x)),x)` at a narrow width (a broken `diff` containing a
+  broken `abs` containing a broken nested fraction, all at once) to visually
+  confirm correct rendering -- this sandbox can install `maxima`/`maxima-doc`
+  (see the sandbox note under Build System for the doc-stripping workaround)
+  and `Xvfb`/`xdotool`/`imagemagick` for exactly this kind of check when a
+  change is rendering-sensitive and the automated test suite's XML/structural
+  assertions aren't enough on their own. `CellList.cpp`'s `SetNext()`/
+  `AppendCell()`/`SpliceInAfter()`/`TearOut()` no longer need any
+  draw-list-mirroring bookkeeping, since there's nothing stored to keep in
+  sync.
+
+- **Ordinary copy renders its formats lazily (GH #2030,
+  `src/worksheet/ClipboardContents.{h,cpp}`).** `Copy()`/`CopyCells()` make
+  only the .wxm and text flavours up front; RTF, MathML, the bitmap, SVG and
+  EMF are rendered from a private `ClipboardSnapshot` of the selection when a
+  program pastes them (GTK's SelectionRequest and Windows' OLE `GetData()`
+  both end in `wxDataObject::GetDataHere()`; macOS' wxClipboard writes every
+  format at once, so there nothing is lazy). Three things to keep in mind:
+  - **The snapshot hangs off a `GroupCell` of its own.** `Cell::Copy()` keeps
+    the original's group, and the original may be deleted before the paste.
+  - **The copied cells use the worksheet's `Configuration`**, so before the
+    worksheet goes away `~Worksheet()` calls `RenderClipboardContents()`,
+    which swaps the lazy data for rendered .wxm/text/RTF/MathML/bitmap and
+    calls `wxClipboard::Flush()`. Whether the clipboard still holds this
+    worksheet's data is a `std::weak_ptr` to the `ClipboardContents` the
+    data objects share -- wx deletes them when another owner takes over.
+  - **A clipboard manager that copies every new clipboard right away**
+    (xfsettingsd does) asks for every format at copy time, which renders
+    them all. Nothing wxMaxima can do about that, and its data survives
+    the exit anyway. To check the handover live, run without one.
+- **"Copy as HTML" (GH #2265/#2266/#2267) -- `WorksheetExport::
+  SelectionToSelfContainedHTML()` / `Worksheet::CopyHTML()`:** a right-click
+  context menu item placing a *self-contained* HTML document on the
+  clipboard (inline `<style>`, every image as a base64 `data:` URI, no
+  external file references at all). `ExportToHTML()`'s on-disk export does
+  the same when `Configuration::HTMLExportSelfContained()` is set (GH #2266;
+  it also embeds the optional `.wxmx` as a `data:` href with a `download`
+  attribute). That option is **off by default on purpose** -- the maintainer
+  wants it only for mailing a single file -- so by default the export still
+  writes an `_htmlimg/` directory next to the `.html`. In self-contained mode
+  the images are written under the fixed prefix `img`, not the file name:
+  `HtmlImageTag()` URL-encodes the prefix into the `src`, so a file name with
+  a space would no longer match the file `InlineImagesAsDataURIs()` looks up. Reuses `ExportCodeCell()`/
+  `ExportOtherCell()` (the same per-GroupCell renderers `ExportToHTML()`
+  uses) completely unchanged, rather than duplicating them, by pointing
+  their `imgDir` at a fresh private scratch directory and post-processing
+  the result:
+  - Images still have to be rendered to a real file (`Svgout`,
+    `WorksheetExport::CopyToFile`, `ImgCellBase::ToImageFile`,
+    `AnimationCell::ToGif` all only know how to write to a path -- same
+    constraint `OutCommon.cpp`'s `PrivateTempDir()` documents for the
+    SVG/EMF clipboard flavors), so `MakeSelfContainedHtmlTempDir()` (a
+    small helper local to `WorksheetExport.cpp`, deliberately *not* shared
+    with `OutCommon.cpp`'s own `PrivateTempDir()`, which lives in a
+    different translation unit and isn't exposed via a header) creates one.
+  - `InlineImagesAsDataURIs()` then rewrites every `HtmlImageTag()`-
+    generated `src="..."` into a `data:` URI by reading the matching file
+    back out of that directory and base64-encoding it
+    (`wxBase64Encode()`). It doesn't need to know the exact
+    `<prefix>_htmlimg/<prefix>_<N><ext>` naming convention
+    `HtmlImageTag()` bakes into the HTML text: every writer above always
+    saves the real file *flat*, as `<imgDir>/<prefix>_<N><ext>` (no
+    `_htmlimg` component -- that only matters for the on-disk exporter's
+    *relative* HTML path), so the two share the same basename and a plain
+    "look up whatever comes after the last `/`" is sufficient.
+  - The stylesheet is generated by the exact same `WriteHtmlStyleSheet()`
+    the on-disk exporter uses, but into a `wxStringOutputStream` instead of
+    a file -- unlike images, wx has no "only writes to a real path"
+    constraint for plain text, so no temp file is needed for the CSS at
+    all.
+  - The scratch directory is removed (`wxFileName::Rmdir(...,
+    wxPATH_RMDIR_RECURSIVE)`) before the function returns, every time --
+    the whole point is that nothing the clipboard payload references lives
+    outside the payload itself.
+  - `MakeSelfContainedHtmlTempDir()` mirrors `PrivateTempDir()`'s graceful
+    fallback: if `Dirstructure::UserConfDir()` is empty --
+    **always the case in every unit test binary**, since that string is
+    only ever populated by the `Dirstructure` member `wxMaxima` itself
+    constructs (`wxMaxima.h`'s `m_dirstruct`), and no unit test builds a
+    full `wxMaxima` app object -- `wxFileName::CreateTempFileName()` is
+    called with a bare prefix instead of a rooted path, which makes it fall
+    back to its own default (system) temp location. `test_WorksheetClipboard.cpp`
+    checks both possible locations for this reason (see its
+    `HtmlClipTempEntryCount()`), not just `Dirstructure::UserConfDir()`.
+  - Clipboard format: a single `wxHTMLDataObject` (wx's own portable
+    abstraction for `wxDF_HTML`/`CF_HTML`/`text/html`, already used
+    elsewhere in this file for the MathML-as-HTML clipboard flavor -- see
+    `Worksheet::CopyMathML()`) plus a plain-text fallback, matching that
+    same function's `+ wxS('\0')` workaround for a wx string-truncation
+    quirk. Unlike RTF (GH #2264, immediately above/below this entry
+    depending on merge order), `wxHTMLDataObject` needed no equivalent
+    three-format workaround: wx already handles the platform-specific
+    `CF_HTML` wrapper header internally.
+  - Verified two ways: `test_WorksheetClipboard.cpp`'s new SCENARIOs pin
+    the structural invariants (inline `<style>`, no `<link
+    rel="stylesheet">`, no `src="` other than `data:`, scratch-dir cleanup,
+    null-range safety) directly against `SelectionToSelfContainedHTML()`
+    without touching the real clipboard (same reasoning as the rest of
+    that file). Separately, a **live** end-to-end check in a real Xvfb +
+    fluxbox session (a window manager is required here -- unlike most of
+    this file's other Xvfb checks, right-clicking to open a context menu
+    and navigating it needs real window-manager focus/stacking behavior,
+    which a bare `Xvfb` without any WM doesn't provide) drove the actual
+    app: typed `wxdraw2d(explicit(sin(x),x,0,10))$`, evaluated it for a
+    real rendered plot, right-clicked the group cell, clicked "Copy as
+    HTML", and read the X clipboard back with `xclip -o -selection
+    clipboard -t text/html` -- confirming a real `data:image/png;base64,`
+    payload, zero non-`data:` `src=` attributes, zero leaked `htmlclip`
+    temp-path fragments, and no leftover scratch directory afterward.
+
+- **"ASCII maths" style not actually defaulting to a monospace font -- two
+  independent bugs stacked, and the second one made the first one look
+  unfixable while debugging it.** Maxima's own ASCII-art 2D printer (see
+  "ASCII-art 2D display" further down this file) pads multi-line output
+  with literal spaces assuming every character is the same width, so
+  `TS_ASCIIMATHS` needs a genuinely fixed-pitch font, not just one that
+  happens to look monospace-ish.
+  1. `Styles::SetDefaults()` used to construct
+     `wxFont(10, wxFONTFAMILY_MODERN, ...)` and use whatever face name that
+     resolved to -- already flagged in the code as `// TODO It's a fat
+     chance that this font actually will be monospace.` On this sandbox's
+     GTK/Pango setup it resolved to plain "Sans", confirmed via
+     `wxFont::IsFixedWidth()` returning false. Fixed with a new
+     `MakeMonospaceFont()` helper (`Styles.cpp`, anonymous namespace) that
+     tries a list of well-known monospace font names through
+     `wxFontEnumerator::IsValidFacename()` first (an actual "is this
+     installed" check, not a family hint) and only falls back to the loose
+     `wxFONTFAMILY_TELETYPE` hint if none of them are installed.
+  2. Fixing #1 alone changed nothing observable, and re-verifying it via a
+     fresh `Configuration cfg;` kept showing the OLD "Sans" default no
+     matter how the fix was re-checked -- confirmed with a temporary trace
+     across `Styles::SetDefaults()` (correctly computed "DejaVu Sans Mono")
+     and immediately after `Configuration::ReadConfig()` (back to "Sans").
+     Root cause: `Style::Read()` (`cells/TextStyle.cpp`) had an `else
+     SetFontName(wxNORMAL_FONT->GetFaceName())` branch that fired whenever
+     a style's `fontname` key was missing from the persisted config --
+     which is the *common* case, true for every user who never explicitly
+     changed a font in Options. Since `Configuration::ReadConfig()` always
+     calls `ReadStyles()` (which calls `Styles::Read()` for every style)
+     immediately after `InitStyles()`/`SetDefaults()`, this silently
+     clobbered every style's just-picked default font -- not only
+     `TS_ASCIIMATHS`'s -- with one generic UI font, on every fresh install.
+     Every *other* field in `Style::Read()` already matched its own
+     documented contract ("Only touches the attributes that were
+     successfully read. Remaining attributes are unchanged.") by simply
+     having no `else` branch at all; only `fontname` violated it. Fixed by
+     deleting the `else` branch, matching the pattern already used by
+     every sibling field in the same function.
+  3. **This second bug is also why a stale `wxConfig` file can permanently
+     hide a fixed default during debugging, and cost real time here before
+     being recognized.** `wxConfig::Get()` in an ad hoc unit-test binary or
+     a manually-run app resolves to a real file under `$HOME` (e.g.
+     `~/.test_StyleConfigRoundtrip` for a bare `wxApp`-only test binary
+     with no explicit app name set, or `~/.config/wxMaxima.conf` for the
+     real app) that *persists across separate process invocations* --
+     unlike most other test state, which resets every run. A single
+     earlier run (in this case, an interactive Xvfb session used to verify
+     the unrelated "Copy as HTML" feature, and this test binary's own
+     pre-fix runs) had already written the old, wrong "Sans" value to that
+     file; every subsequent run silently read it back regardless of what
+     the current code's `SetDefaults()` computed, exactly reproducing bug
+     #2 from a completely different (external, filesystem) cause. Confirmed
+     by grepping `$HOME` for stray `fontname=Sans` entries and deleting the
+     files; the fix then verified correctly on the first truly clean run.
+     `test_StyleConfigRoundtrip.cpp`'s new "TS_ASCIIMATHS defaults to..."
+     SCENARIO now calls `wxConfig::Get()->DeleteAll()` before constructing
+     its `Configuration`, specifically so it can't be shadowed by this same
+     class of contamination on a re-run or a persistent CI runner -- don't
+     drop that call when touching this test.
+  Regression coverage: `test_StyleConfigRoundtrip.cpp` gained two SCENARIOs
+  -- one pinning that a fresh `Configuration`'s `TS_ASCIIMATHS` font passes
+  `wxFont::IsFixedWidth()`, and one pinning `Style::Read()`'s contract
+  directly (a sentinel font name survives a `Read()` against a config with
+  no `fontname` key for that style, using a `wxFileConfig` constructed with
+  `style=0` so it never touches disk at all -- the in-memory-only
+  hermeticity this whole investigation shows is worth having).
+
+- **Context-sensitive help for wxMaxima's own commands
+  (`src/WxMaximaManualAnchors.{h,cpp}`).** Help used to know only Maxima's
+  manual, whose index `MaximaManual` reads from the manual itself, so
+  `wx_matrix()`, `table_form()` and friends got no "Help on" entry. Our own
+  manual has no index and its headings (hence pandoc's heading ids) are
+  translated, so each such keyword has a hand-written `<div id="keyword"></div>`
+  paragraph in `info/wxmaxima.md` **and in every `info/wxmaxima.<lang>.md`**,
+  in front of the paragraph documenting it. A paragraph of its own, so po4a
+  sees a new untranslated msgid whose output is the anchor itself, and
+  translations of the surrounding text don't go fuzzy. When documenting a new
+  wxMaxima command, add its anchor to all of these and its name to
+  `WxMaximaManualAnchors::Keywords()`; `test_WxMaximaManualAnchors` fails if the
+  two disagree, and also checks the committed English `info/wxmaxima.html`
+  (shipped to builds without pandoc), so regenerate that with the pandoc
+  command in `info/CMakeLists.txt`. Keywords Maxima's manual already documents
+  (including `MaximaManual::AnchorAliasses()`, e.g. `wxdraw2d`) stay out of the
+  list: Maxima's description of the wrapped command explains the arguments.
+- **`nanoSVG.cpp` is excluded from unity builds (`SKIP_UNITY_BUILD_INCLUSION`).**
+  It is the one file that compiles nanoSVG's implementation; batched after a
+  file that already included the header, the include guard drops it and the
+  link fails with `undefined reference to wxm_nsvgParse`. Which file precedes
+  it depends only on its position in `SOURCE_FILES`, so this surfaced simply
+  by adding an unrelated source file to that list.
+- **`Worksheet::AnonymizeCodeCells()` (GH #1339, Help menu -> "Anonymize Code
+  for Bug Report"):** renames every non-builtin variable/function name in the
+  selected code cells (whole document if nothing's selected, after a
+  confirmation `wxMessageBox`) to a random `anon_...` name, the same
+  replacement for every occurrence of a given original name, as a single
+  undo step. Telling "a user-defined name" apart from "a name Maxima already
+  knows" needs **two** independent checks on each `TS_CODE_VARIABLE`/
+  `TS_CODE_FUNCTION` token, not one: `AutoComplete::GetSymbolList()` (Maxima
+  builtins plus session-loaded package symbols -- deliberately *not*
+  polluted by user-typed worksheet words, which live in a separate
+  `m_worksheetWords` map) catches real Maxima functions/variables, but
+  `MaximaTokenizer` tokenizes its own hardcoded control-flow keywords
+  (`for`/`in`/`then`/`while`/`do`/`thru`/`next`/`step`/`unless`/`from`/`if`/
+  `else`/`elseif`/`and`/`or`/`not`/`true`/`false`) with that same
+  variable/function style, and only 4 of those 18
+  (`and`/`false`/`in`/`true`) also happen to appear in
+  `data/builtin_commands.txt` -- confirmed directly by grepping that file.
+  A filter using only `GetSymbolList()` would rename `for`/`then`/`do`/...
+  themselves and corrupt the Maxima syntax outright. Fixed by exposing the
+  tokenizer's private keyword set as a new public static
+  `MaximaTokenizer::IsHardcodedKeyword()` and checking both. That accessor
+  needed its own fix first: the keyword map was populated lazily inside the
+  constructor, so calling it before any `MaximaTokenizer` instance existed
+  silently returned false for everything -- fixed by extracting
+  `EnsureHardcodedFunctionsInitialized()` and calling it from both the
+  constructor and the new accessor.
+  `test/unit_tests/test_AnonymizeCodeCells.cpp` pins this with a real
+  `Worksheet`/`Configuration` (no live Maxima), calling the narrow,
+  synchronous `AutoComplete::LoadBuiltinSymbols()` in its `main()` rather
+  than the full `Worksheet::LoadSymbols()` -- the latter also kicks off
+  `LoadableFiles_BackgroundTask`'s directory scan for Maxima's share/demo
+  folders, which stalled for 70+ seconds in this sandbox and got the test
+  process killed by its ctest timeout. A substring check like
+  `after.Contains(wxS("f("))` to confirm a renamed function is gone is
+  fragile and intermittently flaky (confirmed live, ~1-in-3 failure rate
+  over repeated runs): the random 13-character `anon_...` replacement for
+  some *other* name can itself end in the letter being searched for, and
+  since a real function call always has `(` immediately after its name in
+  valid Maxima syntax, the reconstructed text can contain a coincidental
+  `...anon_xyzqwrtf(...` match. Use exact per-token comparison via
+  `MaximaTokenizer` instead (see that test file's `HasExactToken()` helper).
+  The "nothing selected -> confirm whole document" `wxMessageBox` path can't
+  be driven or screenshotted reliably in this sandbox's Xvfb (no window
+  manager is running, and a GTK modal dialog's window never became visible
+  to `import -window <id>`/`-window root` in several attempts, though the
+  underlying `wxMessageBox` call is the same well-established idiom used
+  elsewhere in this codebase) -- verified instead by exercising the
+  already-selected-cells path end-to-end in a live Xvfb session (typed real
+  code, selected the group cell via hCaret + Shift+Up, confirmed the
+  rendered text changed consistently and a single Ctrl+Z restored it).
+
+- **GH #2278 -- the selection rectangle vs. the rendered text.** `Draw()`
+  paints per `StyledText` token, and that is the reference every measurement
+  has to match: measuring a longer substring in one go lets the font kern or
+  ligate across token boundaries and comes out a pixel or two different.
+  **On an ordinary line this is fixed**: `MarkSelection()` used to add the
+  whole selected substring's width to the caret position of its start, and
+  now takes both edges from the caret code (`EditorCell::SelectionLineSpan()`
+  / `LineColumnToPoint()`), which sums per token like `Draw()`. Don't
+  reintroduce a separately measured width there; `test_EditorCellBidi`'s
+  "A selection ends exactly where the caret does" catches it (1 px off with
+  DejaVu Sans Mono here). **Still open on a mixed-direction line**:
+  `MixedDirectionOffset()` measures each bidi run as one substring, so caret
+  and highlight agree with each other there but can both be off the drawn
+  glyphs. The analysis and two candidate fixes are in
+  [the issue](https://github.com/wxMaxima-developers/wxmaxima/issues/2278#issuecomment-5864685775);
+  read it before touching `EditorCell`'s measurement code.
+
+- **GH #2274 -- Windows Dark Mode only affecting the worksheet, not the rest
+  of the interface. Root cause found by reading wxWidgets 3.3's own MSW
+  source (`src/msw/darkmode.cpp` -- fetched directly, this sandbox only has
+  wxWidgets 3.2 installed and cannot compile or run the `wxCHECK_VERSION(3,
+  3, 0)` code path at all, so this could not be tested live and needs a
+  Windows report to confirm) -- fixed on a "the mechanism is exact, but
+  unverified on the actual platform" basis, the same caution a blind fix
+  deserves.** `main.cpp`'s `MyApp::OnInit()` already had a comment
+  explaining that `ApplyAppearanceToApp()` (which calls
+  `wxTheApp->SetAppearance()`) has to run "before the first top-level window
+  is created further down" for Windows to pick it up -- but the very first
+  thing `OnInit()` actually did, several hundred lines *earlier*, was
+  `m_logWindow = new wxLogWindow(...)`. `wxLogWindow`'s constructor
+  unconditionally does `m_pLogFrame = new wxLogFrame(...)` -- a real
+  `wxFrame` -- regardless of its `show` argument; only `Show()` afterwards is
+  conditional (confirmed by reading `src/generic/logg.cpp` directly, not
+  assumed from the class name). A `wxFrame` registers itself in the global
+  `wxTopLevelWindows` list at construction, not at `Show()` time. wx 3.3's
+  MSW `wxApp::SetAppearance()` opens with `if (!wxTopLevelWindows.empty() ||
+  gs_appMode != AppMode_Default) return AppearanceResult::CannotChange;` --
+  so by the time `ApplyAppearanceToApp()` ran, `wxTopLevelWindows` already
+  held the (still-hidden) log window's frame, and `SetAppearance()` silently
+  gave up every single time, on every startup, regardless of what the
+  in-code comment intended. This is MSW-specific: GTK's implementation has no
+  such "only before any window exists" restriction, which is exactly why the
+  maintainer's own diagnostic logging (added just before this fix, still
+  worth keeping) showed `AppearanceResult::Ok` on their Linux dev machine --
+  the bug was never visible there, only on the platform it was actually
+  reported on. Since the worksheet's own colors come from `Configuration`,
+  entirely independent of `wxApp::SetAppearance()`, it always reflected the
+  chosen appearance correctly regardless of this bug -- exactly matching the
+  reported symptom ("only the worksheet is in dark mode"). Fixed by moving
+  `m_logWindow`'s construction to *after* the `ApplyAppearanceToApp()` block,
+  the smallest change that gets a genuinely empty `wxTopLevelWindows` at the
+  point `SetAppearance()` runs, rather than trying to move the (config-file-
+  dependent, command-line-parsing-dependent) appearance-reading code earlier
+  instead. Checked for anything else constructing a top-level window before
+  that point (nothing does; `RepairFileAssociations()`, the only other
+  Windows-specific startup step ahead of it, only touches the registry) and
+  for any code between the old and new construction points that dereferences
+  `m_logWindow` before it exists (one `wxLogMessage()` call, which safely
+  falls through to whatever the default wx log target is when no custom one
+  is installed yet, no different from any `wxLogMessage()` that already ran
+  even earlier in `OnInit()`). Verified on Linux: builds clean, a live Xvfb
+  session starts up normally end to end (Maxima connects, worksheet is
+  usable), and View -> Toggle log window still successfully creates and
+  toggles the (real, `xdotool`-visible) log window frame after being moved --
+  confirming the reordering itself doesn't break anything, though the actual
+  dark-mode effect this targets can only be confirmed by someone running a
+  build on real Windows. A prior "speculative go" at this same issue
+  (changing `wxTheApp->SetAppearance()` to a hypothetical
+  `wxApp::SetAppearance()` static call) was reverted for a compile error --
+  don't repeat that: `SetAppearance()` is an ordinary (non-static) `wxApp`
+  member function.
+  - **Follow-up (found live, 2026-08): that "one `wxLogMessage()` call...
+    safely falls through to whatever the default wx log target is" note
+    above undersold the actual consequence -- "the default wx log target"
+    when no custom one is installed is `wxLogGui`, and `wxLogGui` pops up a
+    real modal dialog for every message, not just errors.** Since
+    `ApplyAppearanceToApp()`'s own diagnostic logging (`"Appearance was
+    successfully changed."` etc., the maintainer's pre-existing debug
+    logging this whole fix was built around keeping) runs from `OnInit()`
+    at the exact point this fix moved `m_logWindow`'s construction *after*,
+    every normal startup now hit that fallback and popped up a modal
+    dialog reporting a mere debug-level message -- worse than the original
+    bug this section fixes, and directly caused by it (the log call was
+    already there before this fix; it only started using the no-custom-
+    target fallback once `m_logWindow` moved later). Fixed by NOT deferring
+    `SetAppearance()` itself (still has to run before the log window's
+    frame exists, unchanged) but only deferring when its result gets
+    logged: `ApplyAppearanceToApp()` gained a `logImmediately` parameter
+    (default `true`, preserving `wxMaxima::ConfigChanged()`'s existing
+    runtime call site unchanged, since a log target already exists by
+    then) and now returns the message as a plain `wxString` instead of
+    logging it directly. `main.cpp`'s startup call passes
+    `logImmediately=false` and holds onto the returned string in a local,
+    then logs it itself with a plain `wxLogMessage()` right after
+    `m_logWindow` is constructed -- by which point a real target exists and
+    the message goes to the (hidden-by-default) log window exactly like
+    every other `wxLogMessage()` call in this app, instead of popping up
+    a dialog. Kept the return type as a version-independent `wxString`
+    (empty when there's nothing to report) rather than the version-gated
+    `wxApp::AppearanceResult` enum itself, so the function's declared
+    signature in `wxMaxima.h` stays valid pre-3.3 too, matching how the
+    rest of this function is already guarded. Live-verified on Linux (this
+    sandbox's wxWidgets 3.2.4 means the whole `#if wxCHECK_VERSION(3, 3,
+    0)` body -- and therefore this exact bug -- is unreachable here,
+    `ApplyAppearanceToApp()` always takes the no-op `#else` branch; the fix
+    is a mechanical, easily-verified-by-reading change, not something this
+    sandbox's build could exercise): builds clean, and a live Xvfb startup
+    shows no unexpected modal dialog (only the normal, unrelated "Did you
+    know?" startup tip, `Show tips at startup` -- present with or without
+    this change).
+
+- **Windows stdio, the subsystem bit, and `wxmaxima-cli.exe` -- see the
+  `wxmaxima-packaging` skill**, which carries the whole
+  `wxmaxima_version_string` investigation. `wxmaxima.exe` is a GUI-subsystem
+  binary, which has two consequences: it starts with no stdio at all (what
+  `BindStdStreamToParent()`/`RedirectStdioToParent()` paper over), and
+  `cmd.exe` does not wait for it (what `src/wxmaxima-cli.cpp`, a
+  console-subsystem launcher, exists to fix). What is still unexplained is
+  that **a GUI-subsystem child reports `FILE_TYPE_CHAR` for the very same
+  handle values its console-subsystem parent sees as `FILE_TYPE_PIPE`**, with
+  inheritance confirmed working -- start there, and do not re-run a theory
+  the skill already records as disproven.
+  Consequence for tests: **a content assertion on captured output runs on
+  non-Windows platforms only**; Windows keeps the return-code tests
+  (`wxmaxima_version_returncode`, `wxmaxima_help_returncode`,
+  `wxmaxima_cli_version_returncode`). Don't restore a content assertion
+  without watching one real run, and never on `wxmaxima.exe` itself.
+
+- **System tray icon (`src/TrayIcon.{h,cpp}`, GH #2286) -- mirrors the busy
+  status, gated entirely by `wxUSE_TASKBARICON`.** The maintainer's own
+  issue text was just "wxAppIndicator -- we don't seem to use that on gtk,
+  currently"; root-caused by finding that `StatusBar::UpdateStatusMaximaBusy()`
+  already has a Windows-only `#ifdef __WXMSW__` block driving the taskbar
+  button's progress/overlay state via `MSWGetTaskBarButton()` -- `TrayIcon`
+  is the portable, GTK-reaching equivalent of exactly that, using the
+  cross-platform `wxTaskBarIcon`. On GTK specifically, whether the icon is
+  actually *visible* depends on whether the linked wxWidgets was itself
+  built with AppIndicator/Ayatana support (`wxUSE_APPINDICATOR`, checked in
+  `wx/gtk/taskbar.cpp`, a wxWidgets-internal macro this app's own code never
+  needs to check) -- Ubuntu 24.04's stock `libwxgtk3.2-dev` package does
+  *not* have it defined at all, so on that specific distro the icon falls
+  back to the older GtkStatusIcon/XEmbed mechanism, which still worked and
+  was confirmed genuinely visible end-to-end after configuring a real
+  systray host (`fluxbox`'s toolbar needs an explicit
+  `session.screen0.toolbar.tools: ..., systemtray, ...` in `~/.fluxbox/init`
+  -- it isn't there by default).
+  - **Two real bugs found only by comparing a live screenshot against the
+    app's own status bar icon side by side, not by reading the code:**
+    1. First attempt built 4 collapsed "category" icons (Idle/Busy/
+       Attention/Error) from the *wrong* bitmap family --
+       `StatusBar`'s `m_network_idle`/`m_network_transmit_receive` members,
+       which track the **separate** `m_networkStatus` icon (raw socket
+       send/receive activity, driven by `HandleTimerEvent()`'s send/receive
+       timers) -- not `m_maximaStatus`'s own per-status bitmaps
+       (`m_bitmap_waiting`, `m_bitmap_calculating`, ...), which is what
+       actually answers "what is Maxima doing." The two icon families exist
+       side by side in the real status bar (look for `m_networkStatus` vs
+       `m_maximaStatus` in `StatusBar.cpp`) and are easy to conflate by name
+       alone. Symptom: the tray showed a barely-visible speck for "idle"
+       instead of a normal icon, since that family's idle glyph is a subtle,
+       mostly-transparent icon designed to sit unobtrusively next to actual
+       traffic icons, not to stand alone. Fixed by exposing
+       `StatusBar::GetTrayIconBitmap(MaximaStatus)`, a straight mirror of
+       `UpdateStatusMaximaBusy()`'s own per-status `m_maximaStatus->SetBitmap(...)`
+       choices, and confirmed by cropping both icons from the same
+       screenshot and eyeballing them side by side -- they now match
+       exactly, pixel for pixel.
+    2. `art/statusbar/*.h` (the bin2h-generated byte-array headers) declare
+       their arrays without `static`/`extern` -- fine when `#include`d from
+       exactly one `.cpp` (which is all `StatusBar.cpp` ever did), but
+       `#include`-ing the same header a second time from `TrayIcon.cpp` to
+       build its own icon set independently is a duplicate-symbol *link*
+       error (`multiple definition of NETWORK_IDLE_SVG_GZ`, ...), not a
+       compile error -- caught immediately on the first real link attempt.
+       Fixed by never re-embedding the art at all: `TrayIcon` only ever
+       calls the new `StatusBar::GetTrayIconBitmap()` getter and reuses the
+       bitmaps `StatusBar` already decoded once in its own constructor.
+  - The popup menu's "Interrupt"/"Exit" items deliberately reuse the *exact*
+    label text (`"&Interrupt\tCtrl+G"`, `"E&xit\tCtrl+Q"`) the Maxima/File
+    menus already use, and the two longer status tooltips
+    (debugging/lispmode) reuse `StatusBar`'s own full multi-line wording
+    verbatim, rather than shorter tray-only paraphrases -- purely to avoid
+    growing the translatable-string count for a near-duplicate of an
+    existing string; `test/check-pot-coverage.cmake` only asserts that
+    every file containing a `_("...")` marker is referenced *somewhere* in
+    `wxMaxima.pot` (by filename, not per-string), so adding this new file
+    needed exactly one hand-added `msgid "&Show wxMaxima"` entry (its own
+    genuinely new string) -- not a full `update-locale` regen, which would
+    have swept in ~1000 lines of unrelated pre-existing POT drift (see the
+    translations skill for why that regen-then-revert dance is the right
+    move here, not a shortcut).
+  - Menu actions never duplicate existing logic: `OnInterrupt()`/`OnExit()`
+    re-post a plain `wxCommandEvent(wxEVT_MENU, <id>)` to the main frame's
+    event handler instead of reimplementing what `MaximaProcessManager::
+    Interrupt`/`MaximaCommandMenus::FileMenu` already do for those same IDs
+    on the real menu -- necessary because `wxTaskBarIcon`'s own popup menu
+    delivers `wxEVT_MENU` to itself, not to the frame that created it.
+    Verified live: clicking "Interrupt" from the tray logs the same
+    "Sending Maxima a SIGINT signal," and clicking "Exit" raises the same
+    save-changes `Save As` prompt a normal File > Exit does.
+
+### Asynchronous ("background job") output from Maxima
+
+**Implemented and verified, but dormant: nothing in today's single-threaded
+Maxima sends it.** Full design, measurements and rationale live in
+`Doxygen/AsyncMaximaOutput.md` -- read that before touching any of it.
+Only the traps worth knowing from elsewhere are repeated here.
+
+- **Nothing else in this protocol identifies a cell.** Output is
+  associated with a cell purely by *when* it arrives
+  (`Worksheet::GetWorkingGroup(true)`). `<wxasync><id>UUID</id>...
+  </wxasync>` is the single exception, and it exists because a background
+  job's output arrives long after its own cell stopped being current.
+  `Worksheet::GetInsertGroup()` honours `m_asyncOutputTarget` (set only via
+  the scoped `Worksheet::AsyncOutputTarget`) ahead of the working group.
+- **`Maxima::ProcessData()` matches a known tag as a bare `<tag>`**, by an
+  exact compare against `"<" + name + ">"`. A tag carrying an attribute is
+  not recognised at all -- which is why the cell id travels in the body as
+  `<id>...</id>` rather than as `id="..."`. Applies to any future tag, not
+  just this one.
+- **The per-cell id MUST be sent as `:lisp-quiet`** (see
+  `MaximaEvaluator::CellIdConfigCommand()`, appended to `m_configCommands`).
+  This is the same hard rule `m_configCommands` already documents above: a
+  plain statement emits a prompt, and `EvaluationQueue::RemoveFirst()`
+  advances the queue by one cell for every main prompt with no way to tell
+  whose it is, silently dropping a queued cell per command sent.
+- **A background job must never ask a question, and closing its
+  `*standard-input*` does not achieve that.** Maxima's `retrieve`
+  (`src/macsys.lisp`) prints the question *before* reading, so the question
+  is already on the shared socket by the time the read fails -- and
+  wxMaxima can only read it as a question from whatever cell is currently
+  being evaluated. Confirmed live: a background `asksign()` put its
+  question on an unrelated cell and left that cell waiting. An *empty*
+  stdin is worse still (EOF, the ask machinery loops, the session stops
+  answering commands entirely). `wxMathML.lisp` therefore wraps `retrieve`
+  itself, gated on `*wx-in-async-job*`; the closed stdin stays as defence
+  in depth. Maxima's input and output are the same socket, so an unguarded
+  read really would consume the next command.
+- **Concurrent writes to Maxima's output stream corrupt it, not merely
+  interleave it** -- SBCL's FD-stream buffer is shared and concurrent
+  flushes replay buffered content (measured: one thread's whole block
+  emitted twice, the command echo three times). Every writer takes
+  `*wx-output-lock*`.
+- **Two wxMaxima-side gotchas that only show up when this is actually
+  run**, both already handled in `ReadAsyncOutput()` but easy to
+  reintroduce elsewhere: (1) a `GroupCell`'s *first* output cell is its
+  **label** slot (`AppendOutput()` assigns it to `m_output`, which
+  `GetLabel()` returns and `GetOutput()` skips), so output appended to a
+  cell that has produced none yet silently becomes the label and never
+  renders -- an empty `LabelCell` is inserted first; (2) nothing schedules
+  a recalculation for a cell that is not the working group, so
+  `RequestRecalculation(target)` has to be explicit or the output is
+  correctly appended and never laid out.
+- **The `wx-spawn-async` macro rebinds `*wx-cell-id*` inside the thread**
+  rather than only capturing it. The first version captured into a gensym
+  the body could not see, so the natural body call `(wx-async-text "...")`
+  read the *global* value and delivered to the wrong cell -- caught live,
+  a job started under cell A landed on cell C. Don't "simplify" that
+  rebinding away.
+- **Deliberately does not scroll or un-collapse**, even with "follow
+  evaluation" on -- same reasoning as GH #1952 above.
+
+### Communication with Maxima
+
+wxMaxima sends Lisp and Maxima commands over the socket; Maxima answers with XML
+wrapped in known tags. `Maxima` reads that data on a worker thread and posts
+`EVT_MAXIMA` events to the main thread, where `wxMaxima` handles them.
+
+`src/wxMathML.lisp` is compiled into the binary (through CMake's bin2h) and is
+what tells Maxima to format its output as MathML-like XML. For development,
+`--wxmathml-lisp=<path>` overrides it with an external file, so a change can be
+tried without rebuilding.
+
+- **`MaximaProcessManager::StartMaxima()` reuses the running process or kills
+  and replaces it, and the thing that decides which is the *directory*, not
+  anything about the worksheet.** Its condition is
+  `(m_maximaProcess == NULL) || m_hasEvaluatedCells || force ||
+  (dirname != dirname_Old)`, where `dirname` comes from the worksheet's
+  current file and `dirname_Old` is whatever `MAXIMA_INITIAL_FOLDER` is
+  currently set to. Maxima reads that variable once, at startup, so a process
+  already running in the wrong directory genuinely cannot be moved to the
+  right one -- replacing it is the only option, and that is why opening a
+  file restarts Maxima at all.
+  - **This is what used to make opening one file start two Maxima
+    processes.** wxMaxima starts a Maxima from its own constructor so the
+    process is warm by the time the user sends off their first cell. With a
+    file named on the command line that head start was pure waste: the
+    constructor's Maxima had no file yet, so it started in the wrong
+    directory, and the file open a moment later killed it and spawned a
+    replacement. Measured on a batch run: the first process lived about
+    three seconds and did nothing but start up and answer its own first
+    prompt. Fixed by letting `StartMaxima()` fall back to `m_fileToOpen`
+    when the worksheet has no file yet, so the first process starts in the
+    right directory and the file open reuses it. `ctest -R lisp_mode` went
+    from 9.0s to 6.6s, consistently, which is one Maxima startup.
+  - **`m_fileToOpen` is only set between wxMaxima's constructor and the idle
+    event that opens the file** (`OnIdle()` clears it *before* calling
+    `OpenFile()`, deliberately -- see its own comment about re-entrancy), so
+    that fallback can only ever apply to the startup spawn. Opening a second
+    file later in the same session still goes by `GetCurrentFile()` and still
+    restarts Maxima, which is correct: by then the running Maxima is in the
+    old file's directory.
+  - **Don't "fix" this by not starting Maxima at all when a file is
+    pending** -- that was the first attempt and it is wrong.
+    `MaximaFileIO::OpenFile()` only loads a worksheet for the formats it
+    recognises (`.wxm`/`.mac`/`.out`/`.wxmx`/`.zip`/`.xml`); for a `.dem`, a
+    package, or anything else it falls through to `MenuCommand("load(...)")`,
+    which needs a Maxima to send that command to and never starts one
+    itself.
+  - Regression coverage: `wxmaxima_one_maxima_per_file`
+    (`test/check_maxima_spawn_count.cmake`) points `--maxima` at a wrapper
+    script (a `.cmd` on Windows) that appends a line to a file and then runs
+    the real Maxima, and counts those lines (GH #2351). It used to count the
+    "Running maxima as:" lines in wxMaxima's own log, which is why it was
+    `if(NOT WIN32)`.
+  - **The trap that wrapper exists for is worth carrying to any future test:
+    on Windows you cannot assert on text wxMaxima wrote to its own stdout or
+    stderr.** The log-counting version shipped without a Windows guard and
+    turned the minGW job red with `Opening one file started 0 Maxima
+    process(es)`: the batch run exited 0 and the captured log was simply
+    empty. A GUI-subsystem process's standard handles do not reliably reach
+    whoever is capturing them -- the unexplained `FILE_TYPE_CHAR` behaviour
+    the `wxmaxima-packaging` skill records -- and a real file (CMake's
+    `ERROR_FILE`) does not dodge it. Give such a test a channel that never
+    touches wxMaxima's stdio, as this one now does.
+
+- **`m_configCommands` (`wxMaxima.cpp`):** the string of startup/config commands
+  sent to Maxima on connect (and again whenever settings change while it's
+  running). **Every entry in it MUST be a `:lisp-quiet (...)` directive --
+  never a plain Maxima statement ending in `$`/`;`.** `m_configCommands` is
+  sent bundled immediately ahead of the evaluation queue's next real per-cell
+  command (`MaximaEvaluator::TriggerEvaluation()`), and
+  `EvaluationQueue::RemoveFirst()` has no way to tell "a prompt answering a
+  config command" from "a prompt answering a real queued cell" -- it advances
+  the queue by one cell for *every* main `(%iN)` prompt it sees. A plain
+  statement here makes Maxima print its own extra prompt, and
+  `RemoveFirst()` then silently drops one real (never-sent) queued cell for
+  each such prompt -- confirmed live with `tcpdump` on the raw
+  wxMaxima<->Maxima socket to drop the whole evaluation queue (21 cells to 0)
+  in one shot, root-causing an intermittent hang/failure in
+  `automatic_test_files/lisp_mode.wxm`. This bit `wxdirs`, the Maxima struct
+  exposing wxMaxima's own paths: it has to be built via genuine Maxima syntax
+  (`defstruct`, `wxdirs@field: "value"`, ...) since Maxima's `defstruct` does
+  not evaluate named-field initializers to the field's value -- it silently
+  stores the unevaluated `field = value` equation instead (confirmed against
+  a real Maxima 5.46), and `new(wxdirs(field=value, ...))` therefore doesn't
+  work either. The fix: build the Maxima-syntax statement (still going
+  through `wxMaxima::EscapeForLisp()` per value -- despite the name it is
+  exactly the escaping Maxima string literals need too, for `"`/`\` in any
+  filesystem path), then wrap the *whole* statement text as the argument to
+  `:lisp-quiet (with-input-from-string (wxst "...") (meval (caddr (mread
+  wxst 0))))` -- reads and evaluates it from Lisp with no separate prompt of
+  its own, same as every other `m_configCommands` entry. The statement text
+  needs `EscapeForLisp()` applied a *second* time at that point, since it is
+  now itself the content of a Lisp string literal (each individual field
+  value was already escaped once, for the Maxima string literal it sits
+  inside).
+  - **Debugging technique note:** when in doubt about what actually crossed
+    the wxMaxima<->Maxima socket (vs. what a log line *claims* was sent),
+    `wxLogMessage()`-based tracing inside wxMaxima can itself be misleading --
+    `Maxima::Write()` only enqueues to `m_outputQueue`; the worker thread
+    flushes it to the socket separately and asynchronously, so a logged "sent"
+    call is not proof the bytes ever left the process (e.g. if the app exits
+    first). `tcpdump -i lo -w file.pcap 'tcp portrange 49000-49999'` plus a
+    small manual pcap parser (this sandbox's Python has no working `scapy` --
+    `cryptography`'s Rust backend panics on import here -- so parse the
+    classic pcap format directly: 24-byte global header, then repeated
+    16-byte-record-header + packet frames; skip the 14-byte Ethernet header,
+    read the IP header's IHL for its length, then the TCP header's data
+    offset for its length) gives ground truth immune to any wxMaxima-internal
+    misattribution. Also: `wxLogMessage()` is not safe to call from
+    `Maxima::WorkerThread()` (a non-GUI thread) -- it crashed with a
+    `wxArgNormalizer` format-specifier assertion the first time it was tried
+    there for debugging (triggered by `%zu` specifically; the crash went away
+    switching to `%lu` + an explicit `(unsigned long)` cast, but the
+    thread-safety of logging from that thread at all remains unverified --
+    treat any such tracing as temporary/debug-only, never ship it).
+
+- **ASCII-art 2D display (`set_display('ascii)`) and `*alt-display2d*`:**
+  when `$display2d` is on, Maxima's evaluator checks the special variable
+  `*alt-display2d*` before printing a result: if it's a function symbol,
+  that function is called *instead of* Maxima's own stock printer (this is
+  how `mydispla` in `wxMathML.lisp` produces the normal `<mth>`/XML output);
+  if it's `nil`, Maxima falls through to its own built-in ASCII-art printer,
+  which pads a result's lines with literal spaces so a multi-line fraction/
+  matrix/etc. lines up correctly under the `(%oN)` label -- but that padding
+  assumes every line, including the label, ends up rendered in one uniform
+  monospace font. `wxMathML.lisp`'s `wx-ascii-displa` wraps that stock
+  printer in `<wxxml-asciimath>`/`</wxxml-asciimath>` markers *without*
+  reimplementing it: it dynamically rebinds `*alt-display2d*` to `nil` for
+  just the duration of `(displa x)`, which re-enters Maxima's own dispatch
+  and this time takes the stock ASCII path (confirmed live: this is
+  correctly reentrant-safe through Maxima's own recursive sub-expression
+  `displa` calls, e.g. matrix rows, since they run inside the same dynamic
+  extent). `Maxima::ProcessData()` only fires the corresponding
+  `XML_ASCIIMATH` event once it has seen the *complete* matching closing
+  tag, so `MaximaResponseReader::ReadAsciiMath()` always receives one whole
+  block in one piece and can render all of it in one uniform style --
+  before this, `ReadMiscText()` guessed a chunk's style from whether it
+  happened to start with `"(%"`, and since chunks are split by socket/timer
+  batching (not by where Maxima's actual output boundaries are), a block's
+  label line could land in a separate batch than its neighbors and get
+  misclassified into a different (proportional) font, breaking the
+  alignment Maxima's padding assumed -- root-caused with a raw
+  `:lisp-quiet (with-input-from-string ...)` / socket-level reproduction
+  (see the debugging technique note above) before the fix, not guessed.
+
+### File Formats
+
+- **`.wxmx`** -- a ZIP archive holding `content.xml` (the MathML-like XML) plus
+  the embedded images. The format version lives in `src/WXMXformat.h`.
+- **`.wxm`** -- the plain-text format, read by `Format::ParseWXMFile()`.
+- **`.wxm`'s marker comments are NOT uniformly self-closed -- exactly one
+  bug class (GH #1907) comes from that asymmetry.** `WXMHeaders[]`
+  (`src/WXMformat.h`/`.cpp`) has two different shapes:
+  1. **Input/code markers are each a single, already-closed one-line
+     comment** -- `"/* [wxMaxima: input   start ] */"` opens *and* closes
+     `/* */` on the same line, so the code text between the start and end
+     markers sits completely outside any comment. This is deliberate and
+     load-bearing: it's what lets a plain, wxMaxima-unaware `batch()`/
+     `load()` parse the code between them with zero special handling, and
+     it's why a literal `/*`/`*/` inside actual Maxima code (a real Maxima
+     comment) must stay byte-for-byte unescaped -- `WXM_INPUT`/
+     `WXM_HIDDEN_INPUT` are excluded from the escaping below for exactly
+     this reason.
+  2. **Every other marker (title/section/subsection/subsubsection/
+     heading5/heading6/comment/caption) opens a comment on its start line
+     that is left open across the cell's entire content**, only closing at
+     the *end* marker's own trailing `*/` (e.g. start = `"/* [wxMaxima:
+     title   start ]"`, no closing `*/`; end = `"   [wxMaxima: title
+     end   ] */"`, no opening `/*`). A literal `*/` inside such a cell's
+     own prose closes that comment early -- everything from there up to
+     whatever `*/` a plain Maxima scanner finds *next* in the file is read
+     as live, executable input instead of inert text. A title cell
+     containing `"abc */ x:2$ /* def"` silently ran `x:2$` when the file
+     was `batch()`ed or opened, with no error and no visible sign anything
+     had executed. (`WXM_CAPTION` shares its ordinal with `GC_TYPE_IMAGE`
+     and covers only an image cell's own descriptive label text -- the
+     separate `WXM_IMAGE` marker pair, wrapping just the raw base64 bitmap
+     bytes, was never at risk here: base64's alphabet has no `*` character
+     at all.)
+  Fixed in `src/WXMformat.cpp` with a reversible, HTML-entity-style
+  transform (`EscapeWXMSlashes()`/`UnescapeWXMSlashes()`), applied only to
+  the type-2 markers above: escape every literal `&` to `&amp;` first (so
+  the scheme stays unambiguous if the original text already has one), then
+  -- in a single linear scan, not two separate global replaces, so a
+  pathological run like `"*/*"` or `"/*/"` is handled correctly rather than
+  double-encoded -- replace every `/` that sits immediately next to a `*`
+  with `&#47;`, leaving that `*` and any unrelated `/` (an ordinary `1/2`)
+  untouched. This closely follows a fix the maintainers had already
+  discussed but never implemented (GH #1907's own comment thread:
+  "how about if all text cells have `/*` and `*/` replaced by HTML
+  entities?"), narrowed to only the `/` adjacent to a `*` rather than every
+  slash, to avoid visual noise in the raw `.wxm` file for cells that just
+  happen to contain an ordinary fraction. Also applied to the equivalent
+  `GC_TYPE_TEXT` write path in the non-`.wxm` (`.mac`/xmaxima interop)
+  export, for the same reason (defense in depth -- `.mac` is always
+  directly Maxima-loadable) -- but only where it is needed. A `.mac` is a
+  Maxima program the user may have written in an editor, so it has to
+  round-trip unchanged (the maintainer's call, GH #2353): a text cell Maxima
+  would read back as exactly one comment (`IsMaximaCommentBody()`: Maxima
+  *nests* comments, and a `/*`/`*/` pair uses up both characters, so `/*/`
+  only opens one) is written as it is, and only one that would end its
+  comment early or leave it open gets its `/` next to a `*` escaped -- and
+  is never unescaped on reading, since a hand-written comment may contain
+  `&#47;` legitimately. `ParseMACContents()` skips comments by the same
+  nesting rules. A `.mac` gets no "Created with wxMaxima" line either.
+  Headings in a `.mac` (open-comment markers, like in a `.wxm`) use the
+  reversible `.wxm` escaping, which `TreeFromWXM()` undoes.
+  **Known, accepted limitation** (also already flagged in the same GH
+  #1907 thread): this can't retroactively fix a `.wxm` file already on
+  disk from before this existed, and a file whose prose coincidentally
+  contains the literal text `&amp;` (e.g. discussing the HTML entity
+  itself) will be mis-decoded after this fix -- an intentional tradeoff,
+  not an oversight. Regression coverage in
+  `test/unit_tests/test_WXMRoundtrip.cpp` pins both the injection fix
+  (title/section/text cells containing `*/`/`/*` round-trip losslessly and
+  the raw `.wxm` line has neither substring left unescaped) and the
+  "code cells are never touched" invariant, confirmed to actually catch the
+  bug by reverting just the source fix (`git stash push -- src/WXMformat.cpp`)
+  and re-running: the injection scenarios failed with exactly the reported
+  symptom before the fix was restored.
+
+### Translations (`locales/`)
+
+- **One combined `.po` per language, in `locales/wxMaxima/`, is the file a
+  translator edits.** It covers both wxMaxima's own UI strings
+  (`xgettext`-extracted from `src/**/*.cpp`/`*.h`) and the manual's prose
+  (`po4a`-extracted from `info/wxmaxima.md`). `locales/wxMaxima/wxMaxima.pot`,
+  the template `msgmerge` works against, is regenerated as
+  the union of a fresh source scan and `locales/manual/wxmaxima.md.pot`
+  (`msgcat --use-first`, preferring `wxMaxima.pot`'s own header) by the
+  `update-locale` CMake target.
+- **The xgettext source list is an explicit glob, not a recursive one, and a
+  file it misses loses its strings silently.** `POT_SOURCE_FILES`/
+  `POT_SOURCE_FILES_REL` in `locales/wxMaxima/CMakeLists.txt` list
+  `src/*.cpp;src/*.h;src/*/*.cpp;src/*/*.h` -- exactly two levels. It was
+  flat `src/*` until `03b16f2d8`, so every string under `src/cells`,
+  `src/wizards` and `src/graphical_io` was missing from the POT from
+  2020-08-05, and `src/sidebars`/`src/dialogs` from 2024-01. Cost: ~7000
+  translations across 21 languages, restored from git history only in
+  2026-08. **Nothing warns about this**: xgettext is happy with a short file
+  list, and the POT-drift check in CI regenerates the POT and diffs it, so a
+  broken glob truncates both sides identically and the check passes. Adding
+  a `src/<a>/<b>/` nesting level would break it again -- `check-pot-coverage`
+  (a `ctest`, needs neither a build nor gettext) now fails the build if any
+  source file sits deeper than the glob reaches, or if a file containing a
+  `_("...")` marker is unreferenced by the committed POT.
+- **Translations can vanish silently, and
+  `locales/wxMaxima/check_translations_not_wiped.py` is the guard against
+  it.** wxMaxima used to have its translations synced by an external
+  translation platform. That platform silently stopped syncing the POT --
+  the project's string count had outgrown the free plan, and rather than
+  erroring or refusing, it fell back to an old snapshot and kept opening
+  correct-looking pull requests built from it. Three times those PRs would
+  have reverted hundreds of translations to empty (464 entries across 16
+  languages, the same set each time); the third was caught before merging
+  only because someone diffed it by hand. The integration has since been
+  dropped entirely -- **do not reintroduce a sync that this repo cannot
+  verify.**
+  The lesson outlives the platform: a bulk edit of `.po` files can replace
+  good translations with empty ones and look perfectly ordinary in review,
+  because a plain 3-way git merge does not understand PO-file semantics and
+  `msgfmt --statistics` counts cannot tell "reverted to worse text" from
+  "line wrapping changed." Compare msgid+msgctxt-keyed, not by line diff.
+  `check_translations_not_wiped.py` does exactly that against `origin/main`
+  on every push (wired into `compile_ubuntu.yml` as its own fast,
+  standalone job, no build dependencies) and fails loudly if any
+  translation would go from non-empty to empty. It catches only "translated
+  text disappeared entirely," not "translation is now provably worse," and
+  can in principle false-positive if one push both reworded a translatable
+  string and committed a regenerated `.po` (the old msgid's entry
+  vanishing under a genuine rename looks identical to it being wiped) --
+  rare, since the convention here is not to commit `update-locale` drift
+  alongside unrelated changes, but worth knowing if it ever fires on
+  something legitimate.
+  **If a mass wipe ever does need undoing**, patch at the text level: find
+  each entry's line range in both the good and the bad file independently
+  (`polib`'s `.linenum`) and splice only the `msgstr` block. Re-saving
+  through `polib`'s own serializer was tried and rejected -- it reflows
+  every line, turning a 464-line fix into a ~200KB diff that buries the
+  actual change.
+
+- **The POT is refreshed weekly by a job, NOT checked per commit -- and that
+  is a deliberate replacement, not a dropped check.**
+  `.github/workflows/update_translations.yml` runs `update-locale` on a
+  schedule and pushes the result straight to `main`. There used to be a
+  `check-pot-up-to-date` step on every push instead; it was removed when this
+  landed.
+  **Do not reinstate a per-commit POT check.** It forced every PR touching a
+  user-visible string to regenerate `wxMaxima.pot`, and `xgettext` rewrites
+  the `#:` reference of *every* entry whenever any file's line count shifts.
+  So two unrelated PRs adding a string in different files still collided in
+  the POT, and a three-string change arrived as a ~2700-line diff. Measured
+  on one real commit: 2719 of 2751 changed lines were location churn, 32 were
+  content. Feature branches now never touch the POT, so they cannot conflict
+  in it.
+  **What makes an unattended push safe is the gate, and it is the point of
+  the whole design**: `locales/wxMaxima/check_pot_not_truncated.py` compares
+  the regenerated POT against the committed one *msgid-keyed* and refuses to
+  commit if more strings disappear than a threshold (50, or 5% of the
+  catalogue, whichever is stricter). The `.po` files go through the existing
+  `check_translations_not_wiped.py` in the same run. If either fires the job
+  fails and the catalogues are left untouched -- a failed job and a stale
+  POT, never a quietly shrunken one.
+  **This gate is strictly stronger than the check it replaced**, which is the
+  part worth understanding before touching any of it. The old check compared
+  the committed POT against a fresh regeneration, so once a *truncated* POT
+  had been committed both sides were truncated identically and it passed --
+  which is exactly how the flat `src/*` glob above went unnoticed. Comparing
+  against what was there before is what catches that. Verified by reproducing
+  it: reintroducing the flat glob and regenerating makes the guard report
+  1087 strings disappearing and exit non-zero.
+  Two consequences to keep in mind:
+  - **Line numbers stay in the committed POT.** Stripping them would shrink
+    the bot's weekly diff enormously, and was deliberately rejected: a
+    translator uses that reference to find the string in its context, which
+    is worth more than a readable machine-generated commit.
+  - **A brand-new source file containing `_("...")` still needs a minimal POT
+    touch**, because `check-pot-coverage` (a ctest, still per-commit, and
+    unaffected by any of this) asserts every such file is referenced by the
+    committed POT. Hand-add the one `msgid`, as the TrayIcon work did -- do
+    not run a full `update-locale` for it.
+
+- **`test/check-pot-coverage.cmake` needs `cmake_policy(SET CMP0057 NEW)`
+  explicitly.** It runs in script mode (`cmake -P`), which does not inherit
+  the top-level `CMakeLists.txt`'s policy settings -- without this line,
+  `if(NOT f IN_LIST covered)` hard-errors with "Unknown arguments
+  specified" on every invocation, on any CMake version, confirmed against a
+  clean `main` checkout (not something introduced by unrelated local
+  changes). `IN_LIST` needs CMP0057 set to `NEW` to be recognized as an
+  operator at all in `if()`; the default/OLD behavior predates that
+  operator's existence.
+- **Don't drop `--previous` from `msgmerge`.** It is what keeps the
+  `#| msgid` comment recording what a fuzzy entry used to say, which is how a
+  translator works out *why* something went fuzzy (`00ba34121`). A plain
+  `msgmerge` discards those comments wholesale and gives no hint it did --
+  212 entries' worth in `zh_CN.po` alone, found only by counting them before
+  and after.
+- **`po4a` must never be pointed at `locales/wxMaxima/<lang>.po` directly.**
+  It looks like the obvious way to keep the manual's translations inside the
+  combined file (`po4a.cfg`'s `$lang:` path *was* set to
+  `locales/wxMaxima/$lang.po` at one point), but `po4a` doesn't treat a `.po`
+  file as something to add/update entries in - it treats it as *its own*,
+  and **rewrites it wholesale to contain only the entries it itself
+  extracted from `info/wxmaxima.md`, silently discarding everything else**.
+  Confirmed live: a language with 1000 translated UI strings and 69
+  translated manual strings dropped to 69 (the UI strings gone) after one
+  `po4a` run against the combined file - and this shipped merged to `main`
+  before being caught. `po4a` therefore keeps writing its own
+  `locales/manual/<lang>.po` (`po4a.cfg`'s `$lang:` path), exactly as before
+  the two catalogs were combined; `locales/wxMaxima/CMakeLists.txt`'s
+  `${LANG}_po` target runs `merge_manual_po.cmake` (`msgcat --use-first`) to
+  fold `locales/manual/<lang>.po` into `locales/wxMaxima/<lang>.po` *before*
+  `msgmerge`, every time - that script is the only place allowed to write
+  manual content into the combined file. `locales/manual/*.po` only exists
+  for the languages that actually have a manual translation (not the full
+  `locales/wxMaxima/*.po` language list) - `info/CMakeLists.txt` expects a
+  matching `info/wxmaxima.<lang>.md` to already exist for every language
+  `po4a.cfg`'s language list names, and doesn't create a fresh empty one, so
+  don't widen that language list to languages that have no manual
+  translation yet without also handling that.
+- **`po4a.cfg`'s manual `[type: text]` line needs `opt:"-o markdown"`
+  explicitly** - `Locale::Po4a::Text`'s own default for that option is `1`,
+  but that default does not take effect through `[type: text]`'s normal
+  invocation; confirmed live by extracting the same heading with and without
+  an explicit `-o markdown`. Without it, every markdown structural element
+  (`##` headings, list items, ...) is extracted as generic wrapped "Plain
+  text" instead of being recognized as its own no-wrap markdown construct,
+  which is what caused #2047: a translated heading long enough to wrap got a
+  literal newline inserted mid-heading when `po4a` wrote it back out,
+  turning the second half into a normal paragraph in the rendered manual.
+  The tempting broader fix, `opt:"-o neverwrap"` (disables wrapping
+  entirely), is a trap: it doesn't just change *output* wrapping, it changes
+  how `po4a` *segments source paragraphs into msgids* (each source line
+  becomes a literal embedded `\n` in the msgid instead of the paragraph
+  being one reflowed string) - confirmed live it turns 293 cleanly-matched
+  German translations into 2 clean matches + 328 fuzzy, i.e. it invalidates
+  the translation of nearly every multi-line paragraph in the whole manual,
+  for a bug that's specifically about headings. `-o markdown` alone fixes
+  the reported bug (headings/lists become their own no-wrap entries) with a
+  much smaller, semantically-justified cost: only headings, list items and
+  fenced code blocks need re-confirming as fuzzy (e.g. 293 clean -> 183
+  clean + 156 fuzzy for German - about 89 of those are headings whose old
+  msgstr still has the now-redundant leading `##` and its space baked in,
+  since `po4a`
+  auto-prepends it from the `Title ##` type instead of storing it in the
+  translated text; the rest are fenced-code-block delimiters `po4a` now
+  reconstructs itself instead of storing literally, plus a handful of
+  entries that were already fuzzy for unrelated reasons - real source-text
+  edits, not a `markdown` side effect), not full paragraphs. **The old
+  translation text is not deleted** (`.po` keeps the fuzzy msgstr plus the
+  previous msgid in a `#|` comment) **but it stops appearing in the
+  generated manual** until a translator re-confirms it - `po4a-translate`
+  skips fuzzy entries by default the same way `msgfmt` does for a compiled
+  `.mo`, falling back to the untranslated English source. Don't describe
+  this fix as lossless to a translator without that caveat: a previously
+  fully-translated heading really does render in English again in
+  `info/wxmaxima.<lang>.md` until someone reviews the (mostly mechanical:
+  strip the leading `#+` and the space after it) fuzzy diff. Fixing the wrapping bug and keeping
+  every translation rendering are in tension - there's no `po4a` option that
+  gets both, since the whole point of `-o markdown` is to change what a
+  heading's msgid *is*.
+- **`locales/wxMaxima/CMakeLists.txt`'s `${LANG}_po` target needs
+  `wxMaxima.pot` in its own `DEPENDS`, not just as a plain path string
+  inside a `COMMAND` argument.** `add_custom_command(OUTPUT wxMaxima.pot
+  ...)` only creates a file-level build rule; a *different* custom command
+  (or target) that merely references that output path in a shell argument
+  gets no ordering guarantee from it. Confirmed live: after fixing the
+  manual's extraction to `-o markdown`, `make update-locale` kept producing
+  stale results (matching the pre-fix fuzzy/translated counts exactly)
+  because `wxMaxima.pot` itself hadn't been rebuilt - `${LANG}_po`'s
+  `PRE_BUILD` command still consumed yesterday's `wxMaxima.pot` on disk.
+  Fixed by declaring `DEPENDS ${LANG}.po wxMaxima.pot` on the
+  `add_custom_target(${LANG}_po ...)` line.
+- **A COMMAND attached to an `add_custom_target` runs on EVERY build, and
+  its `DEPENDS` does not change that** -- a custom *target* is by definition
+  always out of date; `DEPENDS` only *orders* it after those inputs. Only
+  `add_custom_command(OUTPUT ...)` gets a real up-to-date check. This bit
+  `copy_mo_file_${LANG}_for_wxmaxima_local`, which copies each `.gmo` into
+  `${CMAKE_BINARY_DIR}/share/locale/<lang>/LC_MESSAGES/wxMaxima.mo` so
+  `./wxmaxima-local` finds translations without installing (see the GH #1711
+  entry above for why that target must keep existing). Written as
+  `add_custom_target(... ALL DEPENDS <gmo> COMMAND copy ...)` it re-ran for
+  all **50** languages on every build, including a completely no-op one --
+  which is also why `ninja` could never say "no work to do". Measured, not
+  inferred: three consecutive no-op passes over the real targets ran 50
+  copies *each time* before the fix, and `50 / 0 / 0` after, with `ninja: no
+  work to do.` on the second. Fixed by naming the destination `.mo` as an
+  `add_custom_command(OUTPUT ...)` and leaving the `ALL` target as a thin
+  `DEPENDS` on it. Verified the fix is behaviour-preserving in both
+  directions that matter: `diff -r` of the two build trees' `share/locale`
+  is identical (same 50 files, byte for byte), and `touch`ing a `.gmo` still
+  re-runs that language's copy and then settles. **Don't "simplify" this
+  back into a single target with a COMMAND**, and treat the same shape
+  anywhere else as a build-time waste bug. (`info/CMakeLists.txt`'s
+  `add_custom_target(html ALL)` is *not* an instance of this: it carries no
+  COMMAND at all and is a pure aggregator over `build_*.html` targets whose
+  own `add_custom_command(OUTPUT ...)` rules are correctly output-driven, so
+  pandoc does not re-run when the HTML is current.)
+- **Committing a `make update-locale` run's output means committing
+  *every* language's drift against the current C++ source, not just the
+  fix you're testing.** Running it live in this sandbox (to verify the two
+  bugs above) also picked up ~1100 real UI strings that exist in
+  `src/**/*.cpp`/`*.h` today but were missing from every committed
+  `locales/wxMaxima/*.po` and `wxMaxima.pot` (confirmed genuine, not a
+  sandbox artifact: `grep`-verified several, e.g. `Configuration.cpp`'s
+  `_("  Font cache hits: %ld")`, actually exist in the source at `HEAD` -
+  `xgettext` just hadn't been re-run against the source in a while before
+  `wxMaxima.pot` was last committed). That's real, legitimate drift, but
+  it's a separate concern from a `po4a`-pipeline bug fix - bundling ~1100
+  new untranslated strings across 24 languages into a bugfix commit buries
+  the actual fix and forces reviewers (translators included) to wade
+  through unrelated noise. After verifying a `po4a`/CMake fix works
+  end-to-end in the build directory, `git checkout --
+  locales/wxMaxima/*.po locales/wxMaxima/wxMaxima.pot` to drop that
+  incidental drift back to the committed state before committing, keeping
+  only the actual pipeline files (`po4a.cfg.in`, the `CMakeLists.txt`s,
+  `merge_manual_po.cmake`) plus whatever's scoped to the manual itself
+  (`locales/manual/*.po`, `locales/manual/wxmaxima.md.pot`,
+  `info/wxmaxima.<lang>.md`). The UI-string staleness is a legitimate
+  follow-up `make update-locale` run of its own, on its own commit.
+- **Don't run this sandbox's stock `po4a` (0.69) against real translated
+  content.** See `CheckPo4aVersion.cmake`'s corruption warning above --
+  verifying a change to the translation *pipeline*
+  (`po4a.cfg.in`/`merge_manual_po.cmake`/the CMake wiring) is fine without
+  running `po4a` itself, but regenerating actual `.po`/`.md` output needs a
+  real `po4a` >= 0.70. It wasn't reachable via any of apt (only has 0.69),
+  Debian's package archive, or po4a's own GitHub releases (both blocked by
+  this sandbox's proxy) - but a source tarball of a current release, fetched
+  outside the sandbox and handed to the agent as a file, runs perfectly well
+  unpacked with no install step beyond `PERL5LIB=<unpacked-dir>/lib`
+  pointing at its `Locale::Po4a::*` modules; the `po4a`/`po4a-updatepo`/
+  `po4a-translate`/etc. scripts at the tarball's top level need nothing else
+  to work standalone, e.g. `PERL5LIB=lib ./po4a --version`. Regenerating
+  translated content live and diffing it (`msgfmt --statistics` before/after
+  per language, matching translated-message counts) is how both bugs above
+  were actually caught, not guessed from reading `Locale::Po4a::Text`'s
+  source.
+- **`git clean -fd` after `git checkout --` on a directory wipes untracked
+  files in it too, including ones you meant to keep** (e.g. a new
+  `locales/manual/<lang>.po` restored from a scratch copy, or a brand new
+  `.cmake` helper script that was never committed yet) - it doesn't
+  distinguish "test-run droppings" from "uncommitted new work" by intent,
+  only by whether `git add` has seen the path yet. Prefer reverting only the
+  specific files that are actually wrong (or committing work-in-progress to
+  a scratch commit first) over a blanket `git checkout -- <dir> && git clean
+  -fd <dir>` once a directory has a mix of both kinds of changes in it.
+
+## Conventions & Standards
+
+- **Branches and pull requests:** one branch per feature or bugfix, cut fresh from `main`, PR when it is finished -- see "Branches and pull requests" at the top of this file for why reusing one long-lived branch has already caused trouble.
+- **Red CI:** fixing a failure is welcome whoever caused it, and causing one is nobody's fault -- but never make a test pass by removing or weakening it. See "A red CI is everyone's to fix" at the top of this file.
+- **A test that needs a POSIX shell goes into `WXM_POSIX_TESTS`** (`test/CMakeLists.txt`). That list labels its tests `needs_posix`, and the Windows jobs run `ctest -LE "unittest|needs_posix"`, so this is how a test that runs a `.sh` helper (`check-wxMathML.sh`, `check-lintian.sh`, ...) or otherwise assumes `/bin/sh` stays off MSW. A test missing from it fails there as `BAD_COMMAND`, which is how the minGW job went red on `main` in 2026-09 with four such tests. Configure now refuses a test whose `COMMAND` is a `check-*.sh` helper unless it is in the list, but that guard only recognises that one shape: a test that reaches a shell some other way still has to be added by hand.
+- **Git Environment:** Note that running `git diff` might launch the visual diff tool `meld` instead of outputting to the terminal. Always use `git diff --no-ext-diff` if you need terminal output.
+- **String Literals & Translations:** Use the `wxS()` macro for all string literals and `_()` for user-facing translatable strings.
+- **Logging:** Use `wxLogMessage()` for debugging; messages are visible in **View -> Toggle Log Window** or by using the option `--logtostderr`.
+- **Asynchronous Sidebars & Safety:** Sidebars (TOC, Variables Pane) update asynchronously. Always validate `GroupCell` pointers (using `m_tree->Contains()`) before use.
+- **Long-Lived Cell References:** Anything that keeps a reference to a `Cell` or `GroupCell` beyond the current call -- undo/redo actions, the evaluation queue, the selection, the sidebars, a cached "last clicked" cell -- MUST hold it as a `CellPtr<...>`, never as a raw pointer. `CellPtr` derives from `Observed` and nulls itself when the cell is destroyed, so a stale reference reads as `nullptr` instead of dangling; null-check it when consuming it, because the cell may have died since it was stored. A raw `Cell *` is fine only for the duration of a single function or event.
+- **Cell UUIDs & Navigation:** Cells have unique `m_uuid`. Filenames support `#UUID` fragments.
+- **Forward Compatibility:** `ToXML()` implementations MUST call `GetXMLFlags()` and include its output in the opening tag to preserve unknown attributes.
+- **Serialization Tags:** Some cells use shortened tags (e.g., `LimitCell` uses `<lm>`). Verify in `MathParser.cpp` before modifying.
+- **Gnuplot Probe:** MUST be done asynchronously (e.g., `wxEXEC_ASYNC`). Synchronous execution blocks the UI and can disrupt the Linux global menu system.
+- **Variable Escaping:** Use `Maxima::EscapeVarnameForMaxima` for characters like `,`, `°`, and special symbols. A digit at the *start* of a variable name must be escaped (e.g., `\1a`).
+- **Maxima Restart (Windows):** Restarting requires a manual reset of the network client (`m_client.reset()`) and streams in `KillMaxima` (which lives in `MaximaProcessManager`, not in `wxMaxima` any more) to avoid socket state errors.
+- **Worksheet Search Logic:** Traverse in visual order: Prompt → Editor → Output (Forward) or Output → Editor → Prompt (Reverse). Resume from current caret position.
+- **Layout Timeout:** Complex output can trigger a timeout (configurable in Options), replacing slow-to-render cells with a warning.
+- **C++ Standard:** The project uses **C++20, all of it** -- but the real limit is the oldest *compiler* we support, not the standard's number, and that is **GCC 12** (Debian 12's stock compiler; decided 2026-09 after GH #2301 made wxWidgets 3.2 the minimum). Dropping wx 3.0 is what raised that floor: the distros with older compilers (Ubuntu 22.04's GCC 11, Debian 11's GCC 10, RHEL 8's GCC 8) only packaged wx 3.0/3.1 and are unsupported anyway. (RHEL/Alma/Rocky 9 still defaults to GCC 11; building there needs one of the newer `gcc-toolset-*` compilers its AppStream repository provides.) So any C++20 language or library feature GCC 12 implements is fine to use; the one notable gap is **`std::format`, which needs GCC 13** -- keep using `wxString::Format()` until GCC 12 is dropped. `compile_gcc12` in `compile_ubuntu.yml` builds with exactly that compiler and is what enforces this: a feature it rejects is too new, however standard it is. **C++23 is deliberately postponed**: GCC 12 only offers its small library additions (`std::expected`, `std::to_underlying`, `std::unreachable`), while the features that would change this code (deducing `this`, `std::ranges::to`, `std::print`) need GCC 14, which no still-supported distro ships as its default compiler. Checked 2026-09: `main` builds cleanly with `-std=gnu++23` on GCC 13 and Clang 18, so the switch itself will be cheap once that floor moves -- it also needs `cmake_minimum_required` raised from 3.16 to 3.20, the first CMake that knows the value 23. (This replaces an older rule of thumb, "stay about 10 years behind the current standard", which C++20 already no longer matched.)
+- **wxWidgets Version:** wxWidgets 3.2 is the minimum (since 2026-09, GH #2301): 3.0.5, the last 3.0 release, has a bug that leaves wxMaxima unable to talk to Maxima, with no fix in sight. `CMakeLists.txt` (`WXM_MIN_WXWIDGETS_VERSION`) and an `#error` in `main.cpp` enforce it. Features newer than 3.2 still need a `wxCHECK_VERSION` guard; guards for 3.2 and older were removed as dead code (GH #2368), so don't add new ones. The one deliberate exception is `main.cpp`'s `#if !wxCHECK_VERSION(3, 2, 0)` `#error`, which is the enforcement itself. `Compat.h`'s `wxWARN_UNUSED` fallback is still needed: wxWidgets only defines that macro from 3.3 on.
+- **Sizer Flags Are Different Enum Types:** `wxDirection` (`wxLEFT`/`wxRIGHT`/`wxALL`/...), `wxAlignment` (`wxALIGN_*`) and `wxStretch` (`wxEXPAND`/...) are three distinct unscoped enums; OR'ing two of them directly (e.g. `wxALIGN_CENTER_VERTICAL | wxALL`) is deprecated in C++20 and GCC warns `-Wdeprecated-enum-enum-conversion`. Fix by casting the *first* operand of the OR-chain to `int` (e.g. `static_cast<int>(wxALIGN_CENTER_VERTICAL) | wxALL`) -- since `|` is left-associative, this makes every subsequent operation `int | enum`, which is unambiguous and unwarned, without needing to touch the rest of the chain. Only the leftmost token needs the cast, however many differently-typed flags follow.
+- **`[[maybe_unused]]` on data members and GCC < 12:** GCC before version 12 doesn't support `[[maybe_unused]]` on non-static data members at all and warns `'maybe_unused' attribute ignored [-Wattributes]` regardless of whether the member is actually used (reproduced directly against `g++-11`; fixed by `g++-12`). Since the attribute is still needed for Clang (`-Wunused-private-field`), don't just delete it -- wrap the declaration in `#if defined(__GNUC__) && !defined(__clang__) && __GNUC__ < 12` / `#pragma GCC diagnostic push/ignored "-Wattributes"` ... `#pragma GCC diagnostic pop` / `#endif` (see `SvgBitmap.h`, `wxMathml.h`, `graphical_io/Printout.h`).
+- **CI Warnings Live On the Non-`-Werror` Jobs:** `compile_latest_and_test` and `compile_without_webview` (Ubuntu) build with `-Werror`, so they can't show warnings by construction -- check `compile_2404` (Ubuntu 24.04, plain `-Wall -Wextra`, GCC 13; it was `compile_2204` on GCC 11 until 22.04 was dropped with GH #2301) for real warnings that survive to a release build. Don't assume that job's warning list is exhaustive, though: e.g. the `[[maybe_unused]]`-on-a-data-member GCC<12 warning above showed up for `Printout.h` in one such log but not for the identical pattern in `SvgBitmap.h`/`wxMathml.h` in the same run, for reasons that weren't tracked down (not precompiled headers: until 2026-09 that option silently did nothing, see the build-speed notes under Build System) -- a clean local build with `g++-11 -Wall -Wextra` is the more reliable check for this specific class of warning.
+- **`Cell` Bitfields Use C++20 Default Member Initializers, Not `InitBitFields_ClassName()`:** Every per-class flag bit-field (`Cell`, `EditorCell`, `GroupCell`, `TextCell`, `MatrCell`, and the rest of `src/cells/`) declares its default inline, e.g. `bool m_foo : 1 = false;`. The older pattern -- an `InitBitFields_ClassName()` method called from the constructor body, with each field tagged `/* InitBitFields_ClassName */` -- predated C++20 support for bit-field default member initializers and has been fully removed (2026-08); don't reintroduce it for new flags. Classes with zero bit-fields of their own no longer carry an empty stub either. Before folding an existing full-size `bool m_foo;` into a class's bitfield, check (1) nothing takes its address (`&m_foo` doesn't work on a bit-field member) and (2) it's only touched from the GUI thread (no cross-thread `bool` atomicity/tearing expectations) -- worksheet cells are not thread-shared, but double-check call sites rather than assuming. **Declaration order matters more than usual here**: C++ initializes members in declaration order, not constructor-init-list order, so a bit-field read by a *later*-declared member's own initializer (e.g. `IntervalCell::m_leftBracketOpensLeft`/`m_rightBracketOpensRight`, read by the `m_openBracket`/`m_closeBracket` initializers) must stay declared *before* those members -- relocating it next to an unrelated bitfield group to save a byte is undefined behavior (reading the bit-field before it's initialized), not just a style choice, caught before it shipped by tracing the actual initialization order rather than trusting the mem-initializer-list order. When a field can't move, bit-fielding it in place still works: two adjacent `: 1` declarations pack into a shared byte regardless of position.
+- **Tab Characters in `EditorCell`:** A `'\t'` is a real, single character in `m_text` (see `EditorCell::NormalizeLineEndings()`, which replaced the old `TabExpand()` that irreversibly rewrote every tab to 1-4 spaces on input/paste/load). It is expanded to the next 4-column tab stop -- one column being the width of a space glyph in the current font -- only where text becomes pixels, via `EditorCell::NextTabStop(startX)`/`MeasureTextWidth(startX, text)`. Tab width is **position-dependent**, the one thing `GetTextExtent()`/`GetTextSize()` cannot compute on their own (unlike every other character), so it can never be cached the way `StyledText::SetWidth()` caches other tokens' widths. `MaximaTokenizer` guarantees a tab is always its own isolated, single-character token (never merged into a space run, mirroring how a newline is already its own token) -- this is *load-bearing*: every `m_styledText`-based site (`Draw()`, `Recalculate()`, `GetLineWidth()`, `SelectPointText()`'s code-cell branch, `StyleTextCode()`) only needs a `text == wxS("\t")` equality check as a result, never substring splitting. Prose/text cells don't go through `MaximaTokenizer` at all, so `EditorCell::StyleTextTexts()` uses its own splitter, `PushTextLine()`, to get the same isolation guarantee for a tab embedded in an otherwise plain line of text. Sites that measure a raw `m_text` substring instead of a single token (`MarkSelection()`, `MixedDirectionOffset()`, `StyleTextTexts()`'s wrap check) go through `MeasureTextWidth()` instead, which splits on `'\t'` internally since a substring can still have one embedded anywhere. Left/Right arrow and Delete need **no special-casing** for tabs -- they already move/delete exactly one `m_text` character, which is now correct automatically. The plain `WXK_BACK` case's old "gobble up to 4 trailing spaces" shim was a workaround for the old space-expanded-tab world and is gone; a real tab deletes in one plain single-character backspace like anything else.
+
+- **`TextCell::ToTeX()`'s `TS_SPECIAL_CONSTANT` branch is a hardcoded
+  allowlist with a silent fall-through, not a general style handler
+  (GH #972):** `<s>` in wxMathML.lisp is used for `%pi`/`%i`/`%e`/`inf`/
+  `minf` and, separately, for the "d" of an integral's "dx"/"d\theta"/...
+  (`wxxml-int`) -- all five constants get an explicit `if/else if`, but
+  "d" didn't, so it fell through to the branch's final `else return text;`
+  as a bare, unstyled character instead of ever reaching the later
+  `\ensuremath{\mathrm{...}}` wrapping code that runs for `TS_VARIABLE`/
+  `TS_GREEK_CONSTANT`/`TS_SPECIAL_CONSTANT` further down the function --
+  that later code is dead for every `TS_SPECIAL_CONSTANT` value, since the
+  early branch always returns first. Fixed by adding an explicit `d` case
+  returning `\mathrm{d}` (no `\ensuremath{}` needed: it's only ever emitted
+  already inside `IntCell::ToTeX()`'s math-mode string, which also already
+  supplies the separating `\,` and the space ahead of it, so don't duplicate
+  that here).
+  Adding a new special case to this list resurfaced a second, easy-to-miss
+  coupling: `TextCell::ToTeX()`'s own multiplication-dot logic (for e.g. the
+  denominator of `d/dt` or a `dx*dy`-style differential product) identifies
+  "the previous cell was that same 'd'" by comparing
+  `GetPrevious()->ToTeX() == wxS("d")` -- once "d" stopped returning the
+  literal string `"d"`, this comparison went permanently false. Any
+  `TS_SPECIAL_CONSTANT` case whose `ToTeX()` output no longer equals its raw
+  text needs same-file call sites recompared with `ToString()` (returns the
+  untransformed `m_text`) instead of `ToTeX()`, not just the one place a new
+  case is added.
+
+- **`TreeUndoAction`'s discriminant model, and adding a fourth action kind
+  (GH #266, fold/unfold undo):** `TreeUndoAction` (`src/TreeUndoAction.h`) is
+  a single, non-polymorphic struct, not an `Action`/`Undo()`/`Redo()` class
+  hierarchy -- `Worksheet::TreeUndo()` (`Worksheet.cpp`) tells apart the
+  three original action kinds (text change, cell insertion, cell deletion)
+  by which of `m_newCellsEnd`/`m_oldCells`/neither is set, not by a type
+  tag. Adding fold/unfold as a fourth kind followed the same style rather
+  than introducing polymorphism for a fourth fixed case: a `std::optional<
+  FoldDirection>` field (`FoldDirection::Folded`/`Unfolded`), checked in
+  `TreeUndo()`'s dispatch *before* the existing `m_oldCells`-vs-text-change
+  fallback (a `std::nullopt` field, like the others, defaults via the
+  member's own default constructor -- no explicit initializer needed in the
+  three original constructors). Undoing a fold/unfold just applies the
+  opposite direction to the same cell (`m_start`), which is naturally
+  reversible/re-doable through the same generic replay loop the other three
+  kinds already use (`Worksheet::TreeUndo()`'s do-while + swapped-stacks
+  trick already makes redo "undo, but backwards" for free).
+  **Two things worth getting right if you touch this again:**
+  1. `GroupCell::Fold()`/`Unfold()` (`GroupCell.cpp`) are the low-level
+     primitives (`CellList::TearOut`/`SpliceInAfter`, same as `DeleteRegion`/
+     `InsertGroupCells` use) and do **not** themselves record undo -- only
+     `WorksheetDocument::Fold()`/`Unfold()`/`ToggleFold()`/`FoldAll()`/
+     `UnfoldAll()` do, since only `WorksheetDocument` owns the
+     `TreeUndoManager`. Anywhere that needs a fold/unfold NOT to be
+     independently undoable (the automatic auto-unfold in `RevealHidden()`,
+     and the "make room" auto-unfold in `Worksheet.cpp`'s new-cell-insertion
+     logic when the h-caret sits inside a folded ancestor) must keep calling
+     the raw `GroupCell::Fold()`/`Unfold()` directly, not the
+     `WorksheetDocument`-level wrappers, or it'll silently start occupying
+     an undo slot it shouldn't.
+  2. `TreeUndoManager::AppendAction()`'s ordering is easy to get backwards:
+     since actions are pushed with `emplace_front` (newest at the front),
+     marking an entry's `m_partOfAtomicAction = true` means "when the entry
+     pushed *after* me gets undone, keep going and undo me too" -- so to
+     chain N actions (e.g. every cell "Fold All" actually folded) into one
+     atomic Ctrl+Z, call `AppendAction()` after each push *except the
+     last-pushed one* (see `WorksheetDocument::RecordFoldUndo()`), not after
+     the first.
+  A pre-existing unit test (`test/unit_tests/test_TreeUndo.cpp`,
+  "Undoing an insertion whose cell was folded away...") had to switch from
+  `g_ws->ToggleFold()` to the raw `section->Fold()` once folding became
+  independently undoable: it was relying on folding *not* pushing its own
+  undo action so that a single `TreeUndo()` call would reach past it to the
+  insertion underneath -- exactly the kind of test that silently encodes an
+  old architectural assumption and breaks the moment that assumption stops
+  holding, worth checking for before assuming "existing tests pass" means
+  "no behavior changed."
+
+- **`SumCell`'s always-on parentheses (GH #1536), and why the fix needed
+  both wxMathML.lisp and C++:** `sum(k,k,1,n)` used to always display as
+  `Σ (k)`, even though Maxima's own terminal printer shows a bare `k` --
+  `SumCell`'s constructor (`src/cells/SumCell.cpp`) unconditionally wrapped
+  the summand in its own `ParenCell` (`m_paren`), regardless of what the
+  summand actually was. The tempting "just use the existing operator-
+  precedence machinery" fix doesn't quite apply here: `%sum`/`%product` have
+  no `lbp`/`rbp` registered at all in real Maxima (confirmed live:
+  `(get '%sum 'lbp)` is `NIL`), so Maxima's own printer can't be using
+  generic precedence comparison for this either -- it must special-case it,
+  and the same real distinction it makes (parenthesize a compound summand
+  like `k+k^2`, not a bare one like `k`) is exactly `mplusp` on the actual
+  Maxima expression, which is what `wxxml-sum` (`wxMathML.lisp`) now checks.
+  This deliberately avoids inventing a new binding-power value for `sum` --
+  the maintainer has flagged doing that as risky in the past (wxMaxima's own
+  operator precedences drifting out of sync with Maxima's, GH #1536's
+  comment thread), so `mplusp` (an existing Maxima predicate on the real
+  parsed expression) is used instead of a numeric precedence comparison.
+  That decision alone isn't sufficient, though: it has to reach `SumCell`'s
+  2D on-screen layout, which is computed entirely in C++
+  (`Recalculate()`/`Draw()`), and `ParenCell`'s own `m_print` flag -- which
+  looked like the obvious existing mechanism to reuse -- turned out to only
+  suppress parentheses in `ToString()`/`ToTeX()`/`ToMathML()` (text/export
+  formats); `Recalculate()`/`Draw()`/`SetCurrentPoint()` don't check it at
+  all and always reserve/draw the paren glyphs regardless. So the Lisp-side
+  decision is carried across the wire as a `needsparen` attribute on `<sm>`,
+  which `MathParser::ParseSumTag` reads and feeds into `SumCell::NeedsParen()`
+  -- a new setter that drives the *already-existing* `m_displayParen`/
+  `DisplayedBase()` mechanism (previously only toggled by `BreakUp()`/
+  `Unbreak()` for the broken-into-lines case) via a new persistent
+  `m_baseNeedsParen` field, rather than inventing a second, competing
+  wrapping mechanism. Confirmed end-to-end with a live Xvfb screenshot
+  (`sum(k,k,1,n)` bare, `sum(k+k^2,k,1,n)` parenthesized, and
+  `sum(k,k,1,n)+L` -- which motivated the original always-parenthesize
+  decision -- correctly getting *outer* parens around the whole sum from
+  the unrelated, already-existing `%sum` `rbp` registration, not extra
+  parens around the summand).
+
+- **A Maxima `{...}`/`setify(...)` set rendering as completely blank output
+  (GH #2270), despite the value being computed correctly:** `SetCell`
+  (`src/cells/SetCell.cpp`) extends `ListCell` and overrides
+  `SetCurrentPoint()` -- but the override was
+  `void SetCell::SetCurrentPoint(wxPoint point) const { Cell::SetCurrentPoint(point); }`,
+  which positions only the `SetCell` object itself and completely skips the
+  inherited `ListCell::SetCurrentPoint()`'s logic that positions
+  `m_open`/`m_innerCell`/`m_close` (the "{" glyph, the actual list content,
+  the "}" glyph). `GroupCell::UpdateOutputPositions()` calls
+  `tmp.SetCurrentPoint(in)` on each top-level entry of the output's draw
+  list (`OnDrawList()`) -- for an unbroken (fits-on-one-line) `SetCell` that
+  entry *is* the whole `SetCell`, so this override, not `ListCell`'s, is
+  what fires. Since it never touches the children, they keep whatever stale
+  or default position they last had and get drawn there instead of inside
+  the set's own bounding box -- invisible within the visible viewport, while
+  the underlying value is completely correct (confirmed live: copying the
+  blank output cell's clipboard content, or `listify(%)`, reveals the right
+  answer). The override did strictly *less* than the version it shadowed and
+  had no reason to exist at all -- deleting it outright (from both
+  `SetCell.h` and `SetCell.cpp`) is the fix, letting `SetCell` inherit
+  `ListCell::SetCurrentPoint()` normally, which already handles `m_open`/
+  `m_close` correctly regardless of what glyphs they hold. Confirmed live in
+  Xvfb: `{1,2,3};` rendered as a totally blank `(%o1)` line on an unmodified
+  build, both at default window width and narrower (forcing the set to wrap
+  across lines) -- `[1,2,3];` (a plain `ListCell`, no divergent override)
+  rendered correctly in every case tested, which is what pointed at
+  `SetCell`'s own code rather than the shared `ListCell`/layout-pipeline
+  machinery. Root-caused with gdb (`gdb -p <pid> -batch -x script.py`,
+  breaking on `SetCell::Draw`/`ListCell::Recalculate`/`Cell::BreakUpAndMark`
+  from a live, real Xvfb session -- the sandbox's earlier-documented
+  hardware-breakpoint/`rr` limitations don't affect plain software
+  breakpoints, which is all this needed) -- an initial hypothesis blaming
+  `Cell::BreakUpCells()`'s line-wrap width heuristic (a `CachedInteger`
+  reading back its `INT_MAX` "invalid" sentinel as a width) turned out to be
+  a red herring from noisy manual multi-window testing, not reproducible in
+  a clean single-cell session; always reproduce a rendering bug in a fresh,
+  isolated worksheet before trusting a gdb trace's numbers. Also fixed a
+  smaller, related inconsistency found while auditing this: `SetCell`'s
+  constructor replaces `m_open`/`m_close` with fresh "{"/"}" `TextCell`s but
+  never called `SetStyle(TS_FUNCTION)` on them the way `ListCell`'s own
+  constructor does for "["/"]", leaving the braces in the wrong style.
+
+- **`ProductCell` showing "sum(" instead of "product(" when broken into
+  lines, and rendering as nothing at all when it isn't (found live, no GH
+  issue filed yet) -- two independent bugs, both variations of mistakes
+  already documented elsewhere in this file.**
+  1. `SumCell::MakeBreakUpCells()` (called from `SumCell`'s own
+     constructor, `SumCell.cpp`) builds `m_open`'s text from the virtual
+     `GetMaximaCommandName()`. A virtual call made during a base class's
+     constructor can never dispatch to a derived class's override --
+     `ProductCell`'s part of the object doesn't exist yet at that point --
+     so `m_open` was unconditionally built from `SumCell::
+     GetMaximaCommandName()` ("sum("/"lsum(") even for a genuine
+     `ProductCell`, regardless of how the cell was later broken into
+     lines. Fixed with a new protected `SumCell::RefreshBreakUpCommandName()`
+     that re-applies `GetMaximaCommandName()` to the already-built `m_open`
+     via `TextCell::SetValue()`; `ProductCell`'s constructor calls it once,
+     from its own constructor body (where virtual dispatch has already
+     started resolving to `ProductCell`'s overrides), immediately after
+     delegating to `SumCell`'s constructor. Any future `SumCell` subclass
+     that overrides `GetMaximaCommandName()` must do the same.
+  2. `ProductCell::SetCurrentPoint()`/`Draw()` (`ProductCell.cpp`) only
+     ever called `Cell::SetCurrentPoint()`/`Cell::Draw()` -- skipping
+     `SumCell::SetCurrentPoint()`/`SumCell::Draw()` entirely, which are the
+     implementations that actually position/paint the operator glyph, the
+     limits and the base. Exactly the same "override does strictly less
+     than what it shadows and had no reason to exist" shape as the
+     `SetCell` bug immediately above this entry: an unbroken `ProductCell`
+     drew nothing, while the underlying value was computed correctly (same
+     "invisible, not wrong" symptom, same root cause pattern, different
+     cell). Fixed by deleting both overrides outright (header and source),
+     letting `ProductCell` inherit `SumCell`'s implementations -- which is
+     safe here specifically because `Draw()`/`SetCurrentPoint()` never run
+     during construction, so by the time they're actually called,
+     `GetSvgSymbolData()`/`GetSymbolSize()`/... already dispatch correctly
+     to `ProductCell`'s own overrides.
+  Confirmed live in Xvfb: `product(k,k,1,n);` rendered the correct Π glyph
+  with `n`/`k=1` once unbroken-form positioning was fixed (previously blank
+  on unmodified `main`); the broken-form text bug was pinned deterministically
+  via a new regression test (`test/unit_tests/test_LayoutInvariants.cpp`,
+  `SCENARIO("A ProductCell positions its symbol/limits/base and breaks up
+  with the right command name")`) that parses real `wxxml-sum`-shaped XML
+  through `MathParser` (no live Maxima needed, mirroring the `SetCell`
+  scenario's own pattern) and checks `GetBrokenCell(0)`'s text is
+  `"product("`, not `"sum("` -- reverting the fix reproduces both original
+  symptoms (confirmed by re-running the test against the unfixed code).
+  Auditing `SumCell::MakeBreakUpCells()` while fixing this also turned up a
+  third, smaller, unrelated bug: unlike every sibling cell with an analogous
+  `"name("` opening glyph (`BoxCell`, `AbsCell`, `SqrtCell`, `ExptCell`,
+  `ConjugateCell`, `NamedBoxCell` -- all call `DontEscapeOpeningParenthesis()`
+  on their `m_open` right after constructing it), `SumCell`'s `m_open` never
+  did, so `TextCell::ToString()`'s `TS_FUNCTION`-style quoting (the default
+  `TextCell` style, since `MakeBreakUpCells()` never calls `SetStyle()`
+  either) escaped the trailing "(" into a literal backslash-paren whenever
+  that cell's own `ToString()` was read directly (e.g. the new regression
+  test's own `GetBrokenCell(0)->ToString()` check, before this was noticed
+  and fixed) -- invisible on screen (`Draw()` paints `m_displayedText`,
+  which this escaping logic never touches) and invisible in `SumCell::
+  ToString()`'s own clipboard/copy-as-text output (it builds directly from
+  `GetMaximaCommandName()`, never through `m_open`), so this specific
+  escaping bug had no live user-visible symptom found so far -- fixed
+  anyway since it's a one-line, well-precedented, no-risk addition in the
+  exact function already being edited.
+
+- **"Don't unfold cells just because their folded tree is being evaluated"
+  (GH #1952):** `Worksheet::ScrollToError()` -- called automatically by
+  `MaximaEvaluator::CheckForErrors()` whenever `AbortOnError()` is on (the
+  default) and a cell errors -- used to call `errorCell->RevealHidden()`
+  unconditionally. If the errored cell was folded away, that silently
+  unfolded the *entire* enclosing section just to point at it, defeating the
+  whole reason many users fold a calculation down to one line in the first
+  place: to keep the worksheet readable while it evaluates, errors included.
+  Confirmed live in a real Xvfb session (a folded section containing
+  `a:1$ error("...")$ a+1$`, evaluated via "Evaluate All Cells"): the section
+  sprang open the instant the `error()` cell ran, on unmodified `main`.
+  Fixed by walking up `GroupCell::GetHiddenTreeParent()` (returns non-null
+  exactly when a cell sits in someone's torn-out `m_hiddenTree` -- see the
+  `Fold()`/`Unfold()`/`CellList::TearOut` notes elsewhere in this section)
+  to the outermost cell that *is* part of the visible tree, and -- only if
+  that ancestor differs from the error cell itself, i.e. the cell actually
+  is hidden -- targeting that ancestor (`SetHCaret`+`ScrollToCaret`) instead
+  of calling `RevealHidden()`/touching `errorCell`'s own (still-hidden,
+  un-renderable) `EditorCell` at all. The ordinary (not-folded) case falls
+  through to the original code completely unchanged. Deliberately left
+  `Worksheet::OpenQuestionCaret()`'s own `RevealHidden()` call alone: unlike
+  an error, an interactive Maxima question genuinely blocks the evaluation
+  queue until the user answers it, so there is no way to let the user
+  respond without unfolding down to the cell that's asking. Regression-
+  tested in `test/unit_tests/test_TreeUndo.cpp` (`SCENARIO("An error inside
+  a folded section does not unfold it (GH #1952)")`) by folding a section,
+  calling the *public* `ErrorList::Add()` directly to simulate what
+  `MaximaEvaluator` does on a real error (no live Maxima needed), then
+  asserting `ScrollToError()` leaves `GetHiddenTree()`/`GetHiddenTreeParent()`
+  untouched and lands the h-caret on the header -- confirmed to actually
+  catch the regression by reverting the fix and watching the new assertions
+  fail against the old code before restoring it.
+
+- **`wxUILocale` (GH #2233) -- `main.cpp` already had a `#if
+  wxCHECK_VERSION(3, 1, 6)` branch preferring `wxUILocale` over `wxLocale`,
+  but it had two live bugs, both confirmed with a standalone compiled
+  reproduction against the real wxWidgets 3.2.4 in this sandbox (see
+  `wx/uilocale.h`), not guessed from reading the header:**
+  1. `wxUILocale::UseDefault()` was called *unconditionally*, discarding the
+     user's own configured language entirely -- it always applied the
+     system's default locale, even when the user had explicitly picked a
+     different one in wxMaxima's own settings (`wxTranslations::SetLanguage()`
+     right below it still respected the choice for UI *text*, so this bug
+     was invisible for translated strings and only affected locale-driven
+     formatting -- numbers, dates, etc.). Fixed by calling
+     `wxUILocale::UseLocaleName(wxLocale::GetLanguageInfo(lang)->CanonicalName)`
+     when `lang != wxLANGUAGE_DEFAULT`, falling back to `UseDefault()` only
+     if that lookup or the switch itself fails.
+  2. `wxLocale().GetCanonicalName()` -- a **fresh, never-`Init()`-ed**
+     temporary `wxLocale` object -- was still used in two places (`main.cpp`,
+     for building Maxima's own `LANG` environment variable, and
+     `wxMaximaFrame::wxMaximaManualLocation()`, for picking the localized
+     manual) to ask "what's the active locale?". `GetCanonicalName()` reads
+     back `m_strShort`, a plain member that only `wxLocale::Init()` ever
+     populates -- on the `wxUILocale` branch, no `wxLocale::Init()` call
+     happens anywhere in the process, so this **always returned an empty
+     string**, unconditionally falling both call sites back to "C"/the plain
+     English manual regardless of the configured language. Confirmed with a
+     standalone reproduction: `wxUILocale::UseLocaleName("de")` succeeds and
+     `wxUILocale::GetCurrent().GetName()` correctly reports `"de_DE.UTF-8"`
+     immediately afterwards, while a fresh `wxLocale().GetCanonicalName()`
+     called in the same process stays `""`. Fixed two different ways for two
+     different needs: `main.cpp`'s `LANG`-building code now reads
+     `wxUILocale::GetCurrent().GetName()` instead (wants the OS's actual,
+     fully-resolved locale string, which is exactly what that query returns);
+     `wxMaximaManualLocation()` instead derives the language name directly
+     from the already-known configured language ID via the static, lookup-
+     table-only `wxLocale::GetLanguageCanonicalName(lang)` -- deliberately
+     *not* from whatever the OS ended up resolving, since that lookup needs
+     no locale to be installed or supported at all (confirmed live: in this
+     sandbox, which ships only the `C`/`C.utf8`/`POSIX` locales,
+     `wxLocale::Init(wxLANGUAGE_GERMAN)` itself reports failure, yet still
+     leaves a usable `"de_DE"` in `GetCanonicalName()` -- the old `wxLocale`
+     path's `Init()` populates its bookkeeping from the *requested* language
+     on a best-effort basis regardless of whether the underlying OS
+     `setlocale()` call actually succeeded, which is precisely the property
+     `wxUILocale::GetCurrent()` lacks and why it can't be used as a
+     replacement query for this specific "which language did the user pick"
+     question). This lookup needs no version guard -- it's been present and
+     works identically on both pre- and post-3.1.6 wxWidgets.
+  - The follow-ups filed alongside it -- #2229 (minimizable sidebars),
+    #2230 (accessible SVG export), #2231 (PNG description chunks) and #2232
+    (`wxNO_UNUSED_VARIABLES`) -- have all since been implemented behind
+    `wxCHECK_VERSION` guards and closed.
+
+- **Scaled images losing transparency (GH #2227, `Image::GetBitmap()` in
+  `src/Image.cpp`):** the final step of building a scaled display bitmap
+  converted the already-loaded/decoded bitmap back to a `wxImage`, called
+  `Rescale()` on it, then rebuilt the bitmap with `wxBitmap(img, 24)` --
+  an explicit `depth` argument. Passing a depth to this `wxBitmap`
+  constructor forces that bit depth and **discards any alpha channel**,
+  even when `wxImage::HasAlpha()` is true on the source image; omitting the
+  parameter (the default, `-1`) auto-detects depth and preserves alpha
+  instead. Every other bitmap-construction call in the same file --
+  `GetUnscaledBitmap()`'s SVG-rasterize and compressed-image-decode paths,
+  and `GetBitmap()`'s own first construction a few lines earlier -- already
+  omits the depth argument; the scaled-bitmap path was the one outlier.
+  The visible symptom (per the issue) is a previously-transparent region of
+  an image rendering as solid, usually black, once the image needed
+  scaling to fit its on-screen size -- black because that's what most
+  image encoders leave in the RGB channels of a fully-transparent pixel,
+  and once the alpha channel is gone there's nothing left to mask it.
+  Fixed by dropping the explicit depth: `m_scaledBitmap = wxBitmap(img);`.
+  Verified with the existing `imageFormat` ctest (`test/image-test/`,
+  covers PNG/BMP/TIFF/GIF/JPG/WEBP/PNM/XPM sources, PNG and BMP both
+  confirmed to actually carry an alpha channel via `file`) under
+  `xvfb-run` -- it needs a real X display (`Error: Unable to initialize
+  GTK+, is DISPLAY set properly?` without one) -- plus the full `ctest`
+  suite for regressions. This is narrowly a "don't destroy an alpha
+  channel we already have" fix; it does not address the separate,
+  genuinely open design question the same issue also raises (also flagged
+  by the maintainer in the issue itself): whether leaving a transparent
+  pixel fully transparent is actually correct once a dark worksheet
+  background is involved (e.g. black line art becoming invisible against
+  it), which needs a product decision, not a bug fix, and is left for a
+  follow-up.
+
+- **RTF/OMML export (GH #1456, GH #1457) -- previously had zero test
+  coverage; `test/unit_tests/test_RTFExport.cpp` is the first.** RTF export
+  has two independent code paths that both matter: `TextCell::ToRTF()`
+  (plain RTF text, one `\cf<N>{...}` run per cell) and `Cell::ToOMML()` +
+  `Cell::OMML2RTF()` (an embedded Word/LibreOffice math field, used whenever
+  `Cell::ListToRTF()` hits a cell whose `ToRTF()` is empty but whose
+  `ToOMML()` isn't -- see `Cell::ListToRTF()`'s two-branch loop). Getting
+  either path's cell-specific override wrong is invisible to every other
+  export format's tests, since TeX/XML/MathML export don't share this code.
+  - **`TextCell::ToRTF()` didn't check `IsHidden()`/`GetHidableMultSign()`/
+    `HidemultiplicationSign()` at all (GH #1456)**, unlike `ToTeX()` and
+    `ToXML()`, which both already do. Confirmed via a standalone harness
+    (parse the real `<h>*</h>` XML `wxxmlnumformat` in `wxMathML.lisp` emits
+    for scientific notation, e.g. "2*10^7" for `2e7`, through `MathParser`,
+    then call `ListToRTF()` directly) that with `HidemultiplicationSign()`
+    on vs. off the RTF output was byte-for-byte *identical* -- the literal
+    `*` always appeared. Fixed by mirroring `ToTeX()`'s exact logic: when
+    hidden, a lone `*`/`·` becomes a plain space (never removed
+    outright) so cells on either side don't run together, while any other
+    kind of `IsHidden()` cell (e.g. an invisible parenthesis) still clears
+    to empty. The "run together" failure mode is real, not theoretical: the
+    two content types don't mix in `Cell::ListToRTF()`'s output -- plain
+    text and an OMML math field are adjacent, unrelated RTF constructs, so
+    a `2` (plain text) immediately followed by a hidden-then-vanished `*`
+    and then a `10^7` (OMML field, since `ExptCell` only implements
+    `ToOMML()`, not `ToRTF()`) would have rendered as the unreadable "210^7"
+    with no separator between the plain-text run and the math field.
+  - **`MatrCell::ToOMML()` emitted `<m:grow>\"1\"</m:grow>` -- a *child
+    element* whose text content is the two literal characters `"1"`,
+    complete with quote marks -- instead of the `m:grow="1"` *attribute*
+    form `ParenCell`/`ListCell`/`IntervalCell::ToOMML()` all already use
+    correctly (GH #1457).** `Cell::OMML2RTF()` is a generic, mechanical
+    XML-to-RTF-control-word transliterator: an attribute `m:grow="1"` and a
+    same-named child element `<m:grow>1</m:grow>` both produce the
+    identical, well-formed RTF math control word `{\mgrow 1}` -- but the
+    quoted-text-content form MatrCell used produced `{\mgrow "1"}`, with
+    stray literal quote characters inside what must be a bare flag.
+    Confirmed live that this is what a real RTF-math consumer (Word,
+    LibreOffice) needs by comparing against the three sibling cells' already
+    -working attribute-based form, not by guessing at the OOXML schema.
+    Fixed by switching `MatrCell::ToOMML()` to the same attribute form,
+    which also makes all four delimiter-emitting cell types consistent.
+    Word/LibreOffice silently ignoring the malformed flag and falling back
+    to a small, fixed-size (non-growing) bracket regardless of the matrix's
+    actual height is exactly the "big parenthesis...displayed as small
+    parenthesis" the issue reported.
+  - **`AbsCell::ToOMML()` was missing `m:grow="1"` entirely** (not a filed
+    issue, found by auditing every `ToOMML()` for the same bug class while
+    fixing #1457) -- `abs()` of a fraction or matrix would have rendered
+    its `|  |` bars at a fixed, non-growing size in RTF/Word export, unlike
+    every other bracket-drawing cell in this codebase. Fixed the same way.
+  - **Verification methodology**, since none of this was previously
+    testable at all: a standalone harness (same pattern as
+    `test_IntegralToTeX.cpp` -- real `MathParser`, hand-written XML matching
+    exactly what `wxMathML.lisp` emits, no live Maxima needed) was used to
+    reproduce both bugs live *before* writing the fix, then promoted into
+    `test/unit_tests/test_RTFExport.cpp` as a permanent regression test
+    once the fix was confirmed. Confirmed the new test actually catches the
+    regression (not just passing vacuously) by reverting the three
+    `ToOMML()`/`ToRTF()` fixes via `git stash` and re-running it: all three
+    `SCENARIO`s failed with the exact old symptoms, then passed again once
+    the fixes were restored.
+
+- **"Maxima started but never connects" watchdog (GH #1182, open since
+  2019).** Before this, if the Maxima process launched successfully but
+  its socket connection back to wxMaxima's `wxSocketServer` never arrived
+  -- wxMaxima is the TCP *server* here; the spawned `maxima` binary is the
+  *client* that has to connect back, see `MaximaProcessManager::
+  StartServer()`/`OnMaximaConnect()` -- nothing timed this out or told the
+  user: the worksheet just sat at "Maxima started. Waiting for
+  connection..." forever, with no error, no retry, no explanation. This is
+  distinct from the *other* code path that already existed
+  (`OnMaximaConnect()`'s `m_unsuccessfulConnectionAttempts < 12` retry
+  loop): that one only fires once a connection attempt reaches wxMaxima and
+  then fails -- it does nothing if no attempt ever arrives at all, which is
+  exactly what happens when the child process never gets far enough to open
+  the socket. Confirmed live in this sandbox (Linux, can't reproduce the
+  actual macOS Gatekeeper trigger, but the missing-timeout mechanism itself
+  is platform-independent): pointed wxMaxima's `-m` flag at a throwaway
+  shell script that just `sleep`s forever instead of a real `maxima`
+  binary -- unmodified `main` sits at "Waiting for connection..." with zero
+  further log output, indefinitely.
+  Fixed with a new one-shot `wxTimer` (`MAXIMA_CONNECT_WATCHDOG_ID`,
+  `wxMaxima::m_maximaConnectWatchdogTimer`) armed for 5 seconds (matching
+  the issue title's own number) every time `StartMaxima()` successfully
+  spawns a process, and stopped both on a real successful connection
+  (`OnMaximaConnect()`) and on `KillMaxima()` (covers deliberate shutdown
+  and the top of every restart, since `StartMaxima(force=true)` always
+  calls `KillMaxima()` before re-arming). If it fires while the process is
+  still alive (`wxProcess::Exists()`) and still not connected, it shows a
+  `LoggingMessageBox` once per run (`m_maximaConnectWatchdogWarningShown`
+  latches so the automatic restart loop -- which re-arms this same timer on
+  every retry -- doesn't reshow the dialog up to 12 times in a row). The
+  message branches on `__WXOSX__`: on macOS it names the quarantine
+  possibility specifically (a background process wxMaxima spawns can never
+  answer the interactive security prompt Gatekeeper would otherwise show,
+  so it just silently never finishes starting) and suggests both re-running
+  the shown command from a Terminal once and `xattr -d
+  com.apple.quarantine`; elsewhere it's a generic "still waiting, check the
+  debug sidebar or your firewall" message, since quarantine isn't the
+  relevant cause there. Verified end-to-end in a live Xvfb session with the
+  same fake-hung-process technique: the log line appears at exactly +5s and
+  only once, and a screenshot confirms the dialog renders correctly with
+  the non-macOS wording (the `__WXOSX__` branch itself is untestable here
+  for the same reason #2229-#2232 were -- no macOS hardware in this
+  sandbox -- but it's the same string-formatting/branching mechanism,
+  already exercised by the generic path).
+  - **Follow-up (found live, 2026-08): the watchdog fired a false
+    "Maxima isn't connecting" warning on Linux for a large worksheet, with
+    no macOS/Gatekeeper connection at all -- root cause was the watchdog's
+    5-second budget being spent on wxMaxima's own busy-ness, not on
+    Maxima.** `MaximaProcessManager::StartMaxima()` armed the watchdog
+    (`StartOnce(5000)`) immediately after spawning the process -- but one
+    of its callers, `MaximaFileIO::OpenWXMXFile()`, calls `StartMaxima()`
+    *in the middle* of a synchronous sequence: parse the whole worksheet
+    XML into a cell tree (`CreateTreeFromXMLNode()`, before `StartMaxima()`
+    even runs) and, right after `StartMaxima()` returns,
+    `InsertGroupCells()` the tree ("this also requests a recalculate" per
+    its own comment) -- laying out however many cells the worksheet
+    contains, all on the same GUI thread, all before that thread ever
+    returns to the event loop. For a large enough document this alone can
+    exceed 5 seconds. Since the watchdog's `wxTimerEvent` can only be
+    *processed* once the thread is back pumping events, and Maxima's own
+    incoming-connection event is stuck behind the exact same jam, the two
+    end up racing to be processed once the thread frees up -- and when the
+    watchdog's already-queued event happens to be serviced first, it finds
+    `!connected` and fires, even though Maxima tried (or even succeeded)
+    to connect well within its own 5 seconds; the delay was entirely
+    wxMaxima's own busy-work eating into the window it was supposed to
+    spend genuinely listening. Reproduced by tracing the call chain (not
+    by hitting the race live in this sandbox, where the sample worksheets
+    on hand parse fast enough on today's hardware not to trigger it) --
+    `OpenWXMXFile()`'s `CreateTreeFromXMLNode()` / `StartMaxima()` /
+    `InsertGroupCells()` ordering is unambiguous in the source regardless.
+    Fixed by deferring the `StartOnce(5000)` call itself via `CallAfter()`
+    -- the same idiom `StartMaxima()`'s own "Cannot start the maxima
+    binary" dialog a few lines above already uses, and for the identical
+    reason (don't act synchronously inside a call chain that isn't back at
+    the event loop yet). This makes the 5-second countdown start only once
+    wxMaxima is actually idle and able to process an incoming connection,
+    so however long the worksheet's own parse-and-layout took no longer
+    counts against Maxima. `KillMaxima()`'s existing `.Stop()` plus the
+    watchdog handler's own `processAlive` re-check already made this safe
+    against the (rare) case of the deferred callback running after the
+    spawn it was arming for is no longer relevant -- no separate guard
+    needed. Also reworded the non-macOS warning text (still gated on
+    `!__WXOSX__`, unchanged from a working baseline otherwise) to spell
+    out that wxMaxima and Maxima talk over a *local, loopback* socket --
+    users don't necessarily think of "this machine talking to itself" as
+    something a firewall/antivirus's network protection would touch, and
+    some of it blocks loopback inter-process communication too.
+
+## Layout & Compatibility
+
+The rules below are the ones worth carrying around at all times. The reasoning
+behind them, the pipeline they belong to, and the recurring shapes layout bugs
+take are in the **`wxmaxima-layout` skill** (`.claude/skills/wxmaxima-layout/`),
+which loads on demand -- keep the detail there rather than growing this file.
+
+- **`RequestRecalculation()` only SCHEDULES; `RecalculateIfNeeded()` executes.**
+  Never read geometry (positions, sizes) on the line after asking for a
+  recalculation -- at that point nothing has been recalculated yet, and you get
+  the previous layout. `AdjustSize()` deliberately defers while positions are
+  stale. The name is the trap: it was called `Recalculate()` until 2026-07-08,
+  and code written against the old name reads as if it were synchronous.
+- **A composite cell's `Recalculate()` override MUST recurse unconditionally.**
+  Roughly twenty composite cells (`FracCell`, `SqrtCell`, `ParenCell`, ...) used
+  to skip recursing into their children when they judged themselves unchanged.
+  That is wrong: a child can be dirty for a reason the parent cannot see (a font
+  size change on partial breakup), and the parent's guard then strands it at a
+  stale width -- which is how parens ended up too narrow for their contents.
+  Recurse every time and let each child's own changed-flag decide.
+- **List caches must be invalidated when the configuration counter changes.**
+  Cached per-list geometry (`m_listCacheCfgCnt` and friends) survives a
+  configuration change unless it is stamped with the counter and compared on
+  use. Forgetting this produces the "stale spacing" family of bugs, where cells
+  keep a width computed under the previous font/zoom settings.
+
+- **Mathematical Cell Padding:** Use `MC_TEXT_PADDING` (in `Configuration.h`) for text-based cells. **Exception:** `DigitCell` does not include padding to ensure visual consistency in broken-up numbers.
+- **Three-Step Layout Process:**
+  1. `UnBreakUpCells()`: Reset to 2D.
+  2. `BreakUpCells()`: Convert wide 2D objects to 1D fallback.
+
+     **Recursive Strategy:** If a 2D object is too wide, `CollectWideCells` also searches its sub-cells (those already >80% of the available width) for ones that are too wide themselves, and breaks those up in the same pass, avoiding one full recalculation per nesting level. **A sub-cell is only broken if the cell it was found in actually broke up**: cells that have no linear form (subscripts, matrices, `diff()` fractions) draw their contents in 2D, and a broken cell inside them is drawn by nobody (see invariant 5 in the `wxmaxima-layout` skill).
+  3. `BreakLines_List()`: Final line wrapping.
+- **High-DPI / wxBitmapBundle:** Use `wxBitmapBundle` for SVG rendering.
+- **A dialog registered with `wxPersistenceManager` must call `SendDestroyEvent()` first thing in its own destructor.** The persistence manager saves the geometry on the destroy event and treats the window as a `wxTopLevelWindow`; wxQt (3.3) only sends that event from `~wxWindow`, by which time the object isn't one any more, so saving called a function through the wrong vtable slot and crashed every such dialog on closing (found closing the configuration dialog; the backtrace ends in `wxTLWGeometryGeneric::GetFrom`). Frames are fine, `~wxFrameBase` sends the event itself. `check-persistent-dialogs` (a ctest) fails if a dialog that calls `RegisterAndRestore(this)` lacks the call; see `FindReplaceDialog::~FindReplaceDialog()`.
+- **Windows Focus Management:** Use `CallAfter` for focus transitions (e.g., `m_searchText->SetFocus()`) to prevent the worksheet from "stealing" focus back.
+- **Graphical export temp files (`src/graphical_io/OutCommon.cpp`):** `wxSVGFileDC`/EMF's DC only write to a real path, so the SVG/EMF representation rendered for the clipboard needs a temp file (unlike a real "Export as..." target file, which is the user's own chosen path and untouched by this). `PrivateTempDir()` puts it in a mode-0700 `tmp/` subdirectory of `Dirstructure::UserConfDir()` instead of the shared system temp dir, so another unprivileged user can't win a race between the file's creation and its being opened by name (the classic symlink-swap window any path-only API leaves open). Falls back to `wxFileName::CreateTempFileName()`'s own default location if that directory can't be created.
+- **Bidi (`src/Bidi.h`/`.cpp`):** Reorders a line of text per the Unicode Bidirectional Algorithm (UAX #9), using `libfribidi` when it's available at build time (`USE_FRIBIDI` in `BuildConfig.h`, optional, `WXM_USE_FRIBIDI` CMake option, on by default when `pkg-config fribidi` is found) and falling back to a single-run approximation otherwise. No wxWidgets backend exposes this reordering itself -- Pango/CoreText/DirectWrite compute it internally to shape glyphs but never hand it back to the app. `EditorCell::GetLineBidiRuns()` wraps it as absolute `m_text` positions; `MixedDirectionOffset()` (used by `PositionToPoint()`, hence also `MarkSelection()` and `SelectPointText()`'s click search) and `HandleSpecialKey()`'s arrow-key handling are the consumers. wxmTestApp is an OBJECT library (`test/unit_tests/CMakeLists.txt`): it compiles `Bidi.cpp` itself and needs `PkgConfig::FRIBIDI` linked directly to *it* (not just to `wxmaxima`) to get fribidi's include path at that compile step; separately, its own `target_link_libraries()` don't propagate through `$<TARGET_OBJECTS:wxmTestApp>`, so anything it needs must *also* be linked into each consuming test executable directly (`WXM_TESTAPP_EXTRA_LIBS`) for the final link. The imported target has to be declared `GLOBAL` since `test/` is a sibling directory of `src/`, not a descendant. `#include <fribidi.h>`, not `<fribidi/fribidi.h>`: pkg-config's own `-I` already points *at* fribidi's header directory (confirmed on both Debian's and Homebrew's `.pc` files), so the extra `fribidi/` prefix only "worked" on Linux by accident, via `/usr/include` being an implicit compiler search path Homebrew's non-default prefix doesn't share -- caught by a real macOS CI failure, not by this sandbox.
+- **ConfigDialogue Tabs Must Scroll:** Every tab panel in `src/dialogs/ConfigDialogue.cpp` is a `wxScrolled<wxPanel>` with `SetScrollRate(5 * GetContentScaleFactor(), 5 * GetContentScaleFactor())` and `SetMinSize(wxSize(GetContentScaleFactor() * mMinPanelWidth, GetContentScaleFactor() * mMinPanelHeight))`. Without this, a tab's natural size (which grows with font size/DPI/translation length) can make the whole dialog taller than a hi-DPI screen with no way to reach what's cut off. When adding a new tab, copy this pattern (see `CreateWorksheetPanel()`) rather than a plain `wxPanel`.
+- **Constructor Initialization:** Order initialization lists to match header declaration order to prevent `-Wreorder` warnings.
+- **AUI: `RestorePane()` does NOT undo `MinimizePane()`.** Despite the name it is
+  the counterpart to `MaximizePane()`, and its implementation rewrites *every*
+  pane's hidden state from `savedHiddenState` -- using it to un-minimize one
+  sidebar silently reshuffles all the others. There is no separate "minimized"
+  state to undo: `MinimizePane()` just calls `paneInfo.Hide()` and adds an entry
+  to a min-dock strip, and wx's own restore is nothing more than
+  `pane->Show(); m_mgr.Update();` -- exactly what `ShowPane()` and
+  `ShowWizardPane()` already do. So showing a pane the normal way restores it
+  from minimized for free. Note also that centre panes cannot be minimized and
+  `MinimizePane()` asserts on panes without a minimize button -- so wherever
+  `MinimizeButton(true)` is handed out, the worksheet and the toolbar must be
+  excluded.
+- **`wxFont::IsOk()` cannot tell "not set yet" on wxQt.** With wxWidgets' Qt
+  port a default-constructed `wxFont` (and `wxNullFont`) has ref data of its
+  own and reports itself ok -- a default font, unrelated to anything. A cache
+  that marked its empty slots with `wxFont()` and filled them `if
+  (!font.IsOk())` therefore never filled them there: every bold, italic and
+  sub-/superscript text cell format came out in that one small default font
+  (measured narrower than plain text, and all formats looking alike), while
+  wxGTK was fine. Mark "not made yet" with `std::optional<wxFont>` instead
+  (see `EditorCell::GetFont(TextFormat::Format)`).
+- **A wxWidgets-version fallback `#define` must come AFTER the wx header that
+  may define it.** `Compat.h` includes `<wx/defs.h>` *above* its
+  `#ifndef wxWARN_UNUSED` fallback for this reason. Reached in the other order,
+  our header defines the macro empty first, wxWidgets' own
+  `#ifndef wxWARN_UNUSED` then declines to redefine it, and the feature is
+  silently disabled on exactly the compilers that support it -- a change that
+  compiles everywhere and does nothing. The same trap applies to any future
+  `wxSOMETHING` shim added there.
+
+## Performance & Documentation Mandates
+
+- **NEWS.md Updates:** Every non-trivial change MUST be documented in `NEWS.md` under the "# Current development version" section.
+  **When merging `main` into a branch conflicts in `NEWS.md`, take `main`'s side and re-add only your own new entry.** Keeping "both sides" brings back entries that release prep has since condensed into a version section: on 2026-09-30 three branches in a row put ~190 old lines back above `# 26.09.0`. The tag workflow publishes whatever sits under the top heading as the release notes, so that would have become the release body.
+- **Doxygen Comments:** Include descriptions for all new classes and public methods. Complex algorithms (e.g., LCS alignment) require detailed architectural comments.
+- **Background Tasks:** Use `jthread` for automatic joining, protect data with `std::mutex`, check for abort flags regularly, and update `Doxygen/Readme.md`.
+- **Lisp Performance (`wxMathML.lisp`):**
+  - Use `with-output-to-string` instead of recursive concatenation for large inputs.
+  - Use `unwind-protect` when modifying global state like `$lmxchar`.
+  - Prefer `(intern ...)` over `read-from-string` for dynamic symbol generation.
+- **Strict XML Mandate:** To avoid duplicate attributes, add any new manually-handled XML attribute (e.g., `noneParens="true"`) to the filter list in `MathParser.cpp`.
+
+## Visual Documentation (`art/Doxygen/`)
+
+- **Geometry Awareness:** If modifying `Recalculate()` or `Draw()` geometry (padding, center alignment), you MUST update the corresponding SVG diagrams in `art/Doxygen/`.
+- **Consistency:** New cell types should have `*Geometry.svg` and `*LinearGeometry.svg` (if applicable) diagrams.
+
+## Key Subsystems Map
+
+Deeper, per-subsystem background lives in `.claude/skills/`, which load only
+when they are relevant -- so that hard-won detail is available without every
+line of it sitting in context permanently. Read the matching one *before*
+starting work in that area; each is mostly a list of the ways that subsystem
+has already been broken.
+
+| Skill | Covers |
+|---|---|
+| `wxmaxima-layout` | the schedule/recalculate/resize pipeline and the layout invariants |
+| `wxmaxima-architecture` | where code lives, the friend-class decomposition, the extraction recipe |
+| `wxmaxima-translations` | the POT glob, po4a, and how translations get lost |
+| `wxmaxima-export` | HTML/LaTeX/image export, accessible labels, round-trip guarantees |
+| `wxmaxima-maxima-protocol` | the socket, `wxMathML.lisp`, batch mode, process lifetime, the two intermittent CI failures |
+| `wxmaxima-packaging` | the CI matrix's blind spots, installers, signing, releases, Windows stdio and the subsystem bit |
+| `wxmaxima-ai-tools` | the MCP server, the AI chat sidebar, providers, secret storage |
+| `run-wxmaxima` | building, launching and screenshotting the app |
+
+- **Layout Engine:** `src/cells/` and `src/worksheet/` (`Worksheet.cpp` and its siblings moved into that subdirectory).
+- **MathML Formatting:** `src/wxMathML.lisp` and `src/MathParser.cpp`.
+- **Main Logic:** `src/wxMaxima.cpp` and `src/wxMaximaFrame.cpp` -- but much of what used to sit in `wxMaxima` has been peeled off into friend classes, so look there first: `MaximaProcessManager` (spawn/kill/connect and the data pump), `MaximaEvaluator` (evaluation queue and command protocol), `MaximaResponseReader` (the incoming-XML handlers), `MaximaFileIO` (worksheet open/save) and `MaximaCommandMenus` (the menu handlers).
+- **Configuration:** `src/Configuration.cpp`.
+
+## Backlog / Future Work
+
+Items the maintainer has flagged as worth doing but hasn't asked for yet -- don't
+start on these without checking in first, but pick them up if asked for "what's
+next" style work.
+
+Nothing at the moment. Open work lives in GitHub issues rather than here;
+when an entry above says something is still open, it names the issue that
+tracks it. (GH #1335, contiguous cell storage, used to be listed here; it was
+closed as not planned.)
+
+## Error resilience
+
+- To err is human => If your instructions don't seem to make sense feel free to ask.

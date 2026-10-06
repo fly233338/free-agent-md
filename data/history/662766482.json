@@ -2,12 +2,6 @@
   "full_name": "The-PR-Agent/pr-agent",
   "points": [
     {
-      "checked_at": "2026-09-06T07:57:27Z",
-      "commit_sha": "2b1b23193bef54325adb94320428d70112c80449",
-      "pushed_at": "2026-09-06T07:51:56Z",
-      "stars": 12869
-    },
-    {
       "checked_at": "2026-09-09T08:13:13Z",
       "commit_sha": "8bd153280bdf87776da6bae86dd7210d9e2d46c5",
       "pushed_at": "2026-09-09T08:04:38Z",
@@ -24,6 +18,12 @@
       "commit_sha": "1f11725b4d96afbaad8ed956afd074ecf4642426",
       "pushed_at": "2026-09-23T08:31:04Z",
       "stars": 13117
+    },
+    {
+      "checked_at": "2026-10-06T10:25:49Z",
+      "commit_sha": "06a2991c0ce6b055c77fbcbd7f09faf4c5acfcaf",
+      "pushed_at": "2026-10-06T10:22:31Z",
+      "stars": 13278
     }
   ],
   "repo_id": 662766482

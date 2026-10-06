@@ -1,8 +1,0 @@
-# mastra-ai/mastra instruction files
-
-Upstream: [mastra-ai/mastra](https://github.com/mastra-ai/mastra) · License: `NOASSERTION` · Commit: `c03888081edd9b5ccc77f1236b5d5549377ea611`
-
-| Type | Path | Snapshot | Fixed source | SHA-256 | Size |
-|---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/mastra-ai/mastra/AGENTS.md) | [Source](https://github.com/mastra-ai/mastra/blob/c03888081edd9b5ccc77f1236b5d5549377ea611/AGENTS.md) | `30cf4741f1ffd551aa3efab9ae911c1c10fd5076618d51e24be621491065b34a` | 1,675 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/mastra-ai/mastra/CLAUDE.md) | [Source](https://github.com/mastra-ai/mastra/blob/c03888081edd9b5ccc77f1236b5d5549377ea611/CLAUDE.md) | `336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49` | 11 B |

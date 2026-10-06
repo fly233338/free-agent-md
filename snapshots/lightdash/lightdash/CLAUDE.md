@@ -258,6 +258,7 @@ Freezing analytics/customer *deployments* is a different mechanism in a differen
 -   CASL abilities are **additive** - org-level permissions cannot be revoked by project-level custom roles
 -   If a permission should be restrictable via custom roles, do NOT add it to org-level developer/editor abilities
 -   **Changing the scope vocabulary (rename / split / merge / remove) requires a Knex migration against `scoped_roles`** — custom roles persist scope names as strings and do not auto-update. See the `ld-permissions` skill for the migration checklist and patterns.
+-   **Embed capabilities are scopes, not JWT flags**: gate new embedded features with an embed scope on the embed's write actor (user or service account), never a new boolean on the JWT `content`. See `packages/common/src/authorization/CLAUDE.md`.
 
 ## TypeScript Project References
 
@@ -452,6 +453,16 @@ dashboard viewer sees), follow the mandate in
 `packages/frontend/src/components/common/Filters/CLAUDE.md` — it generalizes
 beyond filters. English strings for those surfaces live only in the registry,
 never inline. Do not add an i18n framework; host apps own locale state.
+
+## White-label copy — no "Lightdash" in errors or embeddable UI
+
+Lightdash is embedded (iframe/SDK), and errors from any service can surface
+in an embed. Never write "Lightdash" meaning "this app" in error messages
+(backend errors, API/validation messages, error toasts and states), or in
+labels of embeddable pages and components (dashboards, charts, Explore, data
+apps, the AI agent and the shared components they render). Rewrite neutrally
+(`the server`, `this instance`, or drop the word). Scope, exceptions and
+examples are in [docs/white-label-copy.md](docs/white-label-copy.md).
 
 ## Development Troubleshooting
 

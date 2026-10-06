@@ -2,12 +2,6 @@
   "full_name": "kubernetes/kubernetes",
   "points": [
     {
-      "checked_at": "2026-09-06T07:57:27Z",
-      "commit_sha": "b2ec8b6fefac451a2dedafc4dd71f2f16c7a6abe",
-      "pushed_at": "2026-09-04T23:38:21Z",
-      "stars": 126400
-    },
-    {
       "checked_at": "2026-09-07T08:24:13Z",
       "commit_sha": "b2ec8b6fefac451a2dedafc4dd71f2f16c7a6abe",
       "pushed_at": "2026-09-04T23:38:21Z",
@@ -180,6 +174,12 @@
       "commit_sha": "6ea53b2ed32ccb4c6bd275d42a6e3d9e64729b85",
       "pushed_at": "2026-10-05T09:54:32Z",
       "stars": 128295
+    },
+    {
+      "checked_at": "2026-10-06T10:25:49Z",
+      "commit_sha": "81b2a1c7318e0d15f8a659026436e0f4eef1fe04",
+      "pushed_at": "2026-10-06T09:56:37Z",
+      "stars": 128339
     }
   ],
   "repo_id": 20580498

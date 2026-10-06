@@ -2,12 +2,6 @@
   "full_name": "microsoft/winget-pkgs",
   "points": [
     {
-      "checked_at": "2026-09-06T07:57:27Z",
-      "commit_sha": "89c5261c33fa33fa352861c2027b10acd04f5f0d",
-      "pushed_at": "2026-09-06T07:48:31Z",
-      "stars": 11052
-    },
-    {
       "checked_at": "2026-09-08T08:09:08Z",
       "commit_sha": "36c803a2427b7ebe5af769522e7dbe31f1321bdb",
       "pushed_at": "2026-09-08T08:00:31Z",
@@ -84,6 +78,12 @@
       "commit_sha": "2ad23307e937516dfae228df225c21498e34ed60",
       "pushed_at": "2026-10-03T09:05:09Z",
       "stars": 11127
+    },
+    {
+      "checked_at": "2026-10-06T10:25:49Z",
+      "commit_sha": "c371f10dbd80fb4a9b64b9df6b03142b20fcd2d9",
+      "pushed_at": "2026-10-06T10:22:44Z",
+      "stars": 11132
     }
   ],
   "repo_id": 197275551
