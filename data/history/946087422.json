@@ -2,12 +2,6 @@
   "full_name": "Kilo-Org/kilocode",
   "points": [
     {
-      "checked_at": "2026-09-07T08:24:13Z",
-      "commit_sha": "962e88e72a61ca898deadb02c797124f554d1c46",
-      "pushed_at": "2026-09-07T08:22:04Z",
-      "stars": 27206
-    },
-    {
       "checked_at": "2026-09-10T08:12:06Z",
       "commit_sha": "e7e9a0328d1a370d7b8343eda6c419222c85b920",
       "pushed_at": "2026-09-10T08:10:16Z",
@@ -24,6 +18,12 @@
       "commit_sha": "859d06d8f77aef881c6bc2a63ef254e34f3d8229",
       "pushed_at": "2026-09-22T08:34:17Z",
       "stars": 27383
+    },
+    {
+      "checked_at": "2026-10-07T10:21:27Z",
+      "commit_sha": "3d48d99b1ea53c78b256318bc1fb2a21c034430f",
+      "pushed_at": "2026-10-07T10:20:16Z",
+      "stars": 27517
     }
   ],
   "repo_id": 946087422

@@ -2,12 +2,6 @@
   "full_name": "grafana/grafana",
   "points": [
     {
-      "checked_at": "2026-09-07T08:24:13Z",
-      "commit_sha": "35bf13f080ae7bd06aaa567582d6bb17b24a8eee",
-      "pushed_at": "2026-09-07T08:23:40Z",
-      "stars": 76648
-    },
-    {
       "checked_at": "2026-09-08T08:09:08Z",
       "commit_sha": "6d5e6a360e709b0c1f51b479d68c82c316a942e9",
       "pushed_at": "2026-09-08T08:04:49Z",
@@ -60,6 +54,12 @@
       "commit_sha": "1a06d20e38571bfe2188c6d8ec9662cdb95852c7",
       "pushed_at": "2026-10-06T10:17:07Z",
       "stars": 77100
+    },
+    {
+      "checked_at": "2026-10-07T10:21:27Z",
+      "commit_sha": "88008425e5588cddb8320e3068b315d4789066c9",
+      "pushed_at": "2026-10-07T10:20:10Z",
+      "stars": 77121
     }
   ],
   "repo_id": 15111821

@@ -2,12 +2,6 @@
   "full_name": "JuliusBrussee/caveman",
   "points": [
     {
-      "checked_at": "2026-09-07T08:24:13Z",
-      "commit_sha": "15581d14007fd01fb3f132016741962f34936ca2",
-      "pushed_at": "2026-09-07T08:19:44Z",
-      "stars": 104001
-    },
-    {
       "checked_at": "2026-09-08T08:09:08Z",
       "commit_sha": "15581d14007fd01fb3f132016741962f34936ca2",
       "pushed_at": "2026-09-08T07:30:47Z",
@@ -180,6 +174,12 @@
       "commit_sha": "99aafe151a1be72be783e662858e8a0955add59f",
       "pushed_at": "2026-10-06T09:05:15Z",
       "stars": 110084
+    },
+    {
+      "checked_at": "2026-10-07T10:21:27Z",
+      "commit_sha": "99aafe151a1be72be783e662858e8a0955add59f",
+      "pushed_at": "2026-10-07T07:58:48Z",
+      "stars": 110309
     }
   ],
   "repo_id": 1201173969

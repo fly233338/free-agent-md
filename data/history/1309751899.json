@@ -2,12 +2,6 @@
   "full_name": "truefoundry/trueforge",
   "points": [
     {
-      "checked_at": "2026-09-07T08:24:13Z",
-      "commit_sha": "a518bb29e90288f44850e127b861cf8b3c04867d",
-      "pushed_at": "2026-09-07T08:20:47Z",
-      "stars": 5283
-    },
-    {
       "checked_at": "2026-09-17T08:43:22Z",
       "commit_sha": "c83145ae55ebfc1cf02337ce1514609473a8cdef",
       "pushed_at": "2026-09-17T08:40:08Z",
@@ -24,6 +18,12 @@
       "commit_sha": "92d90e5283a88f9089e36bc177d74ea5f42c1ede",
       "pushed_at": "2026-10-01T10:09:36Z",
       "stars": 6033
+    },
+    {
+      "checked_at": "2026-10-07T10:21:27Z",
+      "commit_sha": "6d9154154b4511134b7e2db9d87c30cfd31090c6",
+      "pushed_at": "2026-10-07T10:18:03Z",
+      "stars": 6074
     }
   ],
   "repo_id": 1309751899

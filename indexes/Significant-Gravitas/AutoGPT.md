@@ -1,8 +1,8 @@
 # Significant-Gravitas/AutoGPT instruction files
 
-Upstream: [Significant-Gravitas/AutoGPT](https://github.com/Significant-Gravitas/AutoGPT) · License: `NOASSERTION` · Commit: `f8b0e0a87c38b67f6e6cb21f3ee03ff5584c3588`
+Upstream: [Significant-Gravitas/AutoGPT](https://github.com/Significant-Gravitas/AutoGPT) · License: `NOASSERTION` · Commit: `bfecefb75ac75e14854716d5552e269305c80ad0`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Significant-Gravitas/AutoGPT/AGENTS.md) | [Source](https://github.com/Significant-Gravitas/AutoGPT/blob/f8b0e0a87c38b67f6e6cb21f3ee03ff5584c3588/AGENTS.md) | `64799eefb2babe20c9013e10e73d2b4573bf0091fb5682b71aff85068b9b5e85` | 6,331 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Significant-Gravitas/AutoGPT/CLAUDE.md) | [Source](https://github.com/Significant-Gravitas/AutoGPT/blob/f8b0e0a87c38b67f6e6cb21f3ee03ff5584c3588/CLAUDE.md) | `336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49` | 11 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Significant-Gravitas/AutoGPT/AGENTS.md) | [Source](https://github.com/Significant-Gravitas/AutoGPT/blob/bfecefb75ac75e14854716d5552e269305c80ad0/AGENTS.md) | `64799eefb2babe20c9013e10e73d2b4573bf0091fb5682b71aff85068b9b5e85` | 6,331 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Significant-Gravitas/AutoGPT/CLAUDE.md) | [Source](https://github.com/Significant-Gravitas/AutoGPT/blob/bfecefb75ac75e14854716d5552e269305c80ad0/CLAUDE.md) | `336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49` | 11 B |
