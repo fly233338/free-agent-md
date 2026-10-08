@@ -1,75 +1,38 @@
 # Repository Agent Guide
 
-## mbx build cache
-
-`mise install` installs mbx. `mise run` activates the project's transparent
-Cargo wrapper, so compilation-heavy mise tasks and hk checks use ordinary
-`cargo` commands. Standalone Cargo commands require an activated mise shell. If
-the wrapper fails or creates a development papercut, rerun the exact equivalent
-command from `CONTRIBUTING.md` with `MBX_DISABLE=1`; this unblocks work without
-weakening the check. If bypassed Cargo succeeds, surface the mismatch and recommend a
-[mr-boxington Discussion](https://github.com/jdx/mr-boxington/discussions) with
-the repository and commit, OS, `mbx --version`, `mbx doctor`, and both commands
-and outputs. Redact secrets, absolute cache paths, remote URLs, namespaces, and
-other sensitive or identifying details. Do not permanently disable the wrapper,
-and do not post externally without user authorization.
-
 This file is the canonical agent guide. `CLAUDE.md` is a symlink to `AGENTS.md` for compatibility with existing tooling.
+
+Task-specific procedures live as skills in `.agents/skills/` (`.claude/skills` is a symlink to it). Load the named skill when this guide points to one; agents without skill support can read its `SKILL.md` directly.
+
+## Discussions and Issues: Restricted AI Replies
+
+**Do not use AI to reply to a mise Discussion or Issue unless the user (a) created that Discussion or Issue, (b) opened a PR that fixes it, or (c) has already had a contribution merged into the default branch of mise.** Otherwise they are not allowed to use AI to respond to it. Drive-by AI replies are spam, the problem is getting worse, and **doing it is an instant ban across all of jdx's projects** (mise, hk, pitchfork, usage, fnox, and the rest).
+
+- If the user asks you to answer, comment on, or "help with" a Discussion or Issue, confirm one of the three conditions first. If you cannot confirm one, **do not post**.
+  - (a) Compare the thread author to the authenticated user (`gh api user --jq .login`). For an Issue, use `gh api repos/jdx/mise/issues/<number> --jq .user.login`. Discussions have no REST endpoint, so use GraphQL: `gh api graphql -f query='query{repository(owner:"jdx",name:"mise"){discussion(number:<number>){author{login}}}}' --jq .data.repository.discussion.author.login`.
+  - (b) Check that the user's PR actually fixes the problem described in the thread. A closing keyword such as `Fixes #<number>` is good evidence, but a link is not required, and a PR that merely mentions an unrelated thread does not count.
+  - (c) Look for any contribution merged into the default branch that is tied to the user's GitHub account, not just a matching name or email: a PR authored by the user that was merged into the default branch (`gh pr list --repo jdx/mise --author @me --state merged --base main --limit 1`), commits on the default branch that GitHub attributes to their login (`gh api 'repos/jdx/mise/commits?author=<login>&per_page=1'` lists the default branch), never commits on a local or unmerged branch, or a PR from someone else, merged into the default branch, that credits them with a `Co-authored-by` trailer whose email is their GitHub noreply address or one verified on their account. Do not accept `git log --author` output, which includes local unmerged commits, or a trailer matched only by display name. Both queries filter by author on the server, so one matching result is enough to qualify and no pagination is needed.
+- If none of the three apply, **do not post a reply, even a short one.** Tell them this project does not allow AI replies from people who have not contributed, and offer to explain the answer to them in chat instead.
+- Never batch-post, loop over, or sweep Discussions or Issues to answer several of them, even for a merged contributor.
+- Lightly edited, human-reviewed, or disclosed model output does not create an exception. The disclosure footer does not make an AI reply acceptable on its own.
+- Permitted replies may be AI-assisted. The user must review and verify the reply before it is posted.
+- Creating a new Discussion or Issue with AI assistance is fine and is not restricted. The user must review it before it is posted, and it needs the AI disclosure below.
+
+When you post AI-contributed GitHub content, including a new Discussion or Issue, a reply, or a PR description or comment, append this disclosure: `*AI-assisted — Tool: <tool>; model: <provider>/<model>; version: <version-or-unavailable>.*` Use the exact model and version identifiers exposed by the runtime, never guessed values, and `unavailable` when one is not exposed.
 
 ## Registry Submissions: READ THIS FIRST
 
-**Most new registry additions from agents get rejected.** Before adding a new tool to `registry/`, understand the rules:
+**Most new registry additions from agents get rejected.** mise's `registry/` is curated for tools that are already widely used — generally thousands of GitHub stars, not hundreds. jdx closes PRs that miss the bar without giving a reason.
 
-- **mise does not host self-written, personal, niche, or low-popularity tools.** The registry is curated for tools that are *already* widely used. "It works" or "it has tests" is not the bar.
-- **There is a high bar for new registry additions: tools generally need thousands of GitHub stars, not hundreds.** jdx will reject projects that do not meet this popularity bar and will not give a reason. Per [contributing.md](docs/contributing.md): "@jdx won't explain why a given tool wasn't accepted." There is no appeal, no checklist, no second chance — the PR is closed and that's it.
-- **Wasted PRs are the default outcome** for tools the agent or user has not vetted against this bar. Do not submit one speculatively.
+Before adding a **new** tool or shorthand to `registry/`, follow the `registry-submission` skill ([`.agents/skills/registry-submission/SKILL.md`](.agents/skills/registry-submission/SKILL.md)). In short:
 
-### Required check for new registry additions
+- Warn the user about the bar, look up real popularity numbers, and stop if the tool is personal, internal, a fork, or niche.
+- Put a `## Popularity` section with those numbers in the PR description.
+- Confirm `mise ls-remote <backend>` lists installable versions.
+- Prefer `packslip:`, then `aqua:`, `github:`, or `gitlab:`. `conda:` has a high bar; `npm:`, `pipx:`, `gem:`, `cargo:`, `go:`, and `dotnet:` are almost never accepted. New `asdf:`, `vfox:`, and `ubi:` entries are not accepted.
+- Users can install any tool without a registry entry (`mise use github:owner/repo`, `mise use cargo:name`, …); the registry only adds a shorthand.
 
-Before adding a new tool or shorthand to `registry/`, ALWAYS do the following. This check does not apply when editing an existing registry entry; do not ask the user about popularity for maintenance or fixes to tools already in the registry.
-
-1. **Warn the user clearly and ask:** "New registry additions have a high popularity bar: jdx generally rejects projects without thousands of GitHub stars and will not give a reason. Is this tool already widely used outside your own projects and does it meet that bar?" If it's the user's own tool, a fork, an internal/company tool, or something with a small audience, **stop and tell them the PR will be rejected.** Do not submit.
-2. **Actively check popularity for every new registry addition — no exceptions.** Look up real numbers; do not guess. Useful sources:
-   - GitHub stars and fork count (`gh repo view owner/repo --json stargazerCount,forkCount`)
-   - Recent release activity / last commit date (`gh repo view owner/repo --json pushedAt,latestRelease`)
-   - Download counts on relevant package registries (npm `npmjs.com/package/x`, crates.io, PyPI, Homebrew analytics, etc.)
-   - Whether the project shows up in third-party docs, awesome-lists, or other tools
-3. **Apply the bar.** Rough signals — very low numbers are disqualifying:
-   - GitHub stars in the thousands, not hundreds
-   - Active maintenance (recent releases, not abandoned)
-   - Real third-party usage (referenced in docs, blog posts, other tools, package registries)
-   - Recognizable in its ecosystem
-4. **Include the popularity data in the PR description.** Every PR adding a new registry tool or shorthand MUST contain a short section like:
-
-   ```
-   ## Popularity
-   - GitHub: 12.3k stars, 480 forks, last release 2026-04-12
-   - crates.io: 1.2M downloads
-   - Used by: <project A>, <project B>
-   ```
-
-   This is non-negotiable for new additions — it lets the maintainer evaluate the submission without re-doing the research. New-tool PRs without it look speculative and are more likely to be rejected.
-5. **If the tool is borderline or numbers are low, warn the user clearly** that the PR is likely to be rejected without reason, and ask if they still want to proceed. Do not soften this — users have repeatedly been surprised when their PR was closed, and the agent should have warned them up front.
-6. **Suggest the alternative:** users can install any tool themselves via explicit backend syntax (`mise use aqua:owner/repo`, `mise use github:owner/repo`, `mise use cargo:name`, `mise use npm:name`, etc.) or by writing a [tool plugin](https://mise.jdx.dev/tool-plugin-development.html). The registry is *only* for shorthand convenience for popular tools — not for enabling installation.
-
-### Backend choice: packslip (preferred), then aqua, github, or gitlab
-
-For registry entries the backend tiers are:
-
-- **Version listing is mandatory.** Before adding a registry entry, run `mise ls-remote <backend>` and confirm it returns installable versions. A backend that can install only an explicitly pinned version is not sufficient, even if the package exists in an upstream registry. If the preferred backend cannot list versions, use another accepted backend (for example, a custom `http:` backend with a reliable `version_list_url`) or stop.
-- **Tier 1 — preferred:** `packslip:`. Use it when the project publishes signed release manifests; mise verifies the signer and artifact digests without requiring a plugin or separate package manager.
-- **Tier 2 — routinely accepted:** `aqua:`, `github:`, and `gitlab:`.
-  - **Prefer `aqua:`** when the project does not publish packslips and the tool is in the [aqua registry](https://github.com/aquaproj/aqua-registry). Better UX, SLSA verification, and per-version logic.
-  - **Use `github:`** when the tool isn't in aqua but ships GitHub releases.
-  - **Use `gitlab:`** for tools released through GitLab.
-- **Tier 3 — high bar, but lower than tier 4:** `conda:`. Potentially acceptable when the tool can't be supported via packslip/aqua/github/gitlab. The bar is lower than tier 4 because **the conda backend in mise does not require a separately-installed package manager** — mise downloads and extracts packages directly from anaconda.org via rattler, so users don't need conda/mamba on PATH. Still requires a popular, well-maintained tool.
-- **Tier 4 — extremely high bar, almost never accepted:** `npm:`, `pipx:`, `gem:`, `cargo:`, `go:`, `dotnet:`. These all rely on a separately-installed runtime/toolchain being present on PATH (`node`, `python`, `ruby`, `cargo`, `go`, `dotnet`), which is fragile — the wrong version, a missing install, or PATH ordering quirks all break them. `npm:`/`pipx:`/`gem:` are particularly painful because tools installed via them silently bind to whichever `node`/`python`/`ruby` was on PATH at install time. Don't reach for these for a registry PR unless the user has explicitly confirmed @jdx wants it that way for this specific tool.
-- **Not accepted at all:**
-  - **New `asdf:` plugins** — supply-chain security. Use packslip/aqua/github/gitlab instead.
-  - **New `vfox:` plugins** — same reason. Use packslip/aqua/github/gitlab instead.
-  - **`ubi:`** is deprecated and will not be accepted under any circumstances.
-
-Users can still install via any backend themselves with explicit syntax (`mise use vfox:...`, `mise use cargo:...`, etc.) — they just don't get a registry shorthand for it.
+None of this applies to editing an existing registry entry; do not ask the user about popularity for maintenance or fixes.
 
 ## Development Commands
 
@@ -85,7 +48,7 @@ Users can still install via any backend themselves with explicit syntax (`mise u
 - Use `MISE_DEBUG=1` or `MISE_TRACE=1` environment variables to enable debug output (not `RUST_LOG`)
 
 ### Code Quality and Testing
-- `mise run lint` - Run all linting tasks
+- `mise run lint` - Run all linting tasks (hk; does not run clippy — see below)
 - `mise run lint-fix` - Run linting and automatically fix issues
 - `mise run format` - Format code (part of CI task)
 - `mise run ci` - Run format, build, and test
@@ -99,6 +62,7 @@ Users can still install via any backend themselves with explicit syntax (`mise u
 
 - Do not add `#[allow(clippy::...)]`, `#[expect(clippy::...)]`, Cargo lint levels set to `allow`, or `-A clippy::...` command-line flags.
 - Refactor the code so `cargo clippy --workspace --all-features --all-targets -- -D warnings` passes without exclusions.
+- `mise run lint` does not cover this: the clippy step in `hk.pkl` is disabled, and `cargo check` does not enforce `-D warnings`. CI runs clippy separately, so run the command above yourself before pushing Rust changes.
 - If a feature or fix needs a preparatory refactor to satisfy Clippy cleanly, put that refactor in a prerequisite PR and stack the behavior change on top of it.
 
 ### Documentation and Generation
@@ -117,9 +81,12 @@ Users can still install via any backend themselves with explicit syntax (`mise u
 ### High-Level Structure
 Mise is a Rust CLI tool that manages development environments, tools, tasks, and environment variables. The codebase follows a modular architecture:
 
+The `mise` package has two targets. The library (`src/lib.rs`) is everything except the command line; the binary (`src/main.rs` plus `src/cli/`) sits on top of it and glob-imports its root, so `cli` code still writes `crate::config::…`. An edit under `src/cli/` recompiles only the binary. Core code must not refer to `crate::cli`: it reaches command behavior through the hooks in `src/frontend.rs`. When `cli` needs a core item, make that item `pub`; `unreachable_pub` keeps everything else `pub(crate)`. `cfg(test)` does not reach the library from the binary's tests, so core code that behaves differently under tests checks `mise_util::testing::in_tests()` instead.
+
 **Core Components:**
-- `src/main.rs` - Entry point and CLI initialization
-- `src/cli/` - Command-line interface implementation with subcommands
+- `src/main.rs` - Binary entry point
+- `src/lib.rs` - Library root: module list and the hooks lower crates need
+- `src/cli/` - Command-line interface implementation with subcommands (binary only)
 - `src/config/` - Configuration file parsing and management
 - `src/backend/` - Tool backend implementations (aqua, github, cargo, npm, asdf, vfox, …)
 - `src/toolset/` - Tool version management and installation logic
@@ -131,7 +98,7 @@ Mise is a Rust CLI tool that manages development environments, tools, tasks, and
 - `aqua.rs` — Aqua registry
 - `github.rs` — GitHub / GitLab / Forgejo releases
 - `http.rs`, `s3.rs` — HTTP and S3 backends
-- `cargo.rs`, `npm.rs` (plus embedded aube), `pipx.rs`, `gem.rs`, `go.rs`, `dotnet.rs`, `conda.rs`, `pkgx.rs`, `spm.rs`
+- `cargo.rs`, `npm.rs` (plus embedded aube), `pipx.rs`, `gem.rs`, `go.rs`, `dotnet.rs`, `conda.rs`, `spm.rs`
 - `asdf.rs`, `vfox.rs` — plugin compatibility layers
 - `ubi.rs` — deprecated; do not add new registry entries
 
@@ -165,7 +132,7 @@ Mise is a Rust CLI tool that manages development environments, tools, tasks, and
 - Windows-specific tests in `e2e-win/`
 
 ### Build System
-- Rust project using Cargo with workspace for `crates/vfox`
+- Rust project using a Cargo workspace; member crates live in `crates/` (`vfox`, `aqua-registry`, `mise-shim`, `mise-sigstore`, `mise-cache-core`, `mise-brew-relocation`, `mise-brew-metadata`, `mise-agent-env`, `mise-interactive-config`, `mise-settings`, `mise-util`)
 - Custom build script in `build.rs` for generating metadata
 - Multiple build profiles including `release` and `serious` (with LTO)
 - Cross-compilation support via `Cross.toml`
@@ -198,7 +165,7 @@ SHOULD use the same format:
 - Use `task` (not `run`) for task-related changes, even if the code lives in `src/cli/run.rs` or `src/cmd.rs`
 
 **Description Style:**
-- Start the description with a lowercase character
+- Start the description with a lowercase character, or with an acronym such as `PGO` or `CLI`
 - Use imperative mood ("add feature" not "added feature")
 - Keep it concise but descriptive
 
@@ -214,15 +181,19 @@ SHOULD use the same format:
 
 CI validates the pull request title and re-runs when it is edited. Intermediate
 commit subjects are not checked because pull requests are squash-merged. CI
-mechanically checks the allowed type, syntax, and lowercase-leading description;
+mechanically checks the allowed type, syntax, and lowercase- or acronym-leading description;
 imperative mood and breaking-change details remain review rules.
+
+### PR titles and descriptions are release-note inputs
+
+Communique generates release notes from PR titles and descriptions, so write them for a mise user who has not read the diff: lead with the user-visible problem and outcome, show a concrete example, and keep them in sync with the final diff. Follow the `pr-description` skill ([`.agents/skills/pr-description/SKILL.md`](.agents/skills/pr-description/SKILL.md)) when opening or revising a PR.
 
 ### Pre-commit Process
 1. Run `mise run lint-fix` and `git add` any lint fixes before committing
 2. Use `mise run test:e2e [test_filename]...` for running specific e2e tests
 3. Never run e2e tests by executing them directly — always use the mise task
 
-`hk.pkl` currently defines `check` and `fix` steps only (no git `pre-commit` hook). `hk install --mise` may print that nothing is installed; that is expected. Use `mise run lint` / `mise run lint-fix` (which run hk) instead.
+`hk.pkl` defines `check` and `fix` steps and a git `pre-commit` hook that runs the same linters with auto-fix (`stash = "git"` preserves unstaged work). `hk install --mise` installs that hook. You can still run `mise run lint` / `mise run lint-fix` by hand; on Linux and macOS they run hk, but on Windows `lint-fix` runs only Clippy, Prettier, and `cargo fmt`, so the other hk steps do not run there.
 
 ### hk Agent Workflow
 
@@ -237,16 +208,7 @@ imperative mood and breaking-change details remain review rules.
 - Routine dependency updates should only change `Cargo.lock`. If the existing `Cargo.toml` requirement accepts the target version, do not change it merely to force or record the update; use `cargo update -p <crate> --precise <version>` instead.
 - Keep lockfile updates focused on the requested dependency and its required transitive changes. Remove unrelated resolver churn before committing.
 
-#### Updating embedded aube
-
-- Update `aube` and `aube-registry` together and refresh all aube workspace crates in `Cargo.lock`.
-- Review the upstream changes for embedder API or behavior changes and make any required mise integration changes.
-- Update the standalone `aube` development tool entry in `mise.lock` to the same version so local and CI workflows exercise the version mise embeds.
-- Run these focused checks:
-  - `cargo check --locked`
-  - `cargo test --locked --bin mise aube`
-  - `cargo test --locked --bin mise task::workspace::node::tests`
-  - `mise run test:e2e e2e/backend/test_npm_aube`
+When updating the embedded `aube` crates, follow the `update-aube` skill ([`.agents/skills/update-aube/SKILL.md`](.agents/skills/update-aube/SKILL.md)).
 
 ## Deprecation Policy
 
@@ -255,11 +217,15 @@ When deprecating a feature, backend, or implicit behavior:
 1. **Immediately**: Mark it as deprecated in docs (add a warning banner) and display a CLI warning using the `deprecated_at!` macro from `src/output.rs` (`warn_at` is the current version).
 2. **12 months after warn** (`remove_at`): `debug_assert!` in `deprecated_at!` fires, signaling the deprecated code or behavior should be removed.
 
+12 months is the default window, not a hard rule. Some deprecations use a shorter window, such as 6 months, on purpose. Use 12 months for new deprecations unless jdx asks for something else, and do not lengthen an existing shorter window.
+
 Delay the CLI warning for up to 6 months only when migration requires a new setting, syntax, or replacement that older supported mise versions would reject or fail to parse. This compatibility window lets users adopt a configuration that works across old and new clients before warnings begin. Do not delay warnings for a behavior change that requires no new configuration, or when the replacement already works in older clients.
 
 Use mise version format for dates (e.g., `deprecated_at!("2026.10.0", "2027.10.0", "id", "message")`).
 
 If a compatibility window is required, removal remains 12 months after `warn_at`, not 12 months after the initial documentation notice.
+
+For temporary code with no user-facing deprecation, such as a migration or a fallback that reads what an older mise wrote, use `remove_by!("2027.1.0", "id")` from `src/output.rs`. It is a compile-time assertion, so the build fails once the version reaches `remove_at`; remove every `remove_by!` with that id and the code it guards.
 
 ## Important Implementation Notes
 
@@ -290,7 +256,9 @@ If you think you need to pick "the newest installed version" at a new call site,
 - Plugin metadata is defined in `mise.plugin.toml` files
 
 ### Configuration Parsing
-The configuration system supports multiple file formats and environment-specific configs. Changes to settings require updating `settings.toml` and running `mise run render:schema`.
+The configuration system supports multiple file formats and environment-specific configs. Changes to settings require updating `settings.toml` and running `mise run render:schema`. The `Settings` types are generated from `settings.toml` in `crates/mise-settings`; loading them (config discovery, trust, CLI flags) stays in `src/config/settings.rs`, whose `SettingsExt` trait holds the methods that need the rest of mise.
+
+When changing configuration syntax or tool options, update `schema/mise.json` and run `mise run render:schema`. The render task also regenerates `schema/mise-task.json` from the main schema.
 
 ### Testing Strategy
 - E2E tests are organized by feature area (cli/, config/, backend/, etc.)
@@ -299,7 +267,9 @@ The configuration system supports multiple file formats and environment-specific
 - Slow tests (marked with `_slow` suffix) test actual tool compilation/installation
 
 ### Cross-Platform Considerations
-- Windows-specific implementations in files ending with `_windows.rs`
+- Windows modules follow one of two conventions:
+  - `*_windows.rs` is a platform-swapped sibling of a same-named module, selected with `#[cfg_attr(windows, path = "..._windows.rs")]` (e.g. `src/fake_asdf.rs` / `src/fake_asdf_windows.rs`)
+  - `windows_*.rs` is a single module about Windows with no non-Windows counterpart to swap in. Declare it on every platform and cfg-split it internally when other code calls it on all targets or its tests should run on Linux (e.g. `src/windows_posix.rs`, `src/windows_console.rs`); declare it under `#[cfg(windows)]` when only Windows code uses it (e.g. `src/windows_job.rs`)
 - Platform-specific tool installation logic in core plugins
 - Shim system varies by platform (especially Windows)
 - we don't chmod mise e2e tests to be executable
@@ -316,8 +286,10 @@ The configuration system supports multiple file formats and environment-specific
 
 Never open pull requests against the `release` branch. Default PRs to `main` unless the user explicitly names a different non-`release` base branch. If a change appears to belong on `release`, stop and ask for the intended branch strategy instead of opening a PR against `release`.
 
+See [Discussions and Issues: Restricted AI Replies](#discussions-and-issues-restricted-ai-replies) at the top of this file.
+
 When AI contributes GitHub content—including a pull request description, review, pull request
-comment, or discussion post—append this disclosure:
+comment, discussion post, or issue—append this disclosure:
 
 `*AI-assisted — Tool: <tool>; model: <provider>/<model>; version: <version-or-unavailable>.*`
 
@@ -337,19 +309,20 @@ When referencing mise documentation URLs, use the correct path structure based o
 
 Do NOT use shortened paths like `mise.jdx.dev/backends/...` - always include the full path matching the `docs/` directory structure.
 
-## Cursor Cloud specific instructions
+## Cloud agent instructions (Cursor Cloud and Claude Code on the web)
 
-Cloud Agents bootstrap from `.cursor/environment.json`, which runs `.cursor/install.sh`. Draft environment builds often run as `ubuntu` rather than `root`; the script handles both (passwordless sudo, cargo/rustup permissions, world-writable `/tmp/fslock`).
+Cursor Cloud Agents bootstrap from `.cursor/environment.json`, which runs `.cursor/install.sh`. Claude Code on the web runs the same script from the SessionStart hook in `.claude/settings.json` (`.claude/hooks/session-start.sh`), which runs on session `startup`/`resume`/`fork` (not `/clear` or compaction) with a 30-minute timeout, exits immediately unless `CLAUDE_CODE_REMOTE=true`, sends the bootstrap output to stderr, and adds the mise shims and `/usr/local/bin` to `PATH` through `CLAUDE_ENV_FILE`. The hook runs synchronously, so the session starts after the build finishes. Claude cloud containers do not provide a GitHub token by default; add `GITHUB_TOKEN` as an environment secret to avoid GitHub API rate limits during `mise install` and e2e tests. Use a fine-grained token with public-repository read-only access and no other permissions: any branch a session checks out (its hook, build scripts, tests, and tasks) can read the session environment. Draft environment builds often run as `ubuntu` rather than `root`; the script handles both (passwordless sudo, cargo/rustup permissions, world-writable `/tmp/fslock`).
 
 The install script:
 
 - cds to the repository root derived from the script path before reading `Cargo.toml` or building
 - installs host packages needed to build mise and to run most e2e tests (openssl, pkg-config, zsh, fish, direnv, python3 + venv, jq, git, build-essential, and compile-time libs). It does **not** install a JDK or GUI libraries; those live in `packaging/e2e/Dockerfile`. `apt-get` is invoked as `sudo -n env DEBIAN_FRONTEND=noninteractive apt-get …` so the frontend reaches apt when elevation is required
-- selects the Rust toolchain from the root `Cargo.toml` `rust-version`, including `rustfmt` and `clippy` (do not hardcode the MSRV)
-- builds `target/debug/mise` and symlinks it to `/usr/local/bin/mise`
+- installs and defaults to the latest stable Rust toolchain (not the `Cargo.toml` `rust-version` MSRV), including `rustfmt` and `clippy`, and updates it on reruns
+- gets a bootstrap `mise` and symlinks it to `/usr/local/bin/mise`: an existing `target/debug/mise` refreshes itself with `mise run build`; if it cannot run this checkout's config, a plain `cargo build` goes to `target/bootstrap` (the `mbx` wrapper leaves read-only outputs in `target/`); with no `target/` yet, a plain `cargo build` goes to `target/`
 - keeps `GITHUB_TOKEN`, `MISE_GITHUB_TOKEN`, and `GH_TOKEN` in sync via one `sync_github_tokens` helper (prefer any already-set token; fall back to `gh auth token` only when all three are empty)
 - runs `MISE_SAFE=1 /usr/local/bin/mise install` with the just-built binary so checkout-controlled hooks/templates/`[env]` and tool-level `postinstall` / `install_env` cannot run with those tokens, then `mise trust` for later agent commands
-- runs `hk install --mise` (`hk.pkl` has no git hook, so this may report that nothing is installed)
+- runs `mise run build` so `target/` is warm for the `mbx`-wrapped cargo (`[wrappers.cargo]` in `mise.toml`) that agents build with, then points `/usr/local/bin/mise` at `target/debug/mise`. Every build runs with `GITHUB_TOKEN`, `MISE_GITHUB_TOKEN`, `GH_TOKEN`, and `GITHUB_API_TOKEN` unset
+- runs `hk install --mise` (installs the git `pre-commit` hook defined in `hk.pkl`)
 - persists mise shims and token sync in one `/etc/profile.d/mise-dev-env.sh` (shims first, then `sync_github_tokens`) and rewrites the Cloud Agent block in `/etc/bash.bashrc` so non-login interactive bash picks it up after a snapshot. Fish/zsh only get this from login shells (`profile.d`), not from bashrc
 - exposes the mise-installed `node` / `npm` / `npx` / `hk` / `gh` binaries on `/usr/local/bin` (isolated e2e PATH includes that directory, not the agent's shims). Links freeze the version from install time — re-run `.cursor/install.sh` after upgrading those tools
 

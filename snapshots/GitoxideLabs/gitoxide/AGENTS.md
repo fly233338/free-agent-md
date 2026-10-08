@@ -11,19 +11,26 @@ This repository contains `gitoxide` - a pure Rust implementation of Git. This do
 
 ## Development Practices
 
+### AI Agent Communication
+
+- AI agents communicating through a person's account must identify themselves, for example in issue or PR descriptions and comments.
+- AI assistance that does not replace the person as the speaker, such as proofreading or wording polish, does not require identification.
+- Attributing AI assistance in commit metadata, for example with an `Assisted-by:` or `Co-authored-by:` trailer, is welcome but not required.
+
 ### Test-First Development
 
 - Protect against regression and make implementing features easy
 - Keep it practical - the Rust compiler handles mundane things
 - Use git itself as reference implementation; run same tests against git where feasible
-- Never use `.unwrap()` in production code, avoid it in tests in favor of `.expect()` or `?`. Use `gix_testtools::Result` most of the time.
+- Never use `.unwrap()` in production code, avoid it in tests in favor of `.expect()` or `?`. Use `gix_error::TestResult` for test functions and helpers.
 - Use `.expect("why")` with context explaining why expectations should hold, but only if it's relevant to the test.
 
 ### Error Handling
 
 - Handle all errors, never `unwrap()`
 - Provide error chains making it easy to understand what went wrong
-- Binaries may use `anyhow::Error` exhaustively (user-facing errors)
+- Applications built on `gix` use `gix::Result` and `gix::Error`, preserving error context and source locations.
+  Import error helpers, traits, and macros through `gix::error` instead of adding a separate `gix-error` dependency.
 
 #### `gix-error` (preferred for plumbing crates)
 
@@ -31,43 +38,82 @@ Plumbing crates are migrating from `thiserror` enums to `gix-error`. Check wheth
 uses `gix-error` (look at its `Cargo.toml`); if it does, follow the patterns below. If it still uses
 `thiserror`, keep using `thiserror` for consistency within that crate.
 
-- **Error type alias**: `pub type Error = gix_error::Exn<gix_error::Message>;`
+- **Public error APIs**: use `gix_error::Result<T>` and `gix_error::Error` for erased or
+  message-based errors at public plumbing boundaries. Preserve concrete error types already exposed
+  by public signatures, including `ExnResult<T, Specific>` and `Exn<Specific>`. This includes public
+  traits, callbacks, iterator items, associated errors, and re-exported APIs.
+  Keep native `io::Result`, standalone concrete-error results, and generic error adapters when they do
+  not expose exceptions. This exemption covers native or operation-specific recovery errors, not
+  shared diagnostics like `Message`. Public message-based errors use `Error` even without an `Exn`
+  wrapper, including `FromStr::Err` and `TryFrom::Error`. Do not introduce public crate-specific or
+  operation-specific forwarding aliases or renamed error exports.
+- **Internal results**: use `Result<T>` for erased or message-based errors in private and
+  `pub(crate)` helpers too. Retain concrete error types when callers benefit from typed recovery
+  or payload access. Use `ExnResult<T, E>` or `ExnMessageResult<T>` when a specific exception type
+  or exception-tree manipulation is actually needed; being private alone is not a reason to
+  introduce an exception-returning wrapper. These aliases and typed construction helpers remain available.
+- **Imports**: import `Result`, `ExnResult`, and `ExnMessageResult` under their canonical names
+  directly from `gix_error` (or their `gix` re-exports), and use their bare names in signatures.
+  Prefer to import `bail` when using `bail!`, via `use gix_error::bail;` or `use gix::error::bail;`,
+  and invoke it without a qualified path.
+- **Porcelain errors**: use the central `gix::Error` and `gix::Result` re-exports at public
+  boundaries that return erased or message-based exceptions.
 - **Static messages**: `gix_error::message("something failed")`
 - **Formatted messages**: `gix_error::message!("failed to read {path}")`
 - **Wrapping callee errors with context**: `.or_raise(|| message("context about what failed"))?`
-- **Standalone error (no callee)**: `Err(message("something went wrong").raise())`
+- **Standalone error (no callee)**: use `bail!(error)` for an early return with a concrete
+  error or message, such as `bail!(message("something went wrong"))`. For a result expression
+  at a boundary returning `Result`, use `Err(error.raise())`.
 - **Wrapping an `impl Error` with context**: `err.and_raise(message("context"))`
-- **Closure/callback bounds**: use `Result<T, Exn>` (bare), not `Exn<Message>`;
-  inside the function, convert with `.or_raise(|| message("..."))?`;
-  inside the closure, convert typed to bare with `.or_erased()`
+- **Typed exceptions**: use `.raise_typed()`, `.and_raise_typed(...)`, `.or_raise_typed(...)`, or
+  `.ok_or_raise_typed(...)` when an `Exn<E>` is required; the default helpers return `Error` or `Result`.
+- **Conversion without context**: `.or_error()` converts native errors and exceptions to `Result`.
+  Propagate existing `Result` values directly when the callee already provides enough context.
+- **Closure/callback bounds**: preserve concrete callback errors; use `Result<T>` for erased or
+  message-based errors in public and private APIs. Private callbacks may use `ExnResult<T>`
+  when they need exception-tree operations, or a specific error when useful. Use
+  `.or_raise_erased(...)` to add context or `.or_erased()` to convert when an internal callback
+  requires an erased exception.
 - **`Exn<E>` does NOT implement `std::error::Error`** — this is by design.
-  - To convert: use `.into_error()` to get `gix_error::Error` (which does implement `std::error::Error`)
-  - Example: `std::io::Error::other(exn.into_error())`
-- **In tests** returning `gix_testtools::Result` (= `Result<(), Box<dyn Error>>`), `Exn` can't be used
-  with `?` directly — use `.map_err(|e| e.into_error())?`
-- **Common imports**: `use gix_error::{message, ErrorExt, ResultExt};`
+  Convert with `?`, `.into()`, or `.into_error()` when a boundary returns `Error`. Conversion retains
+  the original error types, causes, metadata, and locations; erased errors support downcasting for recovery.
+- **In tests**: `gix_error::TestResult` (also re-exported by `gix_testtools`) accepts exceptions
+  directly with `?`. Public `gix_error::Result` also works with `gix_testtools::Result` through `?`.
+- **Common imports**: `use gix_error::{bail, message, ErrorExt, Result, ResultExt};` plus typed
+  exception aliases as needed.
 - See `gix-error/src/lib.rs` module docs for a full migration guide from `thiserror`
 
 ### Commit Messages
 
 Follow "purposeful conventional commits" style:
 
+- Write commit messages in Markdown and assume readers view them with syntax highlighting.
+  - Enclose anything that occurs in code, as well as crate names and shell commands, in backticks.
+  - Use Markdown generously whenever markup helps readers understand or navigate the prose.
+  - Use the body to share everything known about what motivated the change, not merely what changed.
 - Use conventional commit prefixes ONLY if message should appear in changelog
-- Breaking changes MUST use suffix `!`: `change!:`, `remove!:`, `rename!:`
+- Breaking changes MUST use `!` before the colon: `change!:`, `remove!:`, `rename!:`, or _scoped_ forms like `feat(gix-odb)!:`
 - Features/fixes visible to users: `feat:`, `fix:`
+- For a changelog-worthy commit touching multiple crates, _scope_ it to the crate that should receive the changelog entry, like `feat!(gix-ref)`.
 - Refactors/chores: no prefix (don't affect users)
 - Examples:
   - `feat: add Repository::foo() to do great things. (#234)`
   - `fix: don't panic when calling foo() in a bare repository. (#456)`
   - `change!: rename Foo to Bar. (#123)`
+  - `feat(gix-odb)!: add a new object lookup API`
+  - `fix(gix-ref)!: reject invalid reference names`
 
 ### Code Style
 
+- Do not create persistent Python scripts in this repository. Use Bash for repository automation and script-based tests unless the user explicitly requests otherwise.
 - Follow existing patterns in the codebase
+- Skip stylistic rewrites that increase SLOC after formatting; keep simpler existing forms instead of applying style rules unconditionally.
+- Start new Rust modules as `foo.rs`. Create a module directory only when it contains multiple module files; then use `foo/mod.rs` rather than a sibling `foo.rs` file.
 - No `.unwrap()` - use `.expect("context")` if you are sure this can't fail.
 - Prefer references in plumbing crates to avoid expensive clones
 - Avoid calling `.detach()` unless an owned value is explicitly required. Many `gix` APIs accept attached ids and references directly, so prefer keeping repository-backed handles like `gix::Id` when possible.
-- Use `gix_features::threading::*` for interior mutability primitives
+- Name variables holding untyped Git object IDs `<type>_id` or `*_<type>_id` (for example, `commit_id`, `root_tree_id`, or `note_blob_id`) so the object kind is always explicit.
+- Use `gix_parallel::*` for interior mutability primitives
 
 ### Path Handling
 
@@ -91,6 +137,30 @@ Follow "purposeful conventional commits" style:
 
 ### Test Best Practices
 
+- Tests must be isolated from the developer's checkout, other worktrees, shared
+  Git metadata, and user configuration. Use disposable repositories provided by
+  `gix-testtools`, such as `scripted_fixture_writable()`; never mutate a shared
+  read-only fixture or use the source checkout as a test repository.
+- Git invocations in test code must go through `gix_testtools::git()`,
+  `git_command()`, or fixture scripts executed by `gix-testtools`. Do not spawn
+  Git directly with `Command::new("git")` or ad hoc subprocess wrappers. If a test needs unsupported
+  command options, extend the shared isolated helper instead of bypassing it.
+  `run_git()` and `invoke_bash()` share this isolation. Subprocesses that invoke
+  Git indirectly must use `gix_testtools::configure_git_environment()` too.
+  Tests of APIs that read the process environment must isolate it before
+  exercising those APIs or changing environment variables. In `#[serial]` tests,
+  keep a `gix_testtools::isolate_git_environment()` guard alive for the entire test;
+  it restores only its recorded changes on drop. Chain test-specific overrides
+  onto that guard or use a separate `gix_testtools::Env` guard to restore them too.
+  All concurrent environment access must participate in the same serialization. Otherwise, use
+  `gix_testtools::run_in_isolated_process()` so changes cannot race other tests.
+  Restore working-directory changes separately with `gix_testtools::set_current_dir()`.
+- Setting a subprocess's working directory or passing `git -C` is not isolation:
+  inherited `GIT_DIR`, `GIT_WORK_TREE`, `GIT_COMMON_DIR`, `GIT_INDEX_FILE`, or
+  object-directory variables can redirect operations outside the fixture. Tests
+  that exercise such overrides must scope them to disposable test repositories.
+  Open repositories through the crate's isolated test helper or isolated `gix`
+  options, with only test-specific configuration overrides.
 - Run tests before making changes to understand existing issues
 - Use `GIX_TEST_IGNORE_ARCHIVES=1` when testing on macOS/Windows
 - Journey tests validate CLI behavior end-to-end
@@ -140,8 +210,10 @@ Follow "purposeful conventional commits" style:
 
 - Ubuntu-latest git version is the compatibility target
 - `cargo smart-release` for releases (driven by commit messages)
-- Split breaking changes into separate commits per affected crate if one commit-message wouldn't be suitable for all changed crates.
-- First commit: breaking change only; second commit: adaptations
+- Every commit must be self-contained and pass CI independently
+   - Feel free to run `etc/scripts/ci-check-local.sh --thorough` until it passes as proxy, as running every commit against CI isn't feasible.
+- Keep breaking changes and all adaptations required to build and test the workspace in the same commit
+- When such a commit touches multiple crates, _scope_ its conventional commit message to the crate whose changelog should receive the entry
 
 ## When Suggesting Changes
 

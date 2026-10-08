@@ -2,12 +2,6 @@
   "full_name": "roc-lang/roc",
   "points": [
     {
-      "checked_at": "2026-09-08T08:09:08Z",
-      "commit_sha": "c012c5fcfd973114c0a407d84e2158e1ce5a0388",
-      "pushed_at": "2026-09-08T08:02:50Z",
-      "stars": 6035
-    },
-    {
       "checked_at": "2026-10-03T09:14:01Z",
       "commit_sha": "c5261f31f074830b65cc869a7b1195095491f5bb",
       "pushed_at": "2026-10-03T09:10:18Z",

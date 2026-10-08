@@ -2,12 +2,6 @@
   "full_name": "comet-ml/opik",
   "points": [
     {
-      "checked_at": "2026-09-08T08:09:08Z",
-      "commit_sha": "66589738ee68a62bfdf0d58ab925e7d4f6b2099f",
-      "pushed_at": "2026-09-08T08:05:23Z",
-      "stars": 21865
-    },
-    {
       "checked_at": "2026-09-14T09:01:05Z",
       "commit_sha": "26c74dab9fceb987699ab57fcb57d873b9436f0d",
       "pushed_at": "2026-09-14T09:00:54Z",
@@ -30,6 +24,12 @@
       "commit_sha": "0ca52e830c3a8c67f04d9693e3772cc86dff3753",
       "pushed_at": "2026-09-23T08:34:05Z",
       "stars": 22202
+    },
+    {
+      "checked_at": "2026-10-08T10:40:59Z",
+      "commit_sha": "0563aee40e65c6cb2b089fb1ad5e8cb5d0558f91",
+      "pushed_at": "2026-10-08T10:40:53Z",
+      "stars": 22449
     }
   ],
   "repo_id": 638951438

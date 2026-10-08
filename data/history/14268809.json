@@ -2,12 +2,6 @@
   "full_name": "FastLED/FastLED",
   "points": [
     {
-      "checked_at": "2026-09-08T08:09:08Z",
-      "commit_sha": "1b7e5ddd1f0b795e6fd61317c8f20fae2a62dedf",
-      "pushed_at": "2026-09-08T08:02:09Z",
-      "stars": 7484
-    },
-    {
       "checked_at": "2026-09-18T08:19:12Z",
       "commit_sha": "0f7d899a068029e2087cce12da1a2a844972c19c",
       "pushed_at": "2026-09-18T08:16:15Z",
