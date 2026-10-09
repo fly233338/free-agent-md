@@ -1,7 +1,7 @@
 # anthropics/claude-code instruction files
 
-Upstream: [anthropics/claude-code](https://github.com/anthropics/claude-code) · License: `NOASSERTION` · Commit: `71cdddec623889d38af14b7a489670a03186f659`
+Upstream: [anthropics/claude-code](https://github.com/anthropics/claude-code) · License: `NOASSERTION` · Commit: `e47cc82bdbd27b5f799acd5b05fd0c29d33bb48c`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/anthropics/claude-code/CLAUDE.md) | [Source](https://github.com/anthropics/claude-code/blob/71cdddec623889d38af14b7a489670a03186f659/CLAUDE.md) | `0fafa0a267c1a7320c4d9ccb4acaa27bdb7062e34cb23569f32a7a472ed0c7ac` | 2,218 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/anthropics/claude-code/CLAUDE.md) | [Source](https://github.com/anthropics/claude-code/blob/e47cc82bdbd27b5f799acd5b05fd0c29d33bb48c/CLAUDE.md) | `0fafa0a267c1a7320c4d9ccb4acaa27bdb7062e34cb23569f32a7a472ed0c7ac` | 2,218 B |

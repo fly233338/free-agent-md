@@ -2,12 +2,6 @@
   "full_name": "NVIDIA/Megatron-LM",
   "points": [
     {
-      "checked_at": "2026-09-09T08:13:13Z",
-      "commit_sha": "8dc7ed381636e8c46f982dcfb96d4498dba68643",
-      "pushed_at": "2026-09-09T08:05:27Z",
-      "stars": 17793
-    },
-    {
       "checked_at": "2026-09-22T08:37:03Z",
       "commit_sha": "dae135048e9fcb9f75c8fe02ccdd54375711162a",
       "pushed_at": "2026-09-22T08:32:31Z",

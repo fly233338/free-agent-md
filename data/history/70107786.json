@@ -2,12 +2,6 @@
   "full_name": "vercel/next.js",
   "points": [
     {
-      "checked_at": "2026-09-09T08:13:13Z",
-      "commit_sha": "8b037a6748d6b09b040efd3354a15bc58fcf6830",
-      "pushed_at": "2026-09-09T08:13:08Z",
-      "stars": 142233
-    },
-    {
       "checked_at": "2026-09-10T08:12:06Z",
       "commit_sha": "ed1aab5d386d07ee2f553107dd39995251a6e44e",
       "pushed_at": "2026-09-10T07:24:45Z",
@@ -180,6 +174,12 @@
       "commit_sha": "25cfbd6ac1caf1e68f8752182815a663f7a57ae3",
       "pushed_at": "2026-10-08T10:19:53Z",
       "stars": 143251
+    },
+    {
+      "checked_at": "2026-10-09T10:40:00Z",
+      "commit_sha": "76bed42c1b10c623dcfc63d2f6a80940bf79e157",
+      "pushed_at": "2026-10-09T10:34:25Z",
+      "stars": 143037
     }
   ],
   "repo_id": 70107786

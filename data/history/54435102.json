@@ -1,0 +1,12 @@
+{
+  "full_name": "redpanda-data/connect",
+  "points": [
+    {
+      "checked_at": "2026-10-09T10:40:00Z",
+      "commit_sha": "ddb72ae5a52674d723cf94e6c599fe379c608141",
+      "pushed_at": "2026-10-09T10:38:08Z",
+      "stars": 8779
+    }
+  ],
+  "repo_id": 54435102
+}
