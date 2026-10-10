@@ -2,12 +2,6 @@
   "full_name": "apache/flink",
   "points": [
     {
-      "checked_at": "2026-09-10T08:12:06Z",
-      "commit_sha": "330291437309c829378006f5109c947d1bf4216e",
-      "pushed_at": "2026-09-10T08:04:50Z",
-      "stars": 26327
-    },
-    {
       "checked_at": "2026-10-07T10:21:27Z",
       "commit_sha": "3fc308453a40e573877874d272631bfbbf84f81b",
       "pushed_at": "2026-10-07T10:15:02Z",

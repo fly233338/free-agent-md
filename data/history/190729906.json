@@ -2,12 +2,6 @@
   "full_name": "Budibase/budibase",
   "points": [
     {
-      "checked_at": "2026-09-10T08:12:06Z",
-      "commit_sha": "a33a70da64f93fb3dd29aae521f3da77a380c170",
-      "pushed_at": "2026-09-10T08:09:32Z",
-      "stars": 28267
-    },
-    {
       "checked_at": "2026-10-06T10:25:49Z",
       "commit_sha": "0be0ec452a718c1adbfe41b07bc864d53f031bcc",
       "pushed_at": "2026-10-06T10:22:40Z",

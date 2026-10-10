@@ -2,12 +2,6 @@
   "full_name": "flashinfer-ai/flashinfer",
   "points": [
     {
-      "checked_at": "2026-09-10T08:12:06Z",
-      "commit_sha": "dbc88cf86571d2c01f8f67415789097839beaa52",
-      "pushed_at": "2026-09-10T08:04:56Z",
-      "stars": 6363
-    },
-    {
       "checked_at": "2026-09-21T09:02:36Z",
       "commit_sha": "c6ec2cce64d70f28dce7d5d4c3ec6e4316965dcf",
       "pushed_at": "2026-09-21T09:00:15Z",

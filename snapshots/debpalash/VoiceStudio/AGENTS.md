@@ -1,13 +1,12 @@
 ## Active desktop: Electron only
 
-Electron (`electron/`) is the only maintained desktop app. Tauri is sunset and
-archived; do not add features, repair its UI, or backport Electron changes to it.
-Triage Tauri-only reports toward the Electron migration guide; investigate shared
-backend defects only when they affect Electron or the supported API. Keep archived
-source, migration data, and existing compatibility contracts intact. Some code under
-`frontend/` is still shared with Electron or serves the web app: trace consumers
-before editing or removing it. New desktop UI, IPC, setup instructions and tests
-belong in Electron; validate Electron on macOS, Windows and Linux.
+Electron (`electron/`) is the only desktop and web UI. The Tauri shell and legacy
+UI entrypoints are removed; do not restore build, runtime, release, or CI paths for
+them. Triage reports from final Tauri installations toward the migration guide and
+preserve their immutable updater feeds. Some modules under `electron/src/shared/` remain
+temporarily shared by Electron; they are not a runnable app. New UI, IPC, setup
+instructions, tests, and browser assets belong in Electron; validate Electron on
+macOS, Windows and Linux.
 
 # Agent Rules — VoiceStudio
 
@@ -37,17 +36,18 @@ Binding for every AI agent (Claude, Codex, Cursor, review bots, …). CLAUDE.md 
 ## Change rules (see CLAUDE.md for full text)
 - Root-cause the class, not the instance; fail-before/pass-after regression test; smallest correct change.
 - Default behavior identical on macOS/Windows/Linux; platform-only features go behind explicit opt-in. Divergent default = P0.
-- Local-first: no new required network calls; any HF download gated on installed-ness or explicit user action; all synthetic audio through the `mark_synthetic` chokepoint.
-- Every user-facing string via i18n, present in ALL 21 `frontend/src/i18n/locales/*.json` with real translations.
+- Local-first: no new required network calls; any HF download gated on installed-ness or explicit user action; all synthetic audio through the `mark_synthetic` chokepoint. Sanctioned calls are listed in `.github/CONTRIBUTING.md` → Quality gates: user-started first-run setup (ffmpeg from GitHub `zackees/ffmpeg_bins`, the huggingface.co/hf-mirror.com reachability probe, HF model downloads), opening/enabling the galleries (jsDelivr manifest, GitHub Releases), packaged update checks, user-clicked yt-dlp updates from PyPI, consent-gated analytics, prefilled-URL bug reports, and the Pro licence check after a key is entered. Owner-approved exception (2026-09-28): the public GitHub star count may refresh automatically every 20 minutes, without credentials/referrer or user content; offline use remains unaffected.
+- Every user-facing string via i18n, present in ALL 21 `electron/src/renderer/src/i18n/locales/*.json` files (the catalog the app loads) with real translations; `tests/test_locale_parity.py` and Electron `locale:check` enforce it. The legacy `electron/src/shared/i18n/` catalog is loaded only by shared-module tests.
 - Docs-sync in the same PR. CHANGELOG Unreleased: quiet one-liners ending `(#N)` + `— thanks @user!` for community work, under a short `**Highlights**` list.
 - Tagged release announcements lead with the biggest user-visible change; redesigns need real UI screenshots and migrations need installer links and steps. Verify all contributor credits from the tag comparison and included PRs; list authors and bug reporters separately (see `docs/RELEASING.md`).
-- Versioning: `frontend/package.json` is the single source of truth; never bump without the owner asking.
-- `frontend/package.json` dep changes require regenerating root `bun.lock` (Docker runs `--frozen-lockfile`).
+- Versioning: root `package.json` is the single source of truth; never bump without the owner asking.
+- JavaScript dependency changes require regenerating root `bun.lock` (Docker runs `--frozen-lockfile`).
+- Attribution: commits, PR descriptions and comments carry only the submitter's git identity. Never credit an agent (no agent `Co-authored-by:`, "Generated with …", session links) and never add other names/emails. Human co-authors are fine. Enforced by the `commit-identity` check.
 - Issues: absorb or decline — never defer to a future version. Check the open-PR queue before implementing community-reported fixes.
 
 ## Shared select controls
 
-- Use `frontend/src/components/SearchableSelect.jsx` for all new or redesigned select boxes. Reuse `VoiceSelector` for voice choices. Do not introduce native `<select>` controls.
+- Use `electron/src/shared/components/SearchableSelect.jsx` for all new or redesigned select boxes. Reuse `VoiceSelector` for voice choices. Do not introduce native `<select>` controls.
 - Provide a localized `ariaLabel`; use `menuPortal` inside scrolling or clipping containers. Preserve keyboard selection and disabled states.
 
 ## Agent skills
@@ -66,4 +66,4 @@ The five canonical roles, each label string equal to its name. See `docs/agents/
 
 ### Domain docs
 
-Single-context: `CONTEXT.md` + `docs/adr/` at the repo root. See `docs/agents/domain.md`.
+Single-context: `docs/adr/` plus a root `CONTEXT.md` that is created lazily and does not exist yet — skip it when absent. See `docs/agents/domain.md`.

@@ -1,0 +1,194 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Additional Bit Workflow Instructions
+
+For comprehensive Bit MCP workflow instructions and core principles, see: `.github/instructions/bit.instructions.md`
+
+## CLI Output Style Guide
+
+When modifying CLI command output, follow the style guide: `scopes/harmony/cli/cli-output-style-guide.md`
+
+Use the shared formatting toolkit from `@teambit/cli` (`scopes/harmony/cli/output-formatter.ts`) — never hardcode chalk styles for section titles or Unicode symbols.
+
+## Development Commands
+
+**IMPORTANT**: This repository practices "dogfooding" - Bit is built using Bit itself. Always use `bit` commands rather than direct npm/pnpm commands where possible.
+
+### Setup and Installation
+
+- `npm run full-setup` - Complete setup for the repository (installs dependencies, sets up husky, compiles)
+- `npm run setup` - Basic setup (bit install and compile)
+- `bit install` - Install dependencies (uses PNPM under the hood, never run `pnpm install` directly)
+- `npm run dev-link [alias]` - Creates a global symlink for the bit binary (default: bit-dev)
+
+### Build and Compilation
+
+- `bit compile` - Compile all components
+- `bit watch` - Watch for changes and compile automatically
+
+### Testing
+
+**IMPORTANT — prefer unit tests (`.spec.ts`) over e2e tests.** E2e tests are extremely expensive: they dominate CI time and are responsible for ~80% of our CircleCI credit spend. When adding test coverage:
+
+- Default to unit tests: `.spec.ts` files alongside the source, run with `bit test`.
+- Only write an e2e test when the scenario genuinely cannot be covered by a unit test — e.g. it requires a real workspace + remote scope and a flow spanning multiple bit commands (tag/export/import/lane flows).
+- Before creating a new e2e **file**, check if an existing e2e file already covers the area and add a `describe`/`it` there instead — each new file adds fixed setup overhead on CI.
+- Keep any e2e test minimal: fewest components, fewest commands, no redundant variations of the same flow.
+
+- `bit test` - Run unit tests for components/aspects
+- `bit test --debug` - Run unit tests in debug mode (prints workspace location, keeps workspaces)
+- `npm run e2e-test` - Run end-to-end tests (can take hours, usually run on CI)
+- `npm run e2e-test:debug` - Run e2e tests in debug mode (keeps workspaces, prints output)
+- `npm run mocha-circleci` - Run mocha tests with CircleCI configuration
+
+**Running specific e2e tests:**
+⚠️ **CRITICAL: ALWAYS add `.only` to the test before running e2e tests!** ⚠️
+
+- Add `.only` to the `describe` or `it` block (e.g., `describe.only(...)` or `it.only(...)`)
+- Then run `npm run e2e-test` or `npm run e2e-test:debug`
+- The `--grep` flag does NOT work reliably - you MUST use `.only`
+- Running without `.only` will execute the ENTIRE test suite which takes hours
+- Example: Change `describe('my test', ...)` to `describe.only('my test', ...)`
+
+**Bug reproduction testing:** When asked to reproduce a bug, first try to reproduce it with a unit test (`.spec.ts`) at the level of the component that owns the logic. Only fall back to an e2e test when the bug spans multiple bit commands or requires a real workspace/remote-scope flow. Never create test directories in the current workspace — you cannot create nested Bit workspaces; the e2e test helpers provide workspace creation methods that use temporary directories and automatically clean up after tests.
+
+### Linting and Formatting
+
+- `npm run lint` - Run Oxlint and TypeScript type checking (`tsc --noEmit`)
+- `npm run lint:fix` - Run Oxlint with auto-fix
+- `npm run format` - Format code with Prettier
+- `npm run prettier:check` - Check if code is formatted correctly
+
+Lint rules live in `.oxlintrc.json`. ESLint has been fully removed from this repo's linting; the `eslint` packages remaining in `workspace.jsonc` are for `@teambit/defender.eslint-linter` which is shipped to Bit users' envs.
+
+**IMPORTANT**: After making code changes, always run `npm run lint` to verify. Do NOT run `npx tsc --noEmit` or `npx oxlint` directly — `npm run lint` is the canonical command and covers both type checking and linting for this repo.
+
+### Bit-specific Commands
+
+- `bit start` - Start the Bit UI for component development
+- `bit status` - Show workspace status
+- `bit compile` - Compile components
+- `bit test` - Run tests
+- `bit tag` - Tag components for release
+- `bit export` - Export components to remote scopes
+
+## Architecture Overview
+
+### Component System
+
+Bit is built using a component-based architecture where the entire codebase is composed of reusable components. The system follows a modular approach with:
+
+- **Aspects**: Core building blocks that provide functionality across the system
+- **Scopes**: Organizational units that group related components
+- **Environments**: Define how components are built, tested, and bundled
+- **Capsules**: Isolated environments for component operations
+
+### Key Directories
+
+**Core Architecture:**
+
+- `scopes/` - Contains all aspects organized by domain (harmony, component, dependencies, etc.)
+- `components/` - Standalone components and utilities
+- `e2e/` - End-to-end tests organized by functionality
+
+**Important Scopes:**
+
+- `scopes/harmony/` - Core runtime and infrastructure aspects
+- `scopes/component/` - Component-related functionality
+- `scopes/compilation/` - Build and compilation aspects
+- `scopes/dependencies/` - Dependency management
+- `scopes/workspace/` - Workspace management
+- `scopes/scope/` - Remote scope operations
+
+### Aspect System
+
+Each aspect follows a standard structure:
+
+- `.aspect.ts` - Aspect definition and metadata
+- `.main.runtime.ts` - Main runtime implementation
+- `.ui.runtime.ts` - UI runtime implementation (if applicable)
+- `.docs.mdx` - Documentation
+- `.composition.tsx` - Component compositions for testing
+
+**New aspects must use the core-aspect env** (`teambit.harmony/envs/core-aspect-env`), like every other aspect here. No variant sets it, so a new component otherwise falls back to `teambit.harmony/node`. Pass it when creating the aspect: `bit create bit-aspect <name> --scope <scope> --env teambit.harmony/envs/core-aspect-env`. If the component was added with `bit add` (which has no env flag), run `bit envs set <component-id> teambit.harmony/envs/core-aspect-env` right after. Verify with `bit envs get <component-id>`. The same fallback hits any new component: give a non-aspect component the env of its siblings (e.g. `teambit.node/envs/node-babel-mocha` for `scopes/*/modules/*`, `teambit.node/envs/node-typescript-mocha` for `scopes/toolbox/*`).
+
+### Configuration
+
+- `workspace.jsonc` - Main workspace configuration
+- `package.json` - Node.js dependencies and scripts
+- `tsconfig.json` - TypeScript configuration
+- `.bitmap` - Component tracking (auto-generated)
+
+### Development Patterns
+
+**Dependency Management:**
+
+- Uses `bit install` which runs PNPM programmatically under the hood
+- Never run `pnpm install` directly - always use `bit install`
+- `bit install` performs multiple operations beyond just package installation
+- Strict peer dependency rules configured
+- Component dependencies managed through Bit's dependency resolver
+
+**Testing Strategy:**
+
+- Unit tests: `.spec.ts` files alongside source
+- E2E tests: Comprehensive scenarios in `e2e/` directory
+- Component compositions: Interactive examples in `.composition.tsx`
+
+**Build Process:**
+
+- TypeScript compilation with strict mode
+- Babel for transpilation
+- Webpack for bundling
+- Oxlint for linting with custom rules (configured in `.oxlintrc.json`)
+
+### Key Concepts
+
+**Bootstrap Flow:**
+
+1. User runs a Bit command
+2. Bit builds a graph of core aspects + workspace aspects
+3. All aspects are loaded and instantiated
+4. Aspects register CLI commands
+5. Command is parsed and executed
+
+**Component Lifecycle:**
+
+- Add/Create: Components added to workspace (.bitmap updated)
+- Tag/Snap: Components versioned and stored in scope
+- Export: Components published to remote scopes
+- Import: Components brought into workspace from remote scopes
+
+**Workspace vs Scope:**
+
+- Workspace: Development environment with source code
+- Scope: Storage for versioned components (local: `.bit/`, remote: Bit Cloud)
+
+## Development Notes
+
+### Environments
+
+- Components use environments for build, test, and bundle operations
+- Default environments: Node.js, React, Angular, Vue
+- Custom environments can be created by extending base environments
+
+### Debugging
+
+- Debug logs: `~/Library/Caches/Bit/logs/debug.log` (macOS)
+- Verbose logging: `BIT_LOG=*` prefix
+- Stack traces written to debug.log
+- Use `bit globals` to locate debug.log
+
+### Performance
+
+- Use `bit watch` for faster development cycles
+- E2E tests run in parallel on CI
+- Component compilation can be parallelized
+
+### Aspect Configuration
+
+- Aspects accept config as 2nd parameter in `provider` method: `provider(deps, config)`
+- Define TypeScript interface for config and inject into main class constructor
+- Configure in `workspace.jsonc` under aspect ID key

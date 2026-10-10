@@ -1,8 +1,8 @@
 # ant-design/ant-design instruction files
 
-Upstream: [ant-design/ant-design](https://github.com/ant-design/ant-design) · License: `MIT` · Commit: `699e5b8b1a6a811e35f0cc1426c7f593b1f51a2a`
+Upstream: [ant-design/ant-design](https://github.com/ant-design/ant-design) · License: `MIT` · Commit: `c70a4c5a936b1442b291b615cf0702b76d4ec873`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/ant-design/ant-design/AGENTS.md) | [Source](https://github.com/ant-design/ant-design/blob/699e5b8b1a6a811e35f0cc1426c7f593b1f51a2a/AGENTS.md) | `d8d2a63de4f9a54216d3e91473f9ae81cb26ca9a261135f31588150c25a6498b` | 13,874 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/ant-design/ant-design/CLAUDE.md) | [Source](https://github.com/ant-design/ant-design/blob/699e5b8b1a6a811e35f0cc1426c7f593b1f51a2a/CLAUDE.md) | `d8d2a63de4f9a54216d3e91473f9ae81cb26ca9a261135f31588150c25a6498b` | 13,874 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/ant-design/ant-design/AGENTS.md) | [Source](https://github.com/ant-design/ant-design/blob/c70a4c5a936b1442b291b615cf0702b76d4ec873/AGENTS.md) | `d8d2a63de4f9a54216d3e91473f9ae81cb26ca9a261135f31588150c25a6498b` | 13,874 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/ant-design/ant-design/CLAUDE.md) | [Source](https://github.com/ant-design/ant-design/blob/c70a4c5a936b1442b291b615cf0702b76d4ec873/CLAUDE.md) | `d8d2a63de4f9a54216d3e91473f9ae81cb26ca9a261135f31588150c25a6498b` | 13,874 B |

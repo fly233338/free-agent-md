@@ -10,17 +10,46 @@ Do not worry about circular dependencies. All the import should be on the top of
 
 If you are doing any postgres migration. Please do not write migraton code manually, run npm run generate-postgres-migration instead.
 
-After generating the migration file, you MUST also register it in `Common/Server/Infrastructure/Postgres/SchemaMigrations/Index.ts` — add the import at the top and append the class to the default export array. The migration will not run on app startup until it is registered there.
+After generating the migration file, you MUST also register it in `packages/Common/Server/Infrastructure/Postgres/SchemaMigrations/Index.ts` — add the import at the top and append the class to the default export array. The migration will not run on app startup until it is registered there.
 
 CI enforces this. The "Postgres Schema Drift" workflow migrates an empty database with every registered migration and then generates a migration against the result; anything it can still generate is drift and fails the job. Run the same check locally with `npm run check-postgres-schema-drift` — it prints the exact statements that are missing.
+
+If the generated migration builds an index (`CREATE INDEX`) or adds a foreign key (`ALTER TABLE ... ADD CONSTRAINT ... FOREIGN KEY`) on a table that already exists, those statements block the table's writers for the whole scan. Move them into a migration of their own with `public transaction: boolean = false;` and pass each one, exactly as generated, to `OnlineDdl.createIndex` / `OnlineDdl.addForeignKey` (`packages/Common/Server/Infrastructure/Postgres/OnlineDdl.ts`), which build it online. The `SchemaMigrationsOnlineDdl` test enforces this for new migrations.
 
 #### Clickhouse
 
 Clickhouse migrations are written manually. Please write the migration code in DataMigrations and follow the same pattern as other migrations.
 
+### Feed and chat Markdown
+
+Feed items and Slack / Microsoft Teams messages are Markdown with people's text in them: names, titles, labels, rule names. Write that Markdown with the `mdText` tag from `packages/Common/Utils/Markdown/FeedMarkdown.ts`. It escapes every value for where it sits (a sentence, a link's words or address, a code span, a table row, the start of a line), and places a `MarkdownText` (built with `mdText` or a `FeedMarkdown` helper) as it is, so nothing is escaped twice.
+
+- Join pieces with `FeedMarkdown.join` / `bulletList` / `numberedList`, not `Array.join` or `+`, and never turn a `MarkdownText` into a string to place it again.
+- Markdown a person wrote goes in with `FeedMarkdown.asMarkdown`, OneUptime AI's with `FeedMarkdown.aiWritten` (`aiWrittenForTeams` for the Teams bot), and text from outside OneUptime with `FeedMarkdown.writtenOutside` / `reportedValue`.
+- Only `packages/Common/Utils/Markdown/` imports `MarkdownEscape` or `UntrustedMarkdown`.
+
+`FeedAndChatPlainTextEscapedGuard` (packages/Common/Tests/Server/Services) enforces this for every feed and chat sink, including `ee/Server`.
+
+### Megabyte-long values
+
+A synthetic monitor's screenshot reaches descriptions and emails as base64 of several megabytes on one line. Do not run a regular expression with a quantifier over a value that long. V8 backtracks on a stack that can grow with every character a quantifier takes, and a process that has been running a while compiles regular expressions without optimization, so they run out of stack ("Maximum call stack size exceeded") on about three megabytes - in production, and in a CI test worker that has already run many test files. Scan such a value with a loop or `indexOf` (`isBase64` in `packages/Common/Utils/Markdown/InlineImageDataUri.ts`), and keep it out of marked (`Markdown.holdBackFromMarked`). `ScreenshotEmailInLongRunningProcess.test.ts` (packages/Common/Tests/Server/Utils/Mail) runs the screenshot-in-email path under `node --no-regexp-optimization`, the state such a process reaches; test new code that handles these values the same way.
+
+Any text a notification carries can be that long: a response body or a log a description template places, a log pasted into a note - megabytes on one line, or a paragraph of a hundred thousand lines. Markdown parsers (marked for emails, remark for the Dashboard and for slackify) read lines and paragraphs with regular expressions or in time that grows with their square, so:
+
+- Before a parser reads such Markdown, hold back what is too long with `packages/Common/Utils/Markdown/OverLongText.ts` (`holdBackOverLongText`: the middle of every line over 64 KB, the plain lines of every run of lines over 64 KB) and write it back, escaped, where the parser put the token - as the email renderer (`Markdown.holdBackFromMarked`) and `MarkdownViewer` (`MarkdownViewerOverLongText.ts`) do. Markdown of at most 64 KB holds back nothing and renders exactly as before.
+- When too much is still left - long tables, logs whose lines hold a `|`, a `<` or a backtick - show the text as written: an email field with more than `MAX_MARKED_EMAIL_MARKDOWN_LENGTH` (1 MiB) left, or a RangeError from marked, is sent as escaped text; the viewer shows more than `MAX_PARSED_MARKDOWN_LENGTH` (128 KB) as text.
+- A regular expression that can cross lines gets a bounded quantifier (`{0,65536}`, as in `Markdown.convertToPlainText`), and a step that only needs a loop uses one.
+- Chat messages are cut before any converter reads them, ending with a note: Slack at `SlackUtil.MARKDOWN_MAX_LENGTH` (`cutMarkdown`), Teams to an 80 KB message (`MicrosoftTeamsMessageSize.fitMarkdownText`).
+- Every converter of notification text renders in time linear in its input, whatever its shape. marked, remark and slackify read some shapes in quadratic time far below 64 KB - emphasis, brackets or code spans that never close, a long word of punctuation, a `_` inside words for remark, long tables and lists - and 64 KB of one took from seconds to over a minute. Before a parser reads Markdown longer than 2 KB, `packages/Common/Utils/Markdown/SlowMarkdown.ts` (`holdBackSlowMarkdown`) measures its blocks in one pass and holds back the costly ones whole, written back as text, with each parser's limits (`EMAIL_SLOW_MARKDOWN_LIMITS`, `VIEWER_SLOW_MARKDOWN_LIMITS`, `SlackUtil.SLOW_MARKDOWN_LIMITS`). A new converter does the same; a new slow shape gets counted in `getInlineCharacterCount` or `getWordPunctuationWork`, and a timed entry in the suite below.
+- Every message is held to what its channel takes, measured as it is sent, and a cut one ends with "… (truncated — see OneUptime for the full text)": an email field to `MAX_EMAIL_FIELD_HTML_BYTES` and a whole email to `MAX_EMAIL_BYTES` (`Server/Utils/Mail/EmailSize.ts`; the note links to the record), a Teams card to its channel's budget (`MicrosoftTeamsMessageSize.fitAdaptiveCard`, `MICROSOFT_TEAMS_INCOMING_WEBHOOK_BUDGET_IN_BYTES`), and SMS, call, push, WhatsApp, Telegram and Discord messages to their providers' limits (`Utils/MessageFit.ts`, `TelegramMessageFit.ts`, `WhatsAppTemplateFit.ts`). A new channel or sender is held the same way.
+
+`HugeTextInLongRunningProcess.test.ts` (packages/Common/Tests/Server/Types) runs every converter - email, plain text, Slack, Teams, the Dashboard viewer, feed text - on sixteen megabytes under `node --no-regexp-optimization`, and on 64 KB of every shape that was slow, each held to a time budget; a new converter of notification text belongs there too.
+
 ### After you make a change.
 
-Please run "npm run fix" in root to fix all the lint issues. Please run "npm run compile" in projects that you made changes to make sure compile works.
+Do not lint the entire project. Only lint the files you have modified by passing their paths explicitly to `npx eslint --fix` from the root. Do not run `npm run lint`, `npm run fix-lint`, or `npm run fix`, as these commands lint the entire project.
+
+Please run "npm run compile" in projects that you made changes to make sure compile works.
 
 ### Tests
 
@@ -45,13 +74,13 @@ cluster-backed suites that install the chart on a throwaway KinD cluster. That i
 `helm-test` job in the "Common Jobs" workflow. Suites live in `HelmChart/Tests/suites`;
 see `HelmChart/README.md` for how to add one.
 
-### Project docs
-
-Internal roadmaps live in `Internal/Roadmap/` (see its README for the index).
-
 ### Mobile app releases
 
 Before building or publishing the Android or iOS app, read
-[MobileApp/RELEASING.md](MobileApp/RELEASING.md). It contains the existing store and
+[packages/MobileApp/RELEASING.md](packages/MobileApp/RELEASING.md). It contains the existing store and
 Expo identifiers, the verified release procedure, privacy checks, and the steps
 needed after uploading a binary to actually submit and publish the update.
+
+### Commit frequently
+
+Committing frequently helps keep your changes small and manageable. It also makes it easier to identify which changes introduced a bug if something goes wrong. Aim to commit logically related changes together and write clear commit messages that describe the purpose of the change. It also costs less when the work session is interrupted and resumed later.
