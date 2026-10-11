@@ -2,12 +2,6 @@
   "full_name": "apache/cassandra",
   "points": [
     {
-      "checked_at": "2026-09-11T08:07:25Z",
-      "commit_sha": "b4a08e7455cb3d9860bd1a919b3ecead62f7051b",
-      "pushed_at": "2026-09-11T08:05:29Z",
-      "stars": 10087
-    },
-    {
       "checked_at": "2026-09-13T08:22:51Z",
       "commit_sha": "d2fa1a85e93c7d35dbbf1f6dfafd41b3d088101c",
       "pushed_at": "2026-09-13T08:16:45Z",

@@ -2,12 +2,6 @@
   "full_name": "microsoft/FluidFramework",
   "points": [
     {
-      "checked_at": "2026-09-11T08:07:25Z",
-      "commit_sha": "53822eadcde73132d46b511136941aa341668f74",
-      "pushed_at": "2026-09-11T01:05:48Z",
-      "stars": 4947
-    },
-    {
       "checked_at": "2026-09-12T07:58:42Z",
       "commit_sha": "110e13f0ff489630fef099fa642ecac83ffe3208",
       "pushed_at": "2026-09-11T23:40:03Z",
@@ -177,6 +171,12 @@
     },
     {
       "checked_at": "2026-10-10T09:56:02Z",
+      "commit_sha": "48942bf8a2ccebb6f1c681c4c0ce09c81db26eb3",
+      "pushed_at": "2026-10-09T21:12:19Z",
+      "stars": 4947
+    },
+    {
+      "checked_at": "2026-10-11T10:05:50Z",
       "commit_sha": "48942bf8a2ccebb6f1c681c4c0ce09c81db26eb3",
       "pushed_at": "2026-10-09T21:12:19Z",
       "stars": 4947

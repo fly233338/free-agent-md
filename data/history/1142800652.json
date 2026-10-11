@@ -2,12 +2,6 @@
   "full_name": "TabularisDB/tabularis",
   "points": [
     {
-      "checked_at": "2026-09-11T08:07:25Z",
-      "commit_sha": "1583a6461c9b2bbe31801cb8431e17ebd71627e5",
-      "pushed_at": "2026-09-11T07:53:11Z",
-      "stars": 4904
-    },
-    {
       "checked_at": "2026-09-12T07:58:42Z",
       "commit_sha": "1bae5d7f3f8274bdf564abfbf57b1dcf15e44142",
       "pushed_at": "2026-09-12T07:49:50Z",
@@ -66,6 +60,12 @@
       "commit_sha": "4fe595922b2fb232869f9bc62adc7bdf3642f8de",
       "pushed_at": "2026-10-10T09:54:01Z",
       "stars": 5147
+    },
+    {
+      "checked_at": "2026-10-11T10:05:50Z",
+      "commit_sha": "5648e51b6179bb7c9c16a5cceb04465fe501f797",
+      "pushed_at": "2026-10-11T09:54:55Z",
+      "stars": 5178
     }
   ],
   "repo_id": 1142800652

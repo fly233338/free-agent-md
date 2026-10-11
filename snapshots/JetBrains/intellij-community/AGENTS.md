@@ -12,6 +12,7 @@
 ## Language
 
 - Read [Code Style](./.agents/skills/code-style/SKILL.md) before writing or reviewing Kotlin or Java.
+- Read [Rust Code Style](./.agents/skills/rust-code-style/SKILL.md) before writing or reviewing Rust.
 
 ## Writing
 
@@ -44,7 +45,7 @@ Read the referenced rules before you edit or review a file under these roots. Th
 
 ### After Code Changes
 
-- **Run the affected tests:** `./tests.cmd --module <module> --test <FQN or wildcard>`, or `node --test <file>` for a `*.test.mjs` file. An FQN is required, and a simple class name matches nothing. Always name the test module. `tests.cmd` compiles with Bazel itself, so a separate `bazel build` step is not needed. A module rule can override the runner. Skip this when the plugin has no tests. See [TESTING](./.agents/skills/testing/SKILL.md).
+- **Run the affected tests:** `./tools/bt.cmd --module <module> --filter <FQN>`, or `node --test <file>` for a `*.test.mjs` file. An FQN is required. Always name the test module. When bt refuses the module, run the `tests.cmd` command that it prints. Neither runner needs a separate `bazel build` step. A module rule can override the runner. Skip this when the plugin has no tests. See [TESTING](./.agents/skills/testing/SKILL.md).
 - **Bazel compilation without tests:** to verify compilation only, run `bazel build <target>` for the affected modules. Skip this when you changed only `.js`, `.mjs`, `.md`, `.txt`, or `.json` files.
 - After you change a Bazel or Starlark source (`BUILD`, `BUILD.bazel`, `MODULE.bazel`, `WORKSPACE`, `WORKSPACE.bazel`, or `*.bzl`), run `bazel run //:format.check`. If it reports a diff, run `bazel run //:format`, inspect the changes, and run the check again.
 - After you change an `*.iml`, a `BUILD.bazel`, or a `.idea/` file, run `./build/jpsModelToBazelCommunityOnly.cmd`.
