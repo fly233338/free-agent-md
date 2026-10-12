@@ -1,7 +1,7 @@
 # aipoch/open-science instruction files
 
-Upstream: [aipoch/open-science](https://github.com/aipoch/open-science) · License: `Apache-2.0` · Commit: `0b022490462a04e33a36ae6c31e1f4c0d6455cdf`
+Upstream: [aipoch/open-science](https://github.com/aipoch/open-science) · License: `Apache-2.0` · Commit: `802a5ceabfd827a0a19561ed02127f7953b0c06c`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/aipoch/open-science/AGENTS.md) | [Source](https://github.com/aipoch/open-science/blob/0b022490462a04e33a36ae6c31e1f4c0d6455cdf/AGENTS.md) | `1c16f47708ef0260ffe2e8a3e87dae97edda33a7c64e25d9bdff4a0cdfe60568` | 17,328 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/aipoch/open-science/AGENTS.md) | [Source](https://github.com/aipoch/open-science/blob/802a5ceabfd827a0a19561ed02127f7953b0c06c/AGENTS.md) | `afb1b90a78554296aaec07abbe6c0f8b7acfcd7f46d9babffac58aa275ba472d` | 18,110 B |

@@ -2,12 +2,6 @@
   "full_name": "can1357/oh-my-pi",
   "points": [
     {
-      "checked_at": "2026-09-12T07:58:42Z",
-      "commit_sha": "f97fa5c95010b62ac34c7357f9a1cae6975e12d6",
-      "pushed_at": "2026-09-12T07:51:40Z",
-      "stars": 30765
-    },
-    {
       "checked_at": "2026-09-15T08:45:05Z",
       "commit_sha": "07a10ebf7263bf419f53c84a5d516037fae61911",
       "pushed_at": "2026-09-15T08:36:23Z",
@@ -30,6 +24,12 @@
       "commit_sha": "dde3fc44ed16d3bbec292893c7a902e92d6ce00e",
       "pushed_at": "2026-10-09T10:38:47Z",
       "stars": 34736
+    },
+    {
+      "checked_at": "2026-10-12T10:58:37Z",
+      "commit_sha": "22a6a8230656cc87b6e5903a3a366965da35eba9",
+      "pushed_at": "2026-10-12T10:57:46Z",
+      "stars": 35150
     }
   ],
   "repo_id": 1125856365

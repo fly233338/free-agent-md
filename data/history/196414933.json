@@ -2,12 +2,6 @@
   "full_name": "open-telemetry/opentelemetry-collector-contrib",
   "points": [
     {
-      "checked_at": "2026-09-12T07:58:42Z",
-      "commit_sha": "933f7c7ff041c3f19a7bb5c52ec797911aa68880",
-      "pushed_at": "2026-09-11T23:49:40Z",
-      "stars": 4923
-    },
-    {
       "checked_at": "2026-09-13T08:22:51Z",
       "commit_sha": "babc3d0fe9959b83400da0a52819260ecce9a7d0",
       "pushed_at": "2026-09-13T07:15:37Z",
@@ -180,6 +174,12 @@
       "commit_sha": "5ca2c088522aa89a3cc8d77c83283998faa81152",
       "pushed_at": "2026-10-11T04:33:27Z",
       "stars": 4985
+    },
+    {
+      "checked_at": "2026-10-12T10:58:37Z",
+      "commit_sha": "7be474ae4e2a7612b126ecb1435c36de64b00d87",
+      "pushed_at": "2026-10-12T07:34:00Z",
+      "stars": 4990
     }
   ],
   "repo_id": 196414933

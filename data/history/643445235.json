@@ -2,12 +2,6 @@
   "full_name": "lobehub/lobehub",
   "points": [
     {
-      "checked_at": "2026-09-12T07:58:42Z",
-      "commit_sha": "daaea0f3ab1bf78779393702e9b5d5527637439a",
-      "pushed_at": "2026-09-12T07:52:06Z",
-      "stars": 82419
-    },
-    {
       "checked_at": "2026-09-13T08:22:51Z",
       "commit_sha": "791974d83143f4681dcd29d5d76861319514266c",
       "pushed_at": "2026-09-13T08:09:02Z",
@@ -54,6 +48,12 @@
       "commit_sha": "26ffb3cf21faa021fa2cd976a92a38d954d3beba",
       "pushed_at": "2026-10-10T09:54:37Z",
       "stars": 83103
+    },
+    {
+      "checked_at": "2026-10-12T10:58:37Z",
+      "commit_sha": "55ed3885d17283c245b46b814620f6b894c340ac",
+      "pushed_at": "2026-10-12T10:56:55Z",
+      "stars": 83164
     }
   ],
   "repo_id": 643445235

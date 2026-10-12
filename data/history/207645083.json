@@ -2,12 +2,6 @@
   "full_name": "TanStack/query",
   "points": [
     {
-      "checked_at": "2026-09-12T07:58:42Z",
-      "commit_sha": "f37f7f06c353988b81e6f71676e681c691044e75",
-      "pushed_at": "2026-09-12T07:43:36Z",
-      "stars": 50280
-    },
-    {
       "checked_at": "2026-09-18T08:19:12Z",
       "commit_sha": "d346e85f0144eb9b991e6e1665b22f4574de9751",
       "pushed_at": "2026-09-18T08:16:35Z",

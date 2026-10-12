@@ -1,7 +1,7 @@
 # twbs/bootstrap instruction files
 
-Upstream: [twbs/bootstrap](https://github.com/twbs/bootstrap) · License: `MIT` · Commit: `7ec940cb583fa8ba8065e2ae8d42d55bba34b9da`
+Upstream: [twbs/bootstrap](https://github.com/twbs/bootstrap) · License: `MIT` · Commit: `565d7ce52baa3673e8fc165268f03e073a1bf4cf`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/twbs/bootstrap/AGENTS.md) | [Source](https://github.com/twbs/bootstrap/blob/7ec940cb583fa8ba8065e2ae8d42d55bba34b9da/AGENTS.md) | `63b6ed26ae8a55646a59bb542db543cd8a20cea962d8bce0f7a2e6ba7bff02cc` | 7,664 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/twbs/bootstrap/AGENTS.md) | [Source](https://github.com/twbs/bootstrap/blob/565d7ce52baa3673e8fc165268f03e073a1bf4cf/AGENTS.md) | `aee25be7cdcd7c3960d78253b0639c4d608b369d637f475a2a8a40a14c8eb476` | 7,657 B |

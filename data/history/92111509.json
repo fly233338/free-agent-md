@@ -2,12 +2,6 @@
   "full_name": "TriliumNext/Trilium",
   "points": [
     {
-      "checked_at": "2026-09-12T07:58:42Z",
-      "commit_sha": "87fae79c5424289b9f9db26c43c19c9a018c6bb2",
-      "pushed_at": "2026-09-12T07:39:54Z",
-      "stars": 37802
-    },
-    {
       "checked_at": "2026-09-13T08:22:51Z",
       "commit_sha": "ebab479fb3fc2a70732638564c3b977a8de0406e",
       "pushed_at": "2026-09-13T08:17:26Z",
@@ -24,6 +18,12 @@
       "commit_sha": "682ea9937e7747d1d46cfaae898a7bcba8637a2a",
       "pushed_at": "2026-10-06T10:24:54Z",
       "stars": 38222
+    },
+    {
+      "checked_at": "2026-10-12T10:58:37Z",
+      "commit_sha": "3fb3254d7a1f69b6b4454877ef6a506da5f0639b",
+      "pushed_at": "2026-10-12T10:55:14Z",
+      "stars": 38290
     }
   ],
   "repo_id": 92111509
