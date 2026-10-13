@@ -10,7 +10,12 @@ A tool to build and run portable, self-contained virtual machines locally. <200m
 | Linux x86_64 / aarch64 | matching Linux | KVM | `/dev/kvm` |
 | Windows x86_64 | x86_64 Linux | Windows Hypervisor Platform (WHP) | WHP feature enabled |
 
-Windows caveats (run, persistent machines, volumes, port-forwarding, pack create/run, and interactive TTY all work): networking is TSI-only (TCP/UDP + inbound `-p`, no virtio-net); no GPU acceleration; no branch/snapshot. `pack create` needs `storage-template.ext4` / `overlay-template.ext4` beside `smolvm.exe` (Windows has no host `mkfs.ext4`). Set `SMOLVM_LIB_DIR` (folder holding `krun.dll` + `libkrunfw.dll`) and `SMOLVM_AGENT_ROOTFS` when running from a non-standard layout.
+Windows caveats: branches require `--freeze-source`, checkpoint capture rejects active virtiofs DAX mappings, and GPU acceleration is unavailable. `pack create` needs `storage-template.ext4` / `overlay-template.ext4` beside `smolvm.exe` (Windows has no host `mkfs.ext4`). Set `SMOLVM_LIB_DIR` (folder holding `krun.dll` + `libkrunfw.dll`) and `SMOLVM_AGENT_ROOTFS` when running from a non-standard layout.
+
+## Documentation
+
+Skill packets, tested procedures an agent can follow with their scripts, are indexed in
+`docs/README.md` (https://github.com/smol-machines/smolvm/tree/main/docs).
 
 ## Quick Reference
 
@@ -25,7 +30,7 @@ smolvm machine create --net --name myvm
 smolvm machine start --name myvm
 smolvm machine exec --name myvm -- apk add python3   # installs persist
 smolvm machine exec --name myvm -- which python3      # still there
-smolvm machine shell --name myvm               # interactive shell (auto-starts if stopped)
+smolvm machine shell --name myvm               # interactive shell (machine must be running)
 smolvm machine stop --name myvm
 smolvm machine delete --name myvm
 
@@ -77,25 +82,27 @@ smolvm machine create --name myvm --image ./myapp.tar     # persistent, from a l
 | Minimal VM without image | `smolvm machine run -s Smolfile` (bare VM) |
 | Change mounts/ports/resources on existing VM | `machine update --name NAME -v ./src:/app -p 8080:8080` |
 | Declarative VM config | Create a Smolfile, use `--smolfile`/`-s` flag |
+| Move a running machine from an arm64 Mac to arm64 Linux | `machine checkpoint --name NAME -o FILE.checkpoint` on the Mac, then `machine create --name NAME --from FILE.checkpoint` + `machine start` on Linux ([details](docs/mac-to-linux.md)) |
 
 ### Persistence Model
 
-- **`machine run`** — ephemeral. All changes are discarded when the command exits.
+- **`machine run`** — ephemeral. All changes are discarded when the command exits, unless `-d` leaves the machine running.
 - **`machine exec`** — persistent. Filesystem changes (package installs, config edits) persist across exec sessions for the same machine, whether bare or image-based. Changes are stored in an overlay on the machine's storage disk.
 - **`machine stop` + `start`** — changes persist across restarts. The persistent overlay is remounted preserving previous changes.
+- **`machine create --stop-on-exit`** (or Smolfile `stop_on_exit = true`) — the machine stops by itself when its workload (image entrypoint/cmd, or the command after `--`) exits, whatever the exit status. Storage is flushed exactly as for `machine stop`, so nothing the workload wrote is lost. `machine exec` sessions never trigger it. The machine's restart policy then applies as for any stop (the default, `never`, leaves it stopped); the workload's own exit status is not passed on.
 - **`pack run`** — ephemeral. Each run starts fresh from the packed image.
-- **`pack start` + `exec`** — daemon mode. `/workspace` persists across exec sessions and stop/start. Container overlay resets per exec (package installs don't persist — use `/workspace` for durable data).
+- **`pack start` + `exec`** — daemon mode. `/workspace` persists across exec sessions and stop/start. Package installs and file writes also persist across exec sessions.
 - **`machine create --from .smolmachine`** — creates a persistent named machine from a packed artifact. Boots from pre-extracted layers (~250ms, no image pull). Full `machine exec` persistence — package installs, file writes all survive across exec and stop/start.
-- **Memory-backed paths** — `/tmp`, `/run`, and `/dev/shm` are tmpfs regardless of the mode above. They keep their contents while the machine runs, including across `exec` sessions, but are empty again after a stop and start. `/workspace` and the rest of the machine filesystem are on the storage disk, so write anything that must outlive a restart there — including credentials and configuration, which should not sit in `/tmp` or behind a symlink into it.
+- **Memory-backed paths** — `/tmp`, `/run`, and `/dev/shm` are tmpfs regardless of the mode above, except that `machine run --unprivileged` keeps only `/dev/shm`. They keep their contents while the machine runs, including across `exec` sessions, but are empty again after a stop and start. `/workspace` and the rest of the machine filesystem are on the storage disk, so write anything that must outlive a restart there — including credentials and configuration, which should not sit in `/tmp` or behind a symlink into it.
 
 ## CLI Structure
 
-All commands use named flags (no positional args except `machine create --name NAME` and `machine delete --name NAME`).
+All commands name a machine with `--name`, never a positional (`machine cp SRC DST` takes its two paths as positionals).
 
 ```
 smolvm machine run --image IMAGE [-- COMMAND]     # ephemeral
 smolvm machine exec --name NAME [-- COMMAND]      # run in existing VM
-smolvm machine shell [--name NAME]                # interactive shell (auto-starts)
+smolvm machine shell [--name NAME]                # interactive shell (must be running)
 smolvm machine create --name NAME [OPTIONS]              # create persistent
 smolvm machine create --name NAME --from FILE.smolmachine  # from packed artifact
 smolvm machine start [--name NAME]                # start (default: "default")
@@ -114,6 +121,7 @@ smolvm pack run [--sidecar PATH] [-- CMD]         # run .smolmachine
 
 smolvm serve start [--listen ADDR:PORT|PATH]      # HTTP API
 smolvm config registries edit                     # registry auth
+smolvm completion bash|zsh|fish|powershell|elvish # print a shell completion script
 
 # Secrets are references to host env vars / files, resolved at launch — no
 # built-in store. Attach them on the command line or in a Smolfile [secrets].
@@ -141,12 +149,11 @@ Default registry: `registry.smolmachines.com`. Digest references require `sha256
 ### Local container images
 
 `--image` also accepts a local source — useful for CI, air-gapped hosts, and fast
-local iteration. smolvm stays a microVM runtime and delegates all image work
-(flatten, whiteouts, config) to container tooling (`crane`/`docker`/`podman`); the
-archive is flattened with `crane export`.
+local iteration. smolvm accepts Docker-save and OCI layout archives, recovers
+their image configuration, and delegates filesystem flattening to `crane export`.
 
 ```
-./image.tar  ./image.tar.gz  ./image.tgz   # a `docker save` / `podman save` archive (gzip ok)
+./image.tar  ./image.tar.gz  ./image.tgz   # Docker-save or OCI layout archive (gzip ok)
 -                                           # the same archive streamed on stdin
 ./rootfs/                                   # an already-unpacked root filesystem directory
 ```
@@ -163,8 +170,8 @@ rejected with a hint to build first (`docker build … && docker save … | … 
 
 | Flag | Short | Used on | Description |
 |------|-------|---------|-------------|
-| `--image` | `-I` | run, create, pack create | OCI image, or a local source: a `docker save` archive (`./img.tar`, or `-` for stdin) or unpacked rootfs dir (`./rootfs/`) |
-| `--name` | `-n` | run, start, stop, status, exec, update | Machine name (default: "default") |
+| `--image` | `-I` | run, create, pack create | OCI image, or a local source: a Docker-save/OCI archive (`./img.tar`, or `-` for stdin) or unpacked rootfs dir (`./rootfs/`) |
+| `--name` | `-n` | run, start, stop, status, exec, update | Machine name (default: "default"); `exec` takes only the long form |
 | `--net` | | run, create | Enable outbound networking (off by default) |
 | `--gpu` | | run, create | Enable GPU acceleration (Vulkan via virtio-gpu) |
 | `--gpu-vram` | | run, create | GPU shared-memory region size in MiB (default: 4096). Ignored without `--gpu`. |
@@ -176,7 +183,10 @@ rejected with a hint to build first (`docker build … && docker save … | … 
 | `--tty` | `-t` | run, exec | Allocate pseudo-TTY |
 | `--allow-cidr` | | run, create | CIDR egress filter (implies --net) |
 | `--allow-host` | | run, create | Hostname egress filter, resolved at VM start (implies --net) |
+| `--allow-host-pattern` | | run, create | Opt-in exact hostname or `*.domain` subdomains (implies --net) |
 | `--ssh-agent` | | run, create | Forward host SSH agent (git/ssh without exposing keys) |
+| `--nested` | | run, create | Let the guest run its own VMs (nested KVM). Off by default; it exposes the host kernel's nested-KVM code to the guest, so enable it only for trusted workloads. Over the HTTP API it is `nestedVirt`, refused with 403 unless the server runs `smolvm serve start --allow-nested-virt`. |
+| `--stop-on-exit` | | create | Stop the machine when its workload exits, whatever the exit status |
 
 ## Smolfile Reference
 
@@ -189,6 +199,7 @@ entrypoint = ["/app/run"]             # overrides image ENTRYPOINT
 cmd = ["serve"]                       # overrides image CMD
 env = ["PORT=8080", "DEBUG=1"]        # environment variables
 workdir = "/app"                      # working directory
+stop_on_exit = true                   # stop the machine when the workload exits (default: false)
 
 # Resources
 cpus = 2                              # vCPUs (default: 4)
@@ -197,18 +208,19 @@ net = true                            # outbound networking (default: false)
 gpu = true                            # GPU acceleration (default: false)
 gpu_vram = 4096                       # GPU VRAM MiB (default: 4096, ignored unless gpu=true)
 storage = 40                          # storage disk GiB (default: 20)
-overlay = 4                           # overlay disk GiB (default: 2)
+overlay = 4                           # overlay disk GiB (default: 10)
 
 # Network policy — egress filtering by hostname and/or CIDR
 [network]
 allow_hosts = ["api.stripe.com"]      # resolved at VM start (implies net)
+allow_host_patterns = ["api.example.com", "*.files.example.com"] # exact / subdomains
 allow_cidrs = ["10.0.0.0/8"]         # IP/CIDR ranges (implies net)
 
 # Dev profile (used by `machine run` and `machine create`)
 [dev]
 volumes = ["./src:/app"]              # host bind mounts
 ports = ["8080:8080"]                 # port forwarding
-init = ["pip install -r requirements.txt"]  # run on every VM start
+init = ["pip install -r requirements.txt"]  # run once, on the machine's first start
 env = ["APP_MODE=dev"]                # dev-only env (extends top-level)
 workdir = "/app"                      # dev-only workdir
 
@@ -256,13 +268,14 @@ cpus/mem:   CLI flag > Smolfile > defaults (4 CPU, 8192 MiB)
 
 - **Off by default** — VMs have no outbound access unless `--net` is specified
 - `--net` enables full outbound (TCP/UDP, DNS)
-- `--allow-host api.stripe.com` enables egress only to resolved IPs of that hostname (implies `--net`). Also enables DNS filtering — only allowed hostnames can be resolved.
+- `--allow-host api.stripe.com` retains its legacy DNS behavior: the hostname and its subdomains are allowed (implies `--net`).
+- `--allow-host-pattern api.stripe.com` permits the exact hostname. `--allow-host-pattern '*.stripe.com'` permits subdomains but not the apex. Both enable DNS filtering and imply `--net`.
 - `--allow-cidr 10.0.0.0/8` enables egress only to specified IP ranges (implies `--net`)
 - `--allow-host` and `--allow-cidr` can be combined and used multiple times
 - `--outbound-localhost-only` restricts to 127.0.0.0/8 and ::1 (implies `--net`)
-- `-p HOST:GUEST` forwards a host port to the VM (TCP)
+- `-p HOST:GUEST` forwards a host port to the VM (TCP). The server inside the machine must listen on `0.0.0.0` (not `127.0.0.1`): a server bound only to the guest's loopback is unreachable from the host, and connections are reset. `machine status` shows each published port's listening state. Publishing a port does not give the machine outbound access: without `--net` (or an allow-list) it serves inbound connections only.
 - `--guest-subnet 10.200.0.0/30` moves the guest link off the default `100.96.0.0/30` (gateway and resolver `.1`, guest `.2`; implies `--net`, virtio-net). Use it when the guest runs Tailscale, another VPN or carrier NAT that claims `100.64.0.0/10`, which otherwise routes the gateway away and breaks DNS. API: `guestSubnet` on create. Not combinable with `--network`
-- Smolfile: use `[network] allow_hosts` and `[network] allow_cidrs`
+- Smolfile: use `[network] allow_host_patterns` for exact/wildcard matching; `allow_hosts` retains legacy matching.
 
 ### Proxy Support
 
@@ -287,7 +300,20 @@ env = [
 ]
 ```
 
-Proxy vars are NOT forwarded automatically — each VM gets exactly the env you specify. The VM uses the host's DNS server (from `/etc/resolv.conf`) for name resolution.
+Proxy vars are NOT forwarded automatically — each VM gets exactly the env you specify, unless you ask for the host's (below). The VM uses the host's DNS server (from `/etc/resolv.conf`) for name resolution.
+
+### Behind a corporate firewall
+
+Two opt-in flags on `machine run` / `machine create` carry the host's network setup into the machine:
+
+```bash
+smolvm machine run --use-host-proxy --trust-host-certs --image python:3.12 -- pip install requests
+```
+
+- `--use-host-proxy` — the host's `HTTPS_PROXY`/`HTTP_PROXY`/`ALL_PROXY`/`NO_PROXY` (or, on macOS, the system proxy when none is set) become the workload's proxy env, in both cases. A proxy on the host's `localhost` is rewritten to an address the machine can reach; the machine's own loopback is always in `NO_PROXY`. Implies `--net`. A PAC-file-only Mac gets an error asking for `HTTPS_PROXY`.
+- `--trust-host-certs` — the certificates the host trusts (macOS: system roots + System keychain, where a corporate TLS-inspection root is installed; Linux: the system bundle) are mounted read-only at `/etc/smolvm-host-trust/ca-bundle.pem`, and `SSL_CERT_FILE`, `NODE_EXTRA_CA_CERTS`, `REQUESTS_CA_BUNDLE`, `CURL_CA_BUNDLE`, `GIT_SSL_CAINFO`, `PIP_CERT`, `AWS_CA_BUNDLE`, `CARGO_HTTP_CAINFO`, `DENO_CERT` point at it. `SMOLVM_HOST_CA_BUNDLE=/path` reads a different bundle (Nix, custom stores). Not combinable with `--credential` yet. Tools with their own trust store (Java keystores, `apt` over HTTPS) still need it configured in the image.
+
+Values passed with `-e` win over both flags, and `machine create` persists them.
 
 ## SSH Agent Forwarding
 
@@ -497,10 +523,11 @@ smolvm machine stop --name r-sandbox
 - Larger files stream automatically: 1 MiB chunks for upload, 16 MiB
   chunks for download. The split is asymmetric because the
   host→guest direction has tighter socket-buffer headroom.
-- Per-transfer cap is **4 GiB** in either direction. Files at or
-  above this size are rejected up front (`total_size exceeds maximum`
-  on upload; `exceeding the byte cap` on download). For larger
-  blobs, mount a host directory with `--volume` instead of copying.
+- Per-transfer cap is **4 GiB** in either direction. Files above this
+  size are rejected: an upload before it starts (`total_size exceeds
+  maximum`), a download once it passes the cap (`exceeding the byte
+  cap`). For larger blobs, mount a host directory with `--volume`
+  instead of copying.
 - A throttled progress line prints to stderr while large transfers
   run, including bytes-so-far, percentage (uploads), and rate.
   Pipe captures (`> file`) only see the upload/download summary,
@@ -532,6 +559,21 @@ Content-Type: application/json
 # event: exit
 # data: {"exitCode":0}
 ```
+
+### Interactive exec over a WebSocket
+
+`GET /api/v1/machines/:name/exec/interactive` upgrades to a WebSocket that carries a command's stdin and output in both directions.
+
+| Query parameter | Meaning |
+|---|---|
+| `cmd` | Program to run (default `/bin/sh`) |
+| `arg` | One argument to the program; repeat it for each, in order (an empty value is an argument) |
+| `tty` | `true` (default) runs the command on a PTY; `false` runs it on pipes |
+| `cols`, `rows` | Initial terminal size (`tty=true` only) |
+
+Binary frames from the client are the command's stdin; binary frames from the server are its output. When the command exits the server sends `{"type":"exit","code":N}` and closes. Closing the socket ends the session and kills the command. On a PTY, a text frame `{"type":"resize","cols":N,"rows":N}` resizes the terminal and stderr is merged into stdout.
+
+With `tty=false` the command sees plain pipes: stdout is the binary frames byte for byte, stderr arrives as text frames `{"type":"stderr","data":"..."}` (lossily UTF-8), and stdin is written with backpressure. The socket is read only as fast as the command takes its input, and no byte is dropped. Input the server has received wakes the session at once; it does not wait for agent output. Use `tty=false` for anything that is not a person at a terminal (a protocol relay, a filter). A PTY is not a reliable byte pipe: the guest agent writes its stdin without flow control, so a large or bursty write can be dropped, and the line discipline can rewrite bytes.
 ## Bare VM Mode
 
 `machine run` works without `--image` when a Smolfile provides the workload config, or for direct Alpine shell access:
@@ -579,7 +621,7 @@ The `.smolmachine` manifest includes registry-oriented metadata:
 
 ## HTTP API
 
-Start with `smolvm serve start --listen 127.0.0.1:8080` or `smolvm serve start --listen $XDG_RUNTIME_DIR/smolvm.sock`. Key endpoints:
+Start with `smolvm serve start --listen 127.0.0.1:8080` or `smolvm serve start --listen $XDG_RUNTIME_DIR/smolvm.sock`. Machines that ask for nested virtualization (`nestedVirt`) are refused unless the server is started with `--allow-nested-virt`; turning it off again also keeps existing nested machines from starting. Key endpoints:
 
 ```
 POST   /api/v1/machines                    Create machine
@@ -590,6 +632,7 @@ POST   /api/v1/machines/:name/stop         Stop machine
 DELETE /api/v1/machines/:name              Delete machine
 POST   /api/v1/machines/:name/exec         Execute command
 POST   /api/v1/machines/:name/exec/stream  Streaming exec (SSE)
+GET    /api/v1/machines/:name/exec/interactive  Interactive exec (WebSocket)
 PUT    /api/v1/machines/:name/files/*path  Upload file
 GET    /api/v1/machines/:name/files/*path  Download file
 GET    /api/v1/machines/:name/logs         Stream logs (SSE)
@@ -600,9 +643,9 @@ OpenAPI spec: `smolvm serve openapi`
 
 ## Important Defaults
 
-- Machine name defaults to `$SMOLVM_MACHINE_NAME` when set, else `"default"`, when `--name` is omitted. An explicit `--name` always wins. Meant for per-workspace tooling (direnv); `machine run`, `machine checkpoint`, and `machine branch` deliberately ignore the variable
+- Machine name defaults to `$SMOLVM_MACHINE_NAME` when set, else `"default"`, when `--name` is omitted. An explicit `--name` always wins. Meant for per-workspace tooling (direnv); `machine run`, `machine checkpoint`, and `machine branch` deliberately ignore the variable. Without the variable, `machine create` generates a `vm-<id>` name instead of `"default"`
 - Network is **off** by default (security-first)
-- CPUs: 4, Memory: 8192 MiB, Storage: 20 GiB, Overlay: 2 GiB
+- CPUs: 4, Memory: 8192 MiB, Storage: 20 GiB, Overlay: 10 GiB
 - Packed binaries use the same defaults (CPUs: 4, Memory: 8192 MiB)
 - Memory and CPU are elastic via virtio balloon — the host only commits what the guest actually uses and reclaims the rest
 
@@ -611,6 +654,6 @@ OpenAPI spec: `smolvm serve openapi`
 - **Observational commands don't stop running VMs.** `machine images`, `machine status`, `machine ls` and similar read-only commands leave a running VM in its current state. If the VM was already running before the command, it stays running after.
 - **`machine prune` works on a running VM.** Regular prune only removes unreferenced layers and is safe while containers are active. `prune --all` requires the VM to be stopped first since it deletes manifests for layers that may be in use.
 - **`machine exec` persists filesystem changes.** Package installs, config edits, and file writes inside `exec` survive across sessions. This works for both bare VMs and image-based VMs (created with `--image`).
-- **`machine update` modifies a stopped machine.** Add/remove mounts, ports, env vars, or change CPU/memory without recreating the VM. Changes take effect on next `machine start`. Requires the machine to be stopped.
-- **`machine run` is always ephemeral.** The VM is created, the command runs, and everything is cleaned up. No state carries over.
+- **`machine update` modifies a stopped machine.** Add/remove mounts, ports, env vars, or change CPU/memory without recreating the VM. Changes take effect on next `machine start`. Requires the machine to be stopped, except for allow-list changes (`--allow-host`, `--allow-host-pattern`, `--allow-cidr`, `--remove-allow-host`, `--remove-allow-cidr`) on a machine started with an allow list: those apply to its next connection or DNS lookup and persist across restarts. Lifting the allow list entirely still needs a stop.
+- **`machine run` is ephemeral unless detached.** Without `-d` the VM is created, the command runs, and everything is cleaned up. With `-d` it stays as a named machine that `machine exec` and `machine stop` act on.
 - **`-v host:/workspace` replaces the default workspace.** Every image-based VM exposes `/workspace` backed by the VM's storage disk. Mounting a host directory at `/workspace` takes priority — the host share is used instead and the storage-disk workspace is not mounted. Any other target path (e.g. `/data`, `/app`) does not affect `/workspace`.

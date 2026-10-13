@@ -2,12 +2,6 @@
   "full_name": "avelino/awesome-go",
   "points": [
     {
-      "checked_at": "2026-09-13T08:22:51Z",
-      "commit_sha": "9b6fd765589214ca7a70c0fad8af6885e9ab1ec3",
-      "pushed_at": "2026-09-12T19:39:06Z",
-      "stars": 183983
-    },
-    {
       "checked_at": "2026-09-14T09:01:05Z",
       "commit_sha": "58b6a213ce73926465b669540a18771bc0cea2fc",
       "pushed_at": "2026-09-14T00:40:35Z",
@@ -180,6 +174,12 @@
       "commit_sha": "6a6a6c944084158ed7cf81c42f3cf8e67f08b1f8",
       "pushed_at": "2026-10-12T10:29:41Z",
       "stars": 187973
+    },
+    {
+      "checked_at": "2026-10-13T10:42:33Z",
+      "commit_sha": "49368c09285edd92b059a0ad3b4e751ee9348c70",
+      "pushed_at": "2026-10-12T16:09:12Z",
+      "stars": 188139
     }
   ],
   "repo_id": 21540759

@@ -1,8 +1,8 @@
 # fatedier/frp instruction files
 
-Upstream: [fatedier/frp](https://github.com/fatedier/frp) · License: `Apache-2.0` · Commit: `2542d11a6201c0f2bbe3b1d93031fc1e83201056`
+Upstream: [fatedier/frp](https://github.com/fatedier/frp) · License: `Apache-2.0` · Commit: `12b0093ccfeb49fc5026e4b8ae8fb599c23b608b`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/fatedier/frp/AGENTS.md) | [Source](https://github.com/fatedier/frp/blob/2542d11a6201c0f2bbe3b1d93031fc1e83201056/AGENTS.md) | `669d5a2d67e25c848da00c80b6897998746ecdc1611e266f2ef4bfdd47abbc2b` | 1,063 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/fatedier/frp/CLAUDE.md) | [Source](https://github.com/fatedier/frp/blob/2542d11a6201c0f2bbe3b1d93031fc1e83201056/CLAUDE.md) | `669d5a2d67e25c848da00c80b6897998746ecdc1611e266f2ef4bfdd47abbc2b` | 1,063 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/fatedier/frp/AGENTS.md) | [Source](https://github.com/fatedier/frp/blob/12b0093ccfeb49fc5026e4b8ae8fb599c23b608b/AGENTS.md) | `669d5a2d67e25c848da00c80b6897998746ecdc1611e266f2ef4bfdd47abbc2b` | 1,063 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/fatedier/frp/CLAUDE.md) | [Source](https://github.com/fatedier/frp/blob/12b0093ccfeb49fc5026e4b8ae8fb599c23b608b/CLAUDE.md) | `669d5a2d67e25c848da00c80b6897998746ecdc1611e266f2ef4bfdd47abbc2b` | 1,063 B |

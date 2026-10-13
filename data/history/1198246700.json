@@ -2,12 +2,6 @@
   "full_name": "emdash-cms/emdash",
   "points": [
     {
-      "checked_at": "2026-09-13T08:22:51Z",
-      "commit_sha": "0d1b9699779d267906a20f54f2653449fc5e25f9",
-      "pushed_at": "2026-09-13T08:22:50Z",
-      "stars": 12319
-    },
-    {
       "checked_at": "2026-09-25T08:53:43Z",
       "commit_sha": "c78a6cb8c59ad74474e99b5d20f923a3041ac92e",
       "pushed_at": "2026-09-25T08:45:20Z",
@@ -24,6 +18,12 @@
       "commit_sha": "34f480ecc1662d61c4608fc61dfaf606b9e6d7d6",
       "pushed_at": "2026-10-06T10:23:58Z",
       "stars": 13420
+    },
+    {
+      "checked_at": "2026-10-13T10:42:33Z",
+      "commit_sha": "a562318d8fa9fcf086ad4c44a88d395a0559deee",
+      "pushed_at": "2026-10-13T10:42:29Z",
+      "stars": 13607
     }
   ],
   "repo_id": 1198246700
