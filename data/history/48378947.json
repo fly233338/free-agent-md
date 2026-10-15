@@ -2,12 +2,6 @@
   "full_name": "fatedier/frp",
   "points": [
     {
-      "checked_at": "2026-09-14T09:01:05Z",
-      "commit_sha": "d20a232996007dfe6ab425abc0a39a3ae9a0889b",
-      "pushed_at": "2026-09-09T17:28:29Z",
-      "stars": 109416
-    },
-    {
       "checked_at": "2026-09-15T08:45:05Z",
       "commit_sha": "d20a232996007dfe6ab425abc0a39a3ae9a0889b",
       "pushed_at": "2026-09-15T05:55:33Z",
@@ -180,6 +174,12 @@
       "commit_sha": "12b0093ccfeb49fc5026e4b8ae8fb599c23b608b",
       "pushed_at": "2026-10-13T02:46:35Z",
       "stars": 109871
+    },
+    {
+      "checked_at": "2026-10-15T08:23:07Z",
+      "commit_sha": "031716afd104dce6dc2cd06ecca0a76f145b744f",
+      "pushed_at": "2026-10-15T05:02:03Z",
+      "stars": 109922
     }
   ],
   "repo_id": 48378947

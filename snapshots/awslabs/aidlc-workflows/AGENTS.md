@@ -232,7 +232,7 @@ trees. The core uses the same building blocks in every harness:
 - **Sensors** (`sensors/`): Deterministic verification manifests (advisory): `aidlc-claim-sources.md`, `aidlc-required-sections.md`, `aidlc-upstream-coverage.md`, `aidlc-traceability.md`, `aidlc-linter.md`, `aidlc-type-check.md`
 - **Knowledge** (`knowledge/`): Methodology reference. Per-agent under `aidlc-<agent>-agent/`; cross-agent material in `aidlc-shared/`
 - **Tools** (`tools/`): TypeScript CLI tools, all prefixed `aidlc-*.ts` and run via bun
-- **Hooks** (`hooks/`): 17 framework hooks, all prefixed `aidlc-*.ts`, covering audit emission, sensor dispatch, stage-graph rebuild, session lifecycle, state validation, subagent tracking, statusline rendering, human-turn recording, exact stage-rule delivery, forwarding-loop enforcement, reviewer read-scope enforcement, review-receipt write-freeze enforcement, code-generation plan-approval enforcement, direct state-transition enforcement, and token-usage folding (the Claude-only usage-ledger producer)
+- **Hooks** (`hooks/`): 17 framework hooks, all prefixed `aidlc-*.ts`, covering audit emission, sensor dispatch, stage-graph rebuild, session lifecycle, state validation, subagent tracking, statusline rendering, human-turn recording, exact stage-rule delivery, forwarding-loop enforcement, reviewer read-scope enforcement, review-receipt write-freeze enforcement, code-generation plan-approval enforcement, runtime-record protection and helper lifecycle enforcement, and token-usage folding (the Claude-only usage-ledger producer)
 
 ## Working on This Project
 
@@ -242,6 +242,16 @@ trees. The core uses the same building blocks in every harness:
 - User-facing onboarding uses two skeletons: `core/templates/onboarding.md` is marker-free neutral guidance; `core/templates/onboarding-harness.md` carries each harness's `onboarding.fills.ts`. Edit the neutral template for shared project guidance and the harness skeleton/fills for native setup. Kiro, Kiro IDE, Codex, Cursor, and opencode share byte-identical root `AGENTS.md` content and ship native onboarding inside their harness directories; Claude concatenates both parts in `.claude/CLAUDE.md`, and Copilot in its exclusive root `AGENTS.md`.
 - "harness" has three senses in this repo: `harness/` (top-level, the per-CLI distribution surfaces of this effort), `docs/harness-engineering/` (the Harness Engineer Guide), and `tests/harness/` (test-suite helper library), which are unrelated.
 - See `docs/guide/` (User Guide), `docs/harness-engineering/` (Harness Engineer Guide), and `docs/reference/` (Developer Reference) for full documentation
+
+## Comments
+
+Agents read this code more than people do, and they can read the code itself. A comment earns its place when it says what the code cannot.
+
+- **Keep:** why the code is this way, the path that was tried and rejected, a constraint that lives somewhere else, a platform quirk, who owns a rule, a test file's header saying what it checks, and a short label that maps a long block.
+- **Cut:** a comment that restates the next lines; history git already keeps (where code was ported from, review rounds, "used to", "now", dates), unless the history is the reason; commented-out code; a TODO with no owner; an empty banner.
+- **Point by name, never by line.** Name the function, test, section or file you mean; a line number goes wrong as soon as someone edits above it. `tests/unit/t-comment-pointer-lint.test.ts` fails on a pointer such as `aidlc-lib.ts:4144`, `lib:357-361` or `(:869)` in any comment under `core/`, `harness/`, `scripts/`, `plugins/` and `tests/`.
+- **A wrong comment is worse than none.** When you change code, fix or cut the comment that describes it.
+- **Leave machine-read comments as they are:** `covers:` headers and the claim tokens on their lines, `@ts-expect-error`, `biome-ignore`, and markers a tool reads, such as `/* @aidlc-shipped-entrypoints@ */`. Some tools read plain words too: the merge queue's macOS run picks the unit test files whose source names macOS or darwin (`scripts/ci-macos-unit-selection.ts`), so keep that word in a test that needs the macOS run.
 
 ## Test Suite
 

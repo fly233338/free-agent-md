@@ -2,12 +2,6 @@
   "full_name": "remotion-dev/remotion",
   "points": [
     {
-      "checked_at": "2026-09-14T09:01:05Z",
-      "commit_sha": "d50b43bf5aa9a02f0bca4e34b263926ab2a2097f",
-      "pushed_at": "2026-09-14T08:57:57Z",
-      "stars": 59160
-    },
-    {
       "checked_at": "2026-09-15T08:45:05Z",
       "commit_sha": "1610f93cc28241507666d8e198b678c30478255b",
       "pushed_at": "2026-09-15T08:43:59Z",
@@ -66,6 +60,12 @@
       "commit_sha": "102a548c0553e24170cf1baa21b7bc413ce03391",
       "pushed_at": "2026-10-11T09:58:56Z",
       "stars": 63153
+    },
+    {
+      "checked_at": "2026-10-15T08:23:07Z",
+      "commit_sha": "66d7188d4f679d6003fd6e13b1253384b895484f",
+      "pushed_at": "2026-10-15T08:17:48Z",
+      "stars": 64211
     }
   ],
   "repo_id": 274495425

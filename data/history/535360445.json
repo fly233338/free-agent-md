@@ -2,12 +2,6 @@
   "full_name": "ultralytics/ultralytics",
   "points": [
     {
-      "checked_at": "2026-09-14T09:01:05Z",
-      "commit_sha": "c371882b3ba096ff03dc72c63710c4368fdecd31",
-      "pushed_at": "2026-09-14T09:00:18Z",
-      "stars": 61587
-    },
-    {
       "checked_at": "2026-09-19T08:07:22Z",
       "commit_sha": "7e633f91ce2f1d0ab0d0076b93a48e9620e88747",
       "pushed_at": "2026-09-19T07:53:25Z",

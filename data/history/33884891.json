@@ -2,12 +2,6 @@
   "full_name": "apache/airflow",
   "points": [
     {
-      "checked_at": "2026-09-14T09:01:05Z",
-      "commit_sha": "b4d012936c5abe5f6b9b68eff085f98f30018370",
-      "pushed_at": "2026-09-14T09:00:00Z",
-      "stars": 46848
-    },
-    {
       "checked_at": "2026-09-22T08:37:03Z",
       "commit_sha": "4aeb647a51a9ea2a0cb9fee04939078d175cf34f",
       "pushed_at": "2026-09-22T08:31:22Z",
@@ -54,6 +48,12 @@
       "commit_sha": "a52e9f96ecd1aefafe034842231fb93ef08deb76",
       "pushed_at": "2026-10-13T10:38:55Z",
       "stars": 47159
+    },
+    {
+      "checked_at": "2026-10-15T08:23:07Z",
+      "commit_sha": "4e8ab38306f2bec5262e2da465224d4635deb287",
+      "pushed_at": "2026-10-15T08:16:03Z",
+      "stars": 47180
     }
   ],
   "repo_id": 33884891
