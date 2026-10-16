@@ -2,12 +2,6 @@
   "full_name": "nautechsystems/nautilus_trader",
   "points": [
     {
-      "checked_at": "2026-09-15T08:45:05Z",
-      "commit_sha": "700bbd290e50384338ae991e1b791064850ac9cd",
-      "pushed_at": "2026-09-15T08:42:02Z",
-      "stars": 28958
-    },
-    {
       "checked_at": "2026-09-18T08:19:12Z",
       "commit_sha": "5980f363ae83eb11d0afdfec4c7109246ff511d9",
       "pushed_at": "2026-09-18T08:13:52Z",
@@ -54,6 +48,12 @@
       "commit_sha": "f7c4f417f9fae4b9edd0351d36f71197a45a02dc",
       "pushed_at": "2026-10-12T10:55:54Z",
       "stars": 29865
+    },
+    {
+      "checked_at": "2026-10-16T08:15:49Z",
+      "commit_sha": "86d459294b668e09cbcb7996a6d5d9c2ce5e6b29",
+      "pushed_at": "2026-10-16T08:11:58Z",
+      "stars": 30126
     }
   ],
   "repo_id": 138552196

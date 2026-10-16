@@ -2,12 +2,6 @@
   "full_name": "microsoft/terminal",
   "points": [
     {
-      "checked_at": "2026-09-15T08:45:05Z",
-      "commit_sha": "0319ece2192129e74edf27afb6bf8b25b157d111",
-      "pushed_at": "2026-09-14T17:26:00Z",
-      "stars": 104897
-    },
-    {
       "checked_at": "2026-09-16T08:39:32Z",
       "commit_sha": "9694946ae22420a30691b7610c31f5723d9a5ff8",
       "pushed_at": "2026-09-16T03:04:02Z",
@@ -180,6 +174,12 @@
       "commit_sha": "44b440bf043522ec06014b2cff30d0f52ca30b68",
       "pushed_at": "2026-10-14T18:14:36Z",
       "stars": 105168
+    },
+    {
+      "checked_at": "2026-10-16T08:15:49Z",
+      "commit_sha": "44b440bf043522ec06014b2cff30d0f52ca30b68",
+      "pushed_at": "2026-10-15T22:57:19Z",
+      "stars": 105177
     }
   ],
   "repo_id": 100060912

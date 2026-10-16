@@ -2,12 +2,6 @@
   "full_name": "ChromeDevTools/chrome-devtools-mcp",
   "points": [
     {
-      "checked_at": "2026-09-15T08:45:05Z",
-      "commit_sha": "906c83b004320b7f8fc3ac558e96b0f9be9d2e07",
-      "pushed_at": "2026-09-15T08:38:15Z",
-      "stars": 52015
-    },
-    {
       "checked_at": "2026-09-17T08:43:22Z",
       "commit_sha": "9ab482a7b1c0e7537771ea8ce0df93ba7bb32065",
       "pushed_at": "2026-09-17T08:40:45Z",
@@ -30,6 +24,12 @@
       "commit_sha": "dc5ae53f6c924056a14e7085bc43a046d2ff8812",
       "pushed_at": "2026-10-09T10:39:34Z",
       "stars": 53158
+    },
+    {
+      "checked_at": "2026-10-16T08:15:49Z",
+      "commit_sha": "3804a9ad5299bad87e3771683ad4da6d8cae280d",
+      "pushed_at": "2026-10-16T08:09:44Z",
+      "stars": 53634
     }
   ],
   "repo_id": 1054793726

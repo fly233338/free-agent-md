@@ -2,12 +2,6 @@
   "full_name": "garrytan/gstack",
   "points": [
     {
-      "checked_at": "2026-09-15T08:45:05Z",
-      "commit_sha": "4a3c6a8a3cad82cfffdaa4d152e1c5ae5c4af659",
-      "pushed_at": "2026-09-14T22:14:58Z",
-      "stars": 133125
-    },
-    {
       "checked_at": "2026-09-16T08:39:32Z",
       "commit_sha": "a6b3a57512ca6d5c6aa5b68f74f736195021f96e",
       "pushed_at": "2026-09-16T04:35:11Z",
@@ -180,6 +174,12 @@
       "commit_sha": "47d639abffa882b8cbb641d7d1dedf08ecada9ec",
       "pushed_at": "2026-10-15T02:50:03Z",
       "stars": 136456
+    },
+    {
+      "checked_at": "2026-10-16T08:15:49Z",
+      "commit_sha": "47d639abffa882b8cbb641d7d1dedf08ecada9ec",
+      "pushed_at": "2026-10-16T01:04:25Z",
+      "stars": 136614
     }
   ],
   "repo_id": 1179264259

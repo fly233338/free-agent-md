@@ -2,12 +2,6 @@
   "full_name": "langfuse/langfuse",
   "points": [
     {
-      "checked_at": "2026-09-15T08:45:05Z",
-      "commit_sha": "4810332fc1b1edc0c0ee7a38a6ec53154426735d",
-      "pushed_at": "2026-09-15T08:44:47Z",
-      "stars": 34627
-    },
-    {
       "checked_at": "2026-09-16T08:39:32Z",
       "commit_sha": "8c70edf53e9fae13402392c63e60391cd316560d",
       "pushed_at": "2026-09-16T08:33:00Z",
@@ -72,6 +66,12 @@
       "commit_sha": "180e54f62e510fcfb1263d60af4e24650bd0bf11",
       "pushed_at": "2026-10-15T08:19:57Z",
       "stars": 35850
+    },
+    {
+      "checked_at": "2026-10-16T08:15:49Z",
+      "commit_sha": "784c3a784a66431d35dc6f9cf82132fc7eaf377f",
+      "pushed_at": "2026-10-16T08:14:38Z",
+      "stars": 35899
     }
   ],
   "repo_id": 642497346

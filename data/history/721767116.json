@@ -2,12 +2,6 @@
   "full_name": "clash-verge-rev/clash-verge-rev",
   "points": [
     {
-      "checked_at": "2026-09-15T08:45:05Z",
-      "commit_sha": "f58e0a0af573cfce0aedfb5297694869cd46d462",
-      "pushed_at": "2026-09-15T08:10:09Z",
-      "stars": 144586
-    },
-    {
       "checked_at": "2026-09-16T08:39:32Z",
       "commit_sha": "e385d37e5b1f3dd1ac216b4f87524b5913ab2d44",
       "pushed_at": "2026-09-16T06:05:53Z",
@@ -180,6 +174,12 @@
       "commit_sha": "c6b51171a1db9b75a4270d78944e132293dbdd83",
       "pushed_at": "2026-10-15T05:52:29Z",
       "stars": 151519
+    },
+    {
+      "checked_at": "2026-10-16T08:15:49Z",
+      "commit_sha": "dc5a8a5ff443c020a3dec79c2b46bc1f55411d95",
+      "pushed_at": "2026-10-16T06:37:34Z",
+      "stars": 151739
     }
   ],
   "repo_id": 721767116

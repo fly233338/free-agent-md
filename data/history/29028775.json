@@ -2,12 +2,6 @@
   "full_name": "react/react-native",
   "points": [
     {
-      "checked_at": "2026-09-15T08:45:05Z",
-      "commit_sha": "d8139151605a7a887212582d4faabb5ab215ef87",
-      "pushed_at": "2026-09-15T06:58:38Z",
-      "stars": 126607
-    },
-    {
       "checked_at": "2026-09-16T08:39:32Z",
       "commit_sha": "b4d57abe129d65d02a18ab4f5dd89e9e404357e9",
       "pushed_at": "2026-09-16T08:12:20Z",
@@ -180,6 +174,12 @@
       "commit_sha": "cb5ea0385355aeff6321a79615e4ffae8c1cbfb9",
       "pushed_at": "2026-10-15T01:43:13Z",
       "stars": 126677
+    },
+    {
+      "checked_at": "2026-10-16T08:15:49Z",
+      "commit_sha": "e04aaf62f70491c803f0e0653075ec088c7c88f4",
+      "pushed_at": "2026-10-16T03:49:47Z",
+      "stars": 126690
     }
   ],
   "repo_id": 29028775

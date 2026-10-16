@@ -2,12 +2,6 @@
   "full_name": "ClickHouse/ClickHouse",
   "points": [
     {
-      "checked_at": "2026-09-15T08:45:05Z",
-      "commit_sha": "933221e9c1f974791e9554ad0a8fcdd9000a4264",
-      "pushed_at": "2026-09-15T08:43:48Z",
-      "stars": 49898
-    },
-    {
       "checked_at": "2026-09-17T08:43:22Z",
       "commit_sha": "290adb52c4ee238c9f3f0b557d6f2ca9bb3b29ff",
       "pushed_at": "2026-09-17T08:42:04Z",
