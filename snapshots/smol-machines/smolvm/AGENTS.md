@@ -10,7 +10,7 @@ A tool to build and run portable, self-contained virtual machines locally. <200m
 | Linux x86_64 / aarch64 | matching Linux | KVM | `/dev/kvm` |
 | Windows x86_64 | x86_64 Linux | Windows Hypervisor Platform (WHP) | WHP feature enabled |
 
-Windows caveats: branches require `--freeze-source`, checkpoint capture rejects active virtiofs DAX mappings, and GPU acceleration is unavailable. `pack create` needs `storage-template.ext4` / `overlay-template.ext4` beside `smolvm.exe` (Windows has no host `mkfs.ext4`). Set `SMOLVM_LIB_DIR` (folder holding `krun.dll` + `libkrunfw.dll`) and `SMOLVM_AGENT_ROOTFS` when running from a non-standard layout.
+Windows caveats (branches need `--freeze-source`, checkpoint capture rejects active virtiofs DAX mappings, no GPU acceleration, the pack templates): `docs/limitations.md`. Set `SMOLVM_LIB_DIR` (folder holding `krun.dll` + `libkrunfw.dll`) and `SMOLVM_AGENT_ROOTFS` when running from a non-standard layout.
 
 ## Documentation
 
@@ -87,13 +87,13 @@ smolvm machine create --name myvm --image ./myapp.tar     # persistent, from a l
 
 ### Persistence Model
 
-`machine run` is ephemeral unless `-d` keeps the machine. `machine exec`
-changes persist in an overlay on the machine's storage disk, across exec
-sessions and a stop and start. `pack run` starts fresh each time, while
-`pack start` + `exec` and `machine create --from .smolmachine` persist.
-`/tmp`, `/run` and `/dev/shm` are tmpfs and empty after a restart, so write
-what must survive to `/workspace`. Every mode, `--stop-on-exit` and the tmpfs
-details: `docs/dev-env/README.md`.
+`machine run` is ephemeral unless `-d` keeps the machine as a named one that
+`exec` and `stop` act on. `machine exec` changes persist in an overlay on the
+machine's storage disk, bare or image-based, across exec sessions and a stop and
+start. `pack run` starts fresh each time, while `pack start` + `exec` and
+`machine create --from .smolmachine` persist. `/tmp`, `/run` and `/dev/shm` are
+tmpfs and empty after a restart, so write what must survive to `/workspace`.
+Every mode, `--stop-on-exit` and the tmpfs details: `docs/dev-env/README.md`.
 
 ## CLI Structure
 
@@ -110,6 +110,7 @@ smolvm machine stop [--name NAME] [--timeout SECS]  # stop (workload gets SIGTER
 smolvm machine logs [--name NAME] [-f] [--tail N] # workload stdout/stderr, even when stopped
 smolvm machine delete --name NAME [-f]                   # delete
 smolvm machine status [--name NAME]               # check state
+smolvm machine stats [--name NAME] [--json]       # CPU % and guest memory
 smolvm machine ls [--json]                        # list all
 smolvm machine update --name NAME [OPTIONS]              # modify stopped machine settings
 smolvm machine cp SRC DST                         # copy files (host↔VM)
@@ -119,18 +120,13 @@ smolvm machine monitor [--name NAME]              # foreground health + restart
 smolvm pack create --image IMAGE -o PATH          # package
 smolvm pack create --from-vm NAME -o PATH         # pack from VM snapshot
 smolvm pack run [--sidecar PATH] [-- CMD]         # run .smolmachine
+smolvm pack pull REF [-o PATH]                    # pull .smolmachine into the cache
+smolvm pack list [--json]                         # pulled artifacts and their paths
 
 smolvm serve start [--listen ADDR:PORT|PATH]      # HTTP API
 smolvm config registries edit                     # registry auth
 smolvm completion bash|zsh|fish|powershell|elvish # print a shell completion script
 smolvm <any command> --error-format json        # failures as {"error":{"code":"NOT_FOUND","message":…}}
-
-# Secrets are references to host env vars / files, resolved at launch — no
-# built-in store. Attach them on the command line or in a Smolfile [secrets].
-smolvm machine run    --secret-env GUEST_VAR=HOST_VAR     # from host env var
-smolvm machine run    --secret-file GUEST_VAR=/abs/path   # from host file
-smolvm machine create --name NAME --secret-env GUEST_VAR=HOST_VAR  # persists the ref
-smolvm machine exec --name NAME --secret-env GUEST_VAR=HOST_VAR -- cmd
 ```
 
 ## Artifact References
@@ -189,7 +185,7 @@ rejected with a hint to build first (`docker build … && docker save … | … 
 | `--allow-host` | | run, create, update | Hostname egress filter, resolved at VM start (implies --net) |
 | `--allow-host-pattern` | | run, create, update | Opt-in exact hostname or `*.domain` subdomains (implies --net) |
 | `--ssh-agent` | | run, create, pack run | Forward host SSH agent (git/ssh without exposing keys) |
-| `--nested` | | run, create | Let the guest run its own VMs (nested KVM). Off by default; it exposes the host kernel's nested-KVM code to the guest, so enable it only for trusted workloads. Over the HTTP API it is `nestedVirt`, refused with 403 unless the server runs `smolvm serve start --allow-nested-virt`. |
+| `--nested` | | run, create | Let the guest run its own VMs (nested KVM). Off by default; it exposes the host kernel's nested-KVM code to the guest, so enable it only for trusted workloads. |
 | `--stop-on-exit` | | create | Stop the machine when its workload exits, whatever the exit status |
 
 ## Smolfile
@@ -256,7 +252,7 @@ env = [
 ]
 ```
 
-Proxy vars are NOT forwarded automatically — each VM gets exactly the env you specify, unless you ask for the host's (below). The VM uses the host's DNS server (from `/etc/resolv.conf`) for name resolution.
+Proxy vars are NOT forwarded automatically: each VM gets exactly the env you specify, unless you ask for the host's (below). The guest uses the host's own resolver: the first `/etc/resolv.conf` nameserver, systemd-resolved's uplink when that file names only the local stub, or the Windows system resolver list; `--dns` sets a custom DNS resolver for the guest instead.
 
 ### Behind a corporate firewall
 
@@ -311,15 +307,12 @@ headless Chromium example and when to set `VK_ICD_FILENAMES`: `docs/gpu.md`.
 
 ## CUDA (experimental)
 
-`--cuda` (or `cuda = true`) remotes guest CUDA calls to the host NVIDIA GPU
-over vsock, separate from `--gpu`. The host needs a working NVIDIA driver and
-no CUDA toolkit; the guest gets no NVIDIA driver and no `/dev/nvidia*`. The
-release bundles guest shims for the Driver API (`libcuda.so.1`) and the
-Runtime API (`libcudart`, with the cuBLAS, cuBLASLt and cuDNN sonames),
-mounted at `/opt/smolvm-cuda` on `LD_LIBRARY_PATH`; use a glibc image. Without
-an NVIDIA driver the host answers with a CPU-emulation device, so check the
-device name, not the exit code. Coverage and staging: `docs/gpu.md`; the
-tested procedure: `docs/gpu-cuda/`.
+`--cuda` (or `cuda = true`) remotes guest CUDA calls to the host NVIDIA GPU over
+vsock, separate from `--gpu`. The host needs a working NVIDIA driver and no CUDA
+toolkit; the guest gets no `/dev/nvidia*`, only Driver and Runtime API shims at
+`/opt/smolvm-cuda` that need a glibc image. Without an NVIDIA driver the host
+answers with a CPU-emulation device, so check the device name, not the exit code.
+Coverage: `docs/gpu.md`; the tested procedure: `docs/gpu-cuda/`.
 
 ## Secrets
 
@@ -384,19 +377,22 @@ smolvm machine cp ./script.py myvm:/workspace/script.py
 smolvm machine cp myvm:/workspace/output.json ./output.json
 ```
 
-**Image-based VMs (--image):** Files copied with `cp` are visible to
-`exec` at the same path, and vice versa. This works for any path —
-`/tmp`, `/home`, `/workspace`, etc. Under the hood, `cp` routes
-through the container's overlay filesystem so both commands see the
-same files.
+**Files and `exec` see the same filesystem.** Files copied with `cp`
+(or written through the HTTP API or an SDK) are visible to `exec` at the
+same path, and vice versa, for any path: `/tmp`, `/home`, `/workspace`,
+etc. On an image-based VM (`--image`) that is the container's overlay
+filesystem; on a bare VM it is the VM's own root, also after an SDK
+`run(image, ...)` has used a container on the machine. Each image an SDK
+`run`s on a machine keeps its own persistent container filesystem, so
+running a second image never sees the first one's files.
 
 **`/workspace` shared directory:** Every machine has a `/workspace`
 directory — bare VMs, image-based VMs, and machines created from
 `.smolmachine` artifacts. It persists across `exec` sessions and
 across `stop`/`start` cycles. It's a good default location for
 scripts, data, and results. Passing `-v /host/dir:/workspace` replaces
-the default storage-disk workspace with your host directory for that
-run — the host mount takes priority and the storage workspace is skipped:
+the default storage-disk workspace with your host directory for that run; a
+mount at any other path (`/data`, `/app`) leaves `/workspace` alone:
 
 ```bash
 # Typical agent workflow: copy code in, execute, extract results
@@ -502,7 +498,7 @@ metadata and the traps: `docs/pack/`.
 socket by default (loopback TCP on Windows) or on `--listen 127.0.0.1:8080`.
 A plain server has no authentication: whoever reaches the socket or the port
 can create and run machines. Machines that ask for nested virtualization
-(`nestedVirt`) are refused unless the server runs with `--allow-nested-virt`.
+(`nestedVirt`) are refused with 403 unless the server runs with `--allow-nested-virt`.
 `smolvm serve openapi` prints the spec; the endpoints, field names and traps:
 `docs/local-api/`.
 
@@ -518,11 +514,8 @@ can create and run machines. Machines that ask for nested virtualization
 
 - **Failures carry stable codes.** `--error-format json` prints a failure as `{"error":{"code":…,"message":…}}` on stderr (exit status unchanged). Codes match the SDKs' `SmolError.code`: `NOT_FOUND` (machine, file, image), `CONFLICT`, `INTERRUPTED` (a stop or delete cut the command off), `CONFIG_ERROR`, `INVALID_STATE`, `STORAGE_ERROR`, `MOUNT_ERROR`, `KVM_UNAVAILABLE`, `HYPERVISOR_UNAVAILABLE`, `COMMAND_FAILED`, `SMOLVM_ERROR`. Branch on the code, not the message.
 - **Disks smaller than 20 GiB need no host tools.** `--storage 8` makes an 8 GiB disk without `resize2fs`, and image machines of that size get an image seed of their own, so creating the next one does not pull the image again.
-- **`machine stop` stops the workload gracefully.** The workload (the image ENTRYPOINT/CMD or Smolfile command) is sent its stop signal (`SIGTERM` by default) and given its stop timeout (10 s by default) to save its state and exit before it is killed and the machine powers off. Set them with `machine create --stop-signal SIG --stop-timeout SECS` or Smolfile `stop_signal` / `stop_timeout`; `machine stop --timeout SECS` overrides the timeout for one stop (`0` kills at once). `machine delete` does not wait.
+- **`machine stop` stops the workload gracefully**: its stop signal (`SIGTERM` by default), then up to its stop timeout (10 s, at most 300) before a kill. `machine stop --timeout SECS` overrides the wait once (`0` kills at once); `machine delete` does not wait. Setting them: `docs/smolfile.md`.
 - **`machine logs` shows the workload's output.** The workload's stdout and stderr are appended to `workload.log` in the machine's data directory, kept across restarts, rotated at 10 MiB (three old files kept), and readable while the machine is stopped. `-f` follows, `--tail N` shows the last N lines. Output of `machine exec` is not included. Over the API: `GET /api/v1/machines/{name}/logs?source=workload`.
 - **Observational commands don't stop running VMs.** `machine images`, `machine status`, `machine ls` and similar read-only commands leave a running VM in its current state. If the VM was already running before the command, it stays running after.
 - **`machine prune` works on a running VM.** Regular prune only removes unreferenced layers and is safe while containers are active. `prune --all` requires the VM to be stopped first since it deletes manifests for layers that may be in use.
-- **`machine exec` persists filesystem changes.** Package installs, config edits, and file writes inside `exec` survive across sessions. This works for both bare VMs and image-based VMs (created with `--image`).
 - **`machine update` modifies a stopped machine.** Add/remove mounts, ports, env vars, or change CPU/memory without recreating the VM. Changes take effect on next `machine start`. Requires the machine to be stopped, except for allow-list changes (`--allow-host`, `--allow-host-pattern`, `--allow-cidr`, `--remove-allow-host`, `--remove-allow-cidr`) on a machine started with an allow list: those apply to its next connection or DNS lookup and persist across restarts. Lifting the allow list entirely still needs a stop.
-- **`machine run` is ephemeral unless detached.** Without `-d` the VM is created, the command runs, and everything is cleaned up. With `-d` it stays as a named machine that `machine exec` and `machine stop` act on.
-- **`-v host:/workspace` replaces the default workspace.** Every image-based VM exposes `/workspace` backed by the VM's storage disk. Mounting a host directory at `/workspace` takes priority — the host share is used instead and the storage-disk workspace is not mounted. Any other target path (e.g. `/data`, `/app`) does not affect `/workspace`.

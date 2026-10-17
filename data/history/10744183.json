@@ -1,0 +1,12 @@
+{
+  "full_name": "netdata/netdata",
+  "points": [
+    {
+      "checked_at": "2026-10-17T07:52:12Z",
+      "commit_sha": "73bf8278d41f3124a5a97989e18aa0cbd3d54723",
+      "pushed_at": "2026-10-17T07:45:52Z",
+      "stars": 80982
+    }
+  ],
+  "repo_id": 10744183
+}

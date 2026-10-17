@@ -12,6 +12,8 @@
 
 - `docs/src/sidebar/itwanger/ai/` — AI 类文章
 - `docs/src/ai/video/` — AI Agent 面试题的逐题答案文章（兼作视频口播素材）
+- `docs/src/ai` 是软链接，指向 `../ai-better`（GitHub：itwanger/ai-better）。这里的改动不进 toBeBetterJavaer，用 `git -C docs/src/ai` 在 ai-better 仓库提交
+- 改了 `docs/src/ai/video/readme.md` 就运行 `node docs/src/ai/scripts/gen-readme.mjs`，同步 ai-better 首页（也是 javabetter.cn/ai/）的统计表和题目目录，一起提交
 
 ## 写作工作流
 
@@ -27,4 +29,4 @@
 ## 约束
 
 - 文件名：小写字母 + 连字符，如 `my-tutorial.md`
-- 模型相关数据以当前一代（Fable 5 / GPT-5.6）为准，禁止引用过时模型数据
+- 模型相关数据以当前一代为准（Anthropic：Fable 5.1、Opus 5.5、Sonnet 5.5；OpenAI：GPT-6 Astra、GPT-6 Luna），禁止引用过时模型数据

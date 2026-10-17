@@ -2,12 +2,6 @@
   "full_name": "microsoft/PowerToys",
   "points": [
     {
-      "checked_at": "2026-09-16T08:39:32Z",
-      "commit_sha": "8c604f779d98aefb92c63a830f3beb6902cee681",
-      "pushed_at": "2026-09-16T08:00:34Z",
-      "stars": 138700
-    },
-    {
       "checked_at": "2026-09-17T08:43:22Z",
       "commit_sha": "001b4f634640162ae8ec66f552697b8f1d7acfd9",
       "pushed_at": "2026-09-17T05:46:29Z",
@@ -180,6 +174,12 @@
       "commit_sha": "bd1dff89346e463656a57e69bc382296fbc73dff",
       "pushed_at": "2026-10-16T07:52:51Z",
       "stars": 139368
+    },
+    {
+      "checked_at": "2026-10-17T07:52:12Z",
+      "commit_sha": "bd916bd7738e0d0170649998450f923bfd7a1648",
+      "pushed_at": "2026-10-17T06:52:44Z",
+      "stars": 139407
     }
   ],
   "repo_id": 184456251

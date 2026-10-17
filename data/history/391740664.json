@@ -2,12 +2,6 @@
   "full_name": "open-metadata/OpenMetadata",
   "points": [
     {
-      "checked_at": "2026-09-16T08:39:32Z",
-      "commit_sha": "7324ea2c96bcfcb03bdd0c216f929e94a5ff6bf4",
-      "pushed_at": "2026-09-16T08:39:19Z",
-      "stars": 15218
-    },
-    {
       "checked_at": "2026-09-22T08:37:03Z",
       "commit_sha": "f0d7bf814dcb9af31eb7aef4d5751df2e648829d",
       "pushed_at": "2026-09-22T08:36:59Z",
@@ -48,6 +42,12 @@
       "commit_sha": "3b27f40b4154d1ec57af8ba3018733cee229ecf7",
       "pushed_at": "2026-10-11T10:00:14Z",
       "stars": 15439
+    },
+    {
+      "checked_at": "2026-10-17T07:52:12Z",
+      "commit_sha": "2d95c1a1b9a594415b1a3eb102c0626d03c901e2",
+      "pushed_at": "2026-10-17T07:50:16Z",
+      "stars": 15503
     }
   ],
   "repo_id": 391740664

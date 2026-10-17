@@ -2,12 +2,6 @@
   "full_name": "pytorch/pytorch",
   "points": [
     {
-      "checked_at": "2026-09-16T08:39:32Z",
-      "commit_sha": "51aa1bf319ea65e7070d9da5ceb8deb5dc54f600",
-      "pushed_at": "2026-09-16T08:39:32Z",
-      "stars": 103043
-    },
-    {
       "checked_at": "2026-09-17T08:43:22Z",
       "commit_sha": "1d48a37e3a894d86511665174ec7c54425890f28",
       "pushed_at": "2026-09-17T08:42:32Z",
@@ -180,6 +174,12 @@
       "commit_sha": "eb429a042a8f30a486e86eedaf140d1de53aa05b",
       "pushed_at": "2026-10-16T08:15:09Z",
       "stars": 104794
+    },
+    {
+      "checked_at": "2026-10-17T07:52:12Z",
+      "commit_sha": "d862fcbaaf4e5843c52b93fee0464b8a934c1aa1",
+      "pushed_at": "2026-10-17T07:50:51Z",
+      "stars": 104811
     }
   ],
   "repo_id": 65600975

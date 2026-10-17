@@ -2,12 +2,6 @@
   "full_name": "esphome/esphome",
   "points": [
     {
-      "checked_at": "2026-09-16T08:39:32Z",
-      "commit_sha": "17c5daa24560607314c7dcd501a5dca4bb8f65e4",
-      "pushed_at": "2026-09-16T08:38:36Z",
-      "stars": 11691
-    },
-    {
       "checked_at": "2026-10-11T10:05:50Z",
       "commit_sha": "b6096c9437854e41f954a7c94745432e58dc2f6d",
       "pushed_at": "2026-10-11T10:04:57Z",

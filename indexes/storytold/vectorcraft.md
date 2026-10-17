@@ -1,8 +1,8 @@
 # storytold/vectorcraft instruction files
 
-Upstream: [storytold/vectorcraft](https://github.com/storytold/vectorcraft) · License: `Apache-2.0` · Commit: `7bbb63e4bc88618ba1f85179ef3f5f60270a2939`
+Upstream: [storytold/vectorcraft](https://github.com/storytold/vectorcraft) · License: `Apache-2.0` · Commit: `e6b58f5142ae3c31f32a3dd029377b985aa05972`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/storytold/vectorcraft/AGENTS.md) | [Source](https://github.com/storytold/vectorcraft/blob/7bbb63e4bc88618ba1f85179ef3f5f60270a2939/AGENTS.md) | `8a03b9df7df36b840a21a00b32b65547b58b963d1947195f9597759c29b2df27` | 12,703 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/storytold/vectorcraft/CLAUDE.md) | [Source](https://github.com/storytold/vectorcraft/blob/7bbb63e4bc88618ba1f85179ef3f5f60270a2939/CLAUDE.md) | `b79456a4174298c8eef4cbdab4b6f89df8b02084d8281fa413ede1b3df56628f` | 11,423 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/storytold/vectorcraft/AGENTS.md) | [Source](https://github.com/storytold/vectorcraft/blob/e6b58f5142ae3c31f32a3dd029377b985aa05972/AGENTS.md) | `39a68e5e8c7c8c1997cb0f474e9ee61274bd401c122a82921e9dfa7cc7b7478b` | 13,374 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/storytold/vectorcraft/CLAUDE.md) | [Source](https://github.com/storytold/vectorcraft/blob/e6b58f5142ae3c31f32a3dd029377b985aa05972/CLAUDE.md) | `46f12a6f848d87a79307346b467e106e35a0ca0070d4f6ef78c35658a360adf7` | 12,094 B |

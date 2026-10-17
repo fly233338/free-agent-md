@@ -2,12 +2,6 @@
   "full_name": "browser-use/browser-use",
   "points": [
     {
-      "checked_at": "2026-09-16T08:39:32Z",
-      "commit_sha": "d8110c5ff87ccba887aaa726cdb780f2f84bef8d",
-      "pushed_at": "2026-09-15T22:49:04Z",
-      "stars": 114769
-    },
-    {
       "checked_at": "2026-09-17T08:43:22Z",
       "commit_sha": "d8110c5ff87ccba887aaa726cdb780f2f84bef8d",
       "pushed_at": "2026-09-15T22:49:04Z",
@@ -180,6 +174,12 @@
       "commit_sha": "e0a70fbe31c8e9cebcf42648f43e306a1c484421",
       "pushed_at": "2026-10-16T06:10:05Z",
       "stars": 118150
+    },
+    {
+      "checked_at": "2026-10-17T07:52:12Z",
+      "commit_sha": "ccd22fef47a1a36e0c4596fef5db73a5117b9d06",
+      "pushed_at": "2026-10-17T05:14:19Z",
+      "stars": 118255
     }
   ],
   "repo_id": 881458615

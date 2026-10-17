@@ -7,7 +7,7 @@ An agent **running inside a TUIOS pane** wants the other document. Run
 `tuios --skill` for the core that drives a running session: addressing panes,
 reading and writing them, running work and waiting on it, reporting agent
 state, and talking to other agents safely. `tuios --skill TOPIC` prints the
-rest (panes and state in depth, fleets, checkpoints, ship, the Inbox, notify,
+rest (panes and state in depth, fleets, checkpoints, ship, files, the Inbox, notify, pair,
 mail, hosts, clients, events, MCP, the tmux shim, grants, config, agents-off,
 errors, recipes). The source is [skills/tuios/SKILL.md](skills/tuios/SKILL.md)
 and the other files in `skills/tuios/`, embedded in the binary so the printed
@@ -38,14 +38,14 @@ go run ./cmd/tuios --debug
 go run ./cmd/tuios-web --debug
 
 # Run tests
-go test ./...
+go test ./... ./progstatus/... ./vt/...
 
 # Leave the machine usable. The maintainer works on this box while the suite
 # runs, and an uncapped build or test run takes every core. taskset confines the
 # whole process tree to half the cores, and the affinity is inherited, so it
 # also holds for the daemons and shells the e2e suite spawns. GOMAXPROCS and
 # `go test -p` do not, because they only bind the Go runtime.
-nice -n 10 taskset -c 0-7 go test ./... -timeout 20m
+nice -n 10 taskset -c 0-7 go test ./... ./progstatus/... ./vt/... -timeout 20m
 
 # Run specific package tests
 go test ./internal/config/...
@@ -57,13 +57,21 @@ go test -race ./...
 # Run the tests of the ghostty backend. `go build -tags ghostty ./...` compiles
 # it and runs none of its tests, so a change that passes the plain suite can
 # still be wrong on the backend `scripts/install.sh ghostty` builds. The
-# ghostty-vt workflow runs every package whose tests link internal/vt; these
+# ghostty-vt workflow runs every package whose tests link vt; these
 # are the ones that matter most, the renderer in internal/app included.
 PKG_CONFIG_PATH="$PWD/.ghostty-vt/native/pkgconfig" \
   go test -tags ghostty -count=1 -short \
-    ./internal/vt/ ./internal/session/ ./internal/terminal/ \
+    ./vt/ ./internal/session/ ./internal/terminal/ \
     ./internal/app/ ./internal/input/ ./cmd/tuios/
 ```
+
+### The justfile
+
+The `justfile` at the root wraps these commands for local work. `just` lists
+the recipes. They build into `.dev/`, run tests under `nice` and `taskset`,
+and run throwaway daemons under a scratch directory. Only `install`,
+`install-ghostty`, `deploy`, `deploy-hosts` and `restart` touch the live
+daemon. `just deploy` runs `tuios hosts sync --dev --local --restart --yes`.
 
 ### Browser build (Learn tuios)
 
@@ -99,6 +107,39 @@ docker build -t tuios .
 docker run -it --rm tuios
 ```
 
+### Go libraries in this repository
+
+Some parts of tuios are Go modules of their own, published under
+`tuios.dev/<name>` import paths. tuios.dev serves the `go-import` meta tag
+that points the go command at the folder in this repository. They are
+`progstatus/` (`tuios.dev/progstatus`), `vt/` (`tuios.dev/vt`), `swatch/`
+(`tuios.dev/swatch`) and `shot/` (`tuios.dev/shot`).
+
+- `go.work` makes the app, `e2e/tui` and each library one workspace, so a
+  change to a library and to the app lands in one pull request. Never add a
+  `replace` for a library to `go.mod`: `go install .../cmd/tuios@vX` ignores
+  `go.work` and must resolve the library by its pin.
+- `go.mod` pins each library at a commit or a library tag. The pinned version
+  must hold the same files as the folder. After a change to a library folder,
+  commit it, then move the pin:
+
+  ```bash
+  GOWORK=off go get tuios.dev/progstatus@<commit>
+  scripts/library-pins.sh sync    # point go.work at the pin, tidy both modules
+  scripts/library-pins.sh check   # what CI and the release check
+  ```
+
+- A new library joins `go.work` first. It gets its pin with the first change
+  that imports it, because `go mod tidy` drops a requirement nothing imports.
+  Until then `scripts/library-pins.sh` skips it.
+- `./...` from the root stops at a nested module. Name a library to test it:
+  `go test ./progstatus/... ./vt/...`.
+- A library imports no `github.com/Gaurav-Gosain/tuios/...` package.
+- A branch made before `internal/vt` became `vt/` crosses the move with
+  `scripts/vt-rename.sh` after a rebase.
+- A library tag has the folder as a prefix, such as `progstatus/v0.1.0`.
+  Tagging is the maintainer's call.
+
 ## Code Organization
 
 ```
@@ -129,12 +170,8 @@ tuios/
 │   │   ├── window.go       # Window struct, PTY lifecycle
 │   │   └── window_unix.go / window_windows.go  # Platform-specific window and PTY glue
 │   ├── ptyspawn/           # The one path every PTY-backed process is spawned through (spawn_unix.go, spawn_windows.go)
-│   ├── vt/                 # Terminal emulation: pure Go, plus libghostty-vt behind -tags ghostty
-│   │   ├── emulator.go     # The pure Go Emulator and its write path
-│   │   ├── parser.go       # Parser state machine
-│   │   ├── screen.go       # Screen buffer management
-│   │   └── scrollback.go   # History ring (10,000 lines unless configured)
 │   ├── session/            # The daemon: sessions, PTYs (session.go), wire protocol, JSON verbs
+│   ├── transcriptview/     # Decodes an agent's transcript into a conversation, for agent-transcript only
 │   ├── federation/         # The link layer between this daemon and the daemons on other machines
 │   ├── worktree/           # Git worktrees: detect, create, and remove without losing uncommitted work
 │   ├── gitstate/           # Branch and upstream drift for the sidebar
@@ -142,7 +179,6 @@ tuios/
 │   ├── review/             # Reading a worktree's diff, and the notes left on it
 │   ├── diffview/           # Drawing diff lines: chroma highlighting, split layout, changed words
 │   ├── capture/            # Turns a screenshot request and config into what shot renders
-│   ├── shot/               # Renders a cell grid to SVG, PNG, ANSI, HTML or text
 │   ├── release/            # Finds published releases and verifies a downloaded binary (tuios update)
 │   ├── netutil/            # Small network helpers the servers share
 │   ├── memtrim/            # Gives the heap a burst left behind back to the OS once the process settles
@@ -157,8 +193,10 @@ tuios/
 │   ├── hooks/              # Shell hooks on window/session/agent events
 │   ├── tmuxcompat/         # The opt-in tmux shim (tuios tmux-shim) and its pane holder; see docs/TMUX_SHIM.md
 │   ├── shimlink/           # The tmux and herdr links that run tuios as another program
+│   ├── stopevent/          # The Windows event tuios kill-server sets to stop a daemon
 │   ├── scrollback/         # OSC 133 scrollback browser
 │   ├── overlay/            # Panel and dialog primitives for chrome
+│   ├── composer/           # The editor a person writes to an agent in: multiline, undo, paste blocks
 │   ├── sessiontree/        # Sidebar session tree model
 │   ├── tape/               # Tape scripting automation
 │   │   ├── lexer.go        # Tokenizer
@@ -173,6 +211,16 @@ tuios/
 │   └── ui/                 # Animation system
 │                           # (plus cliflags, debuglog, fang, listnav, sound,
 │                           #  transcript, guestenv, perf, fuzz, testutil)
+├── progstatus/             # tuios.dev/progstatus, a Go module of its own: OSC 7501 parser, record store, encoder
+├── shot/                   # tuios.dev/shot, a Go module of its own: a cell grid to PNG, SVG, HTML, ANSI or text; mosaic turns pictures into cells
+├── swatch/                 # tuios.dev/swatch, a Go module of its own: desktop theme palettes (Omarchy), followed live
+├── vt/                     # tuios.dev/vt, a Go module of its own: the terminal emulator, pure Go, plus libghostty-vt behind -tags ghostty
+│   ├── emulator.go         # The pure Go Emulator and its write path
+│   ├── parser.go           # Parser state machine
+│   ├── screen.go           # Screen buffer management
+│   ├── scrollback.go       # History ring (10,000 lines unless configured)
+│   ├── snapshot/           # Capture, pack, apply and replay a pane's state (the daemon's wire snapshot)
+│   └── vtgen/              # Grammar-based terminal input generator for the fuzzers
 ├── pkg/                    # Embeddable facade (tuios), applist, fuzzy
 ├── docs/                   # Documentation
 │   ├── ARCHITECTURE.md     # Technical architecture diagrams
@@ -251,9 +299,9 @@ Tiling itself toggles on `Ctrl+B` `Space` (or bare `t` in window-management mode
 - Take every chrome colour from `theme.UI()` (dialogs) or `theme.GroundUI()`
   (the rail and the dock), both an `overlay.Palette`, or from a named token in
   `internal/theme`. Never write a literal: `internal/lint` rejects
-  `lipgloss.Color("#...")`, constant `color.RGBA{...}`, `charmtone.*` and
-  constant `ansi.BasicColor`/`IndexedColor` in `internal/app` and
-  `internal/overlay`. A deliberate exception carries `//tuios:allow-color <reason>`.
+  `lipgloss.Color("#...")`, constant `color.RGBA{...}`, CharmTone colours (`tone.*`) and
+  constant `ansi.BasicColor`/`IndexedColor` in `internal/app`,
+  `internal/overlay` and `internal/composer`. A deliberate exception carries `//tuios:allow-color <reason>`.
 - The palette is built per colour depth (`overlay.Depth`: truecolor, 256, 16).
   At 16 colours every ground is `overlay.NoColor`, so a state that a ground
   would show has to go through `pal.Row` or `pal.Mark`.
@@ -317,7 +365,7 @@ A test that claims to cover a bug must fail on a build with the fix removed.
 go test ./...
 
 # One package
-go test ./internal/vt/
+go test ./vt/
 
 # Perf budgets
 go test -bench=. ./internal/app/...
@@ -325,16 +373,16 @@ go test -bench=. ./internal/app/...
 
 ### Terminal Emulator Conformance
 
-`internal/vt/` carries a table-driven conformance corpus: an input byte
+`vt/` carries a table-driven conformance corpus: an input byte
 sequence, and the screen it should produce, on a screen small enough that a
 diff is readable. It runs with the ordinary suite.
 
 ```bash
 # The corpus, the unicode sweeps and the generated-input sweep
-go test ./internal/vt/
+go test ./vt/
 
 # Skips the exhaustive write-boundary sweep, which is the slow part
-go test -short ./internal/vt/
+go test -short ./vt/
 ```
 
 Three things in it are worth knowing about before adding a case:
@@ -347,21 +395,21 @@ Three things in it are worth knowing about before adding a case:
   starts passing, so a fixed bug cannot sit on the list pretending to still be
   one.
 - The unicode sweeps are driven by pinned UCD data files under
-  `internal/vt/testdata/unicode/`, with provenance and licence in the README
+  `vt/testdata/unicode/`, with provenance and licence in the README
   there.
 
 ### Terminal Emulator Fuzzing
 
-`internal/fuzz/vtgen` generates terminal input by grammar rather than by byte,
+`vt/vtgen` generates terminal input by grammar rather than by byte,
 so the parser reaches the code past its ground state. A failing run reduces by
 delta debugging to a script of named sequences a person can read.
 
 ```bash
 # Deterministic seeds, part of the ordinary suite
-go test ./internal/vt/ -run TestVTGen
+go test ./vt/ -run TestVTGen
 
 # Coverage-guided, for a real campaign
-go test ./internal/vt/ -run XXX -fuzz FuzzEmulatorScript -fuzztime 10m
+go test ./vt/ -run XXX -fuzz FuzzEmulatorScript -fuzztime 10m
 ```
 
 ### Fuzzing
@@ -382,13 +430,13 @@ emulator ones above:
   manifests and over fuzzed ones.
 - `internal/config` and `internal/tape`: key normalisation, the config
   pipeline, and the tape lexer and parser.
-- `internal/vt`: the kitty payload decoder and command parser, and with
+- `vt`: the kitty payload decoder and command parser, and with
   `-tags ghostty` the differential against libghostty-vt.
 
 Turn a finding into a regression the suite can keep:
 
 - A vtgen target prints the reduced script as JSON. Save it under
-  `internal/vt/testdata/vtgen-repros/` with a `why`. Do not keep the input
+  `vt/testdata/vtgen-repros/` with a `why`. Do not keep the input
   bytes instead: they decode through the generator, and the next change to
   vtgen turns them into a different script that passes.
 - `FuzzModel` and the other `internal/fuzz` runs print a `--- script ---`
@@ -405,7 +453,7 @@ because a test can be wrong in the same way the code is. Needs the `tmux` binary
 and spawns processes, so it is behind a build tag.
 
 ```bash
-go test -tags differential ./internal/vt/ -run TestDifferential -v
+go test -tags differential ./vt/ -run TestDifferential -v
 ```
 
 Cases where tmux is the one diverging are listed in `tmuxDiffers` with the
@@ -483,7 +531,7 @@ go run ./cmd/tuios tape play examples/demo.tape
 | Input handling | `internal/input/handler.go` |
 | Terminal window | `internal/terminal/window.go` |
 | PTY spawn (every path) | `internal/ptyspawn/spawn.go` |
-| VT emulation | `internal/vt/emulator.go` |
+| VT emulation | `vt/emulator.go` |
 | Configuration | `internal/config/userconfig.go` |
 | Keybind registry | `internal/config/registry.go` |
 | Tape scripting | `internal/tape/parser.go` |

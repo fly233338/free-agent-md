@@ -2,12 +2,6 @@
   "full_name": "netbirdio/netbird",
   "points": [
     {
-      "checked_at": "2026-09-16T08:39:32Z",
-      "commit_sha": "eab510178a46e4c8932f8985c7028737b5227361",
-      "pushed_at": "2026-09-16T08:38:16Z",
-      "stars": 29270
-    },
-    {
       "checked_at": "2026-09-18T08:19:12Z",
       "commit_sha": "f8c3e565f3f7287e4982b4ba6b040718e5407c29",
       "pushed_at": "2026-09-18T08:17:03Z",

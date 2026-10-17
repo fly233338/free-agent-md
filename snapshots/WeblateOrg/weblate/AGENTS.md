@@ -26,6 +26,13 @@ For application-developer workflows and broader product integration guidance, us
   permissions and validation explicitly. Keep secrets, computed state, and
   intentionally internal fields unexposed, and document the reason when the
   omission is not self-evident.
+- Keep user-data export, the ``weblate_schemas`` user-data schema, and account
+  settings import in sync. The export and schema should cover profile fields,
+  including fields intentionally excluded from import; omit internal database
+  identifiers and user relations. Validate uploads against the packaged schema
+  and model or form rules; import portable settings only, never counters, audit
+  history, credentials, or source account identifiers. Represent exported
+  project and component references with slugs or slug paths, never database IDs.
 - Do not add tests that duplicate OpenAPI schema expectations covered by the
   tracked snapshot in `docs/specs/openapi.yaml`; schema changes are visible
   during review. Allow focused tests of configuration-dependent behavior that
@@ -42,6 +49,17 @@ For application-developer workflows and broader product integration guidance, us
   flag reuse of shared localized messages as a review issue.
 - Messages written to persisted storage, such as the audit log, add-on log, or
   changes, should not be localized.
+- Supply an explicit user when recording history changes. Automated operations
+  must use the appropriate system or add-on bot user rather than `None`.
+  Preserve the initiating user for settings changes and user-triggered creation,
+  including queued work and pending file writes. Keep the initiating actor
+  separate from the content author. Do not substitute a generic bot for a missing
+  actor.
+  Pass the anonymous user explicitly for intentional anonymous actions. Missing
+  history users currently trigger error reporting and a `RuntimeWarning`, which
+  pytest treats as an error. This is temporary soft enforcement in production,
+  not permission to omit the actor. Do not suppress the warning to hide missing
+  actors in tests; supply the correct user instead.
 - In templates, use `{% translate %}` / `{% blocktranslate %}` for translatable
   text.
 - Preserve accessibility and the existing Bootstrap/jQuery-based frontend
@@ -132,6 +150,15 @@ For application-developer workflows and broader product integration guidance, us
 
 ## Testing and linting instructions
 
+- Select test fixtures by their identifying fields or retain the object returned
+  when creating them. Do not use an unordered queryset's first row when the
+  assertion depends on which row was selected. Use an explicit `order_by()`
+  when order is the behavior under test.
+- Screenshot tests must explicitly configure the services and fixture data
+  visible in the captured UI. Do not depend on configuration inherited from
+  other tests or reusable database snapshots. Wait for asynchronous content to
+  finish loading before capture, and avoid competing providers whose response
+  order changes the rendered output.
 - Complex data migrations must have populated upgrade tests in `ci/run-migrate`:
   add old-version setup and post-upgrade assertion scripts in
   `ci/migrate-scripts/`, gated to applicable source releases. Seed data that
