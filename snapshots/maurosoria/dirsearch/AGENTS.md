@@ -5,25 +5,28 @@
 
 ## Build, Test, and Development Commands
 - `python3 dirsearch.py -u https://example.com -w tests/static/wordlist.txt -q`: quick local CLI smoke test.
-- `python3 testing.py`: legacy unit/integration test runner used by CI.
+- `python -m unittest discover -s tests -t .`: canonical unit/integration test runner used by CI.
 - `python3 -m unittest tests.connection.test_requester tests.connection.test_dns tests.core.test_scanner`: focused regression pass.
 - `python3 -m pip install .`: validate packaged install and console entrypoints.
-- `docker compose -f - build dirsearch` with `build.network: host`: verify Docker release images, matching the GitHub workflow.
+- Generate the build plan with `docker compose -f - build --print dirsearch` and pass it to `docker buildx bake --file - --allow=network.host --load dirsearch`: verify Docker release images with host networking, matching the GitHub workflow.
 - `pyinstaller --clean pyinstaller/dirsearch.spec`: build the standalone binary using the checked-in spec.
 
 ## Coding Style & Naming Conventions
 Use 4-space indentation and keep Python code straightforward and modular. Prefer descriptive `snake_case` for functions and variables, `PascalCase` for classes, and small helpers for exception-heavy logic. Keep module boundaries clean: networking belongs in `lib/connection`, report logic in `lib/report`, and CLI/config parsing in `lib/parse` or `lib/core`. Follow the existing flake8 rules in `pyproject.toml`.
 
+Prefer explicit, initialized attributes and typed protocols over `getattr()` or `hasattr()` in internal code. Do not use dynamic attribute access to hide missing initialization, preserve obsolete object shapes, or provide silent compatibility fallbacks; fix the contract or add an explicit adapter instead. Dynamic access remains appropriate at genuinely dynamic boundaries such as plugin discovery, optional platform/runtime constants, and third-party objects whose API varies by version. When that need is not obvious from the surrounding code, document it with a short comment.
+
 ## Testing Guidelines
 Tests use `unittest`. Add new coverage under `tests/` with filenames like `test_requester.py` and methods named `test_*`. When changing request, packaging, or report behavior, add message-level or artifact-level assertions rather than only smoke checks. For compatibility-sensitive changes, prefer Docker validation on supported Python versions.
 
 ## Docker Release Validation
-When changing `Dockerfile`, Docker workflows, release packaging, dependencies, or stack defaults, build through `docker compose` with host networking instead of plain `docker build`, because CI relies on `build.network: host` for dependency resolution. Validate every release stack, not just the default one: `threaded`, `async`, and `native-rust`.
+When changing `Dockerfile`, Docker workflows, release packaging, dependencies, or stack defaults, build through the Compose-generated Bake plan with host networking instead of plain `docker build`, because CI relies on `build.network: host` for dependency resolution. Compose declares the required entitlement; Bake must also receive `--allow=network.host` to authorize it non-interactively. Validate every release stack, not just the default one: `threaded`, `async`, and `native-rust`.
 
 Use this pattern for each stack, replacing `STACK` and image tag as needed:
 
 ```sh
-docker compose -f - build dirsearch <<'YAML'
+set -o pipefail
+docker compose -f - build --print dirsearch <<'YAML' | docker buildx bake --file - --allow=network.host --load dirsearch
 services:
   dirsearch:
     image: dirsearch:test-STACK
@@ -31,6 +34,8 @@ services:
       context: .
       dockerfile: Dockerfile
       network: host
+      entitlements:
+        - network.host
       args:
         DIRSEARCH_STACK: STACK
 YAML

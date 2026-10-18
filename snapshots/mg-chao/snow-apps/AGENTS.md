@@ -7,7 +7,7 @@
 - `cmake/` – shared modules, `vcpkg-overlay-ports/`, `vcpkg-overlay-triplets/`, `test-support/`. `scripts/` – PowerShell entry points. `build/<preset>/` and `.tools/vcpkg/` are generated; never commit them.
 
 ## Build, Test, and Development Commands
-- Toolchain: VS 2026 x64 developer shell, CMake 4.2+, MSVC 14.51, Rust 1.97.1, repository-managed vcpkg/Qt.
+- Toolchain: VS 2026 x64 or ARM64 developer tools, CMake 4.2+, MSVC 14.51, Rust 1.97.1, repository-managed vcpkg/Qt. Windows ARM64 requires the ARM64 compiler/SDK and host-matching Qt tools/libclang; see `docs-windows-arm64-build.md`.
 - `scripts/bootstrap.ps1` – installs vcpkg deps and validates Qt/MSVC once per machine.
 - `scripts/build.ps1 -Preset windows-msvc-debug [-Target snow_shot] [-Clean]` – configure + build (`snow-all` by default). Presets: `windows-msvc-debug`, `windows-msvc-performance`, `snow-shot-msvc-release`, `snow-shot-msvc-fast`.
 - `ctest --preset test-windows-msvc-debug -R <regex>` – run only matching tests after a change. Do not run unfiltered `ctest --preset …` (full suite) unless the user explicitly asks.
@@ -15,6 +15,9 @@
 - `scripts/run-snow-shot.ps1` / `scripts/run-snow-image-viewer.ps1` – launch from the build tree.
 - `scripts/check-cpp-format.ps1 [-Fix]`, `scripts/check-rust.ps1 [-Fix]` – format and lint (also CMake targets `snow-format`, `snow-lint`).
 - `scripts/package-snow-shot.ps1` – NSIS installer (`snow-shot-msvc-release`).
+- Windows ARM64: use `snow-shot-msvc-arm64-{debug|performance|release|fast}` and `-Architecture arm64` for bootstrap/Qt/package scripts. ARM64 benchmarks require `snow-shot-msvc-arm64-performance`. Cross builds require native ARM64 validation before production publication.
+- macOS: see `docs-macos-build.md`. Use `scripts/bootstrap-macos.sh`, `scripts/build.sh`, `scripts/run-snow-shot.sh`, and `scripts/package-snow-shot.sh`; presets are `snow-shot-macos-{arm64|x64}-{debug|performance|release|fast}`. macOS requires 15+, Xcode tools and shared Qt 6.12.0. Use only the `performance` preset for benchmarks.
+- macOS script regression checks: `python3 scripts/test-macos-build-support.py`. Native deployment fixture: `SNOW_TEST_MACOS_BUNDLE=1 python3 scripts/test-macos-build-support.py MacOSBundle` after provisioning Qt/FFmpeg and putting the build tools on PATH.
 
 ## Coding Style & Naming Conventions
 - C++: `.clang-format` (LLVM base, 4 spaces, 100 columns, attached braces, `T* ptr`, includes unsorted). Strict warnings are on; `.clang-tidy` is enforced when `SNOW_APPS_ENABLE_CLANG_TIDY=ON`.
@@ -25,7 +28,9 @@
 ## Internationalization
 - Source language is `en_US`. User-visible copy (labels, titles, tooltips, accessible names/descriptions, errors, settings text) must be English wrapped in Qt translation APIs (`tr()`, `QCoreApplication::translate()`, `QT_TRANSLATE_NOOP`, or helpers such as `settingsText` / `TranslatableText`). Do not hardcode zh-CN or zh-TW in C++.
 - Keep IDs, config keys, object names, and protocol values as `QStringLiteral`. Do not wrap those, and do not use translated text as a stable identifier.
-- After adding or changing translatable strings, extract with `snow_shot_update_translations` or `ant_design_qt_update_translations`, then fill **every** catalog for that target. Leave no `type="unfinished"` (`snow_shot` `lrelease` uses `-fail-on-unfinished`). Catalogs: `snow_shot/i18n/snow_shot_{en_US,zh_CN,zh_TW}.ts` (`en_US` is identity); `ant_design_qt/.../i18n/ant_design_qt_{zh_CN,zh_TW}.ts` (English is source; no `en_US.ts`). Use Simplified in `zh_CN` and Traditional in `zh_TW`; preserve `%1` / `%n` placeholders. Widgets that cache strings must retranslate on `QEvent::LanguageChange`.
+- After adding or changing translatable strings, extract with `snow_shot_update_translations` or `ant_design_qt_update_translations`, then fill **every** catalog for that target. Leave no `type="unfinished"` (`snow_shot` `lrelease` uses `-fail-on-unfinished`). Catalogs: `snow_shot/i18n/<feature>/snow_shot_<feature>_{en_US,zh_CN,zh_TW}.ts` (`en_US` is identity, apart from language-name metadata and plural forms; context ownership is in `snow_shot/i18n/modules.json`); `ant_design_qt/.../i18n/ant_design_qt_{zh_CN,zh_TW}.ts` (English is source; no `en_US.ts`). Use Simplified in `zh_CN` and Traditional in `zh_TW`; preserve `%1` / `%n` placeholders. Widgets that cache strings must retranslate on `QEvent::LanguageChange`.
+
+- Snow Shot catalogs are split by feature and merged only under `build/`. Use the application-wide `snow_shot_update_translations` target; do not run `lupdate` directly on all fragments or extract from test source subsets. Assign new contexts in `snow_shot/i18n/modules.json`. Keep catalogs sorted without source locations; see `snow_shot/i18n/README.md`.
 
 ## Testing Guidelines
 - After any code change, run **only** the tests that cover those changes. Running the full suite is **strictly prohibited** unless the user explicitly asks.

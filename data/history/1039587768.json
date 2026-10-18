@@ -2,12 +2,6 @@
   "full_name": "osaurus-ai/osaurus",
   "points": [
     {
-      "checked_at": "2026-09-17T08:43:22Z",
-      "commit_sha": "ebabfb72ad1fd9b1a37b542e1c276d2961e620f8",
-      "pushed_at": "2026-09-17T08:40:39Z",
-      "stars": 7946
-    },
-    {
       "checked_at": "2026-10-04T09:52:51Z",
       "commit_sha": "cb31510b2553966a93c52fbb8249a1912826d8ba",
       "pushed_at": "2026-10-04T09:45:00Z",

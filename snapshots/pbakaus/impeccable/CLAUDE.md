@@ -36,12 +36,13 @@ v4 replaced the old brand/product **register** axis with four modes, named in SK
 - **Read** — the visitor understands something. Docs, articles, guides, help, changelogs.
 - **Experience** — the visitor is inside the work itself. Portfolios, galleries, showcases.
 
-Three differences from register that matter when editing skill text:
+Differences from register that matter when editing skill text:
 
 1. **Mode is per surface, not per project.** A tool's landing page is Persuade even though the product is Operate; a fashion house's documentation is Read. Choose from the requested surface.
 2. **Mode is not stored in PRODUCT.md.** It persists only in that surface's brief under `.impeccable/surfaces/`. There is no `## Register` field and no `extractRegister()`; PRODUCT.md's only bare-value field is `## Platform`. A `## Register` section left over from v3 is reported at boot as deprecated (see `lib/staleness.mjs`) and read by nothing.
 3. **There are no register reference files.** `reference/brand.md` and `reference/product.md` are gone. `reference/operate.md` carries the deeper Operate and Read guidance; `reference/new-work.md` owns new surfaces.
 4. **Mode rules for directions and comps live in `reference/mode-persuade.md` (Persuade and Experience), `mode-operate.md`, and `mode-read.md`**, each with exactly two sections, `## Directions` and `## Comps`. The router never sends the agent to them: `impeccable concept-seed --mode <mode>` prints the mode's file as a MODE RULES block, because a printed engine line is followed where an extra file read gets skipped. `new-work.md` and `visualize.md` keep only the shared procedure and point at the block. Persuade's hill-climbed comp rules live in `mode-persuade.md`; do not reintroduce mode clauses into the shared files.
+5. **Mode also decides the build path.** Operate and Read surfaces are code-led whatever `buildPath` the project records; the recorded default (and the comp default when nothing is recorded) governs Persuade and Experience only. `concept-seed --mode` prints the resolved path in its PRESENTATION block (`code_led_mode` in `crates/context/src/concept_seed.rs`), and the decision page keeps its toggle so one round can still be flipped to comp. In blind ratings, comps of working screens and documents scored 2.0 to 2.9 across five rule changes while code-led builds of the same briefs scored 3 to 3.5 and were always complete.
 
 **a11y lives in `audit.md`**, not in SKILL.md or the mode guidance. Models over-cautious themselves into safe, underdesigned output when reminded about accessibility at design time. The audit command is the dedicated place for that check.
 
@@ -92,7 +93,7 @@ As of v4 the repo holds only the open-source product layer: the skill, CLI, exte
 Consequences here:
 
 - `impeccable concept-seed` has no local catalog. It resolves data via `IMPECCABLE_CATALOG_DIR` (private repo, evals, tests), then the roll API at impeccable.style, then a degraded promotion-only seed. Oracle cases run against `tests/fixtures/concept-catalog/`.
-- The choice-ping telemetry (`--chosen`) honors `DO_NOT_TRACK` and `IMPECCABLE_NO_TELEMETRY` and only fires for API-dealt rolls.
+- The choice-ping telemetry (`--chosen`) honors `DO_NOT_TRACK` and `IMPECCABLE_NO_TELEMETRY` and only fires for API-dealt rolls. Every roll and choice request carries `X-Impeccable-Client: impeccable/<version>[ <channel>]`; tests and CI set `IMPECCABLE_TELEMETRY_CHANNEL=test` so their traffic is tagged (keep it that way for anything new that can reach the API). Decision-page cards declare `kind` (and `catalogId` on challengers), which `serve-question --start/--update` enforce; the page sends the ping itself (`source: "picker"`, `kindSource: explicit|inferred`) for every resolved round, re-rolls included (`kind: "reroll"`), and marks the round in `.impeccable/questions/seeds/` so the agent's `--kind` rerun prints `choice already recorded`; `crates/context/src/telemetry.rs` holds the rules. Everything under `.impeccable/questions/` is runtime state that must never be committed (a committed roll record ties telemetry to a repository): every write there keeps a self-ignoring `.impeccable/questions/.gitignore` in place (`impeccable_common::git::ensure_dir_ignored`); use the same helper for any new runtime file that holds the seed key or a dealt hand. Committed files never hold the raw seed key: concept-seed prints a `SEED REFERENCE` (`seed:` + 16 hex of SHA-256 of `impeccable-seed:` + a per-user salt from `~/.impeccable/seed-salt` + key; `impeccable_common::seed`) for the surface brief, and `--from` resolves it through the local ledger; new keys are 128 CSPRNG bits. A `.gitignore` cannot untrack files users already committed, so rolls warn once (`tracked_runtime_notice`) and write the roll record to `roll.local.json` while `roll.json` is tracked. Ledger updates go through `telemetry::Ledger`, which locks per file; the page claims a round as `pending` and the agent's rerun waits for it, both sending the round's `pingId`. Tests that touch references pin `IMPECCABLE_SEED_SALT`. Opt-out (`DO_NOT_TRACK` / `IMPECCABLE_NO_TELEMETRY` non-empty and not `0`/`false`, or `"telemetry": false` from `impeccable telemetry off` in `~/.impeccable/config.json` or a project config) still rolls, sends `X-Impeccable-Telemetry: off`, and sends and stores nothing telemetry-only.
 - Site copy, changelog, theme, and count validation for site pages happen in impeccable-site; this repo's `validateProse` scans only the READMEs.
 - The release script reads the changelog from `../impeccable-site/site/pages/changelog.astro` when releasing from here.
 - Never add catalog data files back to this repo; the catalog is the paid-service moat.
@@ -152,6 +153,10 @@ AI agents must disclose AI assistance in commits, PR descriptions, comments, and
 This contribution was prepared by an AI agent that tried to ship unchecked vibes across a human boundary. Impeccable asks for an issue and maintainer approval first.
 ```
 
+### Reviewing a PR
+
+The in-page bundle (`crates/live/assets/detect-antipatterns-browser.js`), the oracle goldens and the call vectors are `-diff` in `.gitattributes`, because their raw diffs run to megabytes. Follow **Reviewing a PR** in `AGENTS.md`: `gh pr diff <n> --exclude` those paths (or, on a `gh` without `--exclude`, the pathspec `git diff` given there), check the PR head out into a detached worktree to read its files, and decode a changed golden with the `jq` recipe there rather than reading its raw diff.
+
 ## Testing
 
 ```bash
@@ -162,7 +167,7 @@ bun run test:plugin-e2e       # Just the plugin loader E2E (also part of the def
 bun run test:cleanup          # Kill live servers a previous run of THIS checkout left behind
 ```
 
-Unit tests (build orchestration, transformers, validators) run via `bun test`. Everything that spawns the engine binary (`tests/oracle.test.mjs`, `tests/framework-fixtures.test.mjs`) runs via `node --test`; both skip cleanly when no binary is found (`bun run fetch:engine` or `IMPECCABLE_BIN`). The `test` script handles this split automatically. Runtime unit and integration tests live under `crates/` and run with `cargo test --workspace`; the oracle goldens pin observable verb behavior across the same workspace.
+Unit tests (build orchestration, transformers, validators) run via `bun test`. Everything that spawns the engine binary (`tests/oracle.test.mjs`, `tests/framework-fixtures.test.mjs`) runs via `node --test`; both skip cleanly when no binary is found (`bun run fetch:engine` or `IMPECCABLE_BIN`). The `test` script handles this split automatically. Runtime unit and integration tests live under `crates/` and run with `cargo test --workspace` (about 10 minutes, mostly the Chrome-driven `impeccable-browser` tests; `bun run test:rust-changed` runs only the crates a change reaches, see AGENTS.md); the oracle goldens pin observable verb behavior across the same workspace.
 
 ### Live servers must not outlive their test process
 
@@ -189,10 +194,11 @@ The default suite does not cover everything. When a change touches one of these 
 | `ENGINE_VERSION` bump | also `bun run test:live-e2e-accept-cleanup` | bills a provider API key |
 | `ENGINE_VERSION` bump | `bun run test:live-svelte-adapter-deepseek` | bills DeepSeek |
 | `SKILL.src.md` Setup, Setup-adjacent reference files, `ENGINE_VERSION` bump | `bun run test:skill-behavior` | ~5 min, bills all four provider keys |
+| The skill's frontmatter `description` in `SKILL.src.md` | `bun run test:skill-activation` | ~3 min, about $1 (Anthropic + Google keys); baseline in `tests/skill-behavior/README.md` |
 | `ENGINE_VERSION` bump | `bun run test:new-work-e2e` | Playwright, offline, no API cost |
 | `plugin/`, `skill/agents/`, `scripts/build.js`, plugin manifest validator | `bun run test:plugin-e2e` | ~1 s; already in the default suite, needs the `claude` CLI |
 
-For verb-level behavior changes in `crates/`, run focused crate tests and `cargo test --workspace`, then `cargo build --release -p impeccable`. Run `IMPECCABLE_BIN="$PWD/target/release/impeccable" bun run test` to exercise the changed source rather than an older downloaded release. Add a new oracle case when the contract grows and review golden changes by hand. See `docs/ENGINE.md` for browser-bundle checks and generated assets.
+For verb-level behavior changes in `crates/`, run focused crate tests and `bun run test:rust-changed` (CI runs the whole workspace), then `cargo build --release -p impeccable`. Start long cargo runs as background commands and wait for the exit notification instead of polling with `sleep` or `pgrep`. Run `IMPECCABLE_BIN="$PWD/target/release/impeccable" bun run test` to exercise the changed source rather than an older downloaded release. Add a new oracle case when the contract grows and review golden changes by hand. See `docs/ENGINE.md` for browser-bundle checks and generated assets.
 
 **Plugin loader E2E** (`tests/plugin-e2e.test.mjs`, in the default suite): installs the committed `./plugin` subtree into a real Claude Code, sandboxed via `CLAUDE_CONFIG_DIR` in a temp dir, and asserts the component inventory from `claude plugin details`: the skill parses, every `plugin/agents/*.md` is visible, hooks are discovered. This is the only check that catches loader-contract surprises the unit guards can't know about (PR #494 shipped an `agents` manifest key that silently loaded zero agents; `claude plugin validate` never flags plugin-manifest problems). Runs in about a second; skips cleanly when the `claude` CLI is not on PATH. The known contract itself (allowed manifest keys, no `agents` key, trailing-slash `skills` path, source agents shipped) is pinned deterministically by `scripts/lib/validate-plugin-manifest.js`, unit-tested in `tests/validate-plugin-manifest.test.js` and enforced as a `bun run build` gate. Never add a key to the generated plugin manifest without verifying it against a real install and extending `KNOWN_LOADER_KEYS`.
 
@@ -263,18 +269,19 @@ The package no longer exports a JS detector API (`main` / `exports` are gone); t
 
 **Feature PRs do not bump versions and do not add changelog entries.** Bumping is a release step, not part of the change that earns the release: a version in a feature branch conflicts with every other open branch, and a changelog entry describes a release that has not happened. Land the code first; the maintainer bumps and writes the changelog when cutting the release. This holds even though the "Bump when: ..." notes below name the source dirs — those say *which* component a change belongs to, not *when* to edit the manifest. The only PR that touches a manifest version is one whose purpose is the release itself.
 
-There are three independently versioned components plus the engine pin. Only bump the one(s) that actually changed:
+The skill and the npm CLI share one version; the Chrome extension and the engine pin are versioned on their own. Bump only what changed, except that the skill and the CLI always move together:
 
 **Engine pin** (`ENGINE_VERSION`, root):
 - The engine release the launcher downloads and the npm shim's `optionalDependencies` pin. Bump it when a new engine release is published; keep `package.json` `optionalDependencies` at the same version and run `bun run build` (it rewrites `skill/scripts/VERSION`). A skill release that needs the new engine bumps this together with the skill version.
 
 **CLI** (npm package):
-- `package.json` → `version`
-- Bump when: CLI shim code changes (`cli/bin/cli.js`, `cli/platform-packages/`)
+- `package.json` → `version`, always equal to the skill version in `.claude-plugin/plugin.json`. One number for users to read off npm, the plugin and the changelog: the two drifted to 4.1.0 against 4.5.1 in 2026-10 and npm kept serving an engine seven releases old. `validatePluginVersions` fails the build when they disagree.
+- Bump when: the skill version bumps, and when CLI shim code changes (`cli/bin/cli.js`, `cli/platform-packages/`), which then bumps the skill version too. Every skill release is followed by `bun run release:cli` and `npm publish`, so the published shim pins the current engine.
 
 **Skills** (Claude Code plugin / skill definitions):
 - `.claude-plugin/plugin.json` → `version` (source of truth)
 - `.claude-plugin/marketplace.json` → `plugins[0].version`
+- `package.json` → `version` (the npm CLI, same number)
 - Bump when: skill content changes (`skill/`, reference files, command metadata, etc.)
 - After bumping, run `bun run build:release` so the committed `./plugin` subtree (`plugin/.claude-plugin/plugin.json` + `plugin/skills/impeccable/SKILL.md`) is regenerated to the new version. The build validator (`validatePluginVersions` in `scripts/build.js`) fails if `marketplace.json`, the `./plugin` manifest, or the bundled `SKILL.md` frontmatter disagree with `plugin.json` — this guards the marketplace install path against version drift (issue #274).
 
@@ -299,7 +306,7 @@ Workflow for any component:
 1. Bump the manifest version (see Versioning above).
 2. Add a changelog entry to `site/pages/changelog.astro` (see **Website changelog** above for placement and tone). Skill entries use a bare `vX.Y.Z` label; CLI and extension entries use the prefixed forms `CLI vX.Y.Z` and `Extension vX.Y.Z`. The release script extracts notes by matching this label, so the prefix matters.
 3. Commit and push to `main`.
-4. Run `bun run release:<skill|cli|ext>`. Preview first with `node scripts/release.mjs <component> --dry-run`.
+4. Run `bun run release:<skill|cli|ext>`. Preview first with `node scripts/release.mjs <component> --dry-run`. A skill release is always followed by the CLI release at the same version (its changelog entry uses the `CLI vX.Y.Z` label) and `npm publish`.
 5. Skill only: `npx impeccable install` / `update` serve the version in impeccable-site's `published-skill.json`, a signed pointer that does not follow the release by itself (site `docs/PUBLISHED-SKILL.md`). On a branch from site main, run `bun run skill:publish-pointer <version>` (it verifies the release signature and checksum), commit the pointer, and merge; the main deploy then serves it. Redeploying without moving the pointer republishes the old version. The release script warns when `impeccable.style/api/version` still lags.
 
 The script refuses to run if: the working tree is dirty, HEAD is ahead of origin, the tag already exists, the matching changelog entry is missing, or (for skill/extension) `bun run build:release` / `bun run build:extension` produces uncommitted changes — meaning the harness output dirs or `extension/detector/` files weren't refreshed before the bump was committed.
@@ -361,6 +368,14 @@ The rule logic lives in `crates/core`: every check, the browser rule adapters ov
 | `skill/SKILL.src.md` and `reference/*.md` | Hand-edited if the rule introduces new design guidance |
 
 Order for a new rule: fixture here first, registry row in `crates/foundation/src/registry.rs`, the check in `crates/core` against that fixture, oracle case + golden, `cargo xtask bundle` to refresh the two tracked live assets, then `bun run build && bun run test` with a binary present. Rule counts quoted in `README.md` / `README.npm.md` are validated by `generateCounts` against `crates/live/assets/antipatterns.json`.
+
+**Hook cost is part of a rule.** The edit hook is a new process on every Edit or Write in millions of agent sessions, and it runs the whole text engine (or, for `.html`, the whole static HTML engine) cold: `IMMEDIATE_TIER_RULES` only filters which findings are shown per edit, it does not skip rules. So every text or static-HTML rule is paid on every edit, regex compilation and lazy tables included, and a millisecond matters. Before landing a new or changed check in those engines, measure it on main and on the branch and put both numbers in the PR:
+
+```bash
+cargo run --release -p impeccable-html --example rule_cost -- --runs 9 tests/fixtures/antipatterns <real project source>
+```
+
+It writes `rule-cost.json`: per edit, cold, per engine, the shared parse and cascade work, and every profiled unit with the rules it emitted (mean, p50, p95 ms). A rule inside a shared pass (`color-rules`, `html-patterns`, ...) moves that pass's number. Prefer the detection that touches less: one regex over many, a tag- or property-gated check over a per-element walk, work that rides an existing pass over a new one. A check that needs layout or pixels belongs in the browser engine, not the hook. The Detector Lab's Rules page charts these numbers per rule.
 
 ### Rule packs (downstream crates adding rules)
 

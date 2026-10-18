@@ -2,16 +2,16 @@
   "full_name": "python/cpython",
   "points": [
     {
-      "checked_at": "2026-09-17T08:43:22Z",
-      "commit_sha": "01192a80a6e32730d7c6f4fd3bcb1893bce29426",
-      "pushed_at": "2026-09-17T08:40:12Z",
-      "stars": 77191
-    },
-    {
       "checked_at": "2026-09-24T08:32:01Z",
       "commit_sha": "0b447baeaac43723be7d4903d90f22780cc7e374",
       "pushed_at": "2026-09-24T08:26:16Z",
       "stars": 77243
+    },
+    {
+      "checked_at": "2026-10-18T08:06:48Z",
+      "commit_sha": "97a713566be44590121f9e5410e9fbb124107da7",
+      "pushed_at": "2026-10-18T07:56:05Z",
+      "stars": 77671
     }
   ],
   "repo_id": 81598961
