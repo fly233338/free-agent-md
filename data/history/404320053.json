@@ -2,12 +2,6 @@
   "full_name": "foundry-rs/foundry",
   "points": [
     {
-      "checked_at": "2026-09-18T08:19:12Z",
-      "commit_sha": "10cc3b99f067d1517cf36fb1ea54d6b8c9beaf14",
-      "pushed_at": "2026-09-18T08:14:55Z",
-      "stars": 10611
-    },
-    {
       "checked_at": "2026-09-24T08:32:01Z",
       "commit_sha": "ff00dcfe92c192bed0942055361b440c9a61eb62",
       "pushed_at": "2026-09-24T08:28:37Z",

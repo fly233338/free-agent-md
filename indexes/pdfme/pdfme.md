@@ -1,8 +1,8 @@
 # pdfme/pdfme instruction files
 
-Upstream: [pdfme/pdfme](https://github.com/pdfme/pdfme) · License: `MIT` · Commit: `ffc18cde052a080b284a555224a26d0dc2923c1f`
+Upstream: [pdfme/pdfme](https://github.com/pdfme/pdfme) · License: `MIT` · Commit: `d3dba925cfc451ab07a0b8c36943e7de24822792`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/pdfme/pdfme/AGENTS.md) | [Source](https://github.com/pdfme/pdfme/blob/ffc18cde052a080b284a555224a26d0dc2923c1f/AGENTS.md) | `da1c878371bb6fb3fce54aa5c9761d7140376d8ede716c9661f3b6d6621d7f5a` | 14,150 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/pdfme/pdfme/CLAUDE.md) | [Source](https://github.com/pdfme/pdfme/blob/ffc18cde052a080b284a555224a26d0dc2923c1f/CLAUDE.md) | `da1c878371bb6fb3fce54aa5c9761d7140376d8ede716c9661f3b6d6621d7f5a` | 14,150 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/pdfme/pdfme/AGENTS.md) | [Source](https://github.com/pdfme/pdfme/blob/d3dba925cfc451ab07a0b8c36943e7de24822792/AGENTS.md) | `8089c738ddb87abbb1d02773732e71222821dcd5a88d845f7d5d181ffab679a5` | 13,413 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/pdfme/pdfme/CLAUDE.md) | [Source](https://github.com/pdfme/pdfme/blob/d3dba925cfc451ab07a0b8c36943e7de24822792/CLAUDE.md) | `8089c738ddb87abbb1d02773732e71222821dcd5a88d845f7d5d181ffab679a5` | 13,413 B |

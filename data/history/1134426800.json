@@ -2,12 +2,6 @@
   "full_name": "sickn33/agentic-awesome-skills",
   "points": [
     {
-      "checked_at": "2026-09-19T08:07:22Z",
-      "commit_sha": "3013efe1ef749961a625c13c6af48c6c31dd177c",
-      "pushed_at": "2026-09-19T08:07:07Z",
-      "stars": 46577
-    },
-    {
       "checked_at": "2026-10-02T09:51:48Z",
       "commit_sha": "2079776445c0da8a773d63e7b8c4f3c1cc727878",
       "pushed_at": "2026-10-02T09:51:15Z",
@@ -24,6 +18,12 @@
       "commit_sha": "e35c8d32d14f67a9edc4c671af2bb0c021c7c03f",
       "pushed_at": "2026-10-18T08:00:30Z",
       "stars": 47809
+    },
+    {
+      "checked_at": "2026-10-19T08:59:58Z",
+      "commit_sha": "b59e22957dfe318b8937c1f34d16d08fe31cf20f",
+      "pushed_at": "2026-10-19T08:59:40Z",
+      "stars": 47926
     }
   ],
   "repo_id": 1134426800

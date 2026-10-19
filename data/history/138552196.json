@@ -2,12 +2,6 @@
   "full_name": "nautechsystems/nautilus_trader",
   "points": [
     {
-      "checked_at": "2026-09-18T08:19:12Z",
-      "commit_sha": "5980f363ae83eb11d0afdfec4c7109246ff511d9",
-      "pushed_at": "2026-09-18T08:13:52Z",
-      "stars": 29091
-    },
-    {
       "checked_at": "2026-09-24T08:32:01Z",
       "commit_sha": "bf4b9da735e6a247fd952601b22a7872b92f3428",
       "pushed_at": "2026-09-24T08:30:23Z",

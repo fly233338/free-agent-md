@@ -2,18 +2,6 @@
   "full_name": "uutils/coreutils",
   "points": [
     {
-      "checked_at": "2026-09-18T08:19:12Z",
-      "commit_sha": "851b88530e3da5d820631a5d7e20300cca5e87d2",
-      "pushed_at": "2026-09-18T08:16:22Z",
-      "stars": 24127
-    },
-    {
-      "checked_at": "2026-09-19T08:07:22Z",
-      "commit_sha": "3ef4277d5f3095c76babb942298c61d9411ee73c",
-      "pushed_at": "2026-09-19T07:55:48Z",
-      "stars": 24135
-    },
-    {
       "checked_at": "2026-09-20T08:40:26Z",
       "commit_sha": "47df5735a5f887db9117074a313393b13e6a5649",
       "pushed_at": "2026-09-20T08:27:15Z",
@@ -54,6 +42,12 @@
       "commit_sha": "6ba6658c85eeee1f0beefd9bfb9003b2470f5733",
       "pushed_at": "2026-10-18T08:03:43Z",
       "stars": 24264
+    },
+    {
+      "checked_at": "2026-10-19T08:59:58Z",
+      "commit_sha": "bbf2bfff2482f2c8aece14d9bdff4ce488dc142c",
+      "pushed_at": "2026-10-19T08:58:08Z",
+      "stars": 24265
     }
   ],
   "repo_id": 11847500

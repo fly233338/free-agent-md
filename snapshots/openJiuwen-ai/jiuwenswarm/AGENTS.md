@@ -49,6 +49,28 @@ PR 面向 `develop`，遵循 `.gitcode/` 模板，说明问题、变更与测试
 
 检视人、合并人分派及飞书通知由根目录的 `CODEREVIEWER`、`COMMITTER`、`USER.json` 配置，格式与约束见 `.claude/rules/ownership-files.md`。
 
+## 运行时数据位置
+
+排查某个 session 的行为（轨迹、工具调用、团队状态）时直接到这些位置取数，不要在源码或家目录里反复搜索。
+
+- **数据根 `<root>`**：环境变量 `JIUWENSWARM_DATA_DIR`；未设置时为 `JIUWENSWARM_HOME`（默认用户家目录）下的 `.jiuwenswarm`。取值函数集中在 `jiuwenswarm/common/utils.py`（`get_user_workspace_dir()` / `get_agent_root_dir()` / `get_agent_sessions_dir()` / `get_runtime_state_path()` 等），新增路径一律走这些函数。
+- **会话轨迹** `<root>/agent/sessions/<session_id>/`：
+  - `metadata.json`：`mode`、`team_name`、`session_team_dispatch_mode`（autonomous / scheduled）、`model_selection`、`work_mode` 等会话级事实。
+  - `history.jsonl`：每行一条事件。`chat.tool_call` 带 `tool_call.arguments` 与 `reasoning_content`；`chat.tool_result` 的 `rendered_result` 就是模型实际看到的工具返回文本；另有 `team.task`（看板事件）、`context.usage`、`chat.final`。
+  - 归档会话在 `<root>/agent/sessions_archived/`。
+- **会话运行态** `<root>/config/runtime_state/<session_id>.yaml`（当前模型、可用模型、语言、git 上下文），同目录 `<session_id>.<digest>.skill-retrieval.json` 是 skill 检索预算快照。
+- **团队数据** `<root>/.agent_teams/`：
+  - `team.db`：所有团队的成员名册、任务、消息（SQLite，由 agent-core `openjiuwen.agent_teams` 维护）。
+  - `<team_name>/`（web 会话默认 `jiuwen_team_<session_id>`）：`sessions/<session_id>/tasks/task-*.md` 任务正文；`team-workspace/prompts/` 是 `build_team` 时物化的全部系统提示词与工具描述（`system/`、`tool/<domain>/`、`tool/fragments/`、`tool/tool.param.<lang>.md`），**不按 dispatch_mode 过滤**，成员可用文件工具读到；`team-workspace/artifacts/` 交付物；`workspaces/<member>_workspace/` 成员私有工作区。
+- **日志** `<root>/agent/.logs/`：`agent_server.log`（agents / server）、`gateway.log`、`full.log`（汇总）、`context_usage.jsonl`，按时间轮转为 `*_YYYYMMDD_HHMMSS.log`；openjiuwen core 的日志在 `<root>/logs/jiuwen.log` 与 `jiuwen_details.log`。gateway 日志目录可由 `AGENTOS_GATEWAY_LOG_DIR` 单独指定。
+- **观测轨迹库**（`trajectory_ui.enabled` 开启时）：`<root>/.trace/` 下每 session 一个 SQLite，路径解析见 `jiuwenswarm/observability/config.py`。
+
+快速定位一个 session 的全部落点：
+
+```bash
+grep -rl "<session_id>" "<root>/agent/sessions" "<root>/config/runtime_state" "<root>/agent/.logs"
+```
+
 ## 配置与智能体协作
 
 始终使用中文交流。修改子目录前阅读其中的 `AGENTS.md`；同时遵守 `AGENTS.local.md` 的本地约束。不要提交 API 密钥、真实 `.env`、运行日志或覆盖率产物；配置模板放入 `resources/`。涉及文件与进程操作时兼顾 Windows、macOS 和 Linux。

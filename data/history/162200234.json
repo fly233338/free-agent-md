@@ -2,12 +2,6 @@
   "full_name": "OpenCTI-Platform/opencti",
   "points": [
     {
-      "checked_at": "2026-09-19T08:07:22Z",
-      "commit_sha": "da4996c1e986030fc3bad2d8276e1a80a446f15b",
-      "pushed_at": "2026-09-19T08:02:30Z",
-      "stars": 10021
-    },
-    {
       "checked_at": "2026-10-13T10:42:33Z",
       "commit_sha": "a8ef55e6f404d2dcfed9f253062a7593ed56cd12",
       "pushed_at": "2026-10-13T10:41:56Z",

@@ -32,6 +32,7 @@ Everything else should be loaded **lazily** through skills only when needed.
 7. **Large-file guard**: before reading any file with `github-mcp-server-get_file_contents`, check its size. Files larger than 20 KB must be read with targeted tools (`grep`, `glob`, `bash`, or `view` with `view_range`) instead of full-file reads. See [token-optimization.md](.github/aw/token-optimization.md) for the full technique.
 8. Never ask the user to confirm the plan. Always execute the plan.
 9. **Autopilot mode**: Never ask for confirmation before taking action. Never prompt the user with "Should I proceed?", "Do you want me to…?", or any equivalent. Always act immediately and autonomously.
+10. **Grading contract**: Follow `.github/skills/operational-value-designer/SKILL.md`. Built-ins compute over the in-memory unified session in conclusion; custom `graders.<distinct-id>.script` JavaScript and repository-owned `graders.operational-value.run` Bash run only in the separate graders job. Bash reads session JSONL from `$1` / `GH_AW_SESSION_FILE`, config JSON from `GH_AW_GRADER_CONFIG`, and returns legacy metric arrays; detected file writes are rejected. Shell is trusted code, not yet microVM-isolated. Never add user code or steps to conclusion. Adopt workflow semantics and grader acceptance rules together at the same workflow path and commit; corrections are prospective and prior results are never rewritten.
 
 ## Upstream-managed workflow sources (read-only in this repo)
 
@@ -69,6 +70,7 @@ When the relevant skill is not obvious, first discover candidates locally and th
 - Query helpers for issues/PRs/workflows/discussions/labels → matching `.github/skills/github-*-query/SKILL.md`
 - Security-focused reviews of agentic workflow changes (compile/scans/audit/optimization) → `.github/skills/review-agentic-workflows/SKILL.md`
 - Doc-writing conventions → `.github/skills/documentation/SKILL.md`
+- Visual changes to the docs site or landing page (layout, widths, spacing, colour, header nav) → `.github/skills/docs-design/SKILL.md`
 - Reviewing or writing `git`/`gh`/remote operations against checkouts (per-checkout credentials, sparse/shallow monorepos, safe-outputs MCP runs without credentials) → `.github/skills/checkout-credential-review/SKILL.md`
 - Authoring, validating, or debugging canvas extensions (loopback servers, actions, iframe rendering, state model, theme tokens) → `.github/skills/create-canvas/SKILL.md`
 

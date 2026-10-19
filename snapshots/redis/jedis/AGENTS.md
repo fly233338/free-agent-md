@@ -7,6 +7,7 @@ It covers standalone, cluster, sentinel, and multi-db setups — with pipelining
 - **Keep documentation up to date.** If a change affects user-facing behavior, configuration, or the public API, update the relevant pages under [`docs/`](docs) (MkDocs).
 - **Add or update tests.** Every bug fix should include a regression test, and every new feature should include appropriate tests. Follow the conventions in [`docs/integration-testing.md`](docs/integration-testing.md) for choosing between unit and integration tests.
 - **Document breaking changes.** Any breaking change must be documented in the appropriate migration guide under [`docs/migration-guides/`](docs/migration-guides).
+- **Record behavior changes in the release notes.** If a change alters user-visible behavior without breaking the API, add an entry to the running notes for the next release under [`docs/release-notes/`](docs/release-notes) in the same PR, following the entry format in that file.
 - **Follow the contribution guidelines.** Ensure all changes comply with the project rules in [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md).
 - **Request approval before adding dependencies.** Do not introduce new runtime, test, or build dependencies without explicit confirmation.
 - **Review-friendly changes.** Keep commits and pull requests focused and logically grouped. Separate feature or bug-fix changes from refactoring, formatting, and other mechanical changes whenever practical.
@@ -78,3 +79,16 @@ the full matrix so all surfaces stay in sync:
 **Encoding:**
 - String ↔ bytes: `SafeEncoder.encode()` — never `String.getBytes()` (breaks GBK).
 - Numeric → bytes: `Protocol.toByteArray()`.
+
+## Agent Skills
+
+Task procedures live in [`.agents/skills/`](.agents/skills) (also reachable as
+`.claude/skills/`). Read the matching `SKILL.md` before that kind of work:
+
+- `extend-commands-api` — add or extend a Redis command end-to-end (evidence, decision tree, full
+  String/binary/pipeline matrix, tests), supervised or unattended.
+- `create-implementation-plan-for-redis-api-change` — turn a shared client HLD into Jedis's reviewed
+  implementation plan (API, files, ordered steps, test matrix) without touching sources; read-only,
+  writes one plan file; conventions come from `extend-commands-api`.
+- `creating-description-for-gh-pr` — draft a PR title and description from the diff between two
+  local branches.

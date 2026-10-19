@@ -1,8 +1,8 @@
 # pytorch/pytorch instruction files
 
-Upstream: [pytorch/pytorch](https://github.com/pytorch/pytorch) · License: `NOASSERTION` · Commit: `9664c41ccfc87a9661cb2b177985131948306876`
+Upstream: [pytorch/pytorch](https://github.com/pytorch/pytorch) · License: `NOASSERTION` · Commit: `8536e7e76f312789501509196e281ac0bd3d8287`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/pytorch/pytorch/AGENTS.md) | [Source](https://github.com/pytorch/pytorch/blob/9664c41ccfc87a9661cb2b177985131948306876/AGENTS.md) | `a5f8e436e04d4f1ad7de14e3cc7ef3810460ff3a785a8383964a4547f1539915` | 16,037 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/pytorch/pytorch/CLAUDE.md) | [Source](https://github.com/pytorch/pytorch/blob/9664c41ccfc87a9661cb2b177985131948306876/CLAUDE.md) | `a5f8e436e04d4f1ad7de14e3cc7ef3810460ff3a785a8383964a4547f1539915` | 16,037 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/pytorch/pytorch/AGENTS.md) | [Source](https://github.com/pytorch/pytorch/blob/8536e7e76f312789501509196e281ac0bd3d8287/AGENTS.md) | `8bb6dad8c6286dec5fc5ab96ef617e7de712085b8730e0788f3c5862a91fc87e` | 16,518 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/pytorch/pytorch/CLAUDE.md) | [Source](https://github.com/pytorch/pytorch/blob/8536e7e76f312789501509196e281ac0bd3d8287/CLAUDE.md) | `8bb6dad8c6286dec5fc5ab96ef617e7de712085b8730e0788f3c5862a91fc87e` | 16,518 B |

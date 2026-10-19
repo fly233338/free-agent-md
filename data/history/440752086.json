@@ -2,12 +2,6 @@
   "full_name": "coder/coder",
   "points": [
     {
-      "checked_at": "2026-09-18T08:19:12Z",
-      "commit_sha": "e38861d631416e447f620d72cfabb408a155faae",
-      "pushed_at": "2026-09-18T08:14:36Z",
-      "stars": 14985
-    },
-    {
       "checked_at": "2026-09-25T08:53:43Z",
       "commit_sha": "f64ccfb836e3f60f0e0938bd1201d73ef323d3f8",
       "pushed_at": "2026-09-25T08:52:07Z",

@@ -2,12 +2,6 @@
   "full_name": "slint-ui/slint",
   "points": [
     {
-      "checked_at": "2026-09-19T08:07:22Z",
-      "commit_sha": "79e36600242caba79b916bf1b8dade06c8a98715",
-      "pushed_at": "2026-09-19T07:55:11Z",
-      "stars": 23871
-    },
-    {
       "checked_at": "2026-09-22T08:37:03Z",
       "commit_sha": "08416f16733cc5d42c18593eaaaaa97ff277298a",
       "pushed_at": "2026-09-22T08:35:42Z",
@@ -30,6 +24,12 @@
       "commit_sha": "de9834753504cf534b3257f8eefe2e2e5703e039",
       "pushed_at": "2026-10-15T08:16:41Z",
       "stars": 24183
+    },
+    {
+      "checked_at": "2026-10-19T08:59:58Z",
+      "commit_sha": "45cb2b33420e1b3c8a13b6a765d2b5077d9c9608",
+      "pushed_at": "2026-10-19T08:56:49Z",
+      "stars": 24216
     }
   ],
   "repo_id": 261124045

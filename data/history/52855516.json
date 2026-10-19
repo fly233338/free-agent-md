@@ -2,12 +2,6 @@
   "full_name": "Homebrew/homebrew-core",
   "points": [
     {
-      "checked_at": "2026-09-19T08:07:22Z",
-      "commit_sha": "405b674b0fa61a36e958b0d93d632a758035b559",
-      "pushed_at": "2026-09-19T08:06:58Z",
-      "stars": 15575
-    },
-    {
       "checked_at": "2026-09-25T08:53:43Z",
       "commit_sha": "683b6b09a050d8206e721f1237fd69c37dba1c6a",
       "pushed_at": "2026-09-25T08:52:45Z",
