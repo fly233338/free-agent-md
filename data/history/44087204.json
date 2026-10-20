@@ -1,0 +1,12 @@
+{
+  "full_name": "google/syzkaller",
+  "points": [
+    {
+      "checked_at": "2026-10-20T08:38:15Z",
+      "commit_sha": "8b6016332a91c0152d9eab3e24ab8e1e5705d726",
+      "pushed_at": "2026-10-20T08:34:00Z",
+      "stars": 6359
+    }
+  ],
+  "repo_id": 44087204
+}

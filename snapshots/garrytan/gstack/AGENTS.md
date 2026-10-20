@@ -211,7 +211,12 @@ When fixing failures or preparing `/ship`, follow this order:
    result and pending permission state; diagnose a blocked actor before waiting
    through its deadline. Preserve cancellation separately from a test verdict.
    Skipped or unstarted cases
-   do not satisfy coverage; preserve every attempt. Paid evals never retry. Each
+   do not satisfy coverage; preserve every attempt. Paid evals never retry, with
+   one exception: the gate reruns a red rule, behavior or judge case verdict once
+   at the same head (Garry, 2026-10-19: "you can just run the failed test again
+   and note that it is flaky"); a pass is green with a flaky annotation and a
+   flake record, a second failure is a real red, and harness, INFRA, INCOMPLETE
+   or unattributed reds never rerun (`docs/TESTING_INTERNALS.md#flaky-reruns`). Each
    case's kind (`E2E_KINDS`) fixes its trials before the run: `rule` one trial;
    `behavior` a panel of 3 independent trials, PASS at >= 2 with no contract
    violation; `judge` 3 samples on one output, each dimension gated on its
@@ -298,3 +303,4 @@ Agents poll `eval:bg:*` logs for the `### gstack-detach EXIT=<code> ###` sentine
 - Every Codex run's verdict goes through `lib/outside-review-result.ts`; its reason codes live in `lib/gate-outcomes.ts`, each with a `docs/troubleshooting.md` anchor.
 - `test/module-size-ratchet.test.ts` keeps refactored owner modules at or under 800 lines (150 per function) and residual files from growing.
 - The `claude` CLI binary resolves via `lib/claude-bin.ts` (re-exported from `browse/src/claude-bin.ts` for browse internals; `Bun.which()` + `GSTACK_CLAUDE_BIN` override). Set `GSTACK_CLAUDE_BIN=wsl` plus `GSTACK_CLAUDE_BIN_ARGS='["claude"]'` to run Claude through WSL on Windows.
+- Every Bun gstack starts ignores the working directory's `.env` files and `bunfig.toml`: bun shebangs are `#!/usr/bin/env -S bun --no-env-file --config=/dev/null`, shell and skill callers pass `bun --no-env-file --config=/dev/null`, TypeScript spawns use `bunIsolationArgs()` from `lib/bun-isolation.ts`, and `bun build --compile` adds `--no-compile-autoload-dotenv --no-compile-autoload-bunfig`. `test/bun-entry-isolation.test.ts` enforces all four.

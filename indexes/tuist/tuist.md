@@ -1,9 +1,9 @@
 # tuist/tuist instruction files
 
-Upstream: [tuist/tuist](https://github.com/tuist/tuist) · License: `NOASSERTION` · Commit: `5869c5267f1ecf448ebdc83962c75bd76b12a90f`
+Upstream: [tuist/tuist](https://github.com/tuist/tuist) · License: `NOASSERTION` · Commit: `3a6ac0e9c8dad4db65eea8df889203685a70d863`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/tuist/tuist/AGENTS.md) | [Source](https://github.com/tuist/tuist/blob/5869c5267f1ecf448ebdc83962c75bd76b12a90f/AGENTS.md) | `83db439393ec9b3c4cbbb15fd9bc68de5257c03cfd17f5f6f48469926797fc46` | 29,458 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/tuist/tuist/CLAUDE.md) | [Source](https://github.com/tuist/tuist/blob/5869c5267f1ecf448ebdc83962c75bd76b12a90f/CLAUDE.md) | `83db439393ec9b3c4cbbb15fd9bc68de5257c03cfd17f5f6f48469926797fc46` | 29,458 B |
-| `AGENTS.md` | `.github/AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/tuist/tuist/.github/AGENTS.md) | [Source](https://github.com/tuist/tuist/blob/5869c5267f1ecf448ebdc83962c75bd76b12a90f/.github/AGENTS.md) | `e35b24f0064ff6a1ffe9394fb4e12e0d5c1e1bd549fc3e55e12bd899b93f6572` | 22,096 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/tuist/tuist/AGENTS.md) | [Source](https://github.com/tuist/tuist/blob/3a6ac0e9c8dad4db65eea8df889203685a70d863/AGENTS.md) | `d2aee3d909720f9e5662264e2f2fc2ac110a8ba383b4fb7a19e70f417bab6502` | 30,047 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/tuist/tuist/CLAUDE.md) | [Source](https://github.com/tuist/tuist/blob/3a6ac0e9c8dad4db65eea8df889203685a70d863/CLAUDE.md) | `d2aee3d909720f9e5662264e2f2fc2ac110a8ba383b4fb7a19e70f417bab6502` | 30,047 B |
+| `AGENTS.md` | `.github/AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/tuist/tuist/.github/AGENTS.md) | [Source](https://github.com/tuist/tuist/blob/3a6ac0e9c8dad4db65eea8df889203685a70d863/.github/AGENTS.md) | `3447aacbc9a6e11a83888829b58cff49e2969049dfe0382519a3ab16571418e6` | 22,888 B |

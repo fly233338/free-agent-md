@@ -1,7 +1,7 @@
 # MCSManager/MCSManager instruction files
 
-Upstream: [MCSManager/MCSManager](https://github.com/MCSManager/MCSManager) · License: `Apache-2.0` · Commit: `1c0aa9ad9167e60171f5de3addf50bb75a2d3a80`
+Upstream: [MCSManager/MCSManager](https://github.com/MCSManager/MCSManager) · License: `Apache-2.0` · Commit: `3e2e2c06c7c8c04501839aac5d77a26d7eb5f4fc`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/MCSManager/MCSManager/AGENTS.md) | [Source](https://github.com/MCSManager/MCSManager/blob/1c0aa9ad9167e60171f5de3addf50bb75a2d3a80/AGENTS.md) | `1bc397b37f4c3c61000b87d3b718e70ba9c3ec2d097ea4abd62cf870b44006eb` | 13,226 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/MCSManager/MCSManager/AGENTS.md) | [Source](https://github.com/MCSManager/MCSManager/blob/3e2e2c06c7c8c04501839aac5d77a26d7eb5f4fc/AGENTS.md) | `1bc397b37f4c3c61000b87d3b718e70ba9c3ec2d097ea4abd62cf870b44006eb` | 13,226 B |

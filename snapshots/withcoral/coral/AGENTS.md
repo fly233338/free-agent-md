@@ -45,28 +45,49 @@
 - Open read-only work with `Database::begin_read_snapshot` and non-holding
   checks. `Database::begin` takes SQLite's write lock at `BEGIN`, so it waits
   behind every other writer.
+- A Run's Program paths (Emissions, Logs, Invocation admission, held
+  rechecks, the Dispatch Fence, Invocation completion) write only through its
+  Run Owner: an Event is applied in owner memory and a row write is a
+  `ChunkWork` that joins the owner's chunk commit. Do not open a transaction
+  that holds the Run row from a Program path. See
+  [ADR 0018](docs/adr/0018-run-owner-coordinates-each-run.md) for the writers
+  that still hold the row from outside the owner.
+- A Run Owner's write ends on the database's answer, never on the clock: an
+  unanswered write (`Error::is_operational`: a lost connection, a pool
+  timeout, a lock race) means a reread and a retry with bounded backoff until
+  the answer comes or the owner has retired, and a definite answer (a
+  rejection, a claim mismatch, an ended Run, a corrupt head) stops it; the
+  Interrupted record alone retries every answer but a claim mismatch or an
+  ended Run. The worker lease is ownership between processes, renewed by
+  every commit; it never ends a Run from inside its own process. The owner's
+  own bounds do (suspect after one lease without a commit, self-interrupt
+  after three, constants in `crates/coral-run/src/execution.rs`), and the
+  supervisor of a panicked owner task writes the same one Interrupted chunk.
 - Give each independently identified entity one stable ID as its sole primary
   key. Use a composite primary key only when the tuple is the domain identity.
 - For Workspace-owned data, every externally influenced read or write must
   match both the Workspace and entity identity, even when the entity ID is
   globally unique.
-- Each domain crate owns its tables' migrations in `crates/<crate>/migrations`.
-  `crates/coral-app/src/state/migrations.rs` merges them into the one shared
-  chain.
-- Change a schema only by adding a migration. Never edit, rename, or delete a
-  migration or search stream step that is on `main`: databases created from an
-  earlier `main` must keep booting. `scripts/check-migrations.sh` checks this.
+- Add every schema migration to `crates/coral-db/migrations`, the one shared
+  chain. Write one portable file that both databases run. When SQLite and
+  Postgres must perform a step differently, add one file with the same name to
+  both `postgres/` and `sqlite/` instead.
+- Change a schema only by adding a migration. Never delete a migration or
+  search stream step that is on `main`, or change its file name or bytes:
+  databases created from an earlier `main` must keep booting.
+  `scripts/check-migrations.sh` checks this.
   Keep the fence that rejects state written by Coral 0.x.
 - Keep schemas portable across SQLite and Postgres and fail on schema drift;
   do not use `IF NOT EXISTS` to hide unexpected state.
-- The search-owned backend streams in `crates/coral-search/streams` are the one
-  sanctioned exception to the single shared migration chain. Postgres and
+- The search-owned backend streams in `crates/coral-search/streams` keep their
+  own ledger, apart from the shared migration chain. Postgres and
   SQLite retrieve and rank search results with different features: generated
   `tsvector` columns, `pg_trgm` indexes and statistics tables on Postgres, and
   an FTS5 table that triggers fill on SQLite. No one backend-agnostic set of
   objects can serve both. Each stream holds only what its backend's text
   search needs. It runs at boot after the chain, one step per transaction with
   its row in `search_migrations`, and fails on objects that already exist.
+  A chain migration cannot use stream objects: a new database has none yet.
 - Run shared repository behavior tests against SQLite and Postgres. Use
   `make postgres-tests` for Rust repository tests. For Reel's Postgres product
   evidence, use the E2E scope and cadence under Validation.
@@ -81,6 +102,10 @@
   click anywhere in the row opens it, and link its name with `Table.RowLink`.
   Do not make only the name a link, or style the name as a link.
   Use `Table.useRowCursor` so ↑, ↓ and Enter reach the rows.
+- Match a filter field's text with `filterQuery` (`apps/reef/app/utils/filter-query.ts`),
+  not `includes`, so every filter reads `^`, `$` and `*` the same way. To bold
+  the matches, use Wax's `HighlightedMatches`. To match one name exactly, use
+  `exactFilter`.
 - Do not show status or meaning with color alone. Pair color with a distinct
   icon shape or text, so color-blind users can read it (WCAG 1.4.1).
 - Browser access to Coral belongs in React Router server loaders, actions, and
