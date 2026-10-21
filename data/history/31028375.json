@@ -2,12 +2,6 @@
   "full_name": "DefectDojo/django-DefectDojo",
   "points": [
     {
-      "checked_at": "2026-09-20T08:40:26Z",
-      "commit_sha": "b9e7ef98d3478e94eb93f06913050625d4074cf1",
-      "pushed_at": "2026-09-20T05:11:28Z",
-      "stars": 4948
-    },
-    {
       "checked_at": "2026-09-21T09:02:36Z",
       "commit_sha": "b9e7ef98d3478e94eb93f06913050625d4074cf1",
       "pushed_at": "2026-09-21T07:26:54Z",

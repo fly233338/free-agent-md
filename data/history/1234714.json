@@ -2,12 +2,6 @@
   "full_name": "elixir-lang/elixir",
   "points": [
     {
-      "checked_at": "2026-09-20T08:40:26Z",
-      "commit_sha": "192aaef9d2c79415a602a291996ae3826eb97773",
-      "pushed_at": "2026-09-20T08:37:43Z",
-      "stars": 26663
-    },
-    {
       "checked_at": "2026-10-12T10:58:37Z",
       "commit_sha": "0f397504dd85ac7990427649e57d82809afb72a0",
       "pushed_at": "2026-10-12T10:56:48Z",

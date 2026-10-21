@@ -2,12 +2,6 @@
   "full_name": "anomalyco/models.dev",
   "points": [
     {
-      "checked_at": "2026-09-20T08:40:26Z",
-      "commit_sha": "bd94b6ab639374b576d40c6ce78774b7742101ef",
-      "pushed_at": "2026-09-20T08:31:19Z",
-      "stars": 6916
-    },
-    {
       "checked_at": "2026-09-22T08:37:03Z",
       "commit_sha": "c342e16fa8ea3b663ab79f5c421174379a0e6303",
       "pushed_at": "2026-09-22T08:34:53Z",
@@ -36,6 +30,12 @@
       "commit_sha": "32fb2f8779a37b0c87541addb87374738047248e",
       "pushed_at": "2026-10-20T08:38:06Z",
       "stars": 7312
+    },
+    {
+      "checked_at": "2026-10-21T08:39:21Z",
+      "commit_sha": "8d5ae11e091d74a02d1f96b813ba4a63f6656dcf",
+      "pushed_at": "2026-10-21T08:35:57Z",
+      "stars": 7330
     }
   ],
   "repo_id": 996360053

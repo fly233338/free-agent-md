@@ -1,8 +1,8 @@
 # mock-server/mockserver-monorepo instruction files
 
-Upstream: [mock-server/mockserver-monorepo](https://github.com/mock-server/mockserver-monorepo) · License: `Apache-2.0` · Commit: `790201424b9555ae45a0299008858e5abdaa7e5d`
+Upstream: [mock-server/mockserver-monorepo](https://github.com/mock-server/mockserver-monorepo) · License: `Apache-2.0` · Commit: `c840f466112accfceb071bf1290ce98bf7561bc8`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/mock-server/mockserver-monorepo/AGENTS.md) | [Source](https://github.com/mock-server/mockserver-monorepo/blob/790201424b9555ae45a0299008858e5abdaa7e5d/AGENTS.md) | `c665e89a79ab10940743077dd3b7273eb78b5043f9304840281156e520b4b506` | 35,711 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/mock-server/mockserver-monorepo/CLAUDE.md) | [Source](https://github.com/mock-server/mockserver-monorepo/blob/790201424b9555ae45a0299008858e5abdaa7e5d/CLAUDE.md) | `336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49` | 11 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/mock-server/mockserver-monorepo/AGENTS.md) | [Source](https://github.com/mock-server/mockserver-monorepo/blob/c840f466112accfceb071bf1290ce98bf7561bc8/AGENTS.md) | `c665e89a79ab10940743077dd3b7273eb78b5043f9304840281156e520b4b506` | 35,711 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/mock-server/mockserver-monorepo/CLAUDE.md) | [Source](https://github.com/mock-server/mockserver-monorepo/blob/c840f466112accfceb071bf1290ce98bf7561bc8/CLAUDE.md) | `336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49` | 11 B |

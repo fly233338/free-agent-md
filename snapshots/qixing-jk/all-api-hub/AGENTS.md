@@ -30,6 +30,7 @@ Read only the guidance relevant to the current task; reuse unchanged material al
 ## Project boundaries
 
 - Keep `src/entrypoints/**` thin; feature UI belongs in `src/features/**`. Shared code must not import options-page entrypoints. Keep React state ownership outside `src/services/**`.
+- Prefer existing patterns and shared owners. When verified common behavior would otherwise be duplicated, extract or extend the smallest suitable shared layer and use it from the affected callers; keep provider-specific protocol and policy differences explicit. Base abstractions on concrete contracts and consumers rather than speculative future reuse.
 - Use `~/` for `src/` and `~~/` for repo-root imports. Tests belong under `tests/`, not colocated `src/**/__tests__/`; browser workflows live in `e2e/`.
 
 ## Development and validation

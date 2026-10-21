@@ -2,12 +2,6 @@
   "full_name": "evcc-io/evcc",
   "points": [
     {
-      "checked_at": "2026-09-20T08:40:26Z",
-      "commit_sha": "8160673647fbb183894c98db2c6dabdaf2a87642",
-      "pushed_at": "2026-09-20T08:28:59Z",
-      "stars": 7273
-    },
-    {
       "checked_at": "2026-10-11T10:05:50Z",
       "commit_sha": "f0569795076fdc3101fde13194e363d6d8cb19b1",
       "pushed_at": "2026-10-11T10:04:20Z",
