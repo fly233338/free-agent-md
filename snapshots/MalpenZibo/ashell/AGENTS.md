@@ -1,0 +1,107 @@
+# ashell project context
+
+## Quick reference
+
+```bash
+make check    # fmt + cargo check + clippy -D warnings + tests across the workspace (run before pushing)
+make build    # cargo build --release
+make fmt      # cargo fmt
+make start    # run ./target/release/ashell
+make install  # install binary to /usr/bin (requires sudo)
+```
+
+## Project overview
+
+ashell is a status bar for Wayland compositors, written in Rust with the iced GUI framework.
+It has dedicated backends for Hyprland and Niri and a generic Wayland fallback for other compositors.
+It follows the Elm architecture (model → update → view) with a modular design separating UI modules from backend services.
+
+- **Edition:** 2024, **MSRV:** 1.89
+- **License:** GPL-3.0-or-later
+- **iced fork:** custom fork with multi-window, wayland, wgpu support
+
+## Code quality
+
+- **Clippy is strict:** CI runs `cargo clippy --workspace --all-features -- -D warnings`. Zero warnings allowed.
+- **Formatting:** `cargo fmt --all -- --check` enforced in CI.
+- **Tests:** unit tests live in the root crate (`src/`) and in `crates/ashell-services`. Run them with `cargo test --workspace` (use `-p ashell-services` for just the library crate).
+
+## Project structure
+
+```
+src/
+├── main.rs              # entry point, font embedding, CLI dispatch
+├── app.rs               # App state, Elm update/view cycle
+├── app/                 # top-level Message enum + OSD display info
+├── config.rs            # configuration types (TOML deserialization)
+├── i18n.rs              # Fluent localization setup
+├── ipc.rs               # Unix socket IPC (client + server + subscription)
+├── osd.rs               # on-screen display overlay (volume, brightness, ...)
+├── outputs.rs           # multi-monitor output management
+├── theme.rs             # theming (transparent/solid bar surface, radius, margin)
+├── xdg.rs               # XDG runtime directory lookup
+├── components/          # shared UI components, icons, menus and custom iced widgets
+├── modules/             # UI modules (clock, workspaces, settings, tray, etc.)
+│   └── settings/        # settings sub-panels (audio, network, bluetooth, power, brightness)
+├── services/            # iced glue (ReadOnlyService/Service) + services not yet migrated to ashell-services
+│   ├── compositor/      # Hyprland/Niri/generic Wayland abstraction
+│   ├── network/         # NetworkManager + IWD backends
+│   ├── notifications/   # notification daemon
+│   ├── mpris/           # media player control
+│   ├── tray/            # system tray
+│   └── ...              # audio, bluetooth, brightness, privacy, idle_inhibitor, logind, throttle, upower, xdg_icons
+└── utils/
+crates/
+└── ashell-services/     # UI-agnostic services (no iced dependency), e.g. bluetooth, upower
+```
+
+The repo is a Cargo workspace: the root package is the `ashell` binary, `crates/ashell-services` is a library member.
+
+## Key system dependencies
+
+libxkbcommon, libwayland, libpipewire-0.3, libpulse, dbus, udev, pkg-config, clang/llvm
+
+## build.rs
+
+The build script does two things:
+1. Captures `GIT_HASH` from `git rev-parse --short HEAD`
+2. **Font subsetting:** parses `src/components/icons.rs` for `\u{XXXX}` patterns and creates a subset of Nerd Fonts containing only used glyphs (via the `allsorts` crate)
+
+## Commit conventions
+
+Format: `<type>(<optional-scope>): <subject>`
+
+Types: `feat`, `fix`, `docs`, `chore`, `style`, `refactor`, `perf`, `ci`
+Scope examples: `fix(brightness)`, `feat(system_info)`, `fix(network)`
+
+## Branch naming
+
+`feat/`, `fix/`, `chore/`, `docs/`, `refactor/`, `style/` prefixes. PRs target `main`.
+
+## Documentation
+
+- **User docs:** `website/` (Docusaurus) → https://malpenzibo.github.io/ashell/
+- **Versioned docs:** `website/versioned_docs/` are frozen snapshots of past releases. **Never modify them** — only update `website/docs/` (the "next" version).
+- **Developer guide:** `docs/` (mdbook) → https://malpenzibo.github.io/ashell/dev-guide/
+- The developer guide is AI-generated but primarily written for human readers.
+- **Most useful docs for AI agents:** architecture overview, build.rs font subsetting, anatomy-of-a-module. These capture patterns that aren't obvious from the code alone.
+- **Less useful for AI agents:** most other doc files. Prefer targeted codebase exploration (grep, read) over reading docs verbatim. Config-reference is more useful during review than during implementation.
+
+## AI contribution guidelines
+
+- AI contributions are accepted. Frontier-class models are strongly recommended but not mandatory.
+- **You own your code:** regardless of tools used, be able to explain every change. Run `make check` before pushing.
+- **Discuss before implementing:** open an issue or comment before working on features or large changes.
+- **Small incremental PRs:** code review is manual and done in maintainers' free time — big diffs take much longer to review.
+- **After review feedback:** focus AI narrowly on commented elements only — don't let it modify already-reviewed code.
+- **Keep docs in sync:** when a PR changes behavior that impacts documentation (README, mdbook, CLAUDE.md, website), update the relevant docs in the same PR.
+- Full policy: `docs/src/contributing/ai-assisted-contributions.md`
+
+## Architecture patterns
+
+- **Elm architecture:** `App` struct holds all state. `Message` enum drives updates. `update()` returns `Task<Message>` for async work.
+- **Services** are backend abstractions (D-Bus, IPC). Two traits: `ReadOnlyService` and `Service` (mutable). Services moved to `ashell-services` expose a plain API with no trait (a cloneable handle with `execute(command)` and an updates `Stream` that starts with the current state); a module in `src/services/` wraps each one into the iced traits.
+- **Modules** are UI components (workspaces, clock, settings). Each implements `view()` returning iced `Element`.
+- **Compositor abstraction:** the `CompositorChoice` enum routes to per-backend modules (Hyprland, Niri, generic Wayland), each exposing `is_available`/`run_listener`/`execute_command`, auto-detected at runtime.
+- **Config hot-reload:** inotify file watcher triggers `ConfigChanged` message on config file changes.
+- **Translations:** Fluent catalogs in `i18n/<lang-tag>/ashell.ftl`, registered in `CATALOGS` in `src/i18n.rs`. When adding or changing a translation, follow "Adding a Translation" in `docs/src/contributing/common-tasks.md`: check desktop terms against the GNOME and KDE translations for that language and weather terms against libgweather and a major weather site, rather than translating strings in isolation.

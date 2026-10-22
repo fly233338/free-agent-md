@@ -1,7 +1,7 @@
 # rust-lang/rust instruction files
 
-Upstream: [rust-lang/rust](https://github.com/rust-lang/rust) · License: `Apache-2.0` · Commit: `1731faea0da5b4ebf881d8e53f98066c17a74711`
+Upstream: [rust-lang/rust](https://github.com/rust-lang/rust) · License: `Apache-2.0` · Commit: `f8125e48dc669320b4e5e83487dcbfb681957961`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/rust-lang/rust/AGENTS.md) | [Source](https://github.com/rust-lang/rust/blob/1731faea0da5b4ebf881d8e53f98066c17a74711/AGENTS.md) | `0609fe631e54ea9eaf43f4e3bb2dc9a967308b7755418db288f1ffef81cfc753` | 13,435 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/rust-lang/rust/AGENTS.md) | [Source](https://github.com/rust-lang/rust/blob/f8125e48dc669320b4e5e83487dcbfb681957961/AGENTS.md) | `0609fe631e54ea9eaf43f4e3bb2dc9a967308b7755418db288f1ffef81cfc753` | 13,435 B |

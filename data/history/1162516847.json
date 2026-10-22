@@ -2,12 +2,6 @@
   "full_name": "MakazhanAlpamys/Soup",
   "points": [
     {
-      "checked_at": "2026-09-22T08:37:03Z",
-      "commit_sha": "4890709ad048927fb6acce4dcf01d243ef6f0154",
-      "pushed_at": "2026-09-22T08:36:24Z",
-      "stars": 6983
-    },
-    {
       "checked_at": "2026-09-28T09:53:40Z",
       "commit_sha": "886eb6468b892e10747f1948032421570ba417c8",
       "pushed_at": "2026-09-28T09:51:13Z",
@@ -24,6 +18,12 @@
       "commit_sha": "222283e8c1597d48cce673719e21acc768df0321",
       "pushed_at": "2026-10-16T08:14:51Z",
       "stars": 9138
+    },
+    {
+      "checked_at": "2026-10-22T08:41:46Z",
+      "commit_sha": "1ec22e98e12518df69a5dbce022ac0583d0d6d0d",
+      "pushed_at": "2026-10-22T08:41:35Z",
+      "stars": 9540
     }
   ],
   "repo_id": 1162516847

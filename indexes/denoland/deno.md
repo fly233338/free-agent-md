@@ -1,7 +1,7 @@
 # denoland/deno instruction files
 
-Upstream: [denoland/deno](https://github.com/denoland/deno) · License: `MIT` · Commit: `9766cc5e3bc958d11f4fdb98ea841a47d13da8e4`
+Upstream: [denoland/deno](https://github.com/denoland/deno) · License: `MIT` · Commit: `7e4306fbe8587dc7d4c103deb8a95af56cca00cb`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/denoland/deno/CLAUDE.md) | [Source](https://github.com/denoland/deno/blob/9766cc5e3bc958d11f4fdb98ea841a47d13da8e4/CLAUDE.md) | `69015aad5ec6666900043d15d0d5a82bd961327821bd891659c14d6b0113f22f` | 11,866 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/denoland/deno/CLAUDE.md) | [Source](https://github.com/denoland/deno/blob/7e4306fbe8587dc7d4c103deb8a95af56cca00cb/CLAUDE.md) | `69015aad5ec6666900043d15d0d5a82bd961327821bd891659c14d6b0113f22f` | 11,866 B |

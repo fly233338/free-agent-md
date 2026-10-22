@@ -2,12 +2,6 @@
   "full_name": "superplanehq/superplane",
   "points": [
     {
-      "checked_at": "2026-09-21T09:02:36Z",
-      "commit_sha": "09a897d68f247178799884c557ecf11da43315b6",
-      "pushed_at": "2026-09-21T09:02:14Z",
-      "stars": 7520
-    },
-    {
       "checked_at": "2026-09-25T08:53:43Z",
       "commit_sha": "5ce910fff8894cf972ba8f0b5e89c229b03c2355",
       "pushed_at": "2026-09-25T08:53:02Z",
@@ -30,6 +24,12 @@
       "commit_sha": "b4c637130fc955e3a113a2da9f4e1b6c24727bcd",
       "pushed_at": "2026-10-16T08:12:30Z",
       "stars": 7789
+    },
+    {
+      "checked_at": "2026-10-22T08:41:46Z",
+      "commit_sha": "cd7d526eb0e5b72f283e630389a7ab60330f40d5",
+      "pushed_at": "2026-10-22T08:37:23Z",
+      "stars": 8133
     }
   ],
   "repo_id": 979560403

@@ -4,7 +4,7 @@ This is the only agent guide for the repository. Its rules apply everywhere, inc
 
 ## Markdown style
 
-Write prose paragraphs and list items as single source lines and let editors and renderers wrap them naturally. Do not hard-wrap Markdown at a fixed column; preserve separate lines only where Markdown syntax or intentional formatting requires them, such as headings, lists, tables, blockquotes, and code blocks.
+Write prose paragraphs and list items as single source lines and let editors and renderers wrap them naturally. Do not hard-wrap Markdown at a fixed column; preserve separate lines only where Markdown syntax or intentional formatting requires them, such as headings, lists, tables, blockquotes, and code blocks. The Limitations page partials under `docs/content/limitations/` are the exception: they keep one sentence per line (see Limitations page partials).
 
 ## Build and test
 
@@ -45,6 +45,8 @@ SCRIPTC_TEST_WORKERS=4 SCRIPTC_SAN=1 pnpm test  # sanitized lane
 `SCRIPTC_TEST_WORKERS` caps the vitest worker pool so concurrent agents don't contend for cores; full local suites also queue behind an advisory lock per lane.
 
 Corpus programs are differential tests against Node: every program runs under Node and as a compiled native binary, and stdout, stderr, and exit codes must match byte-for-byte. A new feature lands with corpus programs that pin its behavior both ways.
+
+Record a new or remeasured program's CI cost (used to balance the test shards) in `tests/harness/corpus-costs/<program>.json`, not in `tests/harness/corpus-costs.json`; see the README there.
 
 Before opening a PR that adds or changes corpus, diagnostic, or frontend fixtures, run `pnpm test:ts7 --baselines-only`. This fast completeness check uses the same fixture discovery as the parity suite; it does not type-check or replace behavioral parity. Generate missing preflight/order baselines, review their diagnostics and module order, and run the affected `order-parity.test.ts` batches before pushing. Keep existing baseline entries unchanged unless the corresponding behavior intentionally changes. The full `pnpm test:ts7` command also checks completeness before starting its sweep.
 
@@ -138,10 +140,11 @@ Never hand-edit these files:
 
 - `packages/compiler/surface-manifest.json`
 - `internal/compatibility/generated/node-v24-internal.json`
-- `internal/compatibility/generated/node-v24-backlog.json`
 - `docs/src/generated/node-v24-compatibility.json`
 
-Change compiler decision sources or the implementation-owned compatibility manifests, then regenerate. Use `pnpm manifest` when compiler decision tables change and `pnpm node-compat` whenever the Node pin, compatibility manifests, compiler surface manifest, changes.
+Change compiler decision sources or the implementation-owned compatibility manifests, then regenerate. Use `pnpm manifest` when compiler decision tables change and `pnpm node-compat` whenever the Node pin, compatibility manifests, compiler surface manifest, changes. `pnpm node-compat --local` reclassifies the committed ledger without fetching Node's docs; it writes the same files as `pnpm node-compat` while the Node pin is unchanged.
+
+Never resolve a merge conflict in these files by hand. Resolve the source conflicts, then run `node scripts/regen-generated.mjs`: it takes the merged-in branch's version of each conflicted generated file, regenerates all of them from the merged sources, and stages the ones that conflicted.
 
 The public docs artifact must not expose repository test paths, internal source identifiers, engineering evidence bookkeeping, documentation/metadata headings, command-line or configuration-only entries, or rows that are N/A in the native tier. Those remain in the complete internal census under `internal/compatibility/generated/`.
 
@@ -156,7 +159,7 @@ For each API family:
 5. Add differential evidence that executes under Node and as a compiled binary. Cover stdout, stderr, exit status, success behavior, and important error shapes. A load-only export check does not prove behavior.
 6. Update the implementation-owned source or manifest. Positive `supported` and `partial` mappings must name existing test evidence.
 7. Run `pnpm manifest` if compiler surface tables changed, then run `pnpm node-compat`. Never patch generated JSON or headers.
-8. Inspect the internal ledger, public artifact, and backlog diff. Confirm the intended API family changed and unrelated rows did not.
+8. Inspect the internal ledger and public artifact diff, and compare `pnpm node-compat:backlog` output before and after. Confirm the intended API family changed and unrelated rows did not.
 9. Run focused tests, `pnpm node-compat:check`, and the full validation gate required for the change. If docs output changed, also run the docs gate.
 
 Compatibility commands:
@@ -194,6 +197,7 @@ The docs site is a standalone pnpm workspace under `docs/`. It uses Next.js App 
 - A labeled bullet (`- **Crypto:** ...`) is `docs/content/limitations/<section>/<label>.mdx`, for example `builtin-apis/crypto.mdx`. Edit that file to change the bullet.
 - The other text of a section (paragraphs, code blocks, unlabeled lists) is `docs/content/limitations/<section>.mdx`; text before the first heading is `introduction.mdx`.
 - `<section>` and `<label>` are the heading and label text in lowercase with each run of other characters replaced by `-`.
+- Write one sentence per line; a bullet's continuation lines are indented two spaces. Markdown joins the lines, and edits to different sentences don't conflict. `pnpm lint` fails on a line that holds two sentences, and `node docs/scripts/limitations-partials.mjs fix` splits such lines.
 - To add a bullet, add its file and an include line at its position in `limitations.mdx`, with a blank line on each side. Consecutive bullet includes render as one list.
 - To add a section, add the heading to `limitations.mdx` and include the section's partial below it.
 

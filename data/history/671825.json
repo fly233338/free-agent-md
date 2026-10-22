@@ -2,12 +2,6 @@
   "full_name": "Graylog2/graylog2-server",
   "points": [
     {
-      "checked_at": "2026-09-22T08:37:03Z",
-      "commit_sha": "ff39a1946c0bb13dedfdcef20bf9037722d26469",
-      "pushed_at": "2026-09-22T08:34:21Z",
-      "stars": 8141
-    },
-    {
       "checked_at": "2026-10-09T10:40:00Z",
       "commit_sha": "3eb14810546d554a1c7af9377a7e130c301ae7e3",
       "pushed_at": "2026-10-09T10:38:59Z",

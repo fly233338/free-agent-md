@@ -2,12 +2,6 @@
   "full_name": "androidx/androidx",
   "points": [
     {
-      "checked_at": "2026-09-21T09:02:36Z",
-      "commit_sha": "d20bae6b622b7e0306067b618dcbddf851e1cc43",
-      "pushed_at": "2026-09-21T08:55:05Z",
-      "stars": 6094
-    },
-    {
       "checked_at": "2026-09-25T08:53:43Z",
       "commit_sha": "9df3dfef9a4fdc8de448a634fa58f49e1b63e1f9",
       "pushed_at": "2026-09-25T08:52:04Z",
@@ -24,6 +18,12 @@
       "commit_sha": "1c57d53801864669c3332f2946da89257d6605ec",
       "pushed_at": "2026-10-12T10:56:08Z",
       "stars": 6110
+    },
+    {
+      "checked_at": "2026-10-22T08:41:46Z",
+      "commit_sha": "74146e18ff840deb5934c0d0eacb77c89517e666",
+      "pushed_at": "2026-10-22T08:38:20Z",
+      "stars": 6113
     }
   ],
   "repo_id": 256589781

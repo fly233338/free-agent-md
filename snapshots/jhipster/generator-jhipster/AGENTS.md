@@ -1,0 +1,75 @@
+# AI agent instructions for generator-jhipster
+
+JHipster is a Yeoman-based code generator (TypeScript, ESM, Node — see `engines` in `package.json` for the required version) that scaffolds Spring Boot + Angular/React/Vue applications. See `ARCHITECTURE.md`, `BLUEPRINTS.md`, `DEVELOPMENT.md`, and `JDL.md` (the reference of the JDL language) for background context.
+
+**Trust order when docs disagree:** `package.json` scripts and the current source tree are the source of truth. Prose docs (including `DEVELOPMENT.md`) may be stale — verify commands against `package.json` before running them.
+
+## Build, lint, test
+
+- Install: `npm ci` (also compiles via `prepare` → `build`).
+- Build: `npm run build` (runs `clean` → `tsc` of TypeScript 7, the `typescript7` alias → copy non-TS template files + `.d.ts` to `dist/`, then `bin/fix-bin.cjs`). Use `npm run compile` alone for a faster TS-only recompile.
+- Type-check tests: `npm run check-types` (`tsc -p tsconfig.spec.json` of TypeScript 7; the `typescript` package stays TypeScript 6, for typescript-eslint).
+- Lint: `npm run lint` (eslint, `--max-warnings 5`). Auto-fix: `npm run lint-fix` (runs eslint `--fix` then `prettier --write`).
+- Prettier check/format: `npm run prettier:check` / `npm run prettier:format`.
+- Full test (lint + type-check + tests): `npm test`. Runs expect-node (`exnode`) over the spec files of `expect-node.config.ts` (`test generators cli .blueprint lib`) with `--forbid-only`.
+- Fast test (skip lint/type-check): `npx exnode`.
+- Single test files / directories: `npx exnode <path>...` (add `--workers 0` to run each file in a process of its own).
+- Update snapshots: `npm run update-snapshot -- <path>...` or `npm run update-snapshots` (all). Equivalent: `npx exnode --update-snapshot <path>...`.
+- JDL-only tests: `npm run jdl:test` (watch: `npm run jdl:test-watch`).
+
+Snapshots live next to specs as `*.snap` and are committed. Never hand-edit them — regenerate.
+
+**Always run `npm run prettier:format` (or `npm run lint-fix`) before committing** so changes match the project's Prettier configuration. CI will fail otherwise.
+
+## Running the generator locally
+
+Two options (see `DEVELOPMENT.md`):
+
+- JIT: `alias jhipster="$PWD/bin/jhipster.cjs"` — no build step needed.
+- Linked build: `npm run build && npm link`; rebuild after changes.
+  On generated apps use `jhipster --skip-jhipster-dependencies` plus `npm link generator-jhipster` so the dev version is picked up. `jhipster --install-path` shows which copy is active.
+
+`jhipster describe` prints the generators; `jhipster describe <generator> [--no-imports] [--prompts] [--json]` the arguments, options, `.yo-rc.json` keys, choices, defaults, derived properties and prompts of a command (model in `lib/command/describe-command.ts`, generator resolution in `lib/resolver/`); `jhipster describe --config <name>` finds the command declaring a config. The generators are named as the cli names them, without the `jhipster:` prefix (`spring-boot`, `spring-boot:cache`; the generators of a blueprint keep their namespace), and `<generator>` takes that name or the namespace. Use it instead of reading `command.ts` files when you need the option catalog or the prompt order.
+
+## Big-picture architecture
+
+- CLI entry: `cli/jhipster.cjs` → `cli/cli.ts` (env checks) → `cli/program.ts` (commander parsing, generator/blueprint lookup) → spawns a Yeoman Environment which runs the selected generator.
+- Generator hierarchy (extend the lowest level that has what you need):
+  `GeneratorBaseCore` → `GeneratorBase` (blueprint composition) → `GeneratorApplication` (entity APIs).
+- Each generator lives in `generators/<name>/` with a fixed layout:
+  - `index.ts` — re-exports the generator as **default** plus the `command`. Required for the exports map in `package.json`.
+  - `generator.ts` — priority task groups (see below).
+  - `command.ts` — CLI args/options/configs (consumed by `parseJHipsterArguments` / `parseJHipsterConfigs` and by `program.ts` to build the CLI).
+  - `templates/` — EJS templates rendered during `writing`/`writingEntities`.
+  - `support/` — exported helpers (part of the public API via `./generators/*/support`).
+  - `internal/` — non-exported helpers.
+  - `resources/`, `jdl/` — supporting data / JDL specs.
+    Sub-generators nest under `generators/<parent>/generators/<child>/` and are exported via the same pattern.
+- Priority lifecycle (order matters, see `ARCHITECTURE.md` for full list): `initializing` → `prompting` → `configuring` → `composing` → `loading` → `preparing` → `configuringEachEntity` → `loadingEntities` → `preparingEachEntity` → `preparingEachEntityField` → `preparingEachEntityRelationship` → `default` → `writing` → `writingEntities` → `postWriting` → `install` → `end`. Use the matching `as<Priority>TaskGroup()` helper on the generator to get typed task signatures.
+- Blueprints (`BLUEPRINTS.md`): three flavors — replacement, side-by-side, standalone. `GeneratorBase` handles composition; blueprinted sub-generators are discovered and composed in `beforeQueue`.
+- `lib/` holds shared, **exported** code: `lib/jdl` (Chevrotain-based JDL parser), `lib/testing` (test harness, also importable as `#testing`), `lib/utils`, `lib/eslint`, `lib/ci`. Keep cross-generator logic here, not inside an individual generator.
+- `.blueprint/` is the in-repo "dev blueprint" enabled when running via JIT. It provides sub-generators like `generate-sample`, `describe-samples` (what each CI sample generates and the environment it runs on, `--json` for scripts), `github-build-matrix` (the matrix of a CI workflow, including the `daily-*` workflows of jhipster-daily-builds), `generate-generator`, `from-issue`, `update-spring-boot`, etc. — use these instead of ad-hoc scripts when generating samples for manual testing.
+- Build output in `dist/` is what gets published. The `exports` map in `package.json` defines the public API surface — don't import across generator `internal/` boundaries.
+- **Never edit `dist/` directly.** Modify source in `cli/`, `generators/`, `lib/`, etc., then rebuild with `npm run build` (or `npm run compile` for TS-only).
+
+## Key conventions
+
+- **ESM + TypeScript everywhere**; `"type": "module"` in `package.json`. Use `.ts`/`.mts`. Tests are `*.spec.ts` run by `expect-node` on node:test, importing `describe`, `it`, `expect` and `exnode` (mocks) from `expect-node`.
+- **Task groups**: define priorities as getters returning the result of `this.as<Priority>TaskGroup({...})`. Never call tasks directly — the Yeoman environment orchestrates them.
+- **Config access**: prefer `this.jhipsterConfig` (persists to `.yo-rc.json`), `this.jhipsterConfigWithDefaults` (read-only with defaults applied), and the `application`/`entity`/`field`/`relationship` context objects injected into tasks. Derived booleans (e.g. `entity.dtoMapstruct`, `field.fieldTypeInteger`) belong in `preparing*` priorities, not in templates.
+- **Writing files**: use `this.writeFiles({ blocks, context })` with `condition` functions on blocks rather than branching inside templates. Use `editFile(path, transform)` or the needle APIs on `source` in `postWriting` to inject into already-written files.
+- **Templates**: EJS (`.ejs`). Two-space indent for template logic; generated file's own rules apply to content. Factor shared fragments into `.ejs` sub-templates included via `<%- include('../path', { ... }) -%>`.
+- **Commit messages** (enforced at review): imperative present tense, lowercase first letter, no trailing dot, header ≤100 chars. Do not reference issues in commit messages: GitHub adds every commit that mentions an issue (on each push, rebase and amend) to the issue timeline, and agents create many commits. Reference the issue in the pull request description instead (`Fix #1234`). Do not use `[ci skip]` or `[skip ci]`, even for docs-only commits: it blocks the required CI workflows.
+- **Tests required** for every feature or bug fix. When behavior touches generated output, update/extend snapshots rather than asserting strings by hand.
+- **Path aliases** for tests: `#testing` → `lib/testing/index.ts`, `#test-support` → `test/support/index.ts`.
+- **Node version**: CI and local must match `engines` in `package.json`; avoid APIs only in newer releases.
+
+## Opening pull requests
+
+- Open pull requests as draft (`gh pr create --draft`).
+- Use `.github/PULL_REQUEST_TEMPLATE.md` as the body: the description in place of its first comment, and its checklist kept.
+- Leave the "I have personally reviewed, understood, and tested the changes" item unchecked. The user checks it after reviewing the changes, and marks the pull request ready for review.
+
+## Reviewing pull requests
+
+- Post reviews as comments (`gh pr review --comment` or `gh pr comment`). Never submit a "request changes" review: it blocks the merge, and that decision belongs to a human reviewer alone.

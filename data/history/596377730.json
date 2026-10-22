@@ -2,18 +2,6 @@
   "full_name": "openobserve/openobserve",
   "points": [
     {
-      "checked_at": "2026-09-21T09:02:36Z",
-      "commit_sha": "ed4ca94ba3dea357cde5967dc9cf182135a7f3ab",
-      "pushed_at": "2026-09-21T09:02:27Z",
-      "stars": 22054
-    },
-    {
-      "checked_at": "2026-09-22T08:37:03Z",
-      "commit_sha": "e8d1ede61501d8a5a9559800dde9b8dcc2e76b66",
-      "pushed_at": "2026-09-22T08:35:11Z",
-      "stars": 22073
-    },
-    {
       "checked_at": "2026-09-28T09:53:40Z",
       "commit_sha": "464971fbabb36e20c2c7320b8fc33c64b4809f70",
       "pushed_at": "2026-09-28T09:49:52Z",
@@ -60,6 +48,12 @@
       "commit_sha": "f2652418c2f37ef0ecd17520a54d1342e6210417",
       "pushed_at": "2026-10-19T08:57:53Z",
       "stars": 22426
+    },
+    {
+      "checked_at": "2026-10-22T08:41:46Z",
+      "commit_sha": "edac95cc03c12c0fc8ee755716f5230bb3aaebfc",
+      "pushed_at": "2026-10-22T08:41:16Z",
+      "stars": 22455
     }
   ],
   "repo_id": 596377730

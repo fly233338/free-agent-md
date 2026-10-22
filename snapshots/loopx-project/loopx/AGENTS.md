@@ -307,6 +307,15 @@ duplicate configuration. Frontend presence does not require automatic execution
 of privileged tools. Internal helpers/providers belong to their owning
 capability's interaction, not an independent screen.
 
+For artifact-producing capabilities, the requested work is the deliverable.
+An existing conversation, artifact preview/download and revision feedback can
+satisfy the frontend journey. HTML, games, mini-worlds and video are creation
+formats; they do not by themselves require a dedicated LoopX editor, simulator
+or settings screen. Add a product surface only for an accepted user workflow.
+Qualify the capability through actual requested works and meaningful revisions;
+rendering or interaction checks alone do not establish creative quality or
+communication effectiveness.
+
 Before PR handoff, validate the packaged journey with its real owning backend
 and a relevant failure/recovery case. Name changed entrypoints and evidence.
 A staged prerequisite may be proposed as partial with its remaining journey and
@@ -323,6 +332,13 @@ Apply it before implementation and in PR visual evidence. Match an approved
 design source and use the system for unspecified details. For production
 interactions follow task-first delivery above; label simulations and prototypes
 without claiming packaged or installed readback.
+
+Carry the primary user question, default-versus-detail choices and the
+[populated whole-page review](docs/development/design.md#populated-page-review)
+in the existing task/PR evidence. Inspect the affected page with long, repeated
+content and mixed states, not only isolated components or a quiet fixture.
+Reading the contract and passing UI tests do not establish that the page is
+readable; name the observed composition and any remaining failure.
 
 ## Public And Private Boundary
 

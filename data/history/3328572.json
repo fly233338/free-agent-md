@@ -2,12 +2,6 @@
   "full_name": "getsentry/sentry-javascript",
   "points": [
     {
-      "checked_at": "2026-09-22T08:37:03Z",
-      "commit_sha": "0546da5e5682d8cd6712f42b001159fee497162b",
-      "pushed_at": "2026-09-22T08:33:48Z",
-      "stars": 8742
-    },
-    {
       "checked_at": "2026-09-25T08:53:43Z",
       "commit_sha": "37613782dd2b38088c4d24d80502a600c503a2f5",
       "pushed_at": "2026-09-25T08:51:46Z",
@@ -36,6 +30,12 @@
       "commit_sha": "b5a707da0808044c504cb4a53d3999c03a59988a",
       "pushed_at": "2026-10-12T10:53:21Z",
       "stars": 8756
+    },
+    {
+      "checked_at": "2026-10-22T08:41:46Z",
+      "commit_sha": "b94aeb024612c702e529b057e7cf3223fd26eca0",
+      "pushed_at": "2026-10-22T08:37:41Z",
+      "stars": 8762
     }
   ],
   "repo_id": 3328572

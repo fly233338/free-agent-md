@@ -2,12 +2,6 @@
   "full_name": "StarRocks/starrocks",
   "points": [
     {
-      "checked_at": "2026-09-21T09:02:36Z",
-      "commit_sha": "d0bbc92d75d1291201fbd00c4f99d40f9eef01a4",
-      "pushed_at": "2026-09-21T08:56:54Z",
-      "stars": 12130
-    },
-    {
       "checked_at": "2026-09-23T08:39:18Z",
       "commit_sha": "8ef15416cafd20c9479d57c3644c1c764b0f693f",
       "pushed_at": "2026-09-23T08:38:24Z",
@@ -24,6 +18,12 @@
       "commit_sha": "c44515dc3d057433c35c59794a70bd583ae19ccd",
       "pushed_at": "2026-10-13T10:41:04Z",
       "stars": 12167
+    },
+    {
+      "checked_at": "2026-10-22T08:41:46Z",
+      "commit_sha": "4541c7210e72555b4d548ec7c68da9adb5d7e0ec",
+      "pushed_at": "2026-10-22T08:39:56Z",
+      "stars": 12197
     }
   ],
   "repo_id": 402945349

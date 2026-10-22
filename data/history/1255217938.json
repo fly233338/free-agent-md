@@ -2,12 +2,6 @@
   "full_name": "loopx-project/loopx",
   "points": [
     {
-      "checked_at": "2026-09-21T09:02:36Z",
-      "commit_sha": "855c8ca0d37b0fa7a1ad9d4cff4cbb4ccd197590",
-      "pushed_at": "2026-09-21T08:55:46Z",
-      "stars": 5913
-    },
-    {
       "checked_at": "2026-09-25T08:53:43Z",
       "commit_sha": "7ada6f380a4ec609792c4856972a1d74246d85b2",
       "pushed_at": "2026-09-25T08:47:29Z",
@@ -48,6 +42,12 @@
       "commit_sha": "31486ac1853fdfd46118c1c6bc8e6f93447ce476",
       "pushed_at": "2026-10-19T08:58:50Z",
       "stars": 6366
+    },
+    {
+      "checked_at": "2026-10-22T08:41:46Z",
+      "commit_sha": "fde154fc8147bc54d687b9cc22d6315069682de7",
+      "pushed_at": "2026-10-22T08:41:41Z",
+      "stars": 6392
     }
   ],
   "repo_id": 1255217938

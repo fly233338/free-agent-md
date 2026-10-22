@@ -2,18 +2,6 @@
   "full_name": "ant-design/ant-design",
   "points": [
     {
-      "checked_at": "2026-09-21T09:02:36Z",
-      "commit_sha": "8a236ac6f451cd7ab78c56f5761bb6eb3369eb08",
-      "pushed_at": "2026-09-21T06:07:56Z",
-      "stars": 99566
-    },
-    {
-      "checked_at": "2026-09-22T08:37:03Z",
-      "commit_sha": "a5471756d2684b88a11228fdf079a44efcd03c83",
-      "pushed_at": "2026-09-22T07:55:27Z",
-      "stars": 99581
-    },
-    {
       "checked_at": "2026-09-23T08:39:18Z",
       "commit_sha": "230af2a36430609a5164569522bfd0065dd0c059",
       "pushed_at": "2026-09-23T05:13:00Z",
