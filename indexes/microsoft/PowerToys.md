@@ -1,8 +1,8 @@
 # microsoft/PowerToys instruction files
 
-Upstream: [microsoft/PowerToys](https://github.com/microsoft/PowerToys) · License: `MIT` · Commit: `b9c2d3c1c54edb0049ce64c1465a46fd070f6560`
+Upstream: [microsoft/PowerToys](https://github.com/microsoft/PowerToys) · License: `MIT` · Commit: `f5f61ea98449c9cc0793adc8da1aa1d58e167f9b`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/microsoft/PowerToys/AGENTS.md) | [Source](https://github.com/microsoft/PowerToys/blob/b9c2d3c1c54edb0049ce64c1465a46fd070f6560/AGENTS.md) | `3bbf3ee98db9a06f0c1f50c81d063b613f0b224a6c7140c06d9076d104c054a9` | 7,026 B |
-| `CLAUDE.md` | `.claude/CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/microsoft/PowerToys/.claude/CLAUDE.md) | [Source](https://github.com/microsoft/PowerToys/blob/b9c2d3c1c54edb0049ce64c1465a46fd070f6560/.claude/CLAUDE.md) | `282fddeb9b8515381faf9b9b5a577579cd2b74641c617abd885e840b6d6157b4` | 1,380 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/microsoft/PowerToys/AGENTS.md) | [Source](https://github.com/microsoft/PowerToys/blob/f5f61ea98449c9cc0793adc8da1aa1d58e167f9b/AGENTS.md) | `89ac68f882437ed6a3f9c404077a61911142103c9b94ea15277a4edc377ab5a4` | 8,554 B |
+| `CLAUDE.md` | `.claude/CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/microsoft/PowerToys/.claude/CLAUDE.md) | [Source](https://github.com/microsoft/PowerToys/blob/f5f61ea98449c9cc0793adc8da1aa1d58e167f9b/.claude/CLAUDE.md) | `0b6b64c7314fdeb849c94f75da0697fce736b462d43ab296795c92444fc3efde` | 1,454 B |

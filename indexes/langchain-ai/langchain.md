@@ -1,7 +1,7 @@
 # langchain-ai/langchain instruction files
 
-Upstream: [langchain-ai/langchain](https://github.com/langchain-ai/langchain) · License: `MIT` · Commit: `6908e6775cb6f9e9a1bb6a13e2f0322cdff12a3c`
+Upstream: [langchain-ai/langchain](https://github.com/langchain-ai/langchain) · License: `MIT` · Commit: `fa35b519a3a72fb4ccba7935f4c8e9e90a12ccca`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/langchain-ai/langchain/AGENTS.md) | [Source](https://github.com/langchain-ai/langchain/blob/6908e6775cb6f9e9a1bb6a13e2f0322cdff12a3c/AGENTS.md) | `2d6d7ad9785af3e817ef80babe50a77d3b440c869644ebadebbbddc9589c694c` | 20,580 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/langchain-ai/langchain/AGENTS.md) | [Source](https://github.com/langchain-ai/langchain/blob/fa35b519a3a72fb4ccba7935f4c8e9e90a12ccca/AGENTS.md) | `2d6d7ad9785af3e817ef80babe50a77d3b440c869644ebadebbbddc9589c694c` | 20,580 B |

@@ -1,7 +1,7 @@
 # nodejs/node instruction files
 
-Upstream: [nodejs/node](https://github.com/nodejs/node) · License: `NOASSERTION` · Commit: `a232998e0de60db23769571dcf981beb4fd4f176`
+Upstream: [nodejs/node](https://github.com/nodejs/node) · License: `NOASSERTION` · Commit: `952dcb2dc25622b1c4db724e58eb349f10a3e0f3`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/nodejs/node/AGENTS.md) | [Source](https://github.com/nodejs/node/blob/a232998e0de60db23769571dcf981beb4fd4f176/AGENTS.md) | `411bfbc2150092fde13eb75dac977d12c26ba5cc3bf7cddc2699d521d22785c8` | 3,083 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/nodejs/node/AGENTS.md) | [Source](https://github.com/nodejs/node/blob/952dcb2dc25622b1c4db724e58eb349f10a3e0f3/AGENTS.md) | `411bfbc2150092fde13eb75dac977d12c26ba5cc3bf7cddc2699d521d22785c8` | 3,083 B |

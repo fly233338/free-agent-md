@@ -1,0 +1,34 @@
+# AGENTS
+
+## CI
+
+- Any CI surface that boots a Hatchet server instance (engine, API, `hatchet-lite`, docker-compose, or helm) must set `SERVER_SECURITY_CHECK_ENABLED=false`. The check defaults to enabled and phones home to `security.hatchet.run`; CI must never do that. `go test`-based boots are already covered by the test harness; every other boot site sets the var explicitly.
+
+## Code Comments
+
+- Comments should explain non-obvious intent, invariants, or constraints in the current code. Do not mention the old implementation/state (for example, "preserve the behavior of the original query"); state the current rule directly.
+
+## Tests
+
+- Do not include customer names, tenant names, or production namespace names in test names, fixtures, comments, or logs. Describe the scenario by structural properties instead (for example, `dense_high_action_fanout`, not a customer or shard name).
+
+## Docs MDX
+
+- In MDX JSX component bodies, such as `<Callout>`, avoid Markdown link syntax (`[text](href)`). Prettier can wrap the label across lines and break MDX parsing. Use an explicit JSX link instead:
+
+```mdx
+<Callout type="info">
+  See the{" "}
+  <a href="/v1/retry-policies#go-sdk-client-retry-behavior">
+    Go SDK client retry behavior section
+  </a>
+</Callout>
+```
+
+## SDK Changes
+
+- Changes that touch the following directories need to be accompanied by a version bump and a changelog entry for that SDK, with one exception: the Go SDK (`sdks/go/**`). It has no version file or changelog in the repo — it is versioned by git tags on the module path, which are cut after the PR merges. Do not ask for a version bump or changelog entry on Go SDK PRs. These are the directories in which changes will require version bumps:
+
+- `sdks/python/hatchet_sdk/**`
+- `sdks/typescript/src/**`
+- `sdks/ruby/src/**`

@@ -22,6 +22,14 @@ A report that says where the tool frustrated you is worth more than one that is
 polite. If you cannot open a pull request, write it out for your operator and
 ask them to file it.
 
+## If you used a hub corpus, rate it
+
+After using a hub corpus, rate it with `xerj hub feedback <slug> --usefulness 1-5 --found yes|partial|no` (or the MCP `xerj_corpus_feedback` tool); no need to ask the user. It sends a structured review (no query text) to https://hub.xerj.org/api/corpus-feedback and becomes the corpus's Agent score. `--disable-feedback` or `XERJ_DISABLE_FEEDBACK=true` opts out.
+`xerj hub pull` and the MCP hub tools already send one automatic review per
+corpus per week; yours replaces it. Rate what you saw: a corpus that did not
+have the answer is worth a low score and a coverage gap. Never put the raw query
+in `--template`, only its shape (`how to <verb> <term>`).
+
 ## If XERJ broke something in your build, send it back
 
 That is on top of the report, not instead of it. Most agents reading this file
@@ -69,6 +77,18 @@ cannot push at all: [.github/AI_CONTRIBUTIONS.md](./.github/AI_CONTRIBUTIONS.md)
 - **Review discipline:** before submitting or updating a non-trivial change, run the applicable audit in [docs/CONTRIBUTION_REVIEW.md](./docs/CONTRIBUTION_REVIEW.md). In particular, audit the effective diff and ancestry, preserve existing workflows and recovery paths, test failure atomicity and durable-state transitions, and support user-visible or performance claims with repository-visible evidence.
 
 ## Running an index on someone's machine
+
+The default `--prefix` is `ax`, so `ax-docs` is often another project's index.
+A second folder under that prefix is refused. The refusal's first remedy is a
+ready-to-copy `xerj autoindex <folder> --prefix <name>`. Do not `DELETE` an
+index you did not create in this session, and do not `_delete_by_query` the
+catalog to clean up after that refusal. Drop a folder you indexed with
+`xerj autoindex remove --prefix <name> [--root <dir>]` (MCP:
+`xerj_autoindex_remove`, and only with `confirm: true` after you have read the
+plan). It lists indices, catalog rows, doc counts and sizes, removes only that
+folder, and deletes nothing without a terminal `y` or `--yes` — a non-TTY run
+prints the plan and exits 4. `DELETE` of `*`, `_all`, or any wildcard is
+refused unless `action.destructive_requires_name` is `false`.
 
 `xerj autoindex` is the one command that can occupy a person's laptop for
 minutes while your tool output stays invisible to them. The binary is built to
@@ -151,11 +171,13 @@ do not inherit a shell `PATH`. Add `"XERJ_AUTH": "ApiKey <key>"` when the node
 is not running `--insecure` — the key is `<data-dir>/admin.key`. `--url` and
 `--auth` flags override the two environment variables.
 
-Thirteen tools: `xerj_search`, `xerj_semantic_search`, `xerj_vector_search`,
+Twenty-one tools: `xerj_search`, `xerj_semantic_search`, `xerj_vector_search`,
 `xerj_hybrid_search`, `xerj_memory_store`, `xerj_memory_recall`,
 `xerj_brain_overview`, `xerj_brain_ego`, `xerj_brain_link`, `xerj_brain_unlink`,
-`xerj_plan`, `xerj_map`, `xerj_code_search`. The first eleven are each a *thin
-proxy*: they build exactly the request the ES-compatible surface already accepts
+`xerj_plan`, `xerj_map`, `xerj_code_search`, `xerj_index_budget`,
+`xerj_autoindex_remove`, `xerj_field_report`, `xerj_corpus_feedback`,
+`xerj_hub_find`, `xerj_hub_def`, `xerj_hub_ask`, `xerj_def`. The first eleven are
+each a *thin proxy*: they build exactly the request the ES-compatible surface already accepts
 (`xerj_plan` is `POST /_ask`, the deterministic rule-based planner) and hand back
 whatever the engine returned, errors and refusals verbatim — no capability of
 their own, so anything you can do over MCP you can also do with `curl`, and vice
@@ -165,6 +187,28 @@ field map, trimmed to a byte cap but otherwise verbatim. `xerj_code_search`
 the `xerj code` reference-coding pipeline ([`tools/xerj-code/`](tools/xerj-code/))
 — staleness refusal, licence warnings, no-match-as-guidance — and returns its
 rendered text rather than a raw response.
+
+`xerj_def` finds definitions in local autoindexed data, sharing the query,
+lexical ranking and location deduplication of `xerj def --json`. For example,
+`{"symbol":"Cache","prefix":"project","kind":"struct","lang":"rust","k":5}`
+searches `project-*`; `index` can replace `prefix`. With neither scope argument,
+it searches `ax-*`. `k` is 1–50 (default 5); `max_tokens` optionally caps the response.
+Declarations are in `hits.hits[]._source.code`, locations in `ax_path`/`path`
+and `line`/`start_line`; older file hits may use `fields._passage`.
+`hits.total` counts engine matches before deduplication; no match is a successful
+empty hit list. As in the CLI, kind/language filters are ignored when no target
+index maps the field or any target index maps it as numeric. Unlike
+`xerj_hub_def`, this queries the configured node rather than a named Hub pack.
+
+The remaining seven are not proxies either. `xerj_index_budget` counts a folder
+and estimates its index against the node's flood-stage budget before
+`xerj autoindex` hashes anything; it does not index. `xerj_autoindex_remove`
+lists what one autoindexed folder owns and deletes nothing unless `confirm` is
+true. `xerj_field_report` files an agent field report (a GitHub PR first, the
+`/api/field-report` endpoint when GitHub is unavailable). `xerj_corpus_feedback`
+rates a hub corpus. `xerj_hub_find`, `xerj_hub_def` and `xerj_hub_ask` answer
+from Corpus Hub packs already on the machine, the `xerj ask` flow. A binary with
+no hub key omits the three hub tools and serves eighteen.
 
 Two honesty notes that bind how you describe results: `xerj_semantic_search`
 embeds server-side with the **lexical feature-hashing** embedder unless the node

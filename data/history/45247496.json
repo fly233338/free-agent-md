@@ -1,0 +1,12 @@
+{
+  "full_name": "snyk/cli",
+  "points": [
+    {
+      "checked_at": "2026-10-23T08:37:36Z",
+      "commit_sha": "771a2f9f1519a2333982e78d0870ef9aaf81ac94",
+      "pushed_at": "2026-10-23T08:36:51Z",
+      "stars": 5687
+    }
+  ],
+  "repo_id": 45247496
+}

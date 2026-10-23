@@ -169,7 +169,7 @@ what you changed — a thin brief is cheaper to correct before a run than after 
 - Spawn a subprocess only when the subprocess is the subject under test. To suppress an inherited env key for a Bun child, pass it as `''`; deleting it allows `.env` loading to restore it.
 - Bun's module mocks pollute the process cache. Use the package test scripts that preserve isolation; do not run `bun test` from the repository root.
 - Run lint through `bun run lint`. Besides Biome, it runs the repository checks Biome cannot express, such as the workflow persistence boundary.
-- Check what you changed: run the tests that cover it, and lint and type-check the packages you touched.
+- Check what you changed: run the tests that cover it, lint and type-check the packages you touched, and run `bun run check:ratchet` before you push. CI refuses a change the ratchet refuses, and it takes seconds locally against a fetched `origin/dev`.
 - CI is the full validation. Don't run `bun run validate` to finish a change. `scripts/validate.ts` owns the check list and CI selects from it; workflow fixtures run locally only through `--only`.
 - Schema changes also need the PostgreSQL upgrade check. [`CONTRIBUTING.md`](CONTRIBUTING.md) lists it with its command.
 - For visual or runtime behavior, add direct evidence when static tests cannot prove the outcome.
@@ -192,6 +192,6 @@ Do not expand this file with copied reference material. Use the owning source:
 - Workflow-language design: [`.archon/workflow-language-constitution.md`](.archon/workflow-language-constitution.md)
 - Engineering craft and review values: [`.archon/engineering.md`](.archon/engineering.md)
 - CLI: [`packages/docs-web/src/content/docs/reference/cli.md`](packages/docs-web/src/content/docs/reference/cli.md) and `archon --help`
-- Workflow authoring: [`packages/docs-web/src/content/docs/guides/authoring-workflows.md`](packages/docs-web/src/content/docs/guides/authoring-workflows.md) and workflow schemas
+- Workflow authoring: [`packages/docs-web/src/content/docs/reference/workflow-language.md`](packages/docs-web/src/content/docs/reference/workflow-language.md) and workflow schemas
 - Database behavior: [`packages/docs-web/src/content/docs/reference/database.md`](packages/docs-web/src/content/docs/reference/database.md), migrations, and adapter tests
 - Available commands and generated-file checks: root and package `package.json` scripts

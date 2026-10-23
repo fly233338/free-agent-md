@@ -2,7 +2,7 @@
 
 Most importantly, run `./bin/brew lgtm` (style checks, type checks and tests) to verify any file edits before prompting for input.
 
-Inline any new or existing methods or variables used only once unless they are needed for unit tests.
+Inline any new or existing methods or variables used only once unless they are needed for unit tests or explain magic numbers.
 Keep the diff as small, DRY and YAGNI as possible.
 Re-read relevant files after each prompt and preserve user edits and comments.
 Before finishing, check your work and point out anything the user may not have considered.
@@ -45,6 +45,7 @@ This is a Ruby repository with Bash scripts for faster execution that provides t
 - Use `&>/dev/null` instead of `>/dev/null 2>&1`.
 - Put a comment immediately above each `shellcheck disable` explaining why it is needed.
 - Prefer self-documenting code through strings and variable names to new explanatory comments.
+- Avoid magic numbers; use self-explanatory intermediate variables or constants to make their meaning clear.
 - Use UK spelling and punctuation; avoid em dashes and Oxford commas.
 - Wrap human-written user-facing terminal output at around 80 characters; generated output and code are exempt.
 - Update `docs/` when the behaviour it describes changes.

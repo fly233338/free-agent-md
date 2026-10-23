@@ -1,7 +1,7 @@
 # anomalyco/models.dev instruction files
 
-Upstream: [anomalyco/models.dev](https://github.com/anomalyco/models.dev) · License: `MIT` · Commit: `dd269bcae9cd54a7d14b752f5cb75bd91686587a`
+Upstream: [anomalyco/models.dev](https://github.com/anomalyco/models.dev) · License: `MIT` · Commit: `9ebbfc58e9c0b393a698aa6c022ecef4fe324b33`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/anomalyco/models.dev/AGENTS.md) | [Source](https://github.com/anomalyco/models.dev/blob/dd269bcae9cd54a7d14b752f5cb75bd91686587a/AGENTS.md) | `949f1013d7c4ba6597188edb4373e754f4b64ded1f8eaa8d5a8c2285d2d8e19c` | 17,953 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/anomalyco/models.dev/AGENTS.md) | [Source](https://github.com/anomalyco/models.dev/blob/9ebbfc58e9c0b393a698aa6c022ecef4fe324b33/AGENTS.md) | `747d65ad4320fafd9648f55e9107b284a55cdd17a1b8d1f781af38e3778752bb` | 19,282 B |
