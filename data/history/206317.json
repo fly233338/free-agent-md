@@ -2,12 +2,6 @@
   "full_name": "apache/camel",
   "points": [
     {
-      "checked_at": "2026-09-23T08:39:18Z",
-      "commit_sha": "1f762d21591e06b5ccb067b80a981234ee6c824a",
-      "pushed_at": "2026-09-23T08:32:33Z",
-      "stars": 6340
-    },
-    {
       "checked_at": "2026-09-25T08:53:43Z",
       "commit_sha": "e306cfd8ceeb0dfcbaabcf768551e67093fd1cd7",
       "pushed_at": "2026-09-25T08:49:38Z",
@@ -30,6 +24,12 @@
       "commit_sha": "a8edb80b47f4d8adbe06361d357efd7ca626edb3",
       "pushed_at": "2026-10-21T08:37:54Z",
       "stars": 6374
+    },
+    {
+      "checked_at": "2026-10-24T08:12:46Z",
+      "commit_sha": "6183f074e527fa6ba1f62389091280cc6e800d41",
+      "pushed_at": "2026-10-24T08:12:07Z",
+      "stars": 6380
     }
   ],
   "repo_id": 206317

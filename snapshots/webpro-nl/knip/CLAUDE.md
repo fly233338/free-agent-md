@@ -10,6 +10,7 @@ JavaScript and TypeScript projects.
 - Language Server in `packages/language-server` (JS + JSDoc for types)
 - VS Code Extension in `packages/vscode-knip` (JS + JSDoc for types)
 - [Documentation][1] content in `packages/docs` (Astro + MD/MDX)
+- Tracked `.agents` guides live in the checkout; there might be shared lessons and tasks in the workspace's `.agents`.
 
 ## Code style
 
@@ -23,7 +24,7 @@ JavaScript and TypeScript projects.
 - TypeScript
   - Avoid `any` and type casting (`as`).
   - Avoid runtime overhead just to get the types right.
-- Lint and format from root: `pnpm run ci`
+- Lint and check formatting from root: `pnpm run ci`; format with `pnpm fmt`
 - Format Markdown/MDX with `pnpm remark` in `packages/docs` (auto-numbers link refs, validates links)
 
 ## Domain Knowledge
@@ -32,7 +33,7 @@ JavaScript and TypeScript projects.
 - Non-JS/TS files (.css, .mdx, .vue) enter the graph via (usually plugin-registered) compilers (`registerCompilers`)
 - Library-specific AST patterns are caught by plugin-registered visitors (`registerVisitors`)
 - Use `--performance` or `--performance-fn [name]` to profile (→ [timerify][2])
-- If creating or modifying a plugin, read [PLUGINS.md][3] first.
+- If creating, modifying, or reviewing a plugin, read [PLUGINS.md][3] first.
 - If modifying core module graph, AST traversal, or CLI sequence, read [MODULE-GRAPH.md][4] first.
 - For issues re. exported identifiers (following refs, shadowing, `ignoreExportsUsedInFile`), see [EXPORTS.md][5].
 - Before any significant performance tuning, consult [PERFORMANCE.md][6].
@@ -41,9 +42,13 @@ JavaScript and TypeScript projects.
 
 ## Issues and Pull Requests
 
+- Use `gh` for PR metadata, diffs, comments, and checks. Reuse retrieved evidence; browse upstream documentation separately.
 - When given a bug report, first confirm the behavior is actually wrong. Reproduce, then check if the reported behavior is correct-by-design before writing any fix.
 - Find repositories/CodeSandbox/StackBlitz source files and local fixtures to actually reproduce the issue at hand.
 - To fetch a stackblitz.com reproduction: `pnpx stackblitz-zip https://stackblitz.com/edit/{name} {filename}.zip`
+- For a fix, revert the source change and confirm the new test fails for the reported reason.
+- For a new plugin or a change in how a tool finds files, verify against the tool's source, not only its docs, and run Knip on the tool's examples or starters when available.
+- Follow the [AI contribution policy][11]: before opening an issue or PR, make sure the person you work for understands and stands behind it. Keep descriptions concise.
 
 ## Run & Debug
 
@@ -97,26 +102,7 @@ pnpm build
 pnpm test
 ```
 
-See [TESTS.md][7] for conventions and placements.
-
-## Fixtures
-
-There are plenty of directories with fixtures in `packages/knip/fixtures`.
-
-- In general, tests have their own fixture directory.
-- Plugin fixture directories at `packages/knip/fixtures/plugins/[plugin-name]*`.
-- For trivial changes or fixes, extend an existing fixture.
-- Don't use "foo" or vague names. One fixture should consist of descriptive file
-  and variable names like `module.ts` and `barrel.ts`, or build upon a "theme"
-  such as fruits or animals to indicate relation/hierarchy.
-- Use empty files if sufficient (e.g. to verify import specifier or entry file).
-- For debugging, it might be useful to run Knip from the fixture directory and
-  see output in terminal. Example:
-
-```sh
-cd packages/knip/fixtures/commonjs
-knip
-```
+See [TESTS.md][7] for test and fixture conventions and placements.
 
 ## Build
 
@@ -137,3 +123,4 @@ pnpm build
 [8]: ./packages/knip/src/util/debug.ts
 [9]: ./packages/docs/src/content/docs/guides/troubleshooting.md#trace
 [10]: ./.agents/COMPILERS.md
+[11]: ./AI_POLICY.md

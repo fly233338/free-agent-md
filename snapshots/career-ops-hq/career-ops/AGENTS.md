@@ -344,15 +344,15 @@ Then run `node doctor.mjs` once before you confirm. Mention a setup command only
 Then confirm:
 > "You're all set! You can now:
 > - Paste a job URL to evaluate it
-> - Run the scan entrypoint for your CLI to search portals: `/career-ops scan`, `/career-ops-scan`, or ask Codex to run `scan`
-> - Open the command menu for your CLI: `/career-ops`, the CLI-specific alias, or ask Codex to show the available career-ops modes
+> - Run the scan entrypoint for your CLI to search portals: `/career-ops scan`, `/skill:career-ops scan` on Pi, or ask Codex to run `scan`
+> - Open the command menu for your CLI: `/career-ops`, `/skill:career-ops` on Pi, or ask Codex to show the available career-ops modes
 >
 > Everything is customizable — just ask me to change anything."
 
 Then suggest automation:
 > "Want me to scan for new offers automatically? I can set up a recurring scan every few days so you don't miss anything. Just say 'scan every 3 days' and I'll configure it."
 
-If the user accepts, use the `/loop` or `/schedule` skill (if available) to set up a recurring scan entrypoint for their CLI (`/career-ops scan`, `/career-ops-scan`, or the equivalent Codex prompt). If those aren't available, point them to [docs/AUTOMATION.md](docs/AUTOMATION.md) for copy-paste cron / launchd / Windows Task Scheduler recipes plus a zero-token triage-to-shortlist prompt, or remind them to run the scan mode periodically.
+If the user accepts, use the `/loop` or `/schedule` skill (if available) to set up a recurring scan entrypoint for their CLI (`/career-ops scan`, `/skill:career-ops scan` on Pi, or the equivalent Codex prompt). If those aren't available, point them to [docs/AUTOMATION.md](docs/AUTOMATION.md) for copy-paste cron / launchd / Windows Task Scheduler recipes plus a zero-token triage-to-shortlist prompt, or remind them to run the scan mode periodically.
 
 ### Personalization
 

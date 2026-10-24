@@ -43,7 +43,7 @@ Every command, script, reviewer, or gate described as mandatory must exist on th
 
 For every repository maintenance sweep, PR merge batch, maintainer-side PR repair, canonical synchronization, combined Security/Quality cleanup and merge, or tag/release request, **always invoke and follow the `antigravity-maintainer-batch-release` skill before triage or mutation**. If the client has not installed or discovered that skill, read and follow the repository-canonical copy at `skills/antigravity-maintainer-batch-release/SKILL.md`. This is a hard gate, including when the user asks for direct merges or a direct update to `main`; do not substitute a generic Git or GitHub workflow.
 
-Treat `main` as pull-request-only; use `npm run merge:batch` with strict protection and no admin bypass. Follow [the maintenance contract](docs/maintainers/maintenance-contract.md) for resumable review, release-only snapshots, immutable artifact publication and independent catalog revisions. Ordinary merges generate ephemeral validation data; only protected release PRs refresh tracked distribution state.
+Treat `main` as pull-request-only; use `npm run merge:batch` with strict protection and no admin bypass. Follow [the maintenance contract](docs/maintainers/maintenance-contract.md) for resumable review, release-only snapshots, immutable artifact publication and independent catalog revisions. Ordinary merges generate ephemeral validation data; general tracked distribution refresh belongs to protected release PRs. The maintenance contract defines a narrow owner-only exception for byte-identical canonical lockfile replicas during an explicitly requested no-release dependency-security repair; all checks and strict protection remain required.
 
 Every stable or prerelease version must finish with the full-release-alignment gate. Verify the immutable released commit and public bytes even if main advances. Report personal MCP host updates and actual session reload separately. Only authorized existing host entries may be changed.
 
@@ -77,3 +77,32 @@ or PR-controlled ledger is authorized.
 ### Maintainer state and attribution
 
 Use private external review receipts and batch journals as described in the maintenance contract. They never replace current protection or exact-head evidence. Update code, rules, canonical skill, installed skill and negative regressions together when the user requests a workflow change.
+
+Use `maintenance:cycle start/intake/merge/verify` for a measured source batch (its merge delegates to `merge:batch`); finish this no-release cycle before any authorized release preparation; read `docs/maintainers/maintenance-cycle.md`. Record blockers once, continue independent PRs and reuse the existing host verifier. Do not run release steps when no release was requested.
+
+
+## Mandatory release cycle barrier
+
+A release must never proceed with an unresolved PR in the recorded batch. Every
+batch PR must be merged into protected main or closed without merge with an
+owner rationale posted **before** closure and bound to its exact head. A policy
+blocker is not completion and never authorizes bypassing merge protection or
+closing an otherwise valid contribution merely to unlock publication.
+
+Use `npm run maintenance:cycle -- close --state-dir /absolute/private/state --prs 123 --expected-head FULL_40_CHARACTER_SHA --reason 'Substantive reason, including the replacement PR when applicable'`.
+This posts the required comment before closing; uncertain writes stop without a
+retry. Plain undocumented closure does not satisfy verification. Merged PRs use
+the existing protected merge path.
+
+Run `maintenance:cycle verify` successfully on exact current main before
+`npm run release:prepare -- X.Y.Z --state-dir /absolute/private/state`.
+Preparation fails before branch creation or version changes without completed
+cycle evidence. The release PR carries `data/release-cycle.json`; publication
+and the npm workflow independently re-read live PR states, closure comments,
+protected-main ancestry and successful CI/CodeQL for the verified source commit.
+Reopened PRs, absent proof or failed checks block publication. Reverify if main
+moves before preparation. Never shrink the recorded scope to hide blockers.
+
+For a genuinely release-only task with no source PR batch, explicitly start a
+cycle with `--prs none` and verify it; no implicit no-cycle bypass is supported.
+The original batch inventory must include every PR in the authorized scope.

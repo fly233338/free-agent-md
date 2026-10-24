@@ -1,7 +1,7 @@
 # electron/electron instruction files
 
-Upstream: [electron/electron](https://github.com/electron/electron) · License: `MIT` · Commit: `0e77ca92cd373a1b145c1e10d83189c137ea1b3e`
+Upstream: [electron/electron](https://github.com/electron/electron) · License: `MIT` · Commit: `96a2dc1f28a4e4a32fdc19d54ba0af36c7f2c536`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/electron/electron/CLAUDE.md) | [Source](https://github.com/electron/electron/blob/0e77ca92cd373a1b145c1e10d83189c137ea1b3e/CLAUDE.md) | `c3e0714b489fead5f9263796854c28877beaf4760f1ad706da3ba106745b12c4` | 13,996 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/electron/electron/CLAUDE.md) | [Source](https://github.com/electron/electron/blob/96a2dc1f28a4e4a32fdc19d54ba0af36c7f2c536/CLAUDE.md) | `c3e0714b489fead5f9263796854c28877beaf4760f1ad706da3ba106745b12c4` | 13,996 B |

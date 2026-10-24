@@ -1,7 +1,7 @@
 # stablyai/orca instruction files
 
-Upstream: [stablyai/orca](https://github.com/stablyai/orca) · License: `MIT` · Commit: `f9e883a4bfa666635f28e72d37d5f249e3703d41`
+Upstream: [stablyai/orca](https://github.com/stablyai/orca) · License: `MIT` · Commit: `28258c0ba9466587d2374792db863f2bbd22613a`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/stablyai/orca/AGENTS.md) | [Source](https://github.com/stablyai/orca/blob/f9e883a4bfa666635f28e72d37d5f249e3703d41/AGENTS.md) | `97793af119b1c2bc03cbc28f1d9ff630b330fc4f5a8c3f33b55664d82996f227` | 4,105 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/stablyai/orca/AGENTS.md) | [Source](https://github.com/stablyai/orca/blob/28258c0ba9466587d2374792db863f2bbd22613a/AGENTS.md) | `ce082c0e272016915b06a9ed1ca79a14efa9be2fcd283fa36ba6d285f59cb6a5` | 4,381 B |

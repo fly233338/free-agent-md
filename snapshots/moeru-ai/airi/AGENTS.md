@@ -45,9 +45,20 @@ Key files and directories:
 Use pnpm workspace filters to limit a command to one workspace. Replace `<package name>` with the `name` field in `package.json`, for example `@proj-airi/stage-tamagotchi`.
 
 - Typecheck one workspace: `pnpm -F <package name> typecheck`. For stage-tamagotchi, this command runs `tsc` and `vue-tsc`.
-- Test one file: `pnpm exec vitest run <path>`.
+- Test one file: `pnpm -F <package name> exec vitest run <path>`. Give `<path>` relative to the workspace.
 - Test one workspace: `pnpm -F <package name> exec vitest run`.
-- Test all projects: `pnpm test:run`. If Vitest finds no tests, examine the `include` patterns in `vitest.config.ts`.
+- Test all workspaces: `pnpm test:run`. Turbo runs the `test:run` script of each workspace, with its browser projects.
+- Test the root scripts in `.github/scripts`: `pnpm test:root`. The root `vitest.config.ts` has only these tests.
+- Test the changes of a branch: run the `test:run` script of each changed workspace and of each workspace that depends on it.
+  Use the merge base with `origin/main` as the base.
+
+  ```sh
+  base=$(git merge-base origin/main HEAD)
+  TURBO_SCM_BASE="$base" pnpm exec turbo run test:run --affected
+  ```
+
+  If the branch changes `.github/scripts`, also run `pnpm test:root`.
+
 - Lint: `pnpm lint`. ESLint also does the formatting. To fix lint and format errors, run `pnpm lint:fix`.
 - Build one workspace: `pnpm -F <package name> build`. For stage-tamagotchi, this command runs the typecheck and `electron-vite build`.
 
@@ -59,6 +70,11 @@ Use pnpm workspace filters to limit a command to one workspace. Replace `<packag
 - If new logic can become a shared utility, propose the shared approach to the user.
 - If a refactor is small, do it step by step.
 - After a task, run the typecheck and the related tests for each workspace that you changed.
+- Before you create a PR or push to one, run the tests of the branch changes. CI runs every project, including the browser projects.
+- If a change alters UI structure, layout, or interaction, review the related browser and end-to-end tests.
+- If intended behavior changes, update the affected assertions. Keep valid regression checks. Do not delete an assertion only to make a test pass.
+- After the final UI change, run the related tests on the final commit.
+- Before you report a CI success, make sure that CI tested the current PR head.
 - If you change a shared package or an exported type, also run the root `pnpm typecheck`.
 - Run `pnpm lint` before you finish.
 - Report only the checks that you ran. Give each command and its result.
@@ -111,7 +127,8 @@ Use pnpm workspace filters to limit a command to one workspace. Replace `<packag
 
 - Put project-wide and client ADRs in `docs/ai/adr/`. Put hosted backend ADRs in `server/docs/ai/adr/`, and obey the ADR rules in `server/AGENTS.md`.
 - Put a documentation change in the same commit or PR as the code that it describes. This rule applies to ADRs, `README.md` files, and component references.
-- Put agent configuration changes in a separate commit or PR. Agent configuration includes `AGENTS.md`, `CLAUDE.md`, skills, and `.github/copilot-instructions.md`.
+- Put agent configuration changes in their own commit. Agent configuration includes `AGENTS.md`, `CLAUDE.md`, skills, and `.github/copilot-instructions.md`.
+- If the agent configuration describes the code of a PR, put its commit in that PR. Do not open a second PR for it.
 - Keep a structured `README.md` in each `packages/` and `apps/` entry. It tells what the entry does, how to use it, when to use it, and when not to use it.
 - Put all translations in `packages/i18n`. By default, edit only the English source locale and your own locale.
 - Do not edit other locales unless the user asks. Crowdin manages them, and the next Crowdin sync can replace local edits.

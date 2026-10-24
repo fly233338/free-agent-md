@@ -8,6 +8,21 @@ temporarily shared by Electron; they are not a runnable app. New UI, IPC, setup
 instructions, tests, and browser assets belong in Electron; validate Electron on
 macOS, Windows and Linux.
 
+## Mobile: native iOS and Android (owner-set 2026-10-17)
+
+`mobile/ios/` (Swift/SwiftUI) and `mobile/android/` (Kotlin/Compose) are native
+apps that run models **on the phone** (TTS, dictation, voice cloning, dub
+translation; owner-set 2026-10-18) and can also drive a user's own VoiceStudio
+computer. Phone first: once models are downloaded they work offline with no
+computer; pairing adds the heavy engines, chosen per task. The companion-only
+build is the base, not the product. They implement one shared contract,
+`mobile/contract/SPEC.md`: a mobile feature ships on both or neither.
+Theme, API and strings are generated, never hand-copied: `bun
+scripts/export-mobile-tokens.ts` (from the Electron theme), `uv run python
+scripts/export_openapi.py` (from the backend) and the Electron locale catalogs;
+`tests/test_mobile_contract.py` fails on drift. Desktop/web UI still belongs in
+Electron only.
+
 # Agent Rules — VoiceStudio
 
 Binding for every AI agent (Claude, Codex, Cursor, review bots, …). CLAUDE.md is the full constitution; this is the operating contract. When they conflict, CLAUDE.md wins.
@@ -36,7 +51,7 @@ Binding for every AI agent (Claude, Codex, Cursor, review bots, …). CLAUDE.md 
 ## Change rules (see CLAUDE.md for full text)
 - Root-cause the class, not the instance; fail-before/pass-after regression test; smallest correct change.
 - Default behavior identical on macOS/Windows/Linux; platform-only features go behind explicit opt-in. Divergent default = P0.
-- Local-first: no new required network calls; any HF download gated on installed-ness or explicit user action; all synthetic audio through the `mark_synthetic` chokepoint. Sanctioned calls are listed in `.github/CONTRIBUTING.md` → Quality gates: user-started first-run setup (ffmpeg from GitHub `zackees/ffmpeg_bins`, the huggingface.co/hf-mirror.com reachability probe, HF model downloads), opening/enabling the galleries (jsDelivr manifest, GitHub Releases), packaged update checks, user-clicked yt-dlp updates from PyPI, consent-gated analytics, prefilled-URL bug reports, and the Pro licence check after a key is entered. Owner-approved exception (2026-09-28): the public GitHub star count may refresh automatically every 20 minutes, without credentials/referrer or user content; offline use remains unaffected.
+- Local-first: no new required network calls; any HF download gated on installed-ness or explicit user action; all synthetic audio through the `mark_synthetic` chokepoint. Sanctioned calls are listed in `.github/CONTRIBUTING.md` → Quality gates: user-started first-run setup (ffmpeg from GitHub `zackees/ffmpeg_bins`, the huggingface.co/hf-mirror.com reachability probe, HF model downloads), opening/enabling the galleries (jsDelivr manifest, GitHub Releases), packaged update checks, user-clicked yt-dlp updates from PyPI, consent-gated analytics, prefilled-URL bug reports, the Pro licence check after a key is entered, and VoiceStudio Cloud sign-in/account calls (and settings sync once cloud sync is on) only after the user turns them on (off by default; switching off stops them at once). Owner-approved exception (2026-09-28): the public GitHub star count may refresh automatically every 20 minutes, without credentials/referrer or user content; offline use remains unaffected.
 - Every user-facing string via i18n, present in ALL 21 `electron/src/renderer/src/i18n/locales/*.json` files (the catalog the app loads) with real translations; `tests/test_locale_parity.py` and Electron `locale:check` enforce it. The legacy `electron/src/shared/i18n/` catalog is loaded only by shared-module tests.
 - Docs-sync in the same PR. CHANGELOG Unreleased: quiet one-liners ending `(#N)` + `— thanks @user!` for community work, under a short `**Highlights**` list.
 - Tagged release announcements lead with the biggest user-visible change; redesigns need real UI screenshots and migrations need installer links and steps. Verify all contributor credits from the tag comparison and included PRs; list authors and bug reporters separately (see `docs/RELEASING.md`).
