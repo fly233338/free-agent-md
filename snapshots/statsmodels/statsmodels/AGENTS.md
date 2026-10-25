@@ -45,6 +45,9 @@ if the source `.pyx` file is newer than the compiled `.so` or `.dll` file.
 - `black` (line-length 88) is acceptable for auto-formatting, but not required.
   Only use `black` to format changes to files, or in new files. Do not use `black` to
   wholesale reformat existing files.
+- Comments must be in English. This covers code comments, test comments, and
+  docstrings. Do not leave comments in another language in the diff; translate
+  them or remove them.
 
 ## Docstrings & documentation
 
@@ -218,6 +221,13 @@ not reimplement it standalone:
 ## Git / commit conventions
 
 - **One branch, one feature.** Don't bundle unrelated changes.
+  - The exception is a large batch of very similar changes, which is accepted
+    in a single PR. For example, adding the same validation to one kind of
+    parameter across many functions, or applying the same fix at many call
+    sites. Describe the pattern once in the PR description, list the functions
+    that were changed, and keep the change uniform so it can be checked
+    mechanically. Each changed function still needs a test (parametrize over
+    the shared pattern where possible).
 - Commit subject line under ~80 chars; prefix with the informal type tag
   used throughout `git log` (see `docs/source/dev/maintainer_notes.rst`):
   - `ENH:` new feature
@@ -236,6 +246,58 @@ not reimplement it standalone:
   those tests in this repo (its `conftest.py` enforces rules — random-state
   hygiene, warnings-as-errors — that a standalone/ad hoc test run elsewhere
   won't catch).
+
+## Pull requests: the AI disclosure is mandatory
+
+Every pull request to this repository must disclose whether AI tools were
+used, in the `AI Disclosure` section of the PR description. This is required
+by the [AI Policy](docs/source/dev/ai-policy.rst) (a PR without it will be
+rejected) and is enforced by the `AI Policy Disclosure Check` CI job
+(`.github/workflows/ai-policy-check.yml`), which fails until the section is
+present and completed. **If you are an AI agent, or an AI tool helped write any
+part of the change, this applies to you and the answer is "AI tools were
+used".** Never tick "No AI tools were used" for work you did.
+
+- **The PR template is not applied for you.** `.github/PULL_REQUEST_TEMPLATE.md`
+  only pre-fills the description in the GitHub web UI. `gh pr create --body`,
+  `--body-file`, `--fill`, the REST API and GitHub MCP tools all skip it, and
+  writing your own description from scratch is how the section usually gets
+  lost. Read the template and copy its `AI Disclosure` section, unchanged, into
+  the body you submit. The template is the source of truth.
+- **Do not reword, reorder or drop the two checkboxes.** The check matches the
+  exact option text (`No AI tools were used` / `AI tools were used`), so
+  replacing the boxes with your own bullets, prose ("prepared with AI
+  assistance") or a differently worded sentence fails, even if it is honest.
+- **Tick exactly one box and fill in the placeholders.** For AI use, replace
+  both `<...>` placeholders with the real tool name(s) and how they were used.
+  A completed disclosure looks like:
+
+  ```markdown
+  #### AI Disclosure
+
+  Contributions must comply with the statsmodels [AI Policy](https://www.statsmodels.org/devel/dev/ai-policy.html).
+
+  - [ ] No AI tools were used to develop this pull request.
+  - [x] AI tools were used.
+        Tool(s): Claude Code (Claude Sonnet 5.5).
+        Used for: drafting the fix and its regression test.
+        I have personally read, understood, and can explain every line of this diff, and
+        have verified the statistical/numerical correctness of the change.
+  ```
+
+- **A human must review before the PR is submitted.** The last sentence of the
+  second option is a statement by the human submitter, so ticking that box is
+  their attestation, not yours. Open a PR only when the user has asked you to,
+  and if they have not reviewed the diff, tell them to do so first instead of
+  asserting it for them. The AI Policy does not permit an autonomous agent to
+  open a PR with no human review.
+- **Keep the section when you edit the description.** Rewriting the body later
+  (for example with `gh pr edit --body`) has the same failure mode as writing
+  it: re-read the current body and preserve the `AI Disclosure` section.
+- **Confirm the check passes.** After opening or editing a PR, look at the
+  `AI Policy Disclosure Check` result (`gh pr checks`). If it fails, a bot
+  comment on the PR says what is wrong and includes the section to use. Fix the
+  description; the check re-runs when it is edited. Do not leave it failing.
 
 ## Working in this repo as an agent
 

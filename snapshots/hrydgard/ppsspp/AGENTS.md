@@ -17,7 +17,7 @@ for it:
 | [docs/DebuggerThreading.md](docs/DebuggerThreading.md) | `Core_RunOnCPUThread` / `g_frameMutex` / shutdown-lock rules - required reading before touching debugger code |
 | [docs/HLEModules.md](docs/HLEModules.md) | Adding an HLE module or function, and the seven build files a new source file goes in |
 | [docs/translations.md](docs/translations.md) | Translating UI strings with Tools/langtool |
-| [docs/pspautotests.md](docs/pspautotests.md) | Workflow for improving PPSSPP using pspautotests |
+| [docs/pspautotests.md](docs/pspautotests.md) | Workflow for improving PPSSPP using pspautotests, and running the tests that need the real firmware modules (`--disable-hle`, a firmware memstick) |
 | [docs/pspautotests-hardware.md](docs/pspautotests-hardware.md) | Writing a new pspautotest, and running it on a real PSP over PSPLink to record its `.expected` |
 | [docs/frametest.md](docs/frametest.md) | Framedump rendering tests, and replaying a dump on a real PSP |
 | [docs/sceGe.md](docs/sceGe.md) | How the firmware queues display lists, what SIGNAL and FINISH interrupts do and in which order, and how `ProcessDLQueue()` keeps that order |
@@ -27,13 +27,15 @@ for it:
 | [docs/command-line.md](docs/command-line.md) | Adding a command-line option - the `g_autoParams` table, per-mode options, `ApplyToConfig()` |
 | [docs/patching-files.md](docs/patching-files.md) | Editing files from a script without wrecking the diff: line endings, and heredoc backslash escaping |
 | [docs/VSHBootInvestigation.md](docs/VSHBootInvestigation.md) | Booting the PSP's Visual Shell with `--vsh` against a real firmware dump |
+| [docs/POPS.md](docs/POPS.md) | PS1 EBOOTs: how the firmware's POPS manager and emulator are booted, and what's patched in them |
 | [docs/PsarFileFormat.md](docs/PsarFileFormat.md) | The PSAR archive inside a firmware updater - the format `Core/Util/PSARUnpack.cpp` walks |
 | [docs/pkg_notes.md](docs/pkg_notes.md) | The NPDRM `.pkg` format PSP game updates ship in, and how PPSSPP installs them |
 | [docs/cpu-equivalence.md](docs/cpu-equivalence.md) | Making the CPU cores agree bit for bit on every host: the `CPUEquivalence` fuzzer, what it found, and the differences still open (several waiting on a hardware test) |
 | [docs/dnas-patches.md](docs/dnas-patches.md) | Game patches installed on a real PSP (Killzone: Liberation's DLC): installing one over PSPLink, and the Fuse-ID-keyed PGD and type 3 PRX that `sceKernelLoadModuleDNAS` decrypts |
 | [docs/kernel-hle-review.md](docs/kernel-hle-review.md) | Findings from a review pass over `Core/HLE/sceKernel*.cpp`, and what was verified clean |
 | [docs/shader-compilation.md](docs/shader-compilation.md) | Shader/pipeline compile stutter: where the time goes on MoltenVK (Metal's MSL compile, not glslang), the caches involved, how game-specific shaders are, and how to measure a cold start |
-| [docs/metal-backend.md](docs/metal-backend.md) | What a native Metal backend would take, and why programmable blending is the reason to want one |
+| [docs/metal-backend.md](docs/metal-backend.md) | The Metal backend: shader translation, the render manager (recording, replay, pass merging), programmable blending, how it was tested against Vulkan, and what isn't done |
+| [docs/async-savestates.md](docs/async-savestates.md) | How savestate compression and file I/O run on a worker thread: the save/load/rewind pipelines, ordering, memory rules, what stays synchronous, and testing slots with the `game.state.*` debugger commands |
 
 ## General instructions
 
@@ -158,8 +160,9 @@ python test.py -g --graphics=software
   (The debug-CRT "Detected memory leaks!" dump after the summary line is normal, not a failure.)
 
 When the thing under test is a commercial game rather than a suite, headless needs `--log` before it prints
-anything (to stderr), and defaults its memory stick to `<exe dir>/memstick` rather than the app's - so the
-firmware you installed in the app isn't there. Pass `--memstick=<the app's memstick>` for any run that is
+anything (to stderr). On Windows it defaults its memory stick to `<exe dir>/memstick` rather than the app's
+(on Mac and Linux it uses the app's default), so the firmware you installed in the app may not be there.
+`test.py` and `frametests.py` pass `<exe dir>/memstick` everywhere. Pass `--memstick=<the app's memstick>` for any run that is
 meant to exercise a real firmware module. Without it, a library whose HLE the config has disabled has
 nothing left to resolve against, and the game does not fall back to our HLE - it gets unresolved imports and
 dies. The tell is a single line early on, `sceMpeg HLE is disabled, but flash0:/kd/mpeg.prx isn't in the
@@ -285,7 +288,7 @@ state, input injection, log tailing), served at `/debugger` on the Remote ISO po
 Read [docs/WebSocketDebugger.md](docs/WebSocketDebugger.md) before changing the interface, and update
 it when you add a command.
 
-- Breakpoints are most reliable on the interpreter (`-i`): under the JITs, memory breakpoints only work
+- Breakpoints are most reliable on the interpreter (`--cpu=interpreter`): under the JITs, memory breakpoints only work
   for constant addresses and register breakpoints never trip at all.
 - **Debugger code that runs off the CPU thread has a lock order that has deadlocked for real** -
   `Core_RunOnCPUThread()` for mutations, `g_frameMutex` for hot reads. Read
@@ -356,6 +359,10 @@ private:
 ```
 
 But generally follow the surrounding style. Braces are preferred on the same line. Braces are always used even when they could be omitted due the inner part being just a single line.
+
+If a large `else {}` block can be avoided with an early return when writing new code, do that
+instead. Don't wrap existing code in a new `else` and reindent it, either - it makes the diff
+much bigger than the change.
 
 ### Comments
 

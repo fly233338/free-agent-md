@@ -2,12 +2,6 @@
   "full_name": "bytedance/deer-flow",
   "points": [
     {
-      "checked_at": "2026-09-24T08:32:01Z",
-      "commit_sha": "e489bf2c9259f73691d53177c8ec3daa2bafe00f",
-      "pushed_at": "2026-09-24T08:30:36Z",
-      "stars": 82931
-    },
-    {
       "checked_at": "2026-09-26T08:40:12Z",
       "commit_sha": "41e8e75f5650bbb7b783dbb2b69180b48c133a57",
       "pushed_at": "2026-09-26T08:27:40Z",
@@ -30,6 +24,12 @@
       "commit_sha": "ee8e6762acfc7ec1f5aab21c12fd4777768fab8d",
       "pushed_at": "2026-10-24T08:12:04Z",
       "stars": 84352
+    },
+    {
+      "checked_at": "2026-10-25T08:30:15Z",
+      "commit_sha": "a1b89d0432de4e45adc59f512cb25bb386ea1e51",
+      "pushed_at": "2026-10-25T08:25:30Z",
+      "stars": 84397
     }
   ],
   "repo_id": 979115477

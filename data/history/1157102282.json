@@ -1,5 +1,5 @@
 {
-  "full_name": "diegosouzapw/OmniRoute",
+  "full_name": "cheaper-inference/OmniRoute",
   "points": [
     {
       "checked_at": "2026-10-02T09:51:48Z",
@@ -18,6 +18,12 @@
       "commit_sha": "0520f9e8b1f6f5f3c74e500eae643baa12ab2193",
       "pushed_at": "2026-10-21T08:39:19Z",
       "stars": 79109
+    },
+    {
+      "checked_at": "2026-10-25T08:30:15Z",
+      "commit_sha": "81e48878b90fb309ede580bca8b97c6953a2fc62",
+      "pushed_at": "2026-10-25T08:30:07Z",
+      "stars": 80890
     }
   ],
   "repo_id": 1157102282

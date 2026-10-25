@@ -2,12 +2,6 @@
   "full_name": "flipt-io/flipt",
   "points": [
     {
-      "checked_at": "2026-09-24T08:32:01Z",
-      "commit_sha": "aea203626ff0c49adfc95583842c955f65fe1616",
-      "pushed_at": "2026-09-24T06:48:21Z",
-      "stars": 4909
-    },
-    {
       "checked_at": "2026-09-25T08:53:43Z",
       "commit_sha": "46d0ecbdc381c393cc074289c4ef651909aa9ded",
       "pushed_at": "2026-09-24T21:29:57Z",
@@ -180,6 +174,12 @@
       "commit_sha": "3f59af5a2755d17c4e65b9a341d0c184135621fa",
       "pushed_at": "2026-10-24T00:42:59Z",
       "stars": 4926
+    },
+    {
+      "checked_at": "2026-10-25T08:30:15Z",
+      "commit_sha": "3f59af5a2755d17c4e65b9a341d0c184135621fa",
+      "pushed_at": "2026-10-24T14:29:57Z",
+      "stars": 4927
     }
   ],
   "repo_id": 72894587

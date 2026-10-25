@@ -4,7 +4,19 @@
 
 ### Mandatory-rule exception protocol
 
-Use an exception only when a required service or analyzer remains unavailable after one retry, or when satisfying the rule is technically impossible without increasing security or data-loss risk. The repository owner is the sole approver. Before proceeding, record the blocked command, evidence, affected files, risk, compensating check, approver, and an expiry of at most 72 hours in the Todoist task or final handoff; review and remove the exception within seven days. A preference, deadline, or failing quality gate is not sufficient exception criteria.
+Use an exception only when a required service or analyzer remains unavailable after one retry, or when satisfying the rule is technically impossible without increasing security or data-loss risk. The repository owner is the sole approver. Before proceeding, record the blocked command, evidence, affected files, risk, compensating check, approver, and an expiry of at most 72 hours in the Linear issue or final handoff; review and remove the exception within seven days. A preference, deadline, or failing quality gate is not sufficient exception criteria.
+
+### Task tracking (Linear)
+
+**Linear is the only live queue (cutover 2026-10-15).** Desktop work lives in team Tolaria (`TOL`), project **Tolaria Desktop**; mobile work in **Tolaria Mobile**; web work in project Tolaria Web. Do not create or move Todoist tasks. The old Todoist Tolaria project is legacy (its Draft section is being triaged separately); a completed Todoist card commented "Moved to Linear: TOL-n" points to its Linear issue.
+
+**Linear** — workspace Refactoring, team Tolaria, issue key `TOL`.
+
+- Workflow: **Backlog** (not ready) → **Open** (ready for an agent) → **To Rework** (review failed: read the latest review comment and fix only that; pick these **before** Open) → **In Progress** (claimed) → **In Review** (pushed, awaiting Luca's QA) → **Done** / **Canceled** / **Duplicate**.
+- Claim an issue by moving it to In Progress only when a session actually starts work on it. At most one In Progress card per lane (Mac mini mobile: 1, agent-openai desktop: 1, agent-claude web: 2); release your current card (In Review, or back to Open with a comment) before claiming another. Never take another worker's In Progress issue; resume your own only when a prior claim comment identifies this worker and worktree. Re-read the issue after claiming and stop on a conflicting claim. Exception: follow the mandatory-rule exception protocol if Linear remains unavailable after one retry.
+- Labels: type `Bug` / `Feature` / `Improvement`; `needs-luca` (only when a human decision or owner action is truly needed, always with a comment saying what is needed); `dubious` and `contributor-pr` (Backlog, awaiting Luca); Source group `Sentry` / `Canny` / `GitHub`. Exception: an unavailable Linear labeling service requires the same owner-approved exception protocol.
+- No platform labels and no "blocked" label of any kind (Luca, 2026-10-23): the project decides the lane (Desktop → Codex on agent-openai, including Mac-specific work it can't test on Linux; Web → Claude Code on agent-claude; Mobile → the Mac mini). A stuck card goes back to Open with a comment and is retried on a later run with backoff; never label it as blocked.
+- Reference the issue ID in commit messages, e.g. `fix: keep image width after restart (TOL-123)`.
 
 ### Start working on a task
 
@@ -15,15 +27,36 @@ Use an exception only when a required service or analyzer remains unavailable af
 - Check `docs/adr/` for relevant architecture decisions before structural choices
 - Check `docs/ARCHITECTURE.md` and `docs/ABSTRACTIONS.md` for relevant structural information
 - For UI tasks: study app visual language and components first. Prioritize reusing existing components, assets, and variables over recreating them.
-- If working on a Todoist task, add a comment: `🚀 Starting work on this task. [Brief description of approach]`
+- If working on a Linear issue, add a comment: `🚀 Starting work on this task. [Brief description of approach]`
 
 ### Commits & pushes
 
 - Local work may happen on `main`, in detached HEAD worktrees, or in other temporary local states. The production path is still direct-to-main: final verified work is pushed to `origin/main`, with no PR branch flow.
+- Mobile foundation is integrated into main. New mobile work follows the same direct-to-main path; the historical foundation-branch fast lane is not the current delivery workflow.
 - Commit every 20–30 min: `feat:`, `fix:`, `refactor:`, `test:`, `docs:`
 - Pre-commit is a lightweight lint gate only. Pre-push runs the full check suite (build + tests + coverage + core Playwright smoke + CodeScene), preferably on three Chunk sidecar lanes for automatic test/coverage work: frontend lint/build/coverage, Rust coverage, and Playwright smoke. The goal is lower wall-clock time than local hooks while keeping each heavy gate isolated; keep local Playwright mainly for authoring, focused reproduction, or sidecar outages.
 - CircleCI is the authoritative outer-loop CI/CD system. `.circleci/config.yml` owns validation, native cross-platform release builds, GitHub Release publication, and Pages publication.
 - **A task is NOT done until `git push origin main` succeeds.** If the hook blocks: read the error, fix it (clippy, tests, CodeScene, build), commit the fix, push again. If a verified push is impossible, stop and obtain explicit repository-owner direction; do not use `--no-verify` without that recorded approval.
+
+### Mobile coding and release
+
+The general coding, quality, localization, analytics, credentials and completion rules apply unchanged. Read the mobile sections of `docs/ARCHITECTURE.md` and `docs/ABSTRACTIONS.md`; ADRs 0247, 0263 and 0272 define OTA delivery and channel selection.
+
+- Reuse `apps/mobile/src/components/ui` native primitives and `apps/mobile/src/ui` wrappers, not desktop DOM controls. Keep phone/tablet behavior on the shared controller/repository boundary. Run `pnpm mobile:lint`, `pnpm mobile:typecheck`, `pnpm mobile:test` and focused mobile regressions as well as the normal main push gates; scoped mobile checks do not replace them.
+- Verify affected native behavior separately on iPhone, iPad and Android. Browser checks are not native acceptance. Record task-specific owner delegation of manual QA honestly; it does not waive automated gates. A locked Mac leaves affected checks pending while independent work continues.
+- QA is confined to owned disposable vaults/simulators; existing user apps, containers and vault data stay untouched.
+- CircleCI publishes mobile-related main pushes to **Alpha** after its required gates; desktop-only changes are excluded from mobile publication. Confirm the actual publication receipt, source SHA, runtime and update ID before claiming delivery. Native/configuration/dependency changes that alter the runtime require a compatible signed binary, not an incompatible OTA.
+- Use one external **Tolaria Beta** TestFlight group. Settings defaults to **Stable**, with Alpha opt-in; selected channel and running update identity are distinct. Legacy Alpha-native binaries can launch embedded Alpha before preferences load. Retain runtime matching, safe editor flush/restart and Sentry artifact verification.
+- **Stable promotion remains manual**, authorized explicitly by the owner and using the existing exact-tested-Alpha-artifact republish/approval workflow. Never rebuild from moving main or redirect Stable to moving Alpha. Do not submit Apple compliance declarations or grant new credential permissions without explicit owner authorization.
+
+### Hourly mobile queue routine
+
+Keep the scheduled prompt limited to queue orchestration; this file owns coding and release policy.
+
+1. Reuse the routine's attached worktree and inspect current work. Resume its own identified unfinished claim before taking another issue; keep execution serial under the claim protocol above.
+2. Otherwise paginate **Tolaria Mobile** To Rework, then Open; order by priority (unspecified last), then oldest creation time. Skip work assigned or delegated to others (including cards assigned to Luca for owner action), unmet dependencies, and cards whose latest comment records a failed attempt less than 1 h ago (after a 2nd consecutive failure wait 2 h, after a 3rd 4 h, then 8 h). Do not pull Backlog or In Review into implementation. Follow the claim protocol above.
+3. Implement the selected issue under this file's rules. On a blocker, failure or session exit, record the evidence, the checkpoint location and the required action in Linear, then move the card back to Open (or to In Review if verified work landed on main) before claiming the next one; never leave a blocked card In Progress. Continue independent eligible work without mixing partial changes or extending exceptions.
+4. Put verified implementation In Review with its release record, not self-approved Done. Report meaningful milestones or actionable blockers; stay quiet when the queue or status is unchanged. Resume remaining work on the next hourly run. Keep only one active mobile queue routine.
 
 ### TDD (mandatory)
 
@@ -45,7 +78,7 @@ Use `pnpm l10n:translate:force` only when intentionally regenerating existing tr
 
 New features should emit a PostHog event so we can see whether users actually discover and use them. Skip instrumentation when the change has no meaningful user action or when a dedicated event would create noise; record that reason in the completion comment. If the correct instrumentation remains unclear, obtain repository-owner direction before release. Use clear, stable event names, avoid PII or note content, and include only safe metadata that helps evaluate adoption and failures.
 
-When adding or changing a meaningful user-facing feature, include the event name(s) in the Todoist completion comment alongside QA, docs, and code health. If intentionally not instrumenting a feature, explain why in the completion comment.
+When adding or changing a meaningful user-facing feature, include the event name(s) in the Linear completion comment alongside QA, docs, and code health. If intentionally not instrumenting a feature, explain why in the completion comment.
 
 ### Code health (mandatory)
 
@@ -77,8 +110,10 @@ Use Codacy as a security and static-analysis gate before a task is considered re
 - **Before editing existing code:** run a local file scan and record every finding for each code file you intend to touch. Also record that file's findings on Codacy's currently analyzed `main` commit using `codacy_list_files` to resolve the file and `codacy_get_file_issues` to enumerate all paginated results.
 - **Local file scan:** use `mcp__codacy__codacy_cli_analyze` with the repository's absolute `rootPath` and an explicit `file`, one touched/new file at a time. If the MCP is unavailable or fails, run `LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 .codacy/cli.sh analyze <path> --format sarif --output /tmp/codacy-<slug>.sarif`. Omit `--tool` so every locally configured analyzer runs. Explicitly inspect every `runs[].results[]` entry in the SARIF output.
 - **Analyzer-parity gate:** before creating or modifying code, call `codacy_list_repository_tools` and record the enabled dashboard analyzer name, UUID/generation, configuration mode, and language coverage. Compare that roster with the `runs[].tool.driver` entries produced locally for every language in the scan manifest. Tool names alone are not sufficient: deprecated ESLint/ESLint8 and current ESLint9 are different analyzers, and a local run of Lizard, Opengrep, and Trivy does not prove that dashboard ESLint will be clean. For TypeScript/JavaScript, the passing roster must include the current analyzer that honors `eslint.config.js`, plus every other enabled relevant dashboard tool. If the intended analyzer is disabled, a deprecated analyzer is enabled, or any enabled dashboard analyzer has no equivalent successful local run, analyzer parity fails: stop, correct the Codacy tool configuration, trigger a full reanalysis, and verify parity before code work. A repository-owner-approved exception is required if configuration access is unavailable.
+- **Approved analyzer-parity exception (Biome):** Biome is enabled on the Codacy dashboard but missing from the local Codacy CLI. Biome: covered locally by the repo's own Biome (`npx biome check <changed files>`, or the repo's existing Biome run in `pnpm codacy:gate`); approved by Luca 2026-10-10. This is a standing exception recorded here, so it needs no per-task re-approval: record that `npx biome check` run as the local Biome row in the parity and per-file evidence. It covers only the missing local Biome run; any Biome diagnostic on changed files still fails the gate, and every other analyzer must still match.
 - **Per-file analyzer evidence:** for every new code file, record one result row per expected analyzer with the exact file path, analyzer identity, completion status, and finding counts split into Critical/High/Medium/Minor/Info/unclassified. Missing rows, a skipped/untracked target, an analyzer crash, or an analyzer that silently omits the language is a failed scan, never a zero. If the CLI requires Git discovery, add the file to the index normally before the final scan; do not rely on a directory scan to discover an untracked file.
 - **Fail closed on partial scans:** a zero process exit code is not enough. Confirm the expected relevant tools produced SARIF runs and inspect scan logs for crashes, encoding failures, skipped target files, partial analysis, or missing tool output. If any relevant analyzer did not complete, the scan did not pass.
+- **Approved analyzer-coverage exception (unsupported or excluded files):** if Codacy or CodeScene does not support a file type, or excludes the path from analysis (for example test paths, `.husky/*` hook scripts), an agent does not need a pre-edit baseline or a post-edit score from that tool to edit the file. Record "not analyzed by <tool>: <unsupported|excluded>" as that tool's row in the parity/per-file evidence. Likewise, when an enabled dashboard analyzer has no local equivalent for a file type (for example Jackson Linter for `src/lib/locales/*.json`), cover it locally with the repo's own check (`node scripts/validate-locales.mjs` plus a JSON parse for locale catalogs) and record that run. Approved by Luca 2026-10-13; standing, no per-task re-approval. Every other gate still applies: the other tool's baseline and Boy Scout rule where it does analyze the file, zero new findings, tests, coverage, pre-push hooks and post-push verification.
 - **Zero-new-findings rule:** added or modified code must introduce no Codacy finding at any severity, including Info/Minor, Warning/Medium, High/Error/Critical, unclassified findings, and findings reported on unchanged lines or at file level because of the change. If this cannot be achieved, stop and obtain explicit repository-owner approval for a documented exception.
 - **New code — absolute zero rule:** every new code file and every file containing newly added code must be scanned explicitly after creation or modification and must have exactly zero findings attributable to the new code at every severity. A newly created file must have exactly zero findings in the whole file. For added code in an existing file, any finding on an added line, caused by an added symbol or dependency, or newly appearing at file level fails the gate. `0 Critical + 0 High + 0 Medium + 0 Minor + 0 Info + 0 unclassified` is the only passing result. If a scanner cannot prove this, stop and obtain explicit repository-owner approval before proceeding.
 - **Boy Scout Rule for existing files:** after editing, every touched file must have fewer local findings than its recorded baseline; a zero-finding file must stay at zero. Fix every existing Critical/High finding in a touched file; if this cannot be achieved, stop and obtain explicit repository-owner approval for the documented exception.
@@ -90,12 +125,12 @@ Use Codacy as a security and static-analysis gate before a task is considered re
 
 ### Check suite (runs on every push)
 ```bash
-pnpm lint && npx tsc --noEmit && pnpm test && pnpm test:coverage  # frontend ≥70%
+pnpm lint && npx tsc --noEmit && pnpm test && pnpm test:coverage  # frontend ≥71%
 cargo test && cargo llvm-cov --manifest-path src-tauri/Cargo.toml --no-clean --fail-under-lines 85
 ```
 
 Coverage is a release gate, not a vanity metric:
-- Frontend coverage must stay ≥70%. Exception: if coverage cannot be measured after one retry because the coverage service is unavailable, use the mandatory-rule exception protocol and obtain repository-owner approval before release.
+- Frontend coverage must stay ≥71%. Exception: if coverage cannot be measured after one retry because the coverage service is unavailable, use the mandatory-rule exception protocol and obtain repository-owner approval before release.
 - Rust line coverage must stay ≥85%. Exception: if coverage cannot be measured after one retry because the coverage service is unavailable, use the mandatory-rule exception protocol and obtain repository-owner approval before release.
 - For bug fixes, add a regression test when practical.
 - For new behavior, add targeted coverage close to the changed code; do not rely only on broad E2E coverage.
@@ -112,7 +147,9 @@ sleep 3
 BASE_URL="http://localhost:5201" npx playwright test tests/smoke/<slug>.spec.ts
 ```
 
-**Phase 2 — Native app QA:**
+**Phase 2 — Native app QA (macOS):**
+
+> On a Linux agent box, skip this Phase 2 block and follow **Linux agent boxes (Hetzner / remote)** below instead.
 
 ```bash
 pnpm tauri dev &
@@ -123,14 +160,24 @@ bash ~/.openclaw/skills/tolaria-qa/scripts/screenshot.sh /tmp/qa-native.png
 
 Use computer-use/browser-control interaction for native UI QA when either tool is present in the current environment: click, hover, drag, select, scroll, and type the way a real user would with the mouse and trackpad. For every UI feature, test the primary mouse-driven path first, then verify each keyboard shortcut or keyboard-first workflow implemented or modified by the task. If neither interaction tool is present, run the scripted focus, screenshot, and shortcut checks and document that limitation.
 
-Use `osascript` for app focus, keyboard shortcuts, and keyboard-specific checks. **⚠️ WKWebView:** if an `osascript keystroke` fails to enter editor text, use computer use for the native editor interaction and rely on Playwright for deterministic text-input coverage. Write the result as a Todoist comment (✅ or ❌), or in the final handoff when no Todoist task exists.
+Use `osascript` for app focus, keyboard shortcuts, and keyboard-specific checks. **⚠️ WKWebView:** if an `osascript keystroke` fails to enter editor text, use computer use for the native editor interaction and rely on Playwright for deterministic text-input coverage. Write the result as a Linear comment (✅ or ❌), or in the final handoff when no Linear issue exists.
+
+### Linux agent boxes (Hetzner / remote)
+
+These rules apply when the agent runs on a Linux box (no macOS desktop, no `osascript`, no `~/.openclaw`). The macOS instructions above stay in force for the Mac mini; do not remove or weaken them.
+
+**Mac-specific desktop work is done here too (Luca, 2026-10-23).** Every Tolaria Desktop card goes to the agent-openai box, including macOS/Windows-native surfaces (updater, Homebrew, macOS menus and Cmd/Option shortcut wiring, native dialogs, signing, Windows installers). When part of a change can't be built or tested on Linux, implement it carefully anyway, unit-test the logic you can, and list exactly what was not tested on Linux (and how to check it on a Mac or Windows machine) in the Linear comment. That is not a reason to skip or block the card.
+
+**QA on Linux = the Linux Tolaria build with a throwaway vault.** There is no macOS native QA on these boxes. Build the Linux app (`CI=true pnpm tauri build --debug --no-bundle`) and drive it under Xvfb with a throwaway copy of `demo-vault-v2/` — on the agent boxes use the installed `tolaria-qa` CLI (`tolaria-qa help`: `start`, `click`, `key ctrl+…`, `xtype`, `shot`, `smoke`, `stop`). Never open, create, or modify `~/Laputa` or any real user vault. Test the primary mouse path first, then each keyboard shortcut you added or changed (`Ctrl` on Linux where macOS uses `Cmd`). Phase 1 Playwright still applies. Record QA (✅/❌, what was clicked/typed, screenshots) in the task comment as usual.
+
+**Before pushing to main:** the full check suite passes; then `git fetch origin && git rebase origin/main` (stop on conflicts you cannot resolve safely), re-run the checks (including the Linux build and a Linux app smoke) on the rebased HEAD, then `git push origin main` so the pre-push hook runs against the latest `origin/main`. Never `--no-verify` without a recorded repository-owner exception.
 
 ### Release-readiness checklist
 
-Before pushing or moving a task to In Review, verify the release gates and add a **completion comment** to the Todoist task. Exception: when the work has no Todoist task, put the identical evidence in the final handoff and identify it as the release record. The record must include:
+Before pushing or moving a task to In Review, verify the release gates and add a **completion comment** to the Linear issue. Exception: when the work has no Linear issue, put the identical evidence in the final handoff and identify it as the release record. The record must include:
 
 - What was implemented (a few lines covering logic and UX/UI).
-- QA: what was tested and how (Playwright / native screenshot / osascript).
+- QA: what was tested and how (Playwright / native screenshot / osascript on macOS; Linux app driven with a throwaway vault on Linux agent boxes).
 - Tests/coverage: commands run and final coverage result.
 - CodeScene: before/after touched-file checks, the pre-commit safeguard verdict, the final `origin/main` change-set verdict, plus final Hotspot and Average scores after push; every gate must pass `.codescene-thresholds`, or the record must include explicit repository-owner approval for a documented exception.
 - Coverage commands passed (`pnpm test:coverage` and `cargo llvm-cov ... --fail-under-lines 85`) or the change is docs-only.
@@ -192,6 +239,48 @@ Use shadcn/ui components for user-facing interactive elements instead of raw HTM
 
 ## 3. Reference
 
+### Release notes
+
+Release notes live in `release-notes/<tag>.md` and are published to GitHub Releases and the public website.
+
+**Format:**
+- Every release note must start with frontmatter; exceptions require the mandatory-rule exception protocol:
+  ```markdown
+  ---
+  type: Note
+  _organized: true
+  ---
+  ```
+- After frontmatter, write the user-facing content (features, improvements, fixes)
+- Use clear headings: `## New Features`, `## Improvements`, `## Stability and Fixes`
+- Use emojis and **bold** feature names for scanability
+- Write for end users, not developers
+
+**Frontmatter handling:**
+- The vault displays release notes as organized `Note` types
+- GitHub Release bodies and website copies automatically strip frontmatter via `scripts/strip-frontmatter.mjs`
+- Never expose frontmatter in user-facing surfaces
+
+**Creating a new release note:**
+```bash
+cat > release-notes/<tag>.md << 'EOF'
+---
+type: Note
+_organized: true
+---
+
+## New Features
+
+- 🎉 **Feature name** — Description.
+
+## Improvements
+
+- ✨ **Enhancement** — Description.
+EOF
+```
+
+The frontmatter ensures release notes are already organized when the Tolaria repo is opened as a vault, avoiding inbox clutter.
+
 ### macOS / Tauri gotchas
 
 - `Option+N` → special chars on macOS. Use `e.code` or `Cmd+N`
@@ -210,3 +299,7 @@ bash ~/.openclaw/skills/tolaria-qa/scripts/shortcut.sh "command" "s"
 ### Diagrams
 
 Prefer Mermaid (`flowchart`, `sequenceDiagram`, `classDiagram`, `stateDiagram-v2`). ASCII only for spatial wireframe layouts.
+
+## Stuck or blocked tasks
+
+Whenever an agent moves a task back to Open, adds `needs-luca`, or otherwise leaves a task stuck, it must ALWAYS add a task comment explaining why: the exact blocker, the evidence (command/log path), and what decision or action would unblock it. Never leave a task blocked without that comment. Exception: a Linear outage after one retry requires the identical evidence in the final handoff and repository-owner approval under the mandatory-rule exception protocol.
