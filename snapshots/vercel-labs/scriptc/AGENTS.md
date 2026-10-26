@@ -46,6 +46,8 @@ SCRIPTC_TEST_WORKERS=4 SCRIPTC_SAN=1 pnpm test  # sanitized lane
 
 Corpus programs are differential tests against Node: every program runs under Node and as a compiled native binary, and stdout, stderr, and exit codes must match byte-for-byte. A new feature lands with corpus programs that pin its behavior both ways.
 
+Name a new corpus program after what it tests, without a number: lowercase words joined by hyphens, such as `tests/corpus/intersection-restated-members.ts`, or a directory such as `tests/corpus/<name>/main.ts` for a multi-file program. Parallel changes kept taking the same next number; with names, two changes collide only when they add the same name, which git reports as a conflict. Leave existing numbered programs as they are: never rename or renumber them, and name a new program even when it extends a numbered family.
+
 Record a new or remeasured program's CI cost (used to balance the test shards) in `tests/harness/corpus-costs/<program>.json`, not in `tests/harness/corpus-costs.json`; see the README there.
 
 Before opening a PR that adds or changes corpus, diagnostic, or frontend fixtures, run `pnpm test:ts7 --baselines-only`. This fast completeness check uses the same fixture discovery as the parity suite; it does not type-check or replace behavioral parity. Generate missing preflight/order baselines, review their diagnostics and module order, and run the affected `order-parity.test.ts` batches before pushing. Keep existing baseline entries unchanged unless the corresponding behavior intentionally changes. The full `pnpm test:ts7` command also checks completeness before starting its sweep.

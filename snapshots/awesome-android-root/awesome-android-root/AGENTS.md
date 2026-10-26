@@ -94,6 +94,31 @@ python3 scripts/check_links.py
 
 External links should be authoritative and verified when relevant.
 
+### Titles and meta descriptions
+
+Target lengths for every page:
+
+* Title: 50 to 60 characters. Absolute maximum 70.
+* Meta description: 110 to 155 characters. Absolute range 70 to 160.
+
+Rules:
+
+* Put the primary keyword first. Drop trailing qualifiers before shortening a
+  keyword-rich title.
+* The site suffix `| Awesome Android Root` counts toward the title length.
+* Never put the site name in a frontmatter `title`. VitePress appends it, which
+  renders a duplicated title such as `Privacy | Awesome Android Root |
+  Awesome Android Root`. The only exception is `docs/index.md`, which sets
+  `titleTemplate: Awesome Android Root` and therefore uses its title verbatim.
+* Write descriptions from the actual page content. Do not pad them to reach a
+  length and do not use claims the page does not support.
+* Quote a frontmatter `description` in YAML when it contains a colon.
+* Keep `og:title`, `twitter:title`, `og:description`, and `twitter:description`
+  overrides in sync with `title` and `description` when they repeat them.
+* `docs/count.md` and `docs/public/count.json` are generated and gitignored.
+  Edit the page frontmatter and JSON fields in `scripts/app-entries.mjs`, since the
+  build regenerates both files.
+
 ## 6. Site and Code Changes
 
 The project uses Node.js, VitePress, Markdown/YAML, JavaScript, Python, and Bash.
@@ -121,19 +146,24 @@ For dependency changes, check existing dependencies before adding new ones.
 For documentation changes:
 
 ```bash
-python3 scripts/check_links.py
+bun run check:links
 bun run docs:build
 ```
 
-For Cloudflare Pages, use `bun run docs:build` as the build command and
-`docs/.vitepress/dist` as the output directory. Pin the build environment to
-Bun 1.4.2 and Node.js 22 or newer.
-
-For app/module additions or reordering, also run when relevant:
+For app and module entries, also run:
 
 ```bash
-bash scripts/counter.sh
+bun run index:build  # regenerates the app index, count page and reports entry format, ordering and badge problems
 ```
+
+CI runs `check:links` and `docs:build` as blocking steps. `docs:build` runs
+`index:build` itself, so entry lint findings appear in the build job logs; keep
+lint clean even though nothing gates on it. The build needs full git history
+because of `lastUpdated`.
+
+For Cloudflare Pages, use `bun run docs:build` as the build command and
+`docs/.vitepress/dist` as the output directory. Pin the build environment using
+`.bun-version` and the `engines.node` field in `package.json`.
 
 For site configuration or theme changes, build the site and manually inspect affected behavior when practical.
 
@@ -212,14 +242,7 @@ Preserve least-privilege permissions in GitHub Actions.
 
 ## 12. Definition of Done
 
-Before finishing:
-
-* The change is in the correct location.
-* No duplicate or unsupported claim was introduced.
-* Links, categories, tags, and badges are correct.
-* Relevant anchors and navigation still work.
-* Required validation passes.
-* The final diff contains no unrelated edits.
-* The result is concise, maintainable, and consistent with the repository.
+All checks in section 7 pass, the change sits in the correct category with
+correct links, tags, and badges, and the diff contains no unrelated edits.
 
 **Core principle:** Prefer accurate, concise, sourced, and maintainable changes over large, speculative, or impressive-looking changes.

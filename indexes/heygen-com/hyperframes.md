@@ -1,8 +1,8 @@
 # heygen-com/hyperframes instruction files
 
-Upstream: [heygen-com/hyperframes](https://github.com/heygen-com/hyperframes) · License: `Apache-2.0` · Commit: `495dc95acdf738f419eb644439ca1e90b94b511e`
+Upstream: [heygen-com/hyperframes](https://github.com/heygen-com/hyperframes) · License: `Apache-2.0` · Commit: `3f1950b806e72fece41552077b491f1c8c6e8b28`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/heygen-com/hyperframes/AGENTS.md) | [Source](https://github.com/heygen-com/hyperframes/blob/495dc95acdf738f419eb644439ca1e90b94b511e/AGENTS.md) | `e26b3822cfd7e4d6c780fd3c919f650d973a99763f4f147ae5f3080250757909` | 6,707 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/heygen-com/hyperframes/CLAUDE.md) | [Source](https://github.com/heygen-com/hyperframes/blob/495dc95acdf738f419eb644439ca1e90b94b511e/CLAUDE.md) | `51d20d5504bedaf86c3d77e226ef86311ee52496a3f8fba10e661966e0a51626` | 9,026 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/heygen-com/hyperframes/AGENTS.md) | [Source](https://github.com/heygen-com/hyperframes/blob/3f1950b806e72fece41552077b491f1c8c6e8b28/AGENTS.md) | `e26b3822cfd7e4d6c780fd3c919f650d973a99763f4f147ae5f3080250757909` | 6,707 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/heygen-com/hyperframes/CLAUDE.md) | [Source](https://github.com/heygen-com/hyperframes/blob/3f1950b806e72fece41552077b491f1c8c6e8b28/CLAUDE.md) | `51d20d5504bedaf86c3d77e226ef86311ee52496a3f8fba10e661966e0a51626` | 9,026 B |

@@ -29,15 +29,11 @@ binds this repository.
 - **Nullable enabled** globally; test projects may disable it.
 - **Warnings as errors** — `TreatWarningsAsErrors` is true; code style is enforced in build.
 - **`Quartz` builds with the trim, AOT and single-file analyzers on**, so an `IL2xxx` or `IL3xxx` is an error.
-  The known-reflective types are recorded in `src/Quartz/TrimAnalysisBaseline.cs` (and mirrored for ILLink in
-  `src/Quartz/ILLink.Suppressions.xml`, which the worker example's trimmed publish applies; ILCompiler takes no
-  such file, so a native AOT publish still reports them). A warning in a type not listed there means new
-  reflection — fix it rather than adding a line; that file explains the order to try fixes in. Neither file
-  ships, so consumers still see every warning. The package **does** say `IsAotCompatible`, and the claim is
-  narrow: Quartz produces no `IL3050` at all, so nothing it does needs code generated at run time, while the
-  `IL2xxx` that remain are the string-named paths #3341 tracks and are unaffected by it. The property lands
-  in the assembly as `[AssemblyMetadata("IsAotCompatible", "True")]` and puts nothing in the nuspec, so its
-  audience is the analyzers and a reader of `src/Quartz/Quartz.csproj`, which spells all of this out.
+  Nothing is recorded or suppressed: the last reflection sits behind the three switches in
+  `src/Quartz/FeatureSwitches.cs`, which `PublishTrimmed` turns off, and the canary legs fail on any
+  warning against a Quartz type. A new one is new reflection — fix it; that file's header gives the order
+  to try fixes in. The package **does** say `IsAotCompatible`: Quartz produces no `IL3050` at all.
+  `src/Quartz/Quartz.csproj` spells all of this out.
 - **Allman brace style** — braces on new lines for methods, types, control blocks, properties, accessors, lambdas.
 - **No `DateTime.Now`/`DateTimeOffset.Now`** — banned via Roslyn analyzer (`BannedSymbols.txt`). Use `TimeProvider` instead.
 - **No implicit `DateTime` → `DateTimeOffset` cast** — also banned.
@@ -52,14 +48,15 @@ binds this repository.
 - **No setter-only properties on interfaces.** Identity and configuration arrive by constructor or an explicit context parameter.
 - **Strong-named assemblies** — signed with `quartz.net.snk` (except examples).
 - **Central package management** — package versions in `Directory.Packages.props`.
-- **Single target** — everything targets `net10.0`.
+- **Single target** — everything targets `net10.0`. `Quartz.Analyzers` is the one exception: an analyzer
+  runs inside the compiler host, so it is `netstandard2.0`, links the cron parser's sources rather than
+  referencing `Quartz.dll`, and ships inside `Quartz.nupkg` under `analyzers/dotnet/cs`.
 - **SDK**: .NET 10 SDK (see `global.json`), with `rollForward: latestMinor`.
 - **License headers** — source files include Apache 2.0 license region at the top.
 - **UTF-8 without a byte-order mark** — everything under `src/`, whatever its extension;
-  `SourceEncodingTest` fails a file that starts with one. `*.verified.*` snapshots are the exemption,
-  because Verify writes the mark and the next regeneration would put it straight back. A script that
-  writes a source file uses Python's `encoding="utf-8"` — never `utf-8-sig` — or PowerShell's
-  `-Encoding utf8NoBOM`.
+  `SourceEncodingTest` fails a file that starts with one, and `*.verified.*` snapshots are the exemption.
+  A script that writes a source file uses Python's `encoding="utf-8"` — never `utf-8-sig` — or
+  PowerShell's `-Encoding utf8NoBOM`.
 
 ### Naming decisions that are settled
 
@@ -67,65 +64,53 @@ These spots look inconsistent on purpose. Each was examined and ratified in the 
 pass; do not "finish" any of them.
 
 - **The scheduler's noun is `JobDetail`; the store's noun is `Job`.** `IScheduler` hands users
-  `IJobDetail`, so it says `GetJobDetail`/`GetJobDetails`. `IJobStore` speaks in storage terms, so it
-  says `GetJob`/`GetJobs` (beside `GetTrigger`/`GetTriggers`). Singular/plural pairs are consistent
-  *within* each interface; the two interfaces deliberately differ, and aligning one with the other
-  would break the consistent pairs on whichever side got "fixed".
-- **`StdAdoDelegate` and the `*Delegate` dialect family keep their names.** "A class named Delegate
-  that isn't a delegate" is regrettable in .NET, but this vocabulary is Quartz's cross-ecosystem
-  identity: Java parity, twenty years of Stack Overflow answers, `quartz.jobStore.driverDelegateType`
-  spelled in countless configuration files, `database/README.md`, and the dialect docs all teach
-  against `IDriverDelegate`/`SqlServerDelegate`/`PostgreSQLDelegate`/…. The `Std` prefix was retired
-  everywhere else (the semaphore renames finished that); `StdAdoDelegate` is the sole deliberate
-  survivor, because renaming it would orphan the pedagogy without helping anyone.
-- **`RAMJobStore` keeps its name**, for the reason `StdAdoDelegate` does: it is a configuration-key
-  identity. `quartz.jobStore.type` names the type, and twenty years of configuration files, tutorials
-  and Stack Overflow answers spell it. Its options type is `InMemoryJobStoreOptions` and the builder
-  method is `UseInMemoryStore`, because *those* are new names with no history to keep faith with — the
-  mismatch between them and the type is deliberate, not an unfinished rename.
+  `IJobDetail`, so it says `GetJobDetail`/`GetJobDetails`; `IJobStore` speaks in storage terms, so it
+  says `GetJob`/`GetJobs` beside `GetTrigger`/`GetTriggers`. Each interface is consistent *within*
+  itself, and aligning one with the other would break the pairs on whichever side got "fixed".
+- **`StdAdoDelegate` and the `*Delegate` dialect family keep their names.** The vocabulary is Quartz's
+  cross-ecosystem identity: Java parity, `quartz.jobStore.driverDelegateType` spelled in countless
+  configuration files, `database/README.md`, and the dialect docs all teach against
+  `IDriverDelegate`/`SqlServerDelegate`/`PostgreSQLDelegate`/…. The `Std` prefix was retired everywhere
+  else; `StdAdoDelegate` is the sole deliberate survivor.
+- **`RAMJobStore` keeps its name**, for the reason `StdAdoDelegate` does: `quartz.jobStore.type` names
+  the type, and twenty years of configuration files and tutorials spell it. Its options type is
+  `InMemoryJobStoreOptions` and the builder method is `UseInMemoryStore`, because *those* are new names
+  with no history to keep faith with — the mismatch is deliberate, not an unfinished rename.
 - **The `*Utc` suffix on `DateTimeOffset` members stays.** `StartTimeUtc`, `EndTimeUtc`,
-  `NextFireTimeUtc` and the rest carry an offset and so cannot be anything but unambiguous, which makes
-  the suffix redundant on its face. It is Java parity, it is what every Quartz tutorial teaches, and it
-  is twelve members against roughly 1,400 call sites in this repository alone. The names say which
-  reading of the clock the value is, and nobody is confused by them.
+  `NextFireTimeUtc` and the rest carry an offset, which makes the suffix redundant on its face; it is
+  Java parity, it is what every Quartz tutorial teaches, and it is twelve members against roughly 1,400
+  call sites in this repository alone.
 - **`Use*` is the verb for an extension that registers a plugin** — `UseStructuredJobLogging`,
   `UseJobHistoryLogging`, `UseXmlSchedulingConfiguration` — because a plugin is middleware over a
   scheduler's lifecycle and that is how middleware reads. `AddPlugin<T>` is the generic form, for a
   plugin with no extension of its own. `Add*` stays for things a scheduler *contains*: jobs, triggers,
-  calendars, listeners. `UseTimeZoneConverter` keeps the verb although it no longer registers a plugin:
-  what it installs is still a scheduler-wide capability rather than something the scheduler holds.
+  calendars, listeners. `UseTimeZoneConverter` keeps the verb although it registers no plugin, because
+  what it installs is still a scheduler-wide capability.
 - **Four history-logging plugins ship, not two.** `LoggingJobHistoryPlugin` /
   `LoggingTriggerHistoryPlugin` log through numbered format strings and
   `StructuredLoggingJobHistoryPlugin` / `StructuredLoggingTriggerHistoryPlugin` log the same events
   through named templates. The structured pair is the better default and is documented as such; the
-  classic pair stays because a deployment's log pipeline is matched against the 3.x message shape, and
-  a message template is a contract to whatever parses it. Retiring the classic pair is a break with no
-  migration to offer, so it is not on the table. The plugin sweep of #3593 retired the plugins whose
-  job the host already does — these are not those.
-- **`services.AddHealthChecks().AddQuartz()` keeps that name.** Read on its own it says nothing about
-  health, but it is the `AspNetCore.HealthChecks.*` idiom — every check in that ecosystem is
-  `AddHealthChecks().AddX()` — and the receiver is what supplies the noun.
-- **The `AddQuartz(NameValueCollection, …)` overloads stay beside their dictionary twins.** They look
-  like a duplicate pair; they are the 3.x on-ramp, because a `NameValueCollection` is what an
-  application migrating from `StdSchedulerFactory` already holds.
+  classic pair stays because a message template is a contract to whatever parses a deployment's logs,
+  so retiring it is a break with no migration to offer. The plugin sweep of #3593 retired the plugins
+  whose job the host already does — these are not those.
+- **The `AddQuartz(NameValueCollection, …)` overloads stay beside their dictionary twins.** They are the
+  3.x on-ramp, because a `NameValueCollection` is what an application migrating from
+  `StdSchedulerFactory` already holds.
 - **Reading has two altitudes, and both stay.** `IScheduler`'s `Query*` members take a query record —
   filter, page, optional total — and answer with headers; `SchedulerQueryExtensions`' `Get*` conveniences
-  take none of that and answer with bare keys and names. Neither is the other's leftovers, and a
-  shorthand saving only the `new` earns nothing. The pause/resume matcher members are `*Groups` because
-  the group set is what they write and answer with: a paused group survives a restart and binds what is
-  added to it next, which no list of keys can say.
+  take none of that and answer with bare keys and names. The pause/resume matcher members are `*Groups`
+  because the group set is what they write and answer with, which no list of keys can say.
 - **`ISchedulerRepository` and `ISchedulerRegistry` answer different questions.** The repository is the
-  live-instance directory — bind, remove, look up. The registry lists what a container has *registered*,
-  built or not, so an operator can enumerate tenants without starting every one. Both stay.
+  live-instance directory — bind, remove, look up; the registry lists what a container has *registered*,
+  built or not. Both stay.
 - **`NameMatcher` — the arity-free one — sits outside `IMatcher<T>` on purpose.** That interface and the
-  `Matchers.And`/`Or`/`Not` combinators are constrained to `Key<T>`, which is what lets a matcher reach
-  the scheduler members that take one; a calendar's or a group's name is not a key. It was
-  `CalendarNameMatcher`: it took the family's name without taking the family's interface.
+  `Matchers.And`/`Or`/`Not` combinators are constrained to `Key<T>`, and a calendar's or a group's name
+  is not a key.
 
 ### Overload sets audited and frozen in #3598
 
-Counted, argued and left as they are. Each looks like a set to thin; the reason it is not is on the
-members themselves, so read the XML docs before reopening one.
+Counted, argued and left as they are. The reason each is not a set to thin is on the members
+themselves, so read the XML docs before reopening one.
 
 - **Job-store selection keeps all seven members**, because each says something the others cannot:
   the two shipped stores (`UseInMemoryStore`, `UsePersistentStore`), a persistent store of another type
@@ -134,19 +119,16 @@ members themselves, so read the XML docs before reopening one.
   (`UseJobStore(IJobStore)`), and one a factory builds over the scheduler's own parts
   (`UseJobStore(Func<…>)`).
 - **Hosted-service registration keeps all six**: three shapes — the ordinary one, `<T>` for a subclass,
-  and `(schedulerName, …)` for one scheduler's settings — on each of the two receivers every
-  registration API here has. C# has no default type argument, so the first shape is not the second one
-  written shorter.
-- **`IThreadPool` keeps all six members.** It is not an interface guarding one integer: each member has
-  exactly one caller in the scheduler, and `ZeroSizeThreadPool` stays public because
-  `UseThreadPool<ZeroSizeThreadPool>()` needs it reachable.
+  and `(schedulerName, …)` for one scheduler's settings — on each of the two receivers. C# has no
+  default type argument, so the first shape is not the second one written shorter.
+- **`IThreadPool` keeps all six members**; each has exactly one caller in the scheduler, and
+  `ZeroSizeThreadPool` stays public because `UseThreadPool<ZeroSizeThreadPool>()` needs it reachable.
 - **`JobBuilder`/`TriggerBuilder` keep their companion classes while the schedule builders carry their
   own `Create`.** Generic inference forces it — `JobBuilder<MyJob>.Create()` would name the job type
   twice — and no schedule builder is generic.
 - **`IScheduleBuilder.Build()` keeps returning `IMutableTrigger`,** and `ConfigureJobScope` keeps taking
-  `TriggerFiredBundle`. Both are `Quartz.Extensibility` types on a mainstream path, and both are the
-  only type that says the thing: the trigger builder must write onto what it is handed, and a firing
-  before its job exists has no `IJobExecutionContext` yet.
+  `TriggerFiredBundle`. Each is the only type that says the thing: the trigger builder must write onto
+  what it is handed, and a firing before its job exists has no `IJobExecutionContext` yet.
 
 ### Examined in the alpha.5 audit and kept (#3603)
 
@@ -154,57 +136,59 @@ The rule above, for the things that are not names. The reason is on the member t
 
 - **The two day fields follow Vixie, not Cronos.** A field written exactly `*` or `?` restricts nothing
   and defers to the other; when both name days the expression fires on their *union*, so
-  `0 0 0 13 * FRI` is every Friday **and** the 13th. Cronos ANDs them and would fire only on Friday the
-  13th. The union is `crontab(5)`'s rule and what `cron-expressions.md` has always taught,
-  `UnixCronFormatTest` pins it, and "finishing" the alignment would halve every schedule that names
-  both fields. `*/n` is restricted here, unlike Vixie, whose parser reads the leading `*` first.
+  `0 0 0 13 * FRI` is every Friday **and** the 13th, where Cronos ANDs them and would fire only on
+  Friday the 13th. The union is `crontab(5)`'s rule and what `cron-expressions.md` has always taught,
+  and `UnixCronFormatTest` pins it. `*/n` is restricted here, unlike Vixie, whose parser reads the
+  leading `*` first.
 - **`CronFormat` is stated, never sniffed.** A five-field string throws in the default `Quartz` format,
-  and the message names `CronFormat.Unix` and the rewritten expression. Auto-detect was rejected: the
-  suite already uses "five fields" to mean "invalid expression", a dropped middle field would change a
-  schedule in silence, and the same digit is a different day in each dialect. Detection can be added
-  later; removing it could not.
+  and the message names `CronFormat.Unix` and the rewritten expression. Auto-detect was rejected because
+  the same digit is a different day in each dialect and a dropped middle field would change a schedule
+  in silence; it can be added later, removing it could not.
 - **Wrapping ranges and `H` are Quartz supersets over standard cron, and are identity.** A range whose
-  end is below its start wraps instead of sorting its endpoints — `22-2` is five hours, `FRI-MON` a long
-  weekend — and `H` spreads a firing deterministically from the trigger key or an explicit one.
+  end is below its start wraps instead of sorting its endpoints — `22-2` is five hours — and `H` spreads
+  a firing deterministically from the trigger key or an explicit one.
   `CronExpressionWrappingRangeTest` pins the wrap, and the Unix rewrite carries both into five fields.
-- **Every `ISchedulerListener` member leads with `IScheduler`.** A job or trigger listener reaches its
-  scheduler through the execution context; no scheduler-listener notification has one, so the scheduler
-  is the first argument instead — which is also what lets one instance serve several schedulers and say
-  which of them paused a trigger. `ITriggerListener` leads with the trigger, for the mirror reason.
+- **Every `ISchedulerListener` member leads with `IScheduler`.** No scheduler-listener notification has
+  an execution context to reach its scheduler through, so the scheduler is the first argument instead —
+  which is also what lets one instance serve several schedulers. `ITriggerListener` leads with the
+  trigger, for the mirror reason.
 - **`SchedulerContext` and `JobDataMap` are not twins to align.** The map is persisted, dirty-tracked
   and equatable, and its `PutAsString` writers are instance members because they take part in that
-  change tracking. The context is never persisted, is read and written concurrently, and has nothing to
-  track. Only the typed *read* accessors are shared, in `DataMapExtensions`.
+  change tracking; the context is never persisted and has nothing to track. Only the typed *read*
+  accessors are shared, in `DataMapExtensions`.
 - **`LogProvider.SetLogProvider` is the one static escape hatch, kept knowingly.** Plenty of things that
   log are never handed a logger by a container: a listener you constructed, a trigger deserialized out of
   a job store, the static helpers, a standalone `QuartzSchedulerBuilder`. Nor is it seeded from the
-  container: the slot outlives any one container, and a host built, disposed and built again would leave
-  it pointing at a disposed `ILoggerFactory`.
+  container, whose `ILoggerFactory` a rebuilt host would leave disposed behind it.
 - **The built-in trigger serializers are public and unsealed, and so are all five `*TriggerImpl` types.**
   That pairing is the subclassed-trigger seam: derive from the trigger, derive from its serializer, call
-  `base.SerializeFields`/`base.DeserializeFields`. Three of the trigger types were sealed during 4.x's
-  development and reopened for it; `BuiltInTriggerSerializerDerivationTest` fails if either half closes.
+  `base.SerializeFields`/`base.DeserializeFields`. `BuiltInTriggerSerializerDerivationTest` fails if
+  either half closes.
 - **A job's timeout is `[JobTimeout]`, not a builder member.** How long the work may take is a property
   of the code that does it, and an attribute travels with the type through every job store, wire format
-  and way of scheduling — a builder value would have to be persisted, migrated and round-tripped to reach
-  the same places, or squat on a reserved data-map key. As with `[DisallowConcurrentExecution]`. Nothing
-  enforces it until `AddJobTimeout` registers the middleware.
+  and way of scheduling, as with `[DisallowConcurrentExecution]`. Nothing enforces it until
+  `AddJobTimeout` registers the middleware.
 
-### Promises the beta makes (#3647)
+### Promises 4.0 makes (#3647)
 
 Extension policy, not taste. `how-tos/extending-quartz.md` is the reader-facing form.
+
+- **A 4.0.x patch is additive.** Its baseline diff is additions only, and the database schema is frozen
+  for the whole 4.0 line: a fix needing a new column waits for 4.1, one needing a changed public
+  signature waits for 5.0.
 
 - **A collaborator is handed a context object** — parameterless ctor, `init` properties — never a
   parameter list: `DriverDelegateContext`, `LockHandlerContext`, `TriggerFiredBundle` and the rest. A
   new datum is a non-`required` property, so it is source- and binary-compatible.
-- **A member added to a public interface lands as a default interface member.** `IJobStore` has nine,
-  `IScheduler` one, `ILockHandler` and `ITriggerPersistenceDelegate` one each; that is what makes
-  freezing `IQuartzApiClient` and `ITriggerSerializer` without default bodies safe, and the baselines
+- **A member added to a public interface lands as a default interface member**, as on `IJobStore`,
+  `IScheduler`, `ILockHandler` and `ITriggerPersistenceDelegate`; that is what makes freezing `IQuartzApiClient` and `ITriggerSerializer` without default bodies safe, and the baselines
   mark DIMs so the promise is checkable. A forwarder must *declare* every such member — an omitted one
   runs the default on the forwarder; `DelegatingForwardingTest` sweeps both delegating types for it.
 - **Read-replica routing, if ever, is a DIM `IDbProvider.CreateReadConnection()`** — never a `readOnly`
   parameter on `CreateConnection`, which would break both public `IDbProvider` implementations.
-- **`MON/2` stays rejected** (ratified 2026-09-01); 4.1 may accept it additively.
+- **`MON/2` is 4.1's `2/2`**, and `MON-FRI/2` is `2-6/2`: a textual day-of-week takes a step, in lockstep
+  with the numeric form. 4.0 refused it because 3.x read it as a fortnight; that silent change of meaning
+  is a documented hazard, not a reason to reopen this.
 
 ## Build & Test
 
@@ -218,25 +202,22 @@ build.cmd
 ./build.sh
 ```
 
-Run unit tests:
+Run unit tests, or one by name. `global.json` selects Microsoft.Testing.Platform, which has no `--logger`, `--collect` or `--blame-*`:
 
 ```shell
-dotnet test src/Quartz.Tests.Unit/Quartz.Tests.Unit.csproj
+dotnet test --project src/Quartz.Tests.Unit/Quartz.Tests.Unit.csproj
+dotnet test --project src/Quartz.Tests.Unit/Quartz.Tests.Unit.csproj --filter "FullyQualifiedName~CronExpressionTest.TestIsSatisfiedBy"
 ```
 
-Run a single test by fully-qualified name:
-
-```shell
-dotnet test src/Quartz.Tests.Unit/Quartz.Tests.Unit.csproj --filter "FullyQualifiedName~CronExpressionTest.TestIsSatisfiedBy"
-```
-
-Integration tests require a running Docker daemon (containers are provisioned by Testcontainers for .NET) and are run via:
+Integration tests need a running Docker daemon (Testcontainers provisions the databases):
 
 ```shell
 .\build.cmd Compile UnitTest IntegrationTest
 ```
 
-The test framework is **NUnit** with **AwesomeAssertions** and **FakeItEasy** for mocking. Some tests use **Verify.NUnit** for snapshot testing.
+The unit workflow runs `dotnet fallout VerifyMigrations VerifySchema Compile UnitTest BenchmarkSmoke WolverineSmoke ExamplesSmoke PublishTrimmed PublishAot`; run the whole list before a pull request that touches a project file, a migration or a benchmark, with `PublishAot` from a shell whose `PATH` has the Visual Studio installer folder (ILCompiler shells out to `vswhere`).
+
+The test framework is **NUnit** with **AwesomeAssertions** and **FakeItEasy** for mocking. Some tests use **Verify.NUnit** for snapshot testing. A bunit read after `.Click()` or `.Change()` is a `WaitForAssertion`. SQL is a `static readonly` constant built from `StdAdoConstants.TablePrefixSubst` and substituted at the command site — Sonar fails the gate (S2077) on interpolation there.
 
 ### Assertions
 
@@ -297,8 +278,10 @@ Quartz.NET is an enterprise job scheduling library. The core domain model:
 Rules when touching any of this:
 
 - **A migration both branches can run must stay byte-identical on `main` and `3.x`.** It lands on both in a companion PR pair, or a documented path 404s on whichever branch lacks it — which is what #3218 reported. **`database/migrations/4.0/` is the exception and lives only here**: it is the 3.x → 4.0 upgrade path, its content is decided by 4.x's schema, and `main` is its single maintained home — `3.x` links to it rather than mirroring it, because a mirrored copy goes stale silently the next time 4.x's schema moves, and a confidently wrong upgrade script is worse than a missing one. `database/README.md` carries a **Branch** column saying which versions are on both; keep it accurate, since nothing in CI checks cross-branch identity (`VerifyMigrations` only compares a branch's scripts with its own generator). Each branch's `database/README.md` indexes what that branch carries. `database/tables/` is the *current* schema and differs by design.
+- `database/migrations/4.2/` onward are the schema moves since 4.0; a 4.x migration adds nullable columns only, so the previous minor's nodes run beside the next's — a continuation is an `AWAITING` trigger its parent's completion settles in its transaction.
 - Every migration ships a file for **every** supported dialect (`sqlServer`, `postgres`, `mysql_innodb`, `oracle`, `sqlite`, `firebird`), guarded so it is safe to re-run. SQLite `ADD COLUMN` is the one exception — it has no conditional DDL.
-- 4.x has no `Supports*Column` probes, so anything **optional on 3.x is required on 4.x**. Fold every 3.x column migration into `database/migrations/4.0/schema_30_to_40_upgrade_<dialect>.sql` — the fold happens here even when the migration itself was written on `3.x`, because that script is generated on `main` alone.
+- 4.x has no `Supports*Column` probes, so anything **optional on 3.x is required on 4.x**. Fold every 3.x column migration into `database/migrations/4.0/schema_30_to_40_upgrade_<dialect>.sql` — the fold happens here even when the migration itself was written on `3.x`, because that script is generated on `main` alone. The one exception is a migration that adds a **table** only an opt-in feature reads: it goes in `AdoConstants.OptionalTableNames` rather than `AllTableNames`, is probed at startup only when that feature is on, and is created by a fresh install and by `ProvisionSchema()` all the same — `4.2/add_execution_history_<dialect>.sql` is the case.
+- The migration chains read the folder (`MigrationChains.Since`), and `SchemaScriptTest` holds all eight `tables_*.sql` to `create_*.sql`: a forgotten place fails a test.
 - Adding a migration also needs a version section in `docs/documentation/database/schema-changes.md`. The docs site is built from `main` only, and it documents both the 3.x and 4.x trees.
 
 ### Scheduler Thread
@@ -357,11 +340,12 @@ Pluggable serialization for job store persistence:
 ## Documentation and generated artifacts
 
 - **`docs/documentation/quartz-3.x/` must keep the old names.** Only update `quartz-4.x/`.
-- **Heading fragments are checked with the site's own slugger, not GitHub's.** `npm run docs:check-links`
-  parses the docs with the markdown-it instance VuePress renders them with, so the ids it validates
-  against are the ids the published pages carry — `Quartz.Core` is `#quartz-core`, not `#quartzcore`.
-  It runs on every docs pull request. markdownlint's MD051 is off for exactly this reason; do not
-  take its fragment suggestions, they 404. `npm run docs:check-links-test` is the checker's control.
+- **Pages are reference, not essays.** Follow `CONTRIBUTING.md`'s "Writing style": answer first, short
+  sentences, tables over paragraphs, no quotations. Cut words, never facts.
+- **Heading fragments are checked with VuePress's slugger, not GitHub's.** `npm run docs:check-links`
+  checks them on every docs pull request: `Quartz.Core` is `#quartz-core`, not `#quartzcore`.
+  markdownlint's MD051 is off, and its fragment suggestions 404. `npm run docs:check-links-test` is
+  the checker's control.
 - **C# in a documentation page is generated, not typed.** Samples live as `#region sample_*` blocks in
   `src/Quartz.Documentation.Samples` — an ordinary project in the solution, so a rotted sample fails
   `Compile` — and a page carries `<!-- snippet: name -->` / `<!-- endSnippet -->` markers that
@@ -382,10 +366,8 @@ Pluggable serialization for job store persistence:
   Any change to public API fails those tests; review the diff, and if the change is intended,
   accept the new baseline and carry the same diff into
   `docs/documentation/quartz-4.x/migration-guide.md`. Never hand-edit them.
-- **`3.x` carries the same baselines, so the 4.0 API delta is a `git diff`.** Reach for it when
-  writing the migration guide, reviewing API ergonomics, or checking whether a 3.x change has a
-  counterpart here — it is exhaustive and always current, which no prose summary of the delta can be.
-  `git diff` takes `<rev>:<path>` blob arguments, so this is the same command in PowerShell and bash:
+- **`3.x` carries the same baselines, so the 4.0 API delta is a `git diff`.** It is exhaustive and
+  always current, which no prose summary of the delta can be:
 
   ```shell
   git fetch origin
@@ -398,12 +380,21 @@ Pluggable serialization for job store persistence:
   git diff origin/3.x origin/main -- src/Quartz.Tests.Unit/Verify src/Quartz.Tests.AspNetCore/Verify
   ```
 
-  Package boundaries moved between the two, so match the files up first — the migration guide's
-  appendix says which 3.x baseline became which. Two differences are systematic and are **not**
-  deltas worth reporting: `Task` → `ValueTask` on nearly every member, and the namespace moves.
+  Package boundaries moved between the two, so match the files up first with the migration guide's
+  appendix; `Task` → `ValueTask` and the namespace moves are systematic and are **not** deltas worth
+  reporting.
+- **`docs/documentation/quartz-4.x/log-events.md` is generated** from the `LogEventCatalogTest_*` snapshots by `dotnet fallout DocsLogEvents`; `VerifyDocsLogEvents` runs on every docs pull request, and a rebase that merges two catalogues leaves the page stale until it is regenerated.
 - **Release notes live in GitHub releases, not in the repository.** There is no changelog file on
-  either branch; the tag's release is the record. Unreleased 4.x notes accumulate in the `v4.0.0`
-  draft release.
+  either branch; the tag's release is the record. Pushing a `v*` tag runs `publish.yml`, whose last
+  target, `DraftRelease` (`build/Build.Release.cs`, byte-identical on `3.x`), opens that release as a
+  **draft** with notes generated from `.github/release.yml` and attaches `Quartz.NET-<version>.zip`.
+  A draft that already carries notes keeps them and only gains the zip, so notes are written ahead
+  of the tag; re-running the workflow is the recovery path (`Publish` skips duplicates, the asset is
+  replaced). A human publishes the draft and decides "latest" — unticked for a 3.x release. To
+  rehearse: `GITHUB_ACTIONS=true GITHUB_REF_TYPE=tag GITHUB_REF_NAME=v0.0.0-rehearsal
+  GITHUB_REPOSITORY=quartznet/quartznet GITHUB_TOKEN=$(gh auth token) dotnet fallout Pack
+  DraftRelease`, then delete the draft; a local tag is stamped `-dev` instead and `--skip` skips a
+  target's dependencies, not the target.
 
 ## Porting changes between 3.x and main
 

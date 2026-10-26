@@ -2,12 +2,6 @@
   "full_name": "home-assistant/core",
   "points": [
     {
-      "checked_at": "2026-09-25T08:53:43Z",
-      "commit_sha": "8f3b07ea393846ed27943b7be35f93b2123965f8",
-      "pushed_at": "2026-09-25T08:51:53Z",
-      "stars": 91141
-    },
-    {
       "checked_at": "2026-09-29T09:56:38Z",
       "commit_sha": "9864d42ea697f2087b04eb236bd3f12de4a8eb61",
       "pushed_at": "2026-09-29T09:54:26Z",
@@ -66,6 +60,12 @@
       "commit_sha": "3c149cfebc050b8b1e7abc152fdb1843dea15301",
       "pushed_at": "2026-10-25T08:25:00Z",
       "stars": 91712
+    },
+    {
+      "checked_at": "2026-10-26T09:02:50Z",
+      "commit_sha": "c91f95ad3e67945720c5d95a260a766932114c10",
+      "pushed_at": "2026-10-26T09:02:13Z",
+      "stars": 91730
     }
   ],
   "repo_id": 12888993

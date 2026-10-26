@@ -2,12 +2,6 @@
   "full_name": "opensandbox-group/OpenSandbox",
   "points": [
     {
-      "checked_at": "2026-09-26T08:40:12Z",
-      "commit_sha": "4a5619524650ff7c2cbaf59626df822fce72b161",
-      "pushed_at": "2026-09-26T08:24:06Z",
-      "stars": 15514
-    },
-    {
       "checked_at": "2026-09-28T09:53:40Z",
       "commit_sha": "6f1ed236690f37cd565f72946b103acf89de079c",
       "pushed_at": "2026-09-28T09:47:41Z",
@@ -18,6 +12,12 @@
       "commit_sha": "1b25b8334a0826f9ad3ef9437cd56b58d31b65bf",
       "pushed_at": "2026-10-25T08:25:23Z",
       "stars": 16149
+    },
+    {
+      "checked_at": "2026-10-26T09:02:50Z",
+      "commit_sha": "ca1ba1d9f0e9c75e6fd04c09ab97bb051af01b90",
+      "pushed_at": "2026-10-26T09:01:59Z",
+      "stars": 16176
     }
   ],
   "repo_id": 1118085970

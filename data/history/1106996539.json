@@ -2,18 +2,6 @@
   "full_name": "nextlevelbuilder/ui-ux-pro-max-skill",
   "points": [
     {
-      "checked_at": "2026-09-25T08:53:43Z",
-      "commit_sha": "dcc40ff5133ef78276117db0cc34e7b83cc8aeba",
-      "pushed_at": "2026-09-21T13:01:10Z",
-      "stars": 130496
-    },
-    {
-      "checked_at": "2026-09-26T08:40:12Z",
-      "commit_sha": "dcc40ff5133ef78276117db0cc34e7b83cc8aeba",
-      "pushed_at": "2026-09-21T13:01:10Z",
-      "stars": 130713
-    },
-    {
       "checked_at": "2026-09-27T09:20:24Z",
       "commit_sha": "823b0a14d3539b5d78c0efb614426a4fab5983ec",
       "pushed_at": "2026-09-26T13:32:24Z",
@@ -180,6 +168,12 @@
       "commit_sha": "d14efff8ed1faa4187f004f79926f428c8074ec7",
       "pushed_at": "2026-10-23T10:06:31Z",
       "stars": 140071
+    },
+    {
+      "checked_at": "2026-10-26T09:02:50Z",
+      "commit_sha": "1f8857914da3c723d58dab1d609dd0d55a86bf51",
+      "pushed_at": "2026-10-26T07:06:53Z",
+      "stars": 140568
     }
   ],
   "repo_id": 1106996539

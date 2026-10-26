@@ -2,12 +2,6 @@
   "full_name": "apache/spark",
   "points": [
     {
-      "checked_at": "2026-09-25T08:53:43Z",
-      "commit_sha": "600b8b0eb73770a9d00cec12d630709735793df8",
-      "pushed_at": "2026-09-25T08:46:02Z",
-      "stars": 44036
-    },
-    {
       "checked_at": "2026-10-13T10:42:33Z",
       "commit_sha": "5db601a7b996a0b00df2c077b3d9a65b3aefb977",
       "pushed_at": "2026-10-13T10:42:18Z",

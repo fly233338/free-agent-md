@@ -46,5 +46,5 @@
 - PRs: state motivation, list affected presets/targets, link issues, and confirm format, lint, and related tests pass. Do not run the full suite for a PR unless the user explicitly asks.
 
 ## Licensing & Configuration
-- Multi-license repo: keep Apache-2.0 code in library directories and GPL-3.0 code in `snow_shot/`, `snow_image/`, `snow_image_viewer/`. After adding a dependency, run `scripts/collect-third-party-licenses.ps1` and update the project's `THIRD_PARTY_NOTICES.md` (`snow_shot/`, `ant_design_qt/`).
+- Multi-license repo: keep Apache-2.0 code in `ant_design_qt/`, `snow_draw_engine_qt/`, and `snow_memory/`; keep GPL-3.0-or-later code in `snow_shot/`, `snow_image/`, `snow_image_viewer/`, `snow-crates/`, and `snow_rust_ffi/`. The independent `snow-crates/crates/simd-paddle-ocr-rs/` submodule retains Apache-2.0. After adding a dependency, run `scripts/collect-third-party-licenses.ps1` and update the project's `THIRD_PARTY_NOTICES.md` (`snow_shot/`, `ant_design_qt/`).
 - `SNOW_APPS_API_BASE_URL` is set per preset; never hard-code endpoints or secrets.
