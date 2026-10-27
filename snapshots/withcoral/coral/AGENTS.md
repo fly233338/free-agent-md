@@ -89,13 +89,18 @@
   module records its expiry when a holder reads it, and the owner's timer
   only wakes the Invocations parked on it. Do not open a transaction that
   holds the Run row from any of these paths, and do not write a nonterminal
-  Run's row from outside its owner. A Run whose owner retired or whose
+  Run's row from outside its owner. The one exception: the Coral Instance
+  that receives a cancellation for a running Run with no termination
+  recorded inserts it into the Run's Run Inbox, and only the owner deletes
+  that row while the Run is nonterminal
+  ([ADR 0025](docs/adr/0025-outside-run-requests-reach-the-run-owner-through-the-run-inbox.md)). A Run whose owner retired or whose
   process is gone without ending it gets its owner back from the
   expired-lease sweep (the Recovery section of ADR 0018); a panicked owner
   task's supervisor ends its Run at once instead. Retention holds and
   deletes terminal Runs only.
-  [ADR 0018](docs/adr/0018-run-owner-coordinates-each-run.md) has the
-  request model (requests keyed by the entity they decide, the first wins).
+  [ADR 0018](docs/adr/0018-run-owner-coordinates-each-run.md) and ADR 0025
+  have the request model (requests keyed by the entity they decide, the
+  first wins).
 - A Run Owner's write ends on the database's answer, never on the clock: an
   unanswered write (`Error::is_operational`: a lost connection, a pool
   timeout, a lock race) means a reread and a retry with bounded backoff until
@@ -103,7 +108,8 @@
   rejection, a claim mismatch, an ended Run, a corrupt head) stops it; the
   Interrupted record alone retries every answer but a claim mismatch or an
   ended Run. The worker lease is ownership between processes, renewed by
-  every commit: never write a Run whose live lease another process holds.
+  every commit: never write a Run whose live lease another process holds,
+  except to insert a cancellation into its Run Inbox.
   The lease never ends a Run from inside its own process. The owner's
   own bounds do (suspect after one lease without a commit, self-interrupt
   after three, constants in `crates/coral-run/src/execution.rs`), and the
@@ -112,7 +118,10 @@
   key. Use a composite primary key only when the tuple is the domain identity.
 - For Workspace-owned data, every externally influenced read or write must
   match both the Workspace and entity identity, even when the entity ID is
-  globally unique.
+  globally unique. The one exception is Agent authentication at the
+  Organization MCP Endpoint: it finds the Registration by credential verifier
+  alone, because the credential is a secret, not an ID. The Workspace it
+  returns scopes every later read.
 - Add every schema migration to `crates/coral-db/migrations`, the one shared
   chain. Write one portable file that both databases run. When SQLite and
   Postgres must perform a step differently, add one file with the same name to
@@ -143,8 +152,8 @@
   Do not make only the name a link, or style the name as a link.
   Use `Table.useRowCursor` so ↑, ↓ and Enter reach the rows.
 - Match a filter field's text with `filterQuery` (`apps/reef/app/utils/filter-query.ts`),
-  not `includes`, so every filter reads `^`, `$` and `*` the same way. To bold
-  the matches, use Wax's `HighlightedMatches`.
+  not `includes`, so every filter trims the query and ignores case the same
+  way. To bold the matches, use Wax's `HighlightedMatches`.
 - Do not show status or meaning with color alone. Pair color with a distinct
   icon shape or text, so color-blind users can read it (WCAG 1.4.1).
 - Browser access to Coral belongs in React Router server loaders, actions, and

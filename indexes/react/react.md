@@ -1,7 +1,7 @@
 # react/react instruction files
 
-Upstream: [react/react](https://github.com/react/react) · License: `MIT` · Commit: `a6b912fbe77f698ad43c922f206db0d4f4ad7485`
+Upstream: [react/react](https://github.com/react/react) · License: `MIT` · Commit: `e9df86ca6991b779ee50bc744ad8bbdeefa9bae6`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/react/react/CLAUDE.md) | [Source](https://github.com/react/react/blob/a6b912fbe77f698ad43c922f206db0d4f4ad7485/CLAUDE.md) | `01bfd26b915b0f9328f64a396b765c335e9a38ba5fc9ee2117eee6b465533afd` | 359 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/react/react/CLAUDE.md) | [Source](https://github.com/react/react/blob/e9df86ca6991b779ee50bc744ad8bbdeefa9bae6/CLAUDE.md) | `01bfd26b915b0f9328f64a396b765c335e9a38ba5fc9ee2117eee6b465533afd` | 359 B |

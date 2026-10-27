@@ -1,0 +1,342 @@
+# Agent Guidelines for Avibe
+
+This document is the operating manual for coding agents working in this repository.
+
+## 1. Project Overview
+
+Avibe is the local-first Agent OS: one install command turns a machine into the
+runtime an agent lives in, and the user operates that runtime through Web or IM
+surfaces such as Slack, Discord, Telegram, Feishu/Lark, and WeChat.
+
+Current product shape:
+
+- V2 config-driven service with a Web UI setup wizard and settings pages
+- multi-platform message transport with shared core orchestration
+- multi-backend agent routing across OpenCode, Claude Code, and Codex
+- local Incus-based unified regression environment for real cross-platform verification
+
+## 2. Design Philosophy and Architecture
+
+### Product and Technical Decision-Making
+
+- Start from one coherent user mental model. Avibe absorbs backend and
+  implementation differences; users and agents see only what they need to act.
+- Establish hard constraints before choosing scope. Build the smallest complete
+  solution that works within them, and leave concepts undefined until they have
+  a clear responsibility.
+- Prefer compatibility, permissive adoption, and subtraction. Add validation,
+  metadata, state, or isolation only when it protects a demonstrated outcome.
+- Reuse existing ownership and lifecycle before adding mechanisms. Keep the
+  path simple and stateless, then optimize from measured evidence.
+
+### Core Rule: Fix at the Highest Appropriate Layer
+
+- If a bug appears on one platform, check whether the same logic exists for the others before patching a platform adapter.
+- If a behavior should be shared by multiple backends, prefer the shared core or backend abstraction over a single backend implementation.
+- Keep transport/platform details out of core business logic whenever possible.
+
+Decision checklist before writing code:
+
+1. **Scope**: is this platform-specific/backend-specific, or common?
+2. **Abstraction**: can the shared base or core layer own this behavior?
+3. **Call path**: is the code called from controller/handlers/common flow?
+4. **Future-proofing**: would a new platform/backend inherit the correct behavior automatically?
+
+### Codebase Map
+
+- `main.py` - entry point wiring `config.V2Config` into `core/controller.py`
+- `core/controller.py` - orchestration and dependency wiring
+- `vibe/ui_server.py` and `vibe/api.py` run in a separate process from the
+  controller and reach controller-owned state over the internal socket;
+  `vibe/api.py` builds its own `AgentAuthService`. In-memory registries therefore
+  cannot span IM and Web surfaces: cross-surface exclusion needs an explicit IPC
+  hop or a documented per-instance scope. See PR #1417's Known-by-design ledger.
+- `core/handlers/` - platform/backend-agnostic business workflows
+- `core/message_dispatcher.py` - outbound message routing and reply enhancement flow
+- `core/reply_enhancer.py` - file-link and quick-reply prompt injection helpers
+- `modules/im/` - IM platform adapters (`slack.py`, `discord.py`, `telegram.py`, `feishu.py`, `wechat.py`) plus shared base classes
+- `modules/agents/` - agent backend adapters (`opencode/`, `codex/`, Claude-related modules) plus shared abstractions
+- `modules/im/formatters/` - platform-specific formatting built on shared formatter concepts
+- `config/` - V2 config, settings, sessions, paths, and compatibility conversion
+- `ui/` - React + Vite + TypeScript Web UI
+- `scripts/` - operational helpers, including regression testing workflows
+- `tests/` - pytest-style unit/integration/regression coverage
+
+### Runtime Data and Important Paths
+
+- default home: `~/.avibe/`
+- legacy home: `~/.vibe_remote/` remains a compatibility path and may be a back-symlink to `~/.avibe/`
+- logs: `~/.avibe/logs/vibe_remote.log`
+- persisted state: `~/.avibe/state/`
+- default agent working directory: `_tmp/`
+- generated regression metadata: `.runtime/incus-regression/` in the primary checkout
+
+## 3. Runtime Environments
+
+### Local `vibe` Service
+
+Common commands:
+
+- install: `uv tool install avibe-os`
+- run: `vibe`
+- inspect: `vibe status`
+- stop: `vibe stop`
+
+Use local `vibe` for local packaging or CLI behavior checks.
+
+Hard rule:
+
+- **Never restart the local `vibe` service for routine verification.**
+- The local `vibe` process may be the coding agent runtime itself; restarting it can interrupt the session.
+- **Stop only processes you started, by the pid you recorded.** Never
+  pattern-kill (`pkill -f`, `killall`, `pgrep ... | xargs kill`): a test service
+  or UI runs the same command line as the user's live `vibe`, even under a
+  separate `AVIBE_HOME`, so the pattern also kills the live runtime.
+- **Tests and probes must be hermetic by default.** Treat `$HOME`, XDG dirs,
+  keychains, CLI config/token stores, running services, browser profiles, and
+  cloud accounts as production data unless the user explicitly asks otherwise.
+- Any test that reaches write-capable production paths must redirect the whole
+  call path to test-owned state and prove a representative write cannot touch
+  real local or external user state; `uses_real_paths` tests must remain read-only.
+- Unless the user explicitly asks otherwise, use the Incus regression environment for user-facing verification.
+
+### Regression Testing (Incus)
+
+When the user says `回归测试`, update the latest code into the existing **local**
+Incus regression environment, preserve accumulated product state unless reset is
+explicitly requested, then let the user verify Slack, Discord, Feishu/Lark, and
+WeChat behavior.
+
+Entry points:
+
+- default: `./scripts/run_regression.sh`
+- direct: `python3 scripts/incus_regression.py up --target master`
+- macOS/Lima: `INCUS_CMD="limactl shell avibe-incus-regression -- sudo incus" ./scripts/run_regression.sh`
+
+Hard rules:
+
+- local Incus only for development regression; never use `--remote`, SSH, remote
+  tenant projects, demos, or customer/user environments unless explicitly asked
+  for remote ops
+- use the runner, not raw Incus commands; it owns naming, source sync, state
+  preparation, readiness checks, Show Runtime setup, metadata, and cleanup
+- `master` is the long-running unified four-platform environment; keep it online,
+  preserve product state, sync source, and restart the service in place
+- `worktree` targets are temporary isolated environments; delete each one
+  explicitly with
+  `python3 scripts/incus_regression.py delete --target worktree --slug <slug> --yes`
+  when merged, abandoned, or stale
+- before proposing or performing deletion of any regression environment, check
+  its hold with `status` or `reconcile`; if held, tell the user who holds it and
+  why, and do not offer a one-click delete. Long-running work must hold its
+  environment for as long as it runs.
+- `reconcile` reports every worktree environment held by Incus, including
+  environments created outside the runner, and only forgets metadata for
+  environments that are no longer present. It never deletes an environment.
+- a metadata row is dropped only after a complete, readable listing shows that
+  the daemon holds neither its project nor instance and the row is not a live
+  `up` reservation
+- never use `--reset-config` / `--reset-all`, wipe regression state, or overwrite
+  Avibe Cloud pairing / `remote_access` just to make probes pass unless asked
+- after any regression update, verify service health before reporting success
+
+The runner's reconciliation, reservation, daemon ownership, and state lookup
+semantics live in `docs/regression/README.md`. Read that document when changing
+the runner or diagnosing metadata cleanup.
+
+## 4. Configuration and Routing Model
+
+Persistent configuration is centered on `config/v2_config.py` and the Web UI.
+
+High-level V2 config areas:
+
+- platform config: Slack / Discord / Telegram / Feishu / WeChat credentials and switches
+- runtime config: default cwd, log level, and related runtime behavior
+- agent config: per-backend enablement and CLI paths
+- UI config: setup host/port and Web UI behavior
+
+Agent routing model:
+
+- Avibe owns model selection for every backend. Never read or delegate to a
+  backend-native default model; see `docs/plans/avibe-owned-model-selection.md`.
+
+- global default: the enabled Vibe Agent recorded in SQLite `state_meta.default_agent_name`
+- backend availability and CLI path: `agents.<backend>.enabled` and `agents.<backend>.cli_path`
+- per-channel overrides: configured via the Web UI Agent Settings / channel settings
+- deprecated fields: `agents.default_backend` and scope-level `routing.agent_backend` /
+  `scope_settings.agent_backend` are not route selectors; new routing must follow
+  the selected Vibe Agent and its backend
+
+Persisted-shape rule:
+
+- on-disk artifacts written by any released version are a shipped surface, even
+  behind a feature flag
+- a schema change must load older releases' files via migration or safe
+  degradation (a broken optional-feature section disables that feature and
+  warns; startup never fails), with load fixtures covering the released shapes
+- Optional feature artifacts removed from the product must not be reintroduced through
+  compatibility shims; preserve released data through ordinary schema migration
+  and safe degradation where required.
+
+Source-of-truth rule:
+
+- when changing persistent product behavior, align with V2 config and current Web UI flows rather than legacy assumptions
+- a successful `agents.*` runtime config save must also reconcile any live
+  controller through `BackendRestartCoordinator.request_restart`; persisted
+  config and built-in Agent rows alone do not update the in-memory backend
+  registry, and callers must not issue a second restart after the config API
+  accepts that reconciliation
+- configuration changes never interrupt running work or hold new turns: each
+  runtime unit moves at its next turn. Two explicit user actions interrupt:
+  disabling a backend stops its work at once, and a native credential cutover
+  retires its runtime; see `docs/plans/runtime-generations.md`
+
+## 5. Development Workflow
+
+### Planning and Documentation
+
+For recurring upstream dependency work, use the canonical playbook at
+`docs/maintenance/upstream-dependency-maintenance.md`; keep detection,
+candidate preparation, focused validation, and owner-held release boundaries
+there rather than expanding this index.
+
+- for complex or ambiguous tasks, record the plan in `docs/plans/` (background,
+  goal, solution, todo items) and update it when scope changes materially
+- ask before choosing a direction only when an ambiguity would change the
+  outcome; otherwise proceed and state the assumption
+- update user documentation alongside user-visible features or changed workflows
+- keep project-specific plans, investigations, and summaries under `docs/`, never in the repo root
+
+### PR Delivery
+
+- Codex review is triggered automatically by cyhhao after pushes; do not add a trigger while that review is running. When the current head's review fails (Codex reports "Something went wrong"), is never picked up, or stalls (its Watch reports `Codex review stalled`), post `@codex review` yourself and verify pickup; the exact-head review gate is unchanged.
+- load and follow the `pr-delivery-loop` skill for every implementation task;
+  it owns the detailed procedure, but cannot weaken the baseline below
+- regardless of Skill resolution, use a task branch/worktree, record the change
+  contract, require an exact-head Codex review, zero unresolved review threads,
+  and passing CI before close-out, and apply the review-loop circuit breaker
+- merge on the owner's or orchestrator's instruction, or on your own judgment
+  only when the PR is Merge-ready on its exact head, the change stays within
+  your own task, and it touches no release or tag, database migration, or
+  security boundary (authentication, credentials, Vault, sandboxing); say why
+  when you merge on your own judgment
+- use the `background-watch-hook` skill for managed review and CI waits
+- keep one durable `--forever` combined PR/CI Watch and disable the Watch's per-cycle timeout
+- the change contract names intended behavior, affected boundaries, and
+  validation evidence
+- only an explicit owner decision may make Codex findings advisory for an
+  architecture/spec-only PR; ordinary documentation and every product or test
+  code PR retain the Skill's normal gates
+
+### Pre-Push Requirements
+
+- run the smallest relevant validation first, then broader checks as needed
+- before `git push`, run `ruff check` on changed Python files at minimum
+- for UI changes, run `npm run build` in `ui/` before pushing
+- fix lint errors before pushing; CI runs `pre-commit run --all-files` with Ruff
+- do not require a full local CI run before opening or updating a PR; prefer focused local validation and let GitHub CI run the slow gates asynchronously
+
+## 6. Coding Standards
+
+### Language and i18n
+
+- default to English for comments, docs, logs, and user-facing copy
+- use non-English text only when required for localization/i18n
+- backend user-facing strings for IM, Web, and notifications must go through `vibe/i18n/`
+- the `vibe` CLI is Agent-facing: its help, errors, hints, and notices are
+  English, written in code, and never read the configured UI language. A message
+  the CLI shares with a localized surface (such as the Doctor report the Web
+  panel shows) keeps its catalog key, and the CLI renders its English entry
+- frontend user-facing strings must go through `ui/src/i18n/en.json` and `ui/src/i18n/zh.json`
+- never hardcode user-visible display text in handlers, platform adapters, or React components
+
+### Python and Module Conventions
+
+- use `snake_case` for functions and `PascalCase` for classes/dataclasses
+- add type hints for public functions where practical
+- add new business logic under `core/handlers/` when it is platform-agnostic
+- add new IM integrations under `modules/im/` and new agent backends under `modules/agents/`
+- no repo-wide formatter is enforced; keep diffs focused if you use Black/Ruff
+
+### Controller Event Loop
+
+- The controller's asyncio loop (`core/controller.py`) runs every session's
+  turns, the scheduler, and the local Model Hub gateway, so anything that blocks
+  it stalls all of them at once. IM transports run on their own threads and
+  loops.
+- Code reachable on that loop must not block it. Synchronous waits
+  (`time.sleep`, `subprocess.run` and similar, `Future.result()`, lock waits),
+  reads or rewrites of files that grow with use, and SQLite work that is not a
+  bounded, index-keyed statement belong on a thread (an existing executor or
+  `asyncio.to_thread`). Async-native equivalents such as `await asyncio.sleep()`
+  and `asyncio.create_subprocess_exec` are fine on the loop.
+- A query on a per-turn, per-message, or per-tick path must touch only rows
+  bounded by the work in hand, not by history. In `EXPLAIN QUERY PLAN`, a
+  growing table such as `messages`, `agent_events`, or `agent_runs` must be
+  reached by a `SEARCH` whose keys bound the matched rows that way, such as a
+  session or turn id, or a status that only live work has. An
+  `ORDER BY ... LIMIT` must not need a `USE TEMP B-TREE` over a growing set. Pin
+  the plan in a test, and add indexes through an alembic migration.
+- Keep write transactions short, and build them from such bounded statements.
+  While one holds SQLite's write lock, other writers wait for it, including
+  those on the loop, for up to the 5 s `busy_timeout` set in `storage/db.py`.
+- `core/loop_watchdog.py` reports controller-loop stalls in
+  `~/.avibe/logs/vibe_remote.log`; its module documents the detection threshold
+  and rate limits. A stall reported while the loop is serving work is a defect.
+  One reported during shutdown cleanup, after the loop has stopped, comes from
+  an expected bounded wait.
+
+### Web UI Server
+
+- `vibe/ui_server.py` is served by FastAPI/uvicorn; new UI routes should use native async FastAPI patterns where practical.
+- `vibe/ui_compat.py` exists only as a migration scaffold for the old Flask-style route surface. Do not expand it into a general framework unless a migration regression requires it.
+- Do not introduce per-request `asyncio.run()` bridges in UI request paths. Async helpers reached from UI handlers should be awaited directly on the ASGI event loop; blocking work should stay sync or move through a threadpool.
+
+### Frontend (UI)
+
+- source lives in `ui/`; build with `cd ui && npm run build`; `ui/dist/` is served by `vibe/ui_server.py`
+- follow the reuse ladder for UI and shared backend logic: inventory existing patterns -> reuse (`ui/src/components/ui/` primitives such as `Button`, `Badge`, `Card`, `Input`, `Popover`, `Dialog` first) -> extend via variants/sizes/props -> promote near-duplicates -> create a reusable unit only when needed; extract on the third repeat
+- `../avibe-docs/design.pen` is the visual source of truth; map spacing, type, radius, color, and shadow to exact tokens/classes, add missing tokens instead of hardcoding, and verify against the exported frame when visual fidelity matters
+- installed `vibe` uses packaged UI assets, not raw repo `ui/dist/`; for packaged CLI/UI preview, build UI and reinstall from a normal wheel — never `uv tool install --force --editable .`, and never an editable install against system Python
+
+## 7. Testing and Validation
+
+- add tests when an existing test pattern already exists
+- do not introduce a brand-new test framework unless requested
+- use pytest-style tests (`test_<feature>.py`) colocated or under `tests/`
+- before adding or changing a test, name the observable behavior or contract it protects, the credible regression that makes it fail, and why existing coverage misses it; without all three, do not add it
+- give each contract one primary test at its owning boundary; add another layer only for a distinct risk that owner cannot reach, and extend table-driven cases or shared fixtures instead of near-duplicates
+- a bug regression test must fail on the pre-fix code for the intended reason; one regression at the owner boundary covers the bug
+- do not add production seams (exports, flags, hooks) that only tests use; test through the real boundary, and delete dead code whose only callers are tests
+- reject tests whose expected values come from the code under test, whose mocks implement the asserted behavior, whose fixtures supply what the owner should produce, or whose negative case passes for an unrelated reason
+- source-text or `inspect.getsource` assertions are allowed only when they are the cheapest guard of a user-facing key, byte, or path contract and survive identifier-only refactors
+- for IM integrations, stub/mock platform clients and validate outbound payload/schema behavior
+- for reusable capability-first testing guidance, use `standards/scenario-testing/AGENTS.md` as the entrypoint; project-specific scenario metadata lives under `tests/scenarios/`
+- when a scenario catalog exists, make the scenario ID visible in the automated test and in the PR description
+- treat CLI examples in injected system prompts as live callers: update them with CLI flag changes and keep parser-backed contract coverage so unsupported examples cannot ship
+- for multi-step auth/setup flows, update `tests/scenarios/auth_setup/catalog.yaml` and add or update a closed-loop scenario harness case under `tests/scenarios/auth_setup/test_auth_setup_scenarios.py`; keep provider-specific parsing and heuristics in focused unit tests
+- until CI fully covers a flow, do a manual sanity check for the affected workflow when practical
+
+## 8. Git, Security, and Operational Safety
+
+### Git Hygiene
+
+- commit messages must use `type(scope): summary`
+- never commit secrets such as tokens or credentials files
+- avoid destructive git operations unless the user explicitly requests them
+
+### Operational Safety
+
+- keep `AGENT_DEFAULT_CWD` scoped to `_tmp/` or another sanitized directory
+- logs may contain sensitive context; scrub before sharing them back
+- be careful with persisted state under `~/.avibe/`, legacy `~/.vibe_remote/`, and `.runtime/incus-regression/`
+- do not reset or wipe regression data unless the user explicitly asks for it
+
+## 9. Release Workflow
+
+- release automation is workflow-owned; do not pre-create or manually edit
+  official GitHub Releases
+- keep tag naming, update-notification markers, artifact requirements, and
+  managed-runtime manifest safeguards in `docs/release.md`
+- published managed-runtime URLs are availability contracts; publish replacement
+  assets before changing a pinned manifest

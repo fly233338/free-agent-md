@@ -1,11 +1,17 @@
 {
-  "full_name": "superset-sh/superset",
+  "full_name": "ParadevAI/Paradev",
   "points": [
     {
       "checked_at": "2026-10-23T08:37:36Z",
       "commit_sha": "853e3e8d8ed8d7fe542f2115b90eee0ac3d00600",
       "pushed_at": "2026-10-23T08:35:52Z",
       "stars": 15487
+    },
+    {
+      "checked_at": "2026-10-27T09:05:49Z",
+      "commit_sha": "2c586e1c6c8d4a9f78c5dd1f38fa1c11837bf773",
+      "pushed_at": "2026-10-27T09:04:32Z",
+      "stars": 15610
     }
   ],
   "repo_id": 1080370450

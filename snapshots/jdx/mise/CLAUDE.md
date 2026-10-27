@@ -34,6 +34,19 @@ Before adding a **new** tool or shorthand to `registry/`, follow the `registry-s
 
 None of this applies to editing an existing registry entry; do not ask the user about popularity for maintenance or fixes.
 
+## Vendored aqua registry: do not edit
+
+**Never modify `vendor/aqua-registry/`.** That tree is a snapshot of [aquaproj/aqua-registry](https://github.com/aquaproj/aqua-registry). mise refreshes it on release; CI fails pull requests that change it (except for jdx / `mise-en-dev`).
+
+When an `aqua:` install fails because a recipe has the wrong asset name, platform, format, or version rule:
+
+1. **Do not** patch `vendor/aqua-registry/registry.yml` (or anything else under that directory).
+2. Fix the recipe upstream in aquaproj/aqua-registry, or point the user at an existing upstream PR/issue if one already covers it.
+3. For a short-term workaround in chat or on the issue, suggest `github:owner/repo` (or another backend that can install the release), waiting for the next mise release after the upstream fix merges, or [`registry_floating`](https://mise.jdx.dev/configuration/settings.html#registry_floating) once upstream has landed.
+4. To try a recipe locally before it merges, use a custom [`aqua.registries`](https://mise.jdx.dev/dev-tools/backends/aqua.html#custom-registry) entry — still do not commit vendored changes.
+
+The same rule applies to `crates/vfox/embedded-plugins/`: those plugins are vendored from upstream; fix them in their source repos, not here. Details for contributors: [aqua registry recipes](https://mise.jdx.dev/contributing/registry.html#aqua-registry-recipes).
+
 ## Development Commands
 
 ### Building and Testing
@@ -132,7 +145,7 @@ The `mise` package has two targets. The library (`src/lib.rs`) is everything exc
 - Windows-specific tests in `e2e-win/`
 
 ### Build System
-- Rust project using a Cargo workspace; member crates live in `crates/` (`vfox`, `aqua-registry`, `mise-shim`, `mise-sigstore`, `mise-cache-core`, `mise-brew-relocation`, `mise-brew-metadata`, `mise-agent-env`, `mise-interactive-config`, `mise-settings`, `mise-util`)
+- Rust project using a Cargo workspace; member crates live in `crates/` (`vfox`, `aqua-registry`, `mise-shim`, `mise-sigstore`, `mise-cache-core`, `mise-tls`, `mise-brew-relocation`, `mise-brew-metadata`, `mise-agent-env`, `mise-interactive-config`, `mise-settings`, `mise-util`, `mise-ui`, `mise-system-packages`, `mise-config`, `mise-system`, `mise-oci`, `mise-daemons`, `mise-lsp`)
 - Custom build script in `build.rs` for generating metadata
 - Multiple build profiles including `release` and `serious` (with LTO)
 - Cross-compilation support via `Cross.toml`
@@ -193,7 +206,7 @@ Communique generates release notes from PR titles and descriptions, so write the
 2. Use `mise run test:e2e [test_filename]...` for running specific e2e tests
 3. Never run e2e tests by executing them directly — always use the mise task
 
-`hk.pkl` defines `check` and `fix` steps and a git `pre-commit` hook that runs the same linters with auto-fix (`stash = "git"` preserves unstaged work). `hk install --mise` installs that hook. You can still run `mise run lint` / `mise run lint-fix` by hand; on Linux and macOS they run hk, but on Windows `lint-fix` runs only Clippy, Prettier, and `cargo fmt`, so the other hk steps do not run there.
+`hk.pkl` defines `check` and `fix` steps and a git `pre-commit` hook that runs the same linters with auto-fix (`stash = "git"` preserves unstaged work). `hk install --mise` installs that hook. You can still run `mise run lint` / `mise run lint-fix` by hand; on Linux and macOS they run hk, but on Windows `lint-fix` runs only Clippy, oxfmt, and `cargo fmt`, so the other hk steps do not run there.
 
 ### hk Agent Workflow
 
@@ -250,6 +263,9 @@ A few existing call sites (e.g. runtime symlinks) do use `Versioning` ordering t
 
 If you think you need to pick "the newest installed version" at a new call site, stop and ask — that call almost always belongs on the backend, not inline.
 
+### Paranoid mode categories
+`paranoid` is a bool or a list of categories (`config`, `env_files`, `plugins`, `provenance`), defined by `Paranoid` in `crates/mise-settings/src/paranoid.rs`. Any new behavior gated on paranoid mode must belong to one of those categories, or introduce a new named category, so it is individually selectable. New code must never read paranoid as a plain bool: call `settings.paranoid.config()`, `.env_files()`, `.plugins()` or `.provenance()`, and add an e2e test that the category works alone.
+
 ### Plugin Development
 - Core tools are implemented in `src/plugins/core/`
 - External plugins use ASDF or vfox compatibility layers
@@ -258,7 +274,9 @@ If you think you need to pick "the newest installed version" at a new call site,
 ### Configuration Parsing
 The configuration system supports multiple file formats and environment-specific configs. Changes to settings require updating `settings.toml` and running `mise run render:schema`. The `Settings` types are generated from `settings.toml` in `crates/mise-settings`; loading them (config discovery, trust, CLI flags) stays in `src/config/settings.rs`, whose `SettingsExt` trait holds the methods that need the rest of mise.
 
-When changing configuration syntax or tool options, update `schema/mise.json` and run `mise run render:schema`. The render task also regenerates `schema/mise-task.json` from the main schema.
+`schema/mise.json`, `schema/mise-task.json` and `schema/miserc.json` are generated from `crates/mise-config` and `settings.toml`: never edit the JSON. Change the Rust, then run `mise run render:schema`; a `mise-config` test fails while the committed files are stale. The top-level keys are the fields of `MiseTomlDecl` in `crates/mise-config/src/mise_toml.rs`, which `MiseToml` deserializes through: a new key goes in `MiseTomlDecl`, and `MiseToml::from_decl` moves it into `MiseToml`. Sections whose types derive `JsonSchema` (so far `[bootstrap]`, `[daemons_settings]`, `[daemon_groups]`, `[doctor]`, `[history]`, `[monorepo]`, `[oci]`, `[task_config]`, `[tasks]`, `[task_templates]`, `[tool_config]` and `[wrappers]`) are generated from those types and their doc comments. `[env]` and `[vars]` accept shapes a derive cannot parse, so `env.rs` reads them with visitors; their schema is derived from the `Env*` and `Vars*` declaration types in `crates/mise-config/src/env/decl.rs`, which describe the tables and nothing parses into them, and a test checks that the option keys they declare are the fields of `EnvDirectiveOptions`. `[[watch_files]]`, `[tool_alias]` and `min_version` have a hand-written `JsonSchema` impl in `watch_files.rs`, `alias.rs` and `min_version.rs`. Task fields with several accepted shapes (a string or a list, a name or a table, ...) take theirs from the declaration types in `crates/mise-config/src/task/shapes.rs`, which `TaskDecl` and `TaskConfig` attach with `schemars(with = ..)` so the runtime field types stay as they are; nothing parses into those types, so change them together with the parser. `task/schema.rs` composes the rest: the `task` definition, a task's `tools` (which follow the backend table of `[tools]`) and the template schema. `[tools]` picks per-backend options by key pattern: a backend's options are the declaration types in `crates/mise-config/src/tools/decl.rs` (a new option is a field with a doc comment, which is its description), and `crates/mise-config/src/tools/schema.rs` composes them, with one table row per backend and per platform table. mise reads these definitions by name to reject unknown options (`OptionSpec`), so change them together with `ToolVersionOptions::insert_option` and the backend's option reader. `[hooks]` is derived from the `Hook*` declaration types in `crates/mise-config/src/hooks/decl.rs`, which describe the shapes each event accepts, with a test that they name the keys the parser reads. The `[bootstrap]` values that stay raw TOML so newer shapes warn instead of failing (hooks, shell activation, macOS defaults, apt and dnf repositories) are derived from the declaration types in `crates/mise-config/src/bootstrap/decl.rs`; nothing parses into those, and tests in mise-system check the hook phases and the curated macOS keys against the code that reads them. `[daemons]` and `[daemon_providers]` stay raw tables that mise-daemons reads key by key, with their schema derived from the `Daemon*Decl` types in `crates/mise-config/src/daemons.rs`; those types describe a table, and nothing parses into them, so a key added in mise-daemons has to be added to them too. `[deps]` is derived from `DepsDecl` and `DepsProviderDecl`, which also hold the list of built-in providers mise shares; `[secrets]` stays raw TOML like the dotfiles, with its schema derived from `SecretsDecl` and a test in mise that its parser reads the same keys. `[dotfiles]` and `[dotfile_groups]` entries also stay raw TOML until mise-system expands them, but their schema is derived from the declaration types in `crates/mise-config/src/dotfiles.rs`, with the rules between keys written by hand in `dotfiles/schema.rs`; mise-system's `*_keys_match_the_declaration` tests fail until its parsers read the same keys. `[settings]` and `miserc.json` come from `settings.toml` through `crates/mise-config/src/schema/settings.rs`.
+
+The `schema_matches_parser` unit test (`src/config/config_file/mise_toml/schema_conformance.rs`) validates every `toml` block in `docs/` and every mise config an e2e heredoc writes against both the schema and `MiseToml`'s parser, and fails when they disagree. Fix the schema rather than the corpus. Mark a config that mise refuses on purpose with `# schema: invalid` (e2e) or `<!-- schema: invalid -->` (docs) on the line above it, and an excerpt that is not a whole config with `schema: skip`. List deliberate differences in its `GAPS` with a reason.
 
 ### Testing Strategy
 - E2E tests are organized by feature area (cli/, config/, backend/, etc.)
@@ -316,7 +334,7 @@ Cursor Cloud Agents bootstrap from `.cursor/environment.json`, which runs `.curs
 The install script:
 
 - cds to the repository root derived from the script path before reading `Cargo.toml` or building
-- installs host packages needed to build mise and to run most e2e tests (openssl, pkg-config, zsh, fish, direnv, python3 + venv, jq, git, build-essential, and compile-time libs). It does **not** install a JDK or GUI libraries; those live in `packaging/e2e/Dockerfile`. `apt-get` is invoked as `sudo -n env DEBIAN_FRONTEND=noninteractive apt-get …` so the frontend reaches apt when elevation is required
+- installs host packages needed to build mise and to run most e2e tests (openssl, pkg-config, zsh, fish, python3 + venv, jq, git, build-essential, and compile-time libs). It does **not** install a JDK or GUI libraries; those live in `packaging/e2e/Dockerfile`. `apt-get` is invoked as `sudo -n env DEBIAN_FRONTEND=noninteractive apt-get …` so the frontend reaches apt when elevation is required
 - installs and defaults to the latest stable Rust toolchain (not the `Cargo.toml` `rust-version` MSRV), including `rustfmt` and `clippy`, and updates it on reruns
 - gets a bootstrap `mise` and symlinks it to `/usr/local/bin/mise`: an existing `target/debug/mise` refreshes itself with `mise run build`; if it cannot run this checkout's config, a plain `cargo build` goes to `target/bootstrap` (the `mbx` wrapper leaves read-only outputs in `target/`); with no `target/` yet, a plain `cargo build` goes to `target/`
 - keeps `GITHUB_TOKEN`, `MISE_GITHUB_TOKEN`, and `GH_TOKEN` in sync via one `sync_github_tokens` helper (prefer any already-set token; fall back to `gh auth token` only when all three are empty)
@@ -334,6 +352,6 @@ The debug `mise` binary is already on PATH. Prefer `mise run …` for project ta
 
 - Always `mise run test:e2e [test_filename]...` — never execute e2e scripts directly
 - Slow tests (`*_slow`) are skipped unless `TEST_ALL=1`. Do not run the full suite unless asked; pick tests under the feature area you changed
-- Isolated e2e uses `env -i` and a fake `HOME`, so the agent's mise shims are not on PATH. Tests install their own tools. Host packages (zsh, fish, direnv, python3, jq, git) still need to be on `/usr/bin`
+- Isolated e2e uses `env -i` and a fake `HOME`, so the agent's mise shims are not on PATH. Tests install their own tools. Host packages (zsh, fish, python3, jq, git) still need to be on `/usr/bin`
 - If GitHub API calls 429, run `export GITHUB_TOKEN="$(gh auth token)"; export MISE_GITHUB_TOKEN="$GITHUB_TOKEN"`
 - A leftover `/tmp/mise.toml` will fail the harness; remove it if that error appears

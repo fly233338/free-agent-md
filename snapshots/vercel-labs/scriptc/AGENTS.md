@@ -25,6 +25,8 @@ their supported native-clang contracts locally; other hosts retain those
 checks in the Sandboxes. Both lanes green is the bar before shipping any
 change.
 
+`SCRIPTC_SANDBOX_NATIVE_REFERENCE` names a built checkout inside a prepared `SCRIPTC_SANDBOX_SNAPSHOT` or image: each lane copies that checkout's LLVM helper and runtime pack instead of rebuilding them when their source inputs are identical. Sandbox creation is rate limited per team in vCPUs per minute, so the runner retries a rate-limited creation with backoff. Larger Sandboxes (`SCRIPTC_SANDBOX_VCPUS` up to 32, with `SCRIPTC_TEST_WORKERS` at half the vCPUs) shorten the lanes most.
+
 `VERCEL_OIDC_TOKEN` is the preferred credential. `VERCEL_TOKEN` remains
 supported with explicit `VERCEL_TEAM_ID` and `VERCEL_PROJECT_ID`. The custom
 `SCRIPTC_SANDBOX_IMAGE` is optional: without it, the gate starts from
@@ -58,6 +60,8 @@ A change that must not cost good code anything, such as a compatibility fix that
 node scripts/zero-cost-gate.mjs --baseline=/vercel/sandbox/prev --candidate=. --allow='\barguments\b'
 ```
 
+The whole gate takes 30 to 75 minutes on one 8-vCPU Sandbox, so shard it across Sandboxes. `--shard=i/n` splits the bench and corpus programs; the self-hosted compiler runs in shard 1, or alone with `--set=self`, and its candidate-source build overlaps its comparison build on hosts with 40 GB or more. Each shard writes `--json`, and `node scripts/zero-cost-merge.mjs <shard.json>...` merges them into one verdict, recomputing the compile-time intervals over every shard. `--record-baseline-cache=<file>` builds only the baseline and records each program's artifact hashes; `--baseline-cache=<file>` then skips the baseline build of every program whose candidate artifacts hash the same, which halves the work for a change that leaves most programs identical. A record applies only to the built baseline checkout, toolchain, and paths it was made with, and is ignored otherwise; a program whose entry, relative imports, or optimization level changed since the record builds its baseline.
+
 Test location follows scope:
 
 - Co-locate white-box unit tests with implementation files under
@@ -67,6 +71,16 @@ Test location follows scope:
 
 Keep existing tests in place unless a change already touches their organization;
 new tests should follow this convention.
+
+## Numbered registries
+
+Parallel changes must never pick the same number by hand. Each registry has one source of truth and a fast check:
+
+- Diagnostic codes: claim a code by adding its row, in numeric order, to `DIAGNOSTIC_CODES` in `packages/compiler/src/diagnostics/codes.ts` before any site uses it. A shipped construct's code moves to `RETIRED_DIAGNOSTIC_CODES` and is never reused; codes that open work already uses are held in `RESERVED_DIAGNOSTIC_CODES`. `codes.test.ts` fails on a code without a row, a retired code in use, an unused row, or rows out of order, and two claims of one code are a merge conflict or a duplicate key.
+- Dyn handle tags: add a new tag by name only to `SCR_DYNH_NEW_TAGS` in `packages/runtime/src/scr_dyn.h`, in name order; the enum numbers it. Pin a tag to an explicit value in `SCR_DYNH_TAGS` only when the LLVM backend needs its number. The header does not compile when two tags share a value, and `dyn-handle-tags.test.ts` names the problem.
+- Runtime enums and flag bits the backend mirrors (`ScrDynKind`, `ScrMessageKind`, `ScrBytesElem`, `SCR_CLOSURE_KIND_*`, the `%ScrArr` spare flags) are checked against their C declarations by `packages/compiler/src/backend/llvm/runtime-registries.test.ts`. A new mirrored enum or flag set gets a check there, and C code names flag bits instead of writing their values.
+
+Before taking a number in a pinned registry, run `node scripts/registry-claims.mjs`: it lists the diagnostic codes and pinned handle tags that open pull requests claim and reports collisions; `--check` reports only collisions with the current branch and exits 1 when there is one.
 
 ## Where things live
 
