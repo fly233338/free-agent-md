@@ -1,0 +1,12 @@
+{
+  "full_name": "redis/go-redis",
+  "points": [
+    {
+      "checked_at": "2026-10-28T09:46:18Z",
+      "commit_sha": "c6c3bfe16d77f010511d1dc3c69375f011c3b2c6",
+      "pushed_at": "2026-10-28T09:45:50Z",
+      "stars": 22280
+    }
+  ],
+  "repo_id": 5179099
+}

@@ -2,12 +2,6 @@
   "full_name": "lichess-org/lila",
   "points": [
     {
-      "checked_at": "2026-09-27T09:20:24Z",
-      "commit_sha": "134949a4a4e71306b75945ab51a8ac7b54a7c9c1",
-      "pushed_at": "2026-09-27T09:10:55Z",
-      "stars": 18772
-    },
-    {
       "checked_at": "2026-10-02T09:51:48Z",
       "commit_sha": "148455dfef93df7b6153152b2009703558f0c3a0",
       "pushed_at": "2026-10-02T09:45:14Z",
@@ -42,6 +36,12 @@
       "commit_sha": "ae6d2b02cc3f137c6897085ec069630669a6f9a2",
       "pushed_at": "2026-10-22T08:38:26Z",
       "stars": 18874
+    },
+    {
+      "checked_at": "2026-10-28T09:46:18Z",
+      "commit_sha": "43ebfbc6cbe23c12dda41e10ecd28b77c0f84e42",
+      "pushed_at": "2026-10-28T09:41:41Z",
+      "stars": 18909
     }
   ],
   "repo_id": 3507455

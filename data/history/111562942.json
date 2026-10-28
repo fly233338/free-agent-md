@@ -2,12 +2,6 @@
   "full_name": "statamic/cms",
   "points": [
     {
-      "checked_at": "2026-09-27T09:20:24Z",
-      "commit_sha": "b22262038850a66f4be0ccc5dbfa0212f6c1ac40",
-      "pushed_at": "2026-09-25T16:38:06Z",
-      "stars": 4901
-    },
-    {
       "checked_at": "2026-09-28T09:53:40Z",
       "commit_sha": "b22262038850a66f4be0ccc5dbfa0212f6c1ac40",
       "pushed_at": "2026-09-25T16:38:06Z",
@@ -138,6 +132,12 @@
       "commit_sha": "dd4a9310d7fa9103ecdd524d6dc7c2af70291a3f",
       "pushed_at": "2026-10-26T19:38:50Z",
       "stars": 4911
+    },
+    {
+      "checked_at": "2026-10-28T09:46:18Z",
+      "commit_sha": "7da7bf91d55b7b6808fb7da0223781fabc041147",
+      "pushed_at": "2026-10-27T17:25:53Z",
+      "stars": 4910
     }
   ],
   "repo_id": 111562942

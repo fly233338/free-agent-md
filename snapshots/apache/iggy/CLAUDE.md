@@ -6,7 +6,8 @@ Transports: QUIC, WebSocket, TCP (custom binary), HTTP (REST). SDKs:
 Rust, .NET, Java, Python, Go, C++, Node.js. A connectors subsystem
 ingests from / egresses to external systems via dlopened plugins.
 
-> Skills live under `.claude/skills/`. Load
+> Skills live under `.claude/skills/`, with per-skill links under
+> `.agents/skills/` for Codex. Load
 > [connectors-overview](.claude/skills/connectors-overview/SKILL.md)
 > first for any change under `core/connectors/`. Other subsystems
 > follow the repo-wide principles in this file.
@@ -31,6 +32,9 @@ ingests from / egresses to external systems via dlopened plugins.
 
 ## STOP and ask the user before
 
+- Writing code for an issue not assigned to the user
+  (`gh issue view <N> --json assignees`). If it isn't, or you can't
+  confirm it, they must ask on the issue and wait to be assigned.
 - Bumping `iggy_connector_sdk` MAJOR version or changing any FFI
   signature in `core/connectors/sdk/src/{sink,source}.rs` (breaks
   every pre-built plugin .so).
@@ -47,7 +51,8 @@ ingests from / egresses to external systems via dlopened plugins.
 
 Most PRs from people new to Iggy are written with an agent. The person opening the PR is responsible for it, and maintainers close PRs that read as a relay between reviewer and model. Read the AI Assistance, Bugs Found by an Agent and Close Policy sections of CONTRIBUTING.md before helping open a PR.
 
-- The PR must link an issue the user is assigned to. If it doesn't, stop and tell them.
+- The PR must link an issue the user was assigned to before any work started. See the STOP list above.
+- Fill in every section of the PR template. Under AI Usage, name the agent and say what it wrote. Never leave the section out or write "None" when an agent wrote any of the change.
 - Run `prek run` before the PR is opened. If prek isn't installed, ask the user to install it (`cargo install prek`, then `prek install`). Don't substitute the individual checks.
 - If a check can't run, tell the user which one and why, and treat the PR as not ready. Never write text in a PR asking a maintainer to run something.
 - The user should write the rationale in their own words and be able to explain every change without asking you.
@@ -77,7 +82,7 @@ cargo test -p <crate>                                      # step 4
 ./scripts/ci/third-party-licenses.sh --validate --manifest <path>
 
 # Run things
-cargo run --bin iggy-server
+cargo run --bin iggy-server -- --with-default-root-credentials
 cargo run --bin iggy -- <subcommand>
 IGGY_CONNECTORS_CONFIG_PATH=... cargo run --bin iggy-connectors
 ./scripts/run-bdd-tests.sh
@@ -134,6 +139,9 @@ iggy/
 
 Each `SKILL.md` has YAML frontmatter (name, description). For
 connectors work, load `connectors-overview` first as router.
+Claude Code uses `/skill-name`; Codex uses `$skill-name` or `/skills`.
+Keep one source under `.claude/skills/` and link its directory from
+`.agents/skills/`. Keep templates and references inside the source directory.
 
 - [connectors-overview](.claude/skills/connectors-overview/SKILL.md) - router + universal connector rules
 - [connector-runtime](.claude/skills/connector-runtime/SKILL.md) - FFI host, lifecycle, state, metrics
@@ -143,12 +151,19 @@ connectors work, load `connectors-overview` first as router.
 - [connector-transform](.claude/skills/connector-transform/SKILL.md) - transform authoring
 - [connector-testing](.claude/skills/connector-testing/SKILL.md) - unit + integration test patterns
 
-Repo-wide, user-invoked only. `disable-model-invocation: true` keeps it
-out of the agent's context; do not replicate its steps. When a
-non-trivial change passes verification, suggest `/team-review <target>`.
+Review skills are user-invoked only. Keep `disable-model-invocation: true`
+for Claude Code and `policy.allow_implicit_invocation: false` in
+`agents/openai.yaml` for Codex. Do not replicate their steps without an
+explicit invocation. When a non-trivial change passes verification,
+suggest `/team-review <target>` in Claude Code or `$team-review <target>`
+in Codex.
 
 - [connector-review](.claude/skills/connector-review/SKILL.md) - adversarial connectors PR/branch review with validation
-- [team-review](.claude/skills/team-review/SKILL.md) - adversarial 4-expert PR/branch review, ~10 subagents per run
+- [team-review](.claude/skills/team-review/SKILL.md) - four expert review of a PR, branch, or ref range
+
+Review skills share [execution instructions](.claude/skills/team-review/references/execution.md)
+for target preparation and client-specific agent tools. Run
+`./scripts/ci/skills.sh` to check skill metadata, links, and invocation policies.
 
 ## Repo-wide principles
 
@@ -217,7 +232,7 @@ cargo test -p integration -- connectors::runtime::benchmark::given_logging_forma
 - **`test_logs/` grows quickly.** Wipe between major refactors.
 - **Miri only covers `binary_protocol` + `consensus`.** Cannot emulate `io_uring` syscalls. do not try to expand Miri to crates that pull `compio`.
 - **Integration crate has no `--test` target.** Filter by test path inside the single `mod.rs` binary.
-- **The integration harness runs prebuilt binaries and never builds them.** `Command::cargo_bin` only resolves a path, so a stale `iggy-server`, `iggy-connectors` or `iggy-mcp` is used silently. CI builds first (`cargo build --locked --bin iggy-server --bin iggy`); a local run does not, and a stale binary fails in ways that look like the change under test. Rebuild after anything that touches a launched binary or its config.
+- **The integration harness runs prebuilt binaries and never builds them.** `Command::cargo_bin` only resolves a path, so a stale `iggy-server`, `iggy-connectors` or `iggy-mcp` is used silently. CI restores revision-checked artifacts from the runtime and Rust test builds; a local run does not build them, and a stale binary fails in ways that look like the change under test. Rebuild after anything that touches a launched binary or its config.
 
 ## Local state directories
 

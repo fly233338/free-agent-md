@@ -2,12 +2,6 @@
   "full_name": "sbt/sbt",
   "points": [
     {
-      "checked_at": "2026-09-27T09:20:24Z",
-      "commit_sha": "8a2ec14cc8b272792c8697bd5ac27ae07e8bc98b",
-      "pushed_at": "2026-09-26T22:30:18Z",
-      "stars": 4953
-    },
-    {
       "checked_at": "2026-09-28T09:53:40Z",
       "commit_sha": "0a70458a4bc34ec208e7b234375dca812383024f",
       "pushed_at": "2026-09-28T08:18:18Z",
@@ -179,6 +173,12 @@
       "checked_at": "2026-10-27T09:05:49Z",
       "commit_sha": "cbad779fdecb5f48aaf19091934de3be0c79646f",
       "pushed_at": "2026-10-27T05:13:59Z",
+      "stars": 4951
+    },
+    {
+      "checked_at": "2026-10-28T09:46:18Z",
+      "commit_sha": "09a886e3708047cef76df7d76e661c75f84a791d",
+      "pushed_at": "2026-10-28T07:43:24Z",
       "stars": 4951
     }
   ],

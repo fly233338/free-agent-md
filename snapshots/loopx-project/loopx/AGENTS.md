@@ -324,6 +324,15 @@ create new approval gates. Distinguish proposed, packaged and installed behavior
 
 ## UI Design Standard
 
+**Avoid unnecessary secondary labels and descriptions. Let the layout do the explaining.**
+Use hierarchy, grouping, spacing and clear control names to make the interface
+understandable. Remove slogans, heading restatements and implementation or Agent
+instructions from product UI. Improve unclear layout before adding explanatory
+paragraphs. Preserve accessible control names, necessary input constraints,
+permission and activation consequences, errors, recovery and action outcomes;
+place optional help on demand. Apply this in the whole-page visual review,
+not only to isolated components or by imposing a blanket text-length limit.
+
 Before changing or reproducing any UI (including websites, dashboards, desktop,
 documentation, prototypes, screenshots or framework migrations), read
 [the design system](docs/development/design.md), especially

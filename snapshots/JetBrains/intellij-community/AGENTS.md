@@ -28,7 +28,7 @@ Each kind of text has one home. Rationale and evidence for a change go in the co
 
 ## Workspace Isolation
 
-Do not create a Git worktree or a clone, and do not install a workspace manager, on your own initiative. Read [Workspace Isolation](./.ai/workspace-isolation.md) before any workspace-isolation action. It also covers the explicit-request exception.
+This repository is too large for an ad hoc Git worktree or clone. Create one only on an explicit user request, and never install a workspace manager. Isolation comes from the `branch-deck` skill: follow it before the first edit. Without it, work in the current checkout.
 
 ## Module-specific rules
 

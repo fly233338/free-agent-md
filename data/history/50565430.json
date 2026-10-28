@@ -2,12 +2,6 @@
   "full_name": "pnpm/pnpm",
   "points": [
     {
-      "checked_at": "2026-09-27T09:20:24Z",
-      "commit_sha": "f8d8c204ccc0b46aab16fa0bd1fe64691b505a6f",
-      "pushed_at": "2026-09-27T09:08:01Z",
-      "stars": 36667
-    },
-    {
       "checked_at": "2026-10-05T10:33:57Z",
       "commit_sha": "0ab751795968f66968995d84c8428017d9ae7c6e",
       "pushed_at": "2026-10-05T10:33:33Z",

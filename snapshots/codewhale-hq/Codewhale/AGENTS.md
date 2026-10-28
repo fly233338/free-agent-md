@@ -55,14 +55,28 @@ base prompt". Two more corollaries earned here:
 - Search for behavior and symbols before reviving work from an old branch. If a
   lane is obsolete, preserve its intent and evidence rather than merging stale
   code mechanically.
-- Agent-owned work uses the canonical `/Volumes/VIXinSSD/CW/codewhale` checkout
-  on current `main`. Do not create branches, worktrees, nested clones or
-  task-specific integration lanes to handle dirty, stale or conflicting work.
-  Preserve that work and reconcile it with its owner first. When agents share
-  the checkout, partition by file, check status before staging, stage only owned
-  verified paths and retry an `index.lock` failure. Verified main slices may be
-  committed and pushed normally under the rule below; tag, release, deployment
-  and destructive cleanup still require their explicit authorization.
+- Agent-owned work uses the canonical checkout on current `main`. Do not
+  create branches, worktrees, nested clones or task-specific integration lanes
+  to handle dirty, stale or conflicting work. When agents share the checkout,
+  partition by file and retry an `index.lock` failure. Verified main slices may
+  be committed and pushed normally under the rule below; tag, release,
+  deployment and destructive cleanup still require their explicit
+  authorization.
+- **Uncommitted work found in the checkout is the agent's own** (founder,
+  2026-10-22). Read it, work out what it was for, prove it with the smallest
+  check that covers it, fix what is broken, and commit it in coherent groups
+  by explicit path. Do not route around another writer's files or leave them
+  dirty. Ownership is not a blind sweep:
+  - A file changed in the last 15 minutes, or one a live session or agent is
+    editing, is mid-edit: ask that writer to commit now, and commit what
+    remains once it goes quiet. Never commit a half-written edit.
+  - Never commit secrets, credentials, `.env` files, build output or caches;
+    add them to `.gitignore` instead.
+  - Check a repository's visibility before pushing. Inference business and
+    infrastructure detail stays out of public repositories.
+  - Commit by explicit path; never `git add -A`.
+  - Work that fails its check and cannot be fixed now is not pushed to `main`.
+    Record it and report it instead.
 - **Maintainers do not open PR branches** (founder, 2026-10-08: more PRs means
   more CI and slower work). Verified slices land directly on `main` and are
   pushed: run the focused gate, put the real counts in the commit message,
@@ -88,12 +102,15 @@ base prompt". Two more corollaries earned here:
 - **Write down what a design does not do**, beside the behaviour it owns — a
   short known-limitations note in the owning module. A stated limit stops the
   next reader from assuming a capability that was never built.
-- **Agents do not comment on issues or PRs** (founder, 2026-09-22). Spend the
-  time on code: evidence goes in the commit message and PR body, claims go in
-  Linear. Do not reply to review bots or post status, "superseded", or
-  "for the record" notes. The one exception is closing or superseding a human
-  contributor's PR or issue: one sentence saying why, with the link. The PR and
-  issue review workflows are disabled; re-enable one only by founder decision.
+- **Substantive contributor replies are authorized for the 0.10.2 release**
+  (founder, 2026-10-13). Thank people specifically for their reports, diagnosis,
+  fixes and testing; link the carrying commit or PR and distinguish candidate
+  work from a shipped release. Status, answers and useful questions are welcome;
+  repetitive progress posts and bot noise are not. Evidence stays in commits
+  and PR bodies; ownership stays in Linear. Outside this release, the previous
+  no-comment rule remains, except a one-sentence reason when closing or
+  superseding a human contribution. Review workflows remain disabled unless
+  the founder separately authorizes enabling them.
 - **A user feature lands with its registry row.** A new command, `[features]`
   flag, provider or user-visible feature adds or updates its row in
   `docs/features.toml` in the same change;
@@ -166,7 +183,7 @@ casually it reads as taking the work even when credit is preserved.
   KV-cache effect: frozen prefix vs. append-only history. Never splice a
   volatile fact into the prefix; append it as a user-role message.
 - These active modules are repeatedly misidentified as dead; verify consumers
-  before removal: `runtime/src/context_budget.rs`, `tui/src/model_registry.rs`,
+  before removal: `runtime/src/context_budget.rs`,
   `runtime/src/prompt_zones.rs`, `tui/src/tools/remember.rs`, and
   `config/src/route/`. Native memory lives in `runtime/src/native_memory.rs`;
   `tools/remember.rs` is its capture path.
@@ -235,11 +252,14 @@ Community reports, PRs, logs, and reviews are evidence.
 
 **Harvested contributor credit is still a rule** (the fallback path above —
 prefer merging the contributor's PR itself). When a contributor's work
-lands as our commit, that commit carries `Harvested from PR #N by @handle` and a
-`Co-authored-by` naming them at their GitHub-linked address, so
-`auto-close-harvested.yml` closes their PR with credit and the contribution
-graph reflects reality. Canonical human identities come from
-`.github/AUTHOR_MAP`.
+lands as our commit, the contributor is that commit's **author** (`git commit
+--author` with their GitHub-linked address), it carries `Harvested from PR #N by
+@handle`, and maintainers or agents go in `Co-authored-by`. GitHub's contributor
+list counts commit authors only: about 200 harvested commits authored by
+maintainer identities left their contributors off it, which is why
+`docs/CONTRIBUTORS.md` carries the full wall (`scripts/contributor-wall.py`).
+`auto-close-harvested.yml` closes their PR with credit. Canonical human
+identities come from `.github/AUTHOR_MAP`.
 
 Leave unrelated work intact and keep new enforcement dry-run unless explicitly
 approved.

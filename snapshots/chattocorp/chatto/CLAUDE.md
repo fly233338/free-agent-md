@@ -1,0 +1,249 @@
+# Instructions for Agents
+
+Read this file first. It contains rules for the complete repository.
+
+## Product Boundaries And Instruction Routing
+
+This repository contains independent products, libraries, and shared framework modules
+under development:
+
+- **Chatto** is the chat server, bundled client, CLI, and existing public
+  protocols. Unless a path is explicitly Authling-owned or shared, existing
+  repository content belongs to Chatto.
+- **Authling** is the independent identity-provider product under `authling/`.
+  It is not a Chatto component, runtime unit, feature, or deployment mode.
+- **Runling** is the independent TypeScript workflow and agent orchestrator
+  under `packages/runling/`. It includes a library, CLI, and web console. It
+  uses the root pnpm workspace and has its own version, CI job, and npm release.
+  Keep its public APIs and runtime independent of Chatto and Authling.
+- **Shared framework code** is application-neutral event-sourcing, JetStream
+  client, embedded NATS, data-cryptography, and configuration-loading
+  machinery intended for consumption by both products. The independently
+  versioned but unstable modules live under `pkg/events/`,
+  `pkg/jetstreamutil/`, `pkg/natsruntime/`, `pkg/datacrypto/`, and
+  `pkg/appconfig/`.
+
+Authling is in this repository temporarily. It provides the second application
+needed to extract and validate the shared framework. Move Authling to its own
+repository when the shared boundary is stable. Do not describe this repository
+as its permanent home. Do not add coupling that makes this move more difficult.
+
+### Chatto Client And Bundled Frontend
+
+Chatto has one client: `@chatto/client` in `packages/chatto-client/`. The
+bundled frontend in `apps/frontend/`, ChattoBot, and third-party bots and
+frontends use it. See ADR-111.
+
+- Ask: does a bot or a different frontend need this behavior to use Chatto
+  correctly? If yes, put it in `@chatto/client`, also when only the bundled
+  frontend uses it now. If no, put it in the frontend.
+- The frontend uses the client. The client never calls into the frontend.
+- Use the `chatto-client-placement` skill before you add code to either, or
+  move code between them.
+
+## Prime Directives
+
+- Use ASD-STE100 Simplified Technical English for all new or changed documentation (repository and public documentation!) Find the canonical vocabulary in [`docs/GLOSSARY.md`](docs/GLOSSARY.md).
+- The nearest applicable `AGENTS.md` controls path-specific guidance. Root rules still apply when nested guidance is more specific.
+- Do not reserve protobuf field numbers or names for fields introduced and removed within the same unmerged branch or PR. Remove those fields without reservations. Compare with the target branch to distinguish these fields from existing fields, which remain subject to the normal compatibility rules.
+- Add code documentation for public APIs and important fields, functions, types, invariants, and lifecycle behavior. Future maintainers must not have to infer this information from call sites.
+- Keep relevant tests and internal documentation current. Change public documentation only when readers must learn or do something differently. For API changes, document the required client migration; keep implementation details and unchanged behavior out. Apply the release-note scope below.
+- Run verification that can find regressions in the changed area.
+- Never claim full verification when only a partial signal was run.
+- Never silence lint, type, vet, or Svelte warnings as a routine fix. Fix the cause; discuss rare scoped exceptions before adding them.
+- Never log PII: no raw login names, display names, email addresses, submitted auth identifiers, OAuth/OIDC provider subjects, tokens, passwords, auth codes, reset links, raw IPs, or full query strings.
+- Protect user privacy when you design or build a feature. Identify each external system that the feature contacts and the data that the connection reveals, including the user’s IP address. Avoid unnecessary third-party connections, and make necessary connections clear to the user.
+
+## Current Project Status
+
+- Chatto is public, self-hosted, pre-1.0 software with real user data and mixed versions in use.
+- Follow ADR-045 and `proto/AGENTS.md` for public and persisted protocol compatibility.
+- Chatto 0.5 includes breaking public API changes. Public API and frontend
+  compatibility with earlier versions is not a priority for this release.
+  Preserve upgrades from pre-0.5 servers. Keep persisted protobufs backward
+  compatible where feasible.
+- Increase Chatto's minimum connectable server version only as a **last resort**,
+  including during alpha and beta releases. A new release, API change, or
+  simpler implementation alone does not justify an increase. First consider
+  a compatible API design, use of the existing server contract, or deferring
+  the new dependency. Do not add complex compatibility layers merely to avoid
+  an increase.
+- Before increasing the connection threshold, document the exact incompatibility, why
+  reasonable alternatives are insufficient, and the oldest server release
+  that meets the requirement. Include this evidence and the required upgrade
+  action in the PR. Set the minimum to that release, not automatically to the
+  current release. See [FDR-031](docs/fdr/FDR-031-client-server-compatibility-discovery.md).
+- Any value change to `MINIMUM_SUPPORTED_SERVER_VERSION` requires the PR label
+  `server-compatibility:full-support`. Any value change to
+  `MINIMUM_CONNECTABLE_SERVER_VERSION` requires
+  `server-compatibility:connection-floor`. This includes decreases. Changes to
+  both require both labels. Explain each change in the PR. Labels do not waive
+  compatibility tests or the justification required for a connection-threshold
+  increase.
+
+## Additional Agent Rules & Context
+
+- [README.md](README.md) — general project overview.
+- [packages/runling/README.md](packages/runling/README.md) — Runling APIs,
+  development commands, and release setup.
+- [packages/runling/AGENTS.md](packages/runling/AGENTS.md) — Runling instructions
+  and the feature requirements to read before changing behavior.
+- [packages/runling/docs/README.md](packages/runling/docs/README.md) — Runling-owned
+  ADRs, FDRs, and API guides. Runling records have their own numbering.
+- [packages/chatto-client/AGENTS.md](packages/chatto-client/AGENTS.md) — the
+  framework-neutral Chatto client: what belongs in it, stores, realtime
+  projection, sessions, reactivity, and its Svelte adapter.
+- [packages/chattobot/AGENTS.md](packages/chattobot/AGENTS.md) — ChattoBot rules:
+  one agent session per thread, capabilities as tools, background jobs, and
+  changes that a maintainer approves.
+- [authling/AGENTS.md](authling/AGENTS.md) — mandatory Authling product,
+  architecture, documentation, security, and testing rules.
+- [authling/docs/README.md](authling/docs/README.md) — Authling-owned ADR, FDR,
+  architecture, and glossary entry points.
+- [pkg/events/AGENTS.md](pkg/events/AGENTS.md) — shared event-framework module
+  boundary, compatibility, and verification rules.
+- [pkg/jetstreamutil/AGENTS.md](pkg/jetstreamutil/AGENTS.md) — shared
+  JetStream client helpers: key-value leader reads, retried provisioning, and
+  conflict classification.
+- [pkg/natsruntime/AGENTS.md](pkg/natsruntime/AGENTS.md) — shared embedded-NATS
+  lifecycle module boundary and verification rules.
+- [pkg/datacrypto/AGENTS.md](pkg/datacrypto/AGENTS.md) — shared authenticated
+  encryption and key-wrapping boundary and verification rules.
+- [pkg/appconfig/AGENTS.md](pkg/appconfig/AGENTS.md) — shared TOML and
+  environment configuration-loading boundary and verification rules.
+- [cli/AGENTS.md](cli/AGENTS.md) — Go backend, ConnectRPC, NATS/JetStream, authz, live events, backup/restore, and backend tests.
+- [apps/frontend/AGENTS.md](apps/frontend/AGENTS.md) — SvelteKit frontend, Tailwind, i18n, browser verification, frontend tests, e2e, and Storybook.
+- [proto/AGENTS.md](proto/AGENTS.md) — protobuf and generated public API reference guidance.
+- [apps/desktop/AGENTS.md](apps/desktop/AGENTS.md) — desktop integration and native-helper testing guidance.
+- [apps/docs-website/AGENTS.md](apps/docs-website/AGENTS.md) — public docs website guidance.
+- `.agents/skills/*` — workflow skills. Skills with the `chatto-` prefix apply
+  to Chatto. Other skills state their scope.
+- `docs/fdr/INDEX.md` — Chatto feature behavior and rationale.
+- `docs/adr/INDEX.md` — Chatto and explicitly repository-wide architecture
+  decisions.
+- `docs/architecture/INDEX.md` — current Chatto runtime inventory, split by
+  components, projections, NATS resources, subjects, runtime state, effects,
+  interfaces, and realtime delivery.
+- `docs/GLOSSARY.md` — canonical Chatto terminology.
+
+## Installed Skills
+
+Treat skills listed in `skills-lock.json` as installed dependencies. Do not edit
+their files directly. Make shared changes in the source repository and reinstall.
+Put project-specific rules in repository-owned skills or `AGENTS.md`.
+
+## Tooling
+
+`mise` manages tools. Prefer its tasks when they are available.
+
+Use an available browser tool suited to the task to inspect and verify Chatto
+or Authling browser behavior. Playwright MCP and Chrome DevTools MCP are
+examples. Do not use browser tools for general web research or public
+documentation research. Use the available web or document research tools for
+those tasks.
+
+Run Authling's unprefixed tasks from `authling/`; its nested `mise.toml` owns
+the Authling toolchain and workflow.
+
+For an ad-hoc tool command, use `mise x -- ...`. Do not assume that `go`,
+`pnpm`, `node`, or related binaries are on `PATH`.
+
+Turborepo runs the pnpm workspace tasks. Every workspace package must define a
+`check` script that type-checks all of its source, tests, and examples, so
+`mise check-workspace` (`pnpm run check`) checks the complete workspace. Turbo
+caches `check` results and checks again only the packages that a change
+affects. Use `pnpm turbo run check --filter=...<package>` for one package and
+its dependents. The position of `...` is important: `--filter=<package>...`
+selects the package and its dependencies, not its dependents. In a package
+script, run Turbo with `pnpm -w turbo`, so the root script keeps local runs on
+the local cache (ADR-102).
+
+`mise codegen-proto` removes and generates again the TypeScript API files. Do
+not run it at the same time as `mise test-cli`, a frontend build, or another
+task that reads `packages/api-types`.
+
+The workspace packages `@chatto/api-types`, `@chatto/translatto`, and
+`@chatto/client` export their source (ADR-116). Load workspace imports through
+a compiling tool, such as Vite, Vitest, tsx, or jiti. Plain Node cannot load
+them. Translatto has a `build` script for npm releases. Its
+published package exports compiled JavaScript and type declarations. The
+client also has a publication build, which includes the private API types.
+
+Put scratch files, such as PR bodies, commit messages, logs, and file backups,
+in the gitignored `.context/` directory of the worktree. Do not use fixed paths
+in `/tmp`. Parallel agent sessions share `/tmp` and can overwrite each other's
+files. Use `mktemp` when a file must be outside the worktree.
+
+When an agent needs a running Chatto server, launch `mise dev`. Launch
+`mise dev-full` when the task also needs email, LiveKit, Authling, or the
+Runling bot. mise runs each service in its own process group and stops all of
+them when it gets a signal. Stop the stack before handing control back to the user.
+Never leave a dev stack running in a detached or yielded terminal session.
+
+## Runling Documentation Updates
+
+- Read [Runling's documentation index](packages/runling/docs/README.md) when
+  changing Runling. Use its ADRs for architecture decisions and its FDRs for
+  feature behavior and rationale. Keep the relevant records and API guides current.
+- Keep Runling records in `packages/runling/docs/adr/` and
+  `packages/runling/docs/fdr/`. Do not add them to Chatto or Authling numbering.
+  Root ADRs apply only when they explicitly describe a repository-wide decision.
+- Keep application-specific bot behavior outside Runling's framework records.
+  Record proposals and unresolved limits as open questions, not implemented behavior.
+
+## Chatto Documentation Updates
+
+- Use FDRs for feature behavior/rationale and ADRs for cross-cutting decisions.
+- Update the relevant file in `docs/architecture/` when changing server
+  runtime components, projections, EVT events or subjects, NATS resources, runtime
+  state, durable effects, realtime delivery, or mounted ConnectRPC services.
+  The inventory records the server only. Do not add client runtimes, browser
+  behavior, or development tools to it.
+- Update `docs/GLOSSARY.md` when introducing, renaming, or clarifying canonical
+  vocabulary.
+- Public documentation requires a meaningful reader impact. Update
+  `apps/docs-website/` only when a change introduces a meaningful feature,
+  changes observable behavior, requires reader action, or makes existing public
+  documentation incorrect.
+- Internal refactors, storage changes, implementation details, and added tests
+  do not by themselves require public documentation updates. Record these in
+  FDRs, ADRs, and architecture docs as applicable.
+- Before editing public documentation, identify what the reader needs to learn
+  or do differently. If there is no concrete answer, leave it unchanged. Keep
+  justified updates limited to that difference; do not expand documentation
+  merely because related code changed.
+- Generated API reference updates must remain consistent with their source.
+- Final release notes describe changes from the previous stable release to
+  the final version. Do not document migrations between beta versions in the
+  final release document. During a beta cycle, keep the API reference current
+  without adding release-note entries for each intermediate API change.
+- Keep `NOTICE` current when adding, removing, or materially changing bundled
+  dependencies or shipped assets.
+
+## License Metadata
+
+- Chatto uses REUSE/SPDX license metadata. Keep `mise license-check` passing
+  when adding files or changing license boundaries.
+- Files are AGPL-3.0-or-later by default unless `REUSE.toml`, an SPDX header,
+  or an adjacent `.license` file says otherwise.
+- Runling under `packages/runling/` keeps its MIT license. `@chatto/client`
+  under `packages/` uses Apache-2.0.
+- Apache-2.0 applies to the independently versioned shared framework modules
+  under `pkg/events/`, `pkg/jetstreamutil/`, `pkg/natsruntime/`,
+  `pkg/datacrypto/`, and `pkg/appconfig/`, the framework-neutral
+  `packages/translatto` runtime, plus explicit integration and documentation
+  surfaces such as the standalone frontend source and image, public
+  protocol/API definitions, generated TypeScript API clients, documentation,
+  and examples.
+- The Chatto server, CLI, and bundled server release artifacts should stay
+  AGPL-3.0-or-later unless the license boundary is deliberately changed.
+
+## Issues, Commits, And PRs
+
+- Every review that includes `apps/frontend/` must use
+  [chatto-frontend-review](.agents/skills/chatto-frontend-review/SKILL.md).
+  This includes self-review, branch and PR review, and architecture review.
+- Use Conventional Commit format for commits and PR titles, for example `fix(api): ...` or `feat(frontend)!: ...`. Only mark breaking changes when they really are breaking.
+- Always create pull requests as full, ready-for-review PRs. Create a draft PR only when the user explicitly asks for a draft.
+- PR bodies should use clean Markup and summarize changes and link relevant FDRs, ADRs, glossary terms, and issues.
+- If a PR closes an issue, include a GitHub closing keyword such as `Closes #123.` in the body.
