@@ -2,12 +2,6 @@
   "full_name": "podman-desktop/podman-desktop",
   "points": [
     {
-      "checked_at": "2026-09-28T09:53:40Z",
-      "commit_sha": "612483a654f1701f135ec9f14ee0c0bcdc00b0ad",
-      "pushed_at": "2026-09-28T09:52:47Z",
-      "stars": 8035
-    },
-    {
       "checked_at": "2026-10-15T08:23:07Z",
       "commit_sha": "7e56a8a715cbf90fbae90aa14d83767dbfd2486d",
       "pushed_at": "2026-10-15T08:17:37Z",

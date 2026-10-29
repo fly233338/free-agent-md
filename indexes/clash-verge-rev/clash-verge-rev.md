@@ -1,9 +1,9 @@
 # clash-verge-rev/clash-verge-rev instruction files
 
-Upstream: [clash-verge-rev/clash-verge-rev](https://github.com/clash-verge-rev/clash-verge-rev) · License: `GPL-3.0` · Commit: `3953e125b223defcec28a3c822c292c743fc1b1e`
+Upstream: [clash-verge-rev/clash-verge-rev](https://github.com/clash-verge-rev/clash-verge-rev) · License: `GPL-3.0` · Commit: `de22706f3bc1bd87764929066757706577a3445b`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/clash-verge-rev/clash-verge-rev/AGENTS.md) | [Source](https://github.com/clash-verge-rev/clash-verge-rev/blob/3953e125b223defcec28a3c822c292c743fc1b1e/AGENTS.md) | `b496ea2333f09213bc14fd9301fc24b82d52c85588a3fa04bf50d5860d1d5a1f` | 4,104 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/clash-verge-rev/clash-verge-rev/CLAUDE.md) | [Source](https://github.com/clash-verge-rev/clash-verge-rev/blob/3953e125b223defcec28a3c822c292c743fc1b1e/CLAUDE.md) | `336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49` | 11 B |
-| `GEMINI.md` | `GEMINI.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/clash-verge-rev/clash-verge-rev/GEMINI.md) | [Source](https://github.com/clash-verge-rev/clash-verge-rev/blob/3953e125b223defcec28a3c822c292c743fc1b1e/GEMINI.md) | `f4cfcf4ccf71a75fe80e12e2928479e470517587f78939e2d8d03a2a96fc3d7e` | 61 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/clash-verge-rev/clash-verge-rev/AGENTS.md) | [Source](https://github.com/clash-verge-rev/clash-verge-rev/blob/de22706f3bc1bd87764929066757706577a3445b/AGENTS.md) | `b496ea2333f09213bc14fd9301fc24b82d52c85588a3fa04bf50d5860d1d5a1f` | 4,104 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/clash-verge-rev/clash-verge-rev/CLAUDE.md) | [Source](https://github.com/clash-verge-rev/clash-verge-rev/blob/de22706f3bc1bd87764929066757706577a3445b/CLAUDE.md) | `336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49` | 11 B |
+| `GEMINI.md` | `GEMINI.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/clash-verge-rev/clash-verge-rev/GEMINI.md) | [Source](https://github.com/clash-verge-rev/clash-verge-rev/blob/de22706f3bc1bd87764929066757706577a3445b/GEMINI.md) | `f4cfcf4ccf71a75fe80e12e2928479e470517587f78939e2d8d03a2a96fc3d7e` | 61 B |

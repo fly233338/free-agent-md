@@ -2,18 +2,6 @@
   "full_name": "bazelbuild/bazel",
   "points": [
     {
-      "checked_at": "2026-09-28T09:53:40Z",
-      "commit_sha": "af77082b3ca63a64735eb8fd0ed7e1fd3d507ad7",
-      "pushed_at": "2026-09-28T09:51:42Z",
-      "stars": 25895
-    },
-    {
-      "checked_at": "2026-09-29T09:56:38Z",
-      "commit_sha": "7e63e204eeb502ffe419930ca64b2db60dcf5f50",
-      "pushed_at": "2026-09-29T09:55:04Z",
-      "stars": 25899
-    },
-    {
       "checked_at": "2026-10-07T10:21:27Z",
       "commit_sha": "88b6f31c74ecac17e8e98d60b947fdecfcaf6ecb",
       "pushed_at": "2026-10-07T10:20:37Z",
@@ -24,6 +12,12 @@
       "commit_sha": "045b43217fbcb99a42c8a12b78f67067f6261fd2",
       "pushed_at": "2026-10-27T09:04:36Z",
       "stars": 26002
+    },
+    {
+      "checked_at": "2026-10-29T10:04:58Z",
+      "commit_sha": "c9779964bddd85b6173b508ed963cc1ae0a07413",
+      "pushed_at": "2026-10-29T10:01:40Z",
+      "stars": 26011
     }
   ],
   "repo_id": 20773773

@@ -2,18 +2,6 @@
   "full_name": "cloudflare/vinext",
   "points": [
     {
-      "checked_at": "2026-09-28T09:53:40Z",
-      "commit_sha": "226e39ee0d088c63b30931fe2af72aaa8675ead8",
-      "pushed_at": "2026-09-28T09:53:15Z",
-      "stars": 8861
-    },
-    {
-      "checked_at": "2026-09-29T09:56:38Z",
-      "commit_sha": "7f009fdfaa59f899a8141f5e9326f2f22f4c8579",
-      "pushed_at": "2026-09-29T09:56:29Z",
-      "stars": 8950
-    },
-    {
       "checked_at": "2026-10-01T10:13:57Z",
       "commit_sha": "6bc30743f925425fa55bfaa07d33f192b516d84f",
       "pushed_at": "2026-10-01T10:11:23Z",

@@ -2,12 +2,6 @@
   "full_name": "0xJacky/nginx-ui",
   "points": [
     {
-      "checked_at": "2026-09-29T09:56:38Z",
-      "commit_sha": "da08074044fb6777a3ee3aeefe538e5813581249",
-      "pushed_at": "2026-09-29T09:55:44Z",
-      "stars": 11555
-    },
-    {
       "checked_at": "2026-10-15T08:23:07Z",
       "commit_sha": "7a9ad969ec91fb75ea94bb77ccba9495bb34a2b0",
       "pushed_at": "2026-10-15T08:22:03Z",

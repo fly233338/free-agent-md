@@ -79,3 +79,17 @@ When the user signals they are done (e.g. "bye", "done", "wrap up", "end session
 - **Next Steps**: bullet list, max 3 items
 
 Keep `CONTEXT.md` under 20 lines total. Do NOT summarize the full conversation — only what's needed to resume next session.
+
+## Documentation
+
+- The user guide is Sphinx reStructuredText in `doc/src/`. Edit the `.rst` sources there.
+- Images live alongside the docs in `doc/src/img/`. Reference them from `.rst` with a relative path such as `../img/nAnalyst_auth_token.png`.
+- `doc/nedge/src/` holds the nEdge docs, with its own `img/` folder (47 files).
+- Single source of truth for nAnalyst tool counts and editions: `doc/src/nanalyst/tools_and_licensing.rst`. Other pages link to it instead of repeating the list.
+
+## Frontend conventions (Vue pages in `pro/http_src/vue`)
+
+- Never write plain strings in the UI (templates, toasts, tooltips, table titles, chart messages): add every string to `scripts/locales/en.lua` (under the page namespace, e.g. `traffic_model.*`) and read it with `i18n()`. Table JSON definitions use `title_i18n`, `label_i18n`, `*_tooltip_i18n`. Dynamic values use `%{name}` placeholders, replaced in JS.
+- Put all the static dictionaries and enums (ids, status/style maps, option lists, URLs, constants) together at the very beginning of the `<script setup>` block, as the single source of truth of the page. Labels are derived from i18n keys, never repeated next to the dictionary. See `page-traffic-model.vue`.
+- Show results and errors of an action with the toast (`useToast().show()` from `utilities/toast-store.js`, stack mounted in `app-shell.vue`), not with inline bootstrap alert banners.
+

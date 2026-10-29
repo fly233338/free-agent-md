@@ -1,7 +1,7 @@
 # paperclipai/paperclip instruction files
 
-Upstream: [paperclipai/paperclip](https://github.com/paperclipai/paperclip) · License: `MIT` · Commit: `cff331f6ca0a652b5e41641c68dfa5fa584c22ae`
+Upstream: [paperclipai/paperclip](https://github.com/paperclipai/paperclip) · License: `MIT` · Commit: `28e38da7e6bdd6af4092dda56bc2be05bed47af5`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/paperclipai/paperclip/AGENTS.md) | [Source](https://github.com/paperclipai/paperclip/blob/cff331f6ca0a652b5e41641c68dfa5fa584c22ae/AGENTS.md) | `2ba86bce44d20fb2f849b9531e0b6e3082ec5038536d37f817063319b8cd3879` | 12,787 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/paperclipai/paperclip/AGENTS.md) | [Source](https://github.com/paperclipai/paperclip/blob/28e38da7e6bdd6af4092dda56bc2be05bed47af5/AGENTS.md) | `e17dc2949982256816f27e1327d8de9a746ab5c6ae29043d2975a5c141a93f7d` | 13,119 B |

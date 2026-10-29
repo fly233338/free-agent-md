@@ -2,12 +2,6 @@
   "full_name": "paradigmxyz/reth",
   "points": [
     {
-      "checked_at": "2026-09-29T09:56:38Z",
-      "commit_sha": "5232dde6e61543656bf5892f3918e7a436b74c06",
-      "pushed_at": "2026-09-29T09:55:08Z",
-      "stars": 5800
-    },
-    {
       "checked_at": "2026-10-17T07:52:12Z",
       "commit_sha": "f3aebb68019e501d2fc6443d76837d9a6721e083",
       "pushed_at": "2026-10-17T07:51:34Z",

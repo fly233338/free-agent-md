@@ -2,12 +2,6 @@
   "full_name": "statsmodels/statsmodels",
   "points": [
     {
-      "checked_at": "2026-09-28T09:53:40Z",
-      "commit_sha": "81a96b8c082bc89c13b6c8fa4236d377d5dfb613",
-      "pushed_at": "2026-09-28T09:48:22Z",
-      "stars": 11657
-    },
-    {
       "checked_at": "2026-10-25T08:30:15Z",
       "commit_sha": "f739e70533d3218a83358ed6c6d9bb303233cf7b",
       "pushed_at": "2026-10-25T08:30:02Z",
