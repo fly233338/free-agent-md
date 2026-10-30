@@ -2,12 +2,6 @@
   "full_name": "JetBrains/intellij-community",
   "points": [
     {
-      "checked_at": "2026-09-30T09:47:04Z",
-      "commit_sha": "69871d53679976e567f0b5dc2972b75b2fd6d2a3",
-      "pushed_at": "2026-09-30T09:40:15Z",
-      "stars": 20599
-    },
-    {
       "checked_at": "2026-10-11T10:05:50Z",
       "commit_sha": "5052d670549f435096df5da585444e3401985c69",
       "pushed_at": "2026-10-11T09:55:52Z",

@@ -2,12 +2,6 @@
   "full_name": "homarr-labs/homarr",
   "points": [
     {
-      "checked_at": "2026-09-30T09:47:04Z",
-      "commit_sha": "661eb20d13ccb6850244ccb664311adbcc412bc9",
-      "pushed_at": "2026-09-30T08:23:54Z",
-      "stars": 4906
-    },
-    {
       "checked_at": "2026-10-01T10:13:57Z",
       "commit_sha": "3a53bb77aa02742acce492b31df8ab43398bc9f6",
       "pushed_at": "2026-10-01T08:28:15Z",
@@ -48,6 +42,12 @@
       "commit_sha": "93d50b269e571de0ee1a1832c1ba6ac759e292f9",
       "pushed_at": "2026-10-19T08:59:56Z",
       "stars": 5135
+    },
+    {
+      "checked_at": "2026-10-30T10:08:14Z",
+      "commit_sha": "fdcae59a438d331187c47545f4ffbab52e3219da",
+      "pushed_at": "2026-10-30T10:06:39Z",
+      "stars": 5242
     }
   ],
   "repo_id": 729308541

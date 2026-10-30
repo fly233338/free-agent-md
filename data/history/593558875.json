@@ -2,12 +2,6 @@
   "full_name": "polarsource/polar",
   "points": [
     {
-      "checked_at": "2026-09-30T09:47:04Z",
-      "commit_sha": "4f38775e711107af33bdf41e1f797f310a998b29",
-      "pushed_at": "2026-09-30T09:46:20Z",
-      "stars": 10300
-    },
-    {
       "checked_at": "2026-10-12T10:58:37Z",
       "commit_sha": "d915a2a79449688916ac20f54af91831367a0744",
       "pushed_at": "2026-10-12T10:57:28Z",
@@ -48,6 +42,12 @@
       "commit_sha": "222b1fb8aba88574f0f55636600e08de7cb293e8",
       "pushed_at": "2026-10-28T09:46:16Z",
       "stars": 10433
+    },
+    {
+      "checked_at": "2026-10-30T10:08:14Z",
+      "commit_sha": "f81e9ca2827ed4e63b272f4358e8cd8fe1e00b79",
+      "pushed_at": "2026-10-30T10:07:33Z",
+      "stars": 10439
     }
   ],
   "repo_id": 593558875

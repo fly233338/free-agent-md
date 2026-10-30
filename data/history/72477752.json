@@ -2,12 +2,6 @@
   "full_name": "pulumi/pulumi",
   "points": [
     {
-      "checked_at": "2026-09-30T09:47:04Z",
-      "commit_sha": "e801eb0529bc4655950517fd9daa0447a6c795b3",
-      "pushed_at": "2026-09-30T09:45:34Z",
-      "stars": 25747
-    },
-    {
       "checked_at": "2026-10-05T10:33:57Z",
       "commit_sha": "fa4b08f43a00f742aadafee81fb6699db0f588bf",
       "pushed_at": "2026-10-05T10:31:05Z",

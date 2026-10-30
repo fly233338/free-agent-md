@@ -15,15 +15,12 @@ yarn build           # or: make build
 yarn watch           # or: make watch
 
 # Run tests
-yarn test            # Unit tests (Jest) for all packages
+yarn test            # Unit tests (Jest) for all packages, then type-checks src + tests
 yarn test-playwright # Playwright E2E tests
 
 # Run tests for a specific package
 cd packages/framer-motion && yarn test-client  # Client-side Jest tests
 cd packages/framer-motion && yarn test-server  # SSR Jest tests
-
-# Lint
-yarn lint            # or: make lint
 
 # Run E2E tests
 make test-e2e        # Runs all E2E tests (Next.js, HTML, React, React 19, Playwright)
@@ -79,7 +76,7 @@ motion (public API)
 
 ### Test types by feature
 
-- **Unit tests (Jest)**: For pure logic, value transformations, utilities. Located in `__tests__/` directories alongside source. **JSDOM does not support WAAPI** (`Element.animate()`), so Jest tests only cover the JS animation fallback path.
+- **Unit tests (Jest)**: Jest only transpiles TypeScript (no type-checking); test types are checked by `yarn typecheck` in each package (`tsc -p tsconfig.test.json`), which `yarn test` runs at the root. For pure logic, value transformations, utilities. Located in `__tests__/` directories alongside source. **JSDOM does not support WAAPI** (`Element.animate()`), so Jest tests only cover the JS animation fallback path.
 - **E2E tests (Cypress)**: For UI behavior that involves DOM rendering, scroll interactions, gesture handling, or WAAPI animations. Test specs in `packages/framer-motion/cypress/integration/`, test pages in `dev/react/src/tests/`.
 - **E2E tests (Playwright)**: For cross-browser testing and HTML/vanilla JS tests. Specs in `tests/`, test pages in `dev/html/public/playwright/`.
 
@@ -150,7 +147,7 @@ async function nextFrame() {
 
 - **Prioritise small file size** — this is a library shipped to end users. Prefer concise patterns that minimise output bytes.
 - Prefer optional chaining (`value?.jump()`) over explicit `if` statements
-- Use `interface` for type definitions (enforced by ESLint)
+- Use `interface` for type definitions
 - No default exports (use named exports)
 - Prefer arrow callbacks
 - Use strict equality (`===`)

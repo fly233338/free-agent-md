@@ -2,12 +2,6 @@
   "full_name": "papers-we-love/papers-we-love",
   "points": [
     {
-      "checked_at": "2026-09-30T09:47:04Z",
-      "commit_sha": "9b92363eac4d4fbea0f5fdc7766ef68d22037ca8",
-      "pushed_at": "2026-09-29T09:45:40Z",
-      "stars": 110102
-    },
-    {
       "checked_at": "2026-10-01T10:13:57Z",
       "commit_sha": "9b92363eac4d4fbea0f5fdc7766ef68d22037ca8",
       "pushed_at": "2026-09-29T09:45:40Z",
@@ -174,6 +168,12 @@
       "commit_sha": "0b33c953aae0c90e6d15c4ed41b01e76358f3c28",
       "pushed_at": "2026-10-28T23:10:37Z",
       "stars": 111012
+    },
+    {
+      "checked_at": "2026-10-30T10:08:14Z",
+      "commit_sha": "0b33c953aae0c90e6d15c4ed41b01e76358f3c28",
+      "pushed_at": "2026-10-28T23:10:37Z",
+      "stars": 111044
     }
   ],
   "repo_id": 15204860

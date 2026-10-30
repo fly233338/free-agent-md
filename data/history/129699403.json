@@ -2,12 +2,6 @@
   "full_name": "tuist/tuist",
   "points": [
     {
-      "checked_at": "2026-09-30T09:47:04Z",
-      "commit_sha": "d1c70e03f6da76cc7073079d979f67f94afbadeb",
-      "pushed_at": "2026-09-30T09:43:26Z",
-      "stars": 5818
-    },
-    {
       "checked_at": "2026-10-07T10:21:27Z",
       "commit_sha": "3f29b45ce6177b3cde695d53d9f4a223b739ae75",
       "pushed_at": "2026-10-07T10:14:06Z",
@@ -42,6 +36,12 @@
       "commit_sha": "b4bfce11933c706452441e43771ffc7f4b7cf139",
       "pushed_at": "2026-10-26T09:02:18Z",
       "stars": 5851
+    },
+    {
+      "checked_at": "2026-10-30T10:08:14Z",
+      "commit_sha": "580ff335e0fae008775964aec80973c9eeba5822",
+      "pushed_at": "2026-10-30T10:07:48Z",
+      "stars": 5852
     }
   ],
   "repo_id": 129699403

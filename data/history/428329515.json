@@ -2,12 +2,6 @@
   "full_name": "nuxt/ui",
   "points": [
     {
-      "checked_at": "2026-09-30T09:47:04Z",
-      "commit_sha": "4bfd115418fdbd2c4419bac1b53aa7dcdc7e8f8a",
-      "pushed_at": "2026-09-30T09:45:32Z",
-      "stars": 6976
-    },
-    {
       "checked_at": "2026-10-04T09:52:51Z",
       "commit_sha": "322fcfbbae4d28a20651945593721d0e506dbb47",
       "pushed_at": "2026-10-04T09:50:04Z",

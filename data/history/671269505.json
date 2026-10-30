@@ -2,12 +2,6 @@
   "full_name": "BerriAI/litellm",
   "points": [
     {
-      "checked_at": "2026-09-30T09:47:04Z",
-      "commit_sha": "6bc17f98d7d049d1e9b3fb6354654d1efe7f407e",
-      "pushed_at": "2026-09-30T09:40:40Z",
-      "stars": 59911
-    },
-    {
       "checked_at": "2026-10-01T10:13:57Z",
       "commit_sha": "0980f756bd031993329eb0b8b2caa193047e6465",
       "pushed_at": "2026-10-01T10:08:02Z",
@@ -66,6 +60,12 @@
       "commit_sha": "94e4ebd63d9384efd933812d4e8a786d1c2f9652",
       "pushed_at": "2026-10-28T09:45:48Z",
       "stars": 62220
+    },
+    {
+      "checked_at": "2026-10-30T10:08:14Z",
+      "commit_sha": "d1758cda91a663b4e00b35af0921389bc6e2c95e",
+      "pushed_at": "2026-10-30T10:05:00Z",
+      "stars": 62362
     }
   ],
   "repo_id": 671269505

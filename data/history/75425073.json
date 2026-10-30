@@ -2,12 +2,6 @@
   "full_name": "pubkey/rxdb",
   "points": [
     {
-      "checked_at": "2026-09-30T09:47:04Z",
-      "commit_sha": "bb88a9412b9aaba5aba7d7184615eac415c1b026",
-      "pushed_at": "2026-09-30T09:45:37Z",
-      "stars": 23395
-    },
-    {
       "checked_at": "2026-10-01T10:13:57Z",
       "commit_sha": "8b524a8e1eb2dede3d008d2c7b0582e9fde9c7e0",
       "pushed_at": "2026-10-01T10:13:07Z",

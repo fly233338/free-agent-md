@@ -2,12 +2,6 @@
   "full_name": "langwatch/langwatch",
   "points": [
     {
-      "checked_at": "2026-09-30T09:47:04Z",
-      "commit_sha": "02103b750c38b069160401f2336899279a82c9fd",
-      "pushed_at": "2026-09-30T08:32:47Z",
-      "stars": 4891
-    },
-    {
       "checked_at": "2026-10-01T10:13:57Z",
       "commit_sha": "08c9bfacc23f145fac2bddc3dc4749389b59de88",
       "pushed_at": "2026-10-01T10:09:30Z",
@@ -174,6 +168,12 @@
       "commit_sha": "60d900e4304cc52627fac4b14c08ecc9d7b5330e",
       "pushed_at": "2026-10-29T09:30:26Z",
       "stars": 4998
+    },
+    {
+      "checked_at": "2026-10-30T10:08:14Z",
+      "commit_sha": "3f7af90638356c3cd68ae91dd167d5ce4ba36e60",
+      "pushed_at": "2026-10-30T09:28:37Z",
+      "stars": 4999
     }
   ],
   "repo_id": 689299900
