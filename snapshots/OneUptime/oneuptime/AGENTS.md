@@ -49,6 +49,10 @@ Any text a notification carries can be that long: a response body or a log a des
 
 `HugeTextInLongRunningProcess.test.ts` (packages/Common/Tests/Server/Types) runs every converter - email, plain text, Slack, Teams, the Dashboard viewer, feed text - on sixteen megabytes under `node --no-regexp-optimization`, and on 64 KB of every shape that was slow, each held to a time budget; a new converter of notification text belongs there too.
 
+### Emails load nothing from outside the installation
+
+An email is read wherever its reader is - on a network without the internet, behind a mail gateway that flags remote images - and every image it fetches tells whoever serves it who opened the email, and when (issue #5124: every email's header loaded its logo from res.cloudinary.com). So an email's own markup loads nothing it does not carry: an image is either inside the email - OneUptime's logo (`oneUptimeLogoUrl`, `packages/Common/Server/Utils/Mail/EmailLogo.ts`) and screenshots go out as inline attachments the HTML points at by Content-ID (`EmailInlineImages.ts`) - or an address the installation builds on its own host and hands the template (a logo its operator uploaded). Never a CDN, a web font, a tracking pixel or any other address a template or the code that writes email markup spells out; the only host a template names is `oneuptime.com`, in the footer's link of an installation that is not renamed. `OfflineAssetHygiene.test.ts` (packages/Common/Tests/Server/Utils) reads every email template, in any format, and every string of the code that writes email markup; `EmailsLoadNothingFromOutside.test.ts` (packages/App/Tests/Notification) renders and sends every template on every transport.
+
 ### After you make a change.
 
 Do not lint the entire project. Only lint the files you have modified by passing their paths explicitly to `npx eslint --fix` from the root. Do not run `npm run lint`, `npm run fix-lint`, or `npm run fix`, as these commands lint the entire project.
@@ -113,21 +117,24 @@ stands, and what the GitHub Marketplace listing holds and how to change it.
 
 ### Cloud marketplace listings
 
-OneUptime Cloud is sold on AWS Marketplace, Microsoft Marketplace (Azure) and Google Cloud Marketplace through
-`packages/Common/Server/Utils/Marketplace` (purchases, landing pages, webhooks, hourly usage reporting) and Sign in with
-Microsoft. Before changing that code, its settings, the marketplace usage prices, or anything in a seller portal, read
+OneUptime Cloud is sold on AWS Marketplace, Microsoft Marketplace (Azure) and Google Cloud Marketplace through the
+enterprise module's `ee/Server/CloudMarketplace` (purchases, landing pages, webhooks, hourly usage reporting) and Sign in
+with Microsoft (core: `packages/Common/Server/Utils/MicrosoftSignIn`, built on the HTTP client and token verifier that
+stay in `packages/Common/Server/Utils/Marketplace`). Before changing that code, its settings, the marketplace usage
+prices, or anything in a seller portal, read
 [the cloud marketplace guide](packages/Common/Server/Utils/Marketplace/RELEASING.md). It explains how a purchase is billed,
 the URLs and settings each marketplace is configured with, and which steps (seller registration, tax and banking,
 publishing) only a maintainer may do.
 
-OneUptime Cloud is also a native integration on the Vercel Marketplace (`packages/Common/Server/Utils/Marketplace/Vercel`:
-the provider API Vercel calls, sign-in from Vercel, webhooks, monitors of connected projects, Vercel invoices) with its
-log drain in the Telemetry service. Before changing that code, the resources' secrets or plans, or anything in Vercel's
-Integration Console, read [the Vercel Marketplace guide](packages/Common/Server/Utils/Marketplace/VERCEL_RELEASING.md).
+OneUptime Cloud is also a native integration on the Vercel Marketplace (`ee/Server/CloudMarketplace/Vercel` and
+`ee/Server/CloudMarketplace/API`: the provider API Vercel calls, sign-in from Vercel, webhooks, monitors of connected
+projects, Vercel invoices) with its log drain in the Telemetry service, which every edition serves. Before changing that
+code, the resources' secrets or plans, or anything in Vercel's Integration Console, read
+[the Vercel Marketplace guide](packages/Common/Server/Utils/Marketplace/VERCEL_RELEASING.md).
 
 Self-hosted OneUptime Enterprise is sold on the same three marketplaces as a Kubernetes application, billed per
 user-hour: the usage job in `ee/Server/Marketplace`, the marketplace license in `ee/Server/License`, the reporters in
-`packages/Common/Server/Utils/Marketplace/SelfHosted`, the chart editions and their release automation in
+`ee/Server/Marketplace/Reporters`, the chart editions and their release automation in
 `HelmChart/Marketplace`, and `.github/workflows/marketplace-release.yml`. Before changing
 any of these, the `enterpriseMarketplace` chart values, or anything in those listings, read
 [the self-hosted marketplace guide](packages/Common/Server/Utils/Marketplace/SELF_HOSTED_RELEASING.md). It explains

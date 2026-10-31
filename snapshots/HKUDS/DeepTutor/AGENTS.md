@@ -5,7 +5,9 @@
 DeepTutor is an **agent-native** intelligent learning companion organized
 around a two-layer plugin model — single-shot **Tools** invoked by the
 LLM, and multi-stage **Capabilities** that take over a turn — exposed
-through three entry points: CLI, WebSocket API, and Python SDK.
+through three entry points: CLI, WebSocket API, and Python SDK. All three
+enter the durable turn application service before the shared turn engine
+routes a normalized context to the selected capability.
 
 ## Architecture
 
@@ -13,7 +15,12 @@ through three entry points: CLI, WebSocket API, and Python SDK.
 Entry Points:  CLI (Typer)  |  WebSocket /ws  |  Python SDK
                     ↓                   ↓                   ↓
               ┌─────────────────────────────────────────────────┐
-              │              ChatOrchestrator                    │
+              │          TurnApplicationService                 │
+              │   persists, coordinates, and replays turns      │
+              └──────────────────────┬──────────────────────────┘
+                                     ↓
+              ┌─────────────────────────────────────────────────┐
+              │       TurnEngine → ChatOrchestrator              │
               │   routes UnifiedContext → selected Capability    │
               │   (defaults to `chat`)                           │
               └──────────┬──────────────┬───────────────────────┘
@@ -24,32 +31,37 @@ Entry Points:  CLI (Typer)  |  WebSocket /ws  |  Python SDK
               └──────────────┘  └────────────────────┘
 ```
 
-All capabilities emit on a shared `StreamBus`; the orchestrator fans
-events out to consumers. Runtime settings live in
+`TurnApplicationService` owns durable turn state and replay through the
+session store and runtime coordinator. Each execution uses a per-turn
+`StreamBus`; the orchestrator emits events, the turn runtime persists them,
+and adapters replay them to consumers. Runtime settings live in
 `data/user/settings/*.json` — project-root `.env` files are intentionally
 ignored.
 
 ### Level 1 — Tools
 
-Single-function tools the LLM picks on demand. Four user-toggleable tools
+Single-function tools the LLM picks on demand. Eight user-toggleable tools
 surface in `/settings/tools`:
 
-| Tool           | Description                                   |
-| -------------- | --------------------------------------------- |
-| `brainstorm`   | Breadth-first idea exploration with rationale |
-| `web_search`   | Web search with citations                     |
-| `paper_search` | arXiv preprint search                         |
-| `reason`       | Dedicated deep-reasoning LLM call             |
+| Tool                 | Description                                   |
+| -------------------- | --------------------------------------------- |
+| `brainstorm`         | Breadth-first idea exploration with rationale |
+| `web_search`         | Web search with citations                     |
+| `paper_search`       | arXiv preprint search                         |
+| `zotero_search`      | Search a configured Zotero library            |
+| `reason`             | Dedicated deep-reasoning LLM call             |
+| `geogebra_analysis`  | Analyze math images into GeoGebra commands    |
+| `imagegen`           | Generate images                               |
+| `videogen`           | Generate videos                               |
 
-The rest are **context-gated**: the chat capability auto-mounts them from
-`ToolMountFlags` (presence of a KB, attachments, sandbox availability, …), and
-any of them can also be force-enabled via `--tool`. Auto-mounted set: `rag`,
-`read_source`, `read_memory`, `write_memory`, `read_skill`, `load_tools`,
-`exec`, `code_execution` (sandboxed Python: NL intent → code → run),
-`list_notebook`, `write_note`, `web_fetch`, `github`, `cron`,
-`ask_user` (pauses the turn and resumes with the user's reply), plus the
-mastery-path tools. `geogebra_analysis` is parked under
-`COMING_SOON_TOOL_TYPES`.
+`USER_TOGGLEABLE_TOOL_NAMES` in `deeptutor/tools/builtin/__init__.py` is the
+authoritative toggle list. Other built-ins are **context-gated** or
+capability-owned: `CONFIGURABLE_BUILTIN_TOOL_NAMES` declares the context-gated
+surface, while `deeptutor/agents/_shared/tool_composition.py` owns the mount
+rules (`ToolMountFlags`) and the always-available workspace tools. Examples
+include `rag`, memory and notebook tools, `read_skill`, deferred MCP/CLI tools,
+`exec`, `ask_user`, and mastery navigation. `--tool` selects from the
+user-toggleable whitelist; it does not bypass context or capability gates.
 
 ### Level 2 — Capabilities
 
@@ -58,28 +70,36 @@ Multi-stage pipelines that own the turn:
 | Capability       | Stages                                                |
 | ---------------- | ----------------------------------------------------- |
 | `chat`           | exploring → responding (single agentic loop, default) |
-| `mastery_path`   | responding (Guided Learning — chat loop + mastery tools, gated per topic type) |
-| `deep_solve`     | planning → reasoning → writing                        |
+| `ask_questions`  | responding (chat loop forced through `ask_user`)      |
+| `deep_solve`     | responding (chat loop + solve planning tools)         |
 | `deep_question`  | ideation → generation                                 |
 | `deep_research`  | rephrasing → decomposing → researching → reporting    |
 | `visualize`      | analyzing → generating → reviewing (SVG / Chart.js / Mermaid / HTML; or routes to Manim sub-stages via `render_type`) |
 | `math_animator`  | concept_analysis → concept_design → code_generation → code_retry → summary → render_output |
+| `mastery_path`   | responding (Guided Learning — chat loop + mastery tools, gated per topic type) |
+| `immersive_reading` | responding (document- or timestamp-grounded media reading loop) |
+| `video_lesson`   | code_generation → render_check → render_output (Remotion lesson played live in the browser, with TTS narration) |
 
 All capabilities converge on `emit_capability_result()` in
-`deeptutor/capabilities/_shared.py` so every turn emits the same envelope
+`deeptutor/agents/_shared/capability_result.py` so every turn emits the same envelope
 (response payload + `cost_summary` from `UsageTracker`). Status copy and
 prompts are i18n'd via `capabilities/prompts/{en,zh}/<name>.yaml`.
 
 ## CLI Usage
 
 ```bash
-# Install
-pip install deeptutor      # Full app (CLI + Web/API + packaged Web assets)
-pip install deeptutor-cli  # CLI-only
+# Install from the current dev source checkout
+python -m pip install -r requirements/full.txt
+python -m pip install -e . --no-deps
+
+# Alternative in 1.7.0: choose one in a separate wheel environment
+python -m pip install "deeptutor[full]"  # Full app, CLI + Web/API
+python -m pip install deeptutor         # Core CLI/SDK (chat + ask_questions)
+python -m pip install deeptutor-cli     # Compatibility alias for core
 
 # Run any capability
 deeptutor run chat "Explain Fourier transform"
-deeptutor run deep_solve "Solve x^2=4" -t rag --kb my-kb
+deeptutor run deep_solve "Solve x^2=4" --kb my-kb
 deeptutor run visualize "Animate sine wave" --config render_mode=manim_video
 
 # Interactive REPL
@@ -97,6 +117,13 @@ deeptutor serve --port 8001       # API server only
 deeptutor start                   # backend + frontend together
 ```
 
+Examples beyond core require their owning modules; use `deeptutor module list`
+to inspect installed/enabled/ready states and `deeptutor plugin list` to discover
+registered capabilities and tools. Source Web startup also needs Node.js 22 LTS
+and `npm ci --legacy-peer-deps` in `web/`. CLI-only source users can skip frontend
+setup, but still need the full Python dependencies. Follow
+[Agent Setup](docs-for-dev/AGENT_SETUP.md) for credentials and verification.
+
 ## Key Files
 
 | Path                                       | Purpose                              |
@@ -106,33 +133,43 @@ deeptutor start                   # backend + frontend together
 | `deeptutor/runtime/registry/`              | Tool + Capability registries         |
 | `deeptutor/runtime/bootstrap/builtin_capabilities.py` | Built-in capability class paths |
 | `deeptutor/services/config/runtime_settings.py` | JSON settings + process-env overrides |
-| `deeptutor/core/stream.py`, `stream_bus.py` | StreamEvent protocol + async fan-out |
+| `deeptutor/services/subagent/`             | Local/remote agent connectors; register each backend in `registry.py` and its model options in `models.py` (Grok CLI uses native `streaming-json`) |
+| `deeptutor/core/stream.py`, `deeptutor/runtime/stream_bus.py` | StreamEvent protocol + async fan-out |
 | `deeptutor/core/tool_protocol.py`          | `BaseTool` + `ToolDefinition`         |
-| `deeptutor/core/capability_protocol.py`    | `BaseCapability` + `CapabilityManifest` |
+| `deeptutor/core/capability_protocol.py`    | `TurnCapability` + `CapabilityManifest` |
 | `deeptutor/core/context.py`                | `UnifiedContext` dataclass            |
 | `deeptutor/tools/builtin/__init__.py`      | All built-in tool wrappers           |
 | `deeptutor/capabilities/`                  | Built-in capability implementations  |
-| `deeptutor/app.py`                         | `DeepTutorApp` — Python SDK facade    |
+| `deeptutor/app/`                           | `DeepTutorApp` SDK facade + durable application service |
 | `deeptutor_cli/main.py`                    | Typer CLI entry point                |
 | `deeptutor/api/routers/unified_ws.py`      | Unified WebSocket endpoint           |
 
 ## Dependency Layers
 
-Public install paths and source extras are defined in `pyproject.toml`.
-Requirements files mirror the same dependency groups for Docker/CI installs.
+The 1.7.0 layout is modular; 1.6.15 and earlier packages use the
+previous layout. Core owns the CLI, SDK and shared runtime; feature wheels must
+match its version. `deeptutor-cli` is a metadata-only compatibility alias.
+For development, use source or [local wheels](docs-for-dev/MODULES.md).
 
-```
-pip install deeptutor      — Full app (CLI + Web/API + packaged Web assets)
-pip install deeptutor-cli  — CLI-only (LLM + RAG + providers + document parsing)
-pip install -e .           — Source install for development
+Module manifests own dependency groups; generated requirements files support
+source, Docker and CI installs. `pyproject.toml` stores extra templates under
+`tool.deeptutor.optional-dependencies`; `build_metadata.py` resolves same-version
+wheel pins. Source checkouts expose all modules and install external dependencies
+through `requirements/full.txt`, followed by `pip install -e . --no-deps`.
+Use the source helper for optional extras rather than installing feature wheels
+over the checkout:
 
-Source extras (.[ extra ], defined in pyproject.toml):
-.[cli]            — CLI-only dependency set
-.[server]         — Web/API server dependencies
-.[partners]       — Partner channel SDKs  (legacy alias: .[tutorbot])
-.[matrix]         — Matrix channel for Partners (matrix-nio; needs libolm)
-.[matrix-e2e]     — Matrix with end-to-end encryption (matrix-nio[e2e])
-.[math-animator]  — Manim addon (powers `visualize` Manim renders + `deeptutor run math_animator`)
-.[dev]            — Test / lint tooling
-.[all]            — Everything above
+```bash
+python scripts/install_extras.py partners       # Partner channel SDKs
+python scripts/install_extras.py matrix         # Matrix channel without E2EE/libolm
+python scripts/install_extras.py matrix-e2e     # Matrix with end-to-end encryption
+python scripts/install_extras.py math-animator  # Manim; also needs system LaTeX/ffmpeg
+python scripts/install_extras.py dev            # Test / lint tooling
+python scripts/install_extras.py all            # Full + Manim + dev dependencies
 ```
+
+Stop DeepTutor before module changes. Source supports `module enable/disable`;
+wheel environments also support `module install/uninstall`. Upgrading a legacy
+`deeptutor-cli` installation requires uninstalling it before installing the new
+packages, preserving the same `DEEPTUTOR_HOME`; see the setup guide. Validate
+with `python -m pip check`, `deeptutor module list`, and the setup readiness checks.

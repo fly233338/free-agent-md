@@ -1,0 +1,345 @@
+# AGENTS.md instructions
+
+These instructions apply to Codex and other coding agents working in this
+repository. Keep them durable, repo-scoped, and free of volatile business
+metrics.
+
+## Start Here
+
+Use [README.md](README.md) for setup and `package.json` for available commands.
+`CLAUDE.md` imports this file so repository instructions have one source.
+
+The Next.js app handles UI and HTTP requests; Convex owns persisted data;
+Trigger.dev owns durable Agent runs. Ask and Agent share model-streaming logic
+in `lib/api/agent-stream-runner.ts`. Trace both callers when changing that
+boundary. Local and desktop clients connect through separate sandbox transports;
+success on one transport does not prove the others work.
+
+## Code Design and Maintenance
+
+Prefer the smallest design that handles the actual requirement. Keep provider
+and transport differences at their adapters and share domain logic across
+callers. Extract a module when it gives a responsibility a clear owner, not just
+to reduce a file's line count. Avoid speculative abstractions and pass-through
+wrappers that add navigation without behavior.
+
+Before deleting code or dependencies, check imports, scripts, framework entry
+points, generated references, and dynamic loading. Treat unused-code reports as
+candidates to verify. Keep refactors focused on one concern and preserve public
+contracts and authorization boundaries.
+
+## Documentation and Skills
+
+Repository documentation is public. Keep internal product and business plans,
+experiment plans and readouts, rollout evidence, and account-specific operational
+notes in Linear under the owning issue or a team document. Do not recreate
+`docs/internal/` or commit those materials elsewhere in the repository.
+
+Keep documentation for decisions, cross-service constraints, operational
+procedures, and pitfalls that are hard to infer from the code. Put local
+implementation explanations beside the code they explain. Avoid file catalogs,
+restating types or control flow, and recording PR summaries in durable docs.
+Rewrite or remove stale guidance when behavior changes.
+
+Keep `.agents/skills/` for HackerAI-owned workflows, such as user research.
+Do not vendor generic third-party coding skills or copy SDK manuals into the
+repository; consult the installed dependency's docs or its official reference
+when needed. Product runtime skills under `lib/ai/subagents/` and their vendored
+sources under `third_party/` are a separate application dependency.
+
+## Focused Validation
+
+When writing, reviewing, or removing HackerAI tests, follow the
+[test-quality skill](.agents/skills/hackerai-test-quality/SKILL.md). Require a
+concrete failure each test would catch; preserve unique regression coverage
+when simplifying the suite. Test count and coverage percentage are not goals.
+
+Use the smallest check that proves the changed behavior: targeted tests, lint,
+and type checking for the affected scope. Test outcomes and meaningful logic,
+not assertions that repeat the implementation. Preserve required commit hooks
+and CI checks; avoid repeating the full suite after it passes unless new changes
+or failures justify another run.
+
+For cross-cutting changes, identify the affected paths: Ask and Agent, web and
+desktop, cloud and local sandboxes, and relevant model providers. Check recovery
+as well as the happy path, including cancellation, retry, and reconnect when
+applicable. Apply the visual and manual verification rules below.
+
+For native Desktop Computer Use, use the
+[hackerai-desktop-qa skill](.agents/skills/hackerai-desktop-qa/SKILL.md) and its
+local QA runner to reuse builds, record diagnostics and clean up owned processes.
+
+## Preview-First Validation and Shared Host Resources
+
+For browser and web UI acceptance, prefer the task's Vercel Preview deployment
+instead of starting another local Next.js server or production build. Push a
+reviewable branch, wait for its Preview deployment, verify the deployed commit
+and the designated Preview backend/worker, and test through Computer Use. Keep
+Preview and Production environment boundaries; do not use Production as a test
+fallback. Preview UI success does not replace required tests or CI.
+
+Before detailed Preview QA, verify the designated Preview backend and Trigger
+worker, then use the existing Preview test account to complete one harmless
+Agent request and confirm its saved response survives reload. Resolve
+configuration failures before continuing. Never use masked configuration values
+as credentials or substitute Production.
+
+Run `pnpm test:changed` for local iteration: it runs Jest tests related to
+uncommitted changes with one worker, plus the Node tooling suites outside Jest.
+The commit hook retains staged lint/format checks and type checking, then uses
+this focused command. It includes staged, unstaged and untracked files.
+Documentation-only changes may select no Jest tests. Configuration changes,
+dynamic imports, and missing dependency links can escape automatic selection, so
+this is a feedback shortcut, not full acceptance: required CI still runs the
+entire suite with coverage. Run an explicit affected suite when the dependency
+graph cannot represent the change. Do not rerun the full suite locally for every
+review correction; use `pnpm test` when a local full run is needed.
+
+Run focused local tests first, with one worker for small suites. The repository
+limits Jest to two workers by default so concurrent worktrees do not each consume
+half the host's CPU cores. Do not increase concurrency on a shared host without
+checking capacity. Avoid overlapping a full suite, typecheck, and frontend/native
+build in the same task. Let required hooks and CI complete; do not run duplicate
+full suites when an unchanged result already provides the needed evidence.
+
+For Desktop changes, still build and operate the actual local native app through
+Computer Use. Prefer a prebuilt local frontend for acceptance when practical;
+finish the build before starting the test so on-demand compilation cannot consume
+request deadlines. Retain local backend/worker/relay and transport verification.
+Use local web development when debugging requires it or Preview cannot exercise
+the affected behavior, and state that reason in the verification record.
+
+Track task-owned process IDs and ports. Stop unused servers, watchers, and test
+runners when finished; never stop another task's processes to reclaim capacity.
+Report any services intentionally left running for continued testing.
+
+## Worktree Dependencies
+
+Each checkout or worktree must have its own `node_modules` links. Never copy,
+move, or manually link an installed `node_modules` tree between the main
+checkout and another worktree. Sharing pnpm's global content-addressable store
+is safe; sharing the installed dependency tree is not.
+
+After creating a worktree, install its dependencies with
+`corepack pnpm install --frozen-lockfile`. If the local dependency guard reports
+links outside the checkout, repair that checkout with
+`corepack pnpm install --force --frozen-lockfile` before running development
+commands.
+
+Do not pre-create a Convex deployment for worktrees that may only need static
+checks or PR publication. `pnpm run dev:local` owns lazy local Convex setup: it
+selects an existing local deployment and creates one for the current worktree
+only when the Convex CLI reports that none exists. Never copy `.convex` state
+between worktrees.
+
+## HackerAI Product Direction
+
+HackerAI is primarily built for individual security practitioners: bug bounty
+hunters, solo pentesters, students, and technical builders who want practical
+AI-assisted security workflows. Teams exist, but they are a secondary surface;
+do not optimize product decisions, copy, onboarding, or UI around enterprise
+procurement, compliance checklists, or admin-heavy workflows unless the task
+explicitly asks for it.
+
+When working on product, growth, pricing, onboarding, analytics, or UX,
+optimize first for fast solo-user activation: chat-to-value, Agent mode,
+local/desktop sandbox setup, cloud agent upgrade paths, file uploads, cost
+clarity, referrals, and limit-pressure conversion. Favor self-serve flows,
+simple language, and trust-through-transparency over enterprise sales language.
+
+Security and trust work should be candid about current capabilities: public
+source code, sandbox boundaries, subprocessors, data deletion, account security,
+and any missing formal certifications. Do not imply enterprise-grade compliance,
+managed security guarantees, or organizational trust claims unless they are
+already implemented and documented.
+
+For business, analytics, reliability, or production-regression questions, check
+the codebase docs and instrumentation first, then use PostHog, Vercel
+logs/inspect, Linear, or GitHub only when current external evidence is needed.
+For production Vercel logs, use `--no-branch` unless intentionally investigating
+a preview branch. Avoid hard-coding current revenue, user counts, team-share
+percentages, pricing, or other volatile metrics in durable instructions; use
+qualitative direction and source-of-truth references instead.
+
+## OpenRouter Request Diagnostics
+
+Check existing provider telemetry first. If attribution or usage metadata is
+missing and a recorded generation ID is available, call
+`GET https://openrouter.ai/api/v1/generation?id=<generation_id>` using the existing
+`OPENROUTER_API_KEY` from the authorized environment source. Load the key inside
+the request process; never print it, place it in command arguments, or copy
+environment files between checkouts. Return only provider, model, timing, token
+usage, cost, and finish reason. Report missing records or lookup failures without
+inferring an upstream provider or requesting a new key before checking access.
+
+## Feature Rollouts and Measurement
+
+For meaningful user-facing features or behavior changes, consider a PostHog
+feature flag or experiment so the release can be staged and its impact
+evaluated. Good candidates include new workflows, changed defaults,
+onboarding or pricing changes, costly Agent behavior, operationally risky
+behavior, and UX changes with uncertain impact. Do not require a flag for every
+change: routine refactors, minor visual polish, accessibility fixes, and
+correctness or security fixes that should reach everyone immediately are not
+flag candidates.
+
+Before implementation, document in the owning Linear issue the hypothesis,
+eligible population, primary success metric, guardrail metrics, actual exposure
+event, rollback condition, owner, readout or review date, and flag removal plan.
+Start with internal users or an explicit allowlist, then ramp gradually. Choose
+each rollout percentage based on risk, expected sample size, and current
+traffic, and record it in Linear and PostHog rather than assuming a universal
+percentage. Assignment must be deterministic and stable.
+
+Keep assignment, exposure, activation, and outcome distinct. Emit exposure
+only when the user actually encounters the changed experience. Analytics must
+remain privacy-safe: never send prompts, targets, findings, evidence, code,
+payloads, or other user content.
+
+Shipping the implementation does not complete the experiment. Review the
+PostHog readout before expanding the rollout, removing the flag, or calling the
+experiment complete. Every flag needs an owner and cleanup plan so stale flags
+do not accumulate.
+
+For churn, retention, renewal, or a change's effect on subscribers, follow
+the [hackerai-retention-analysis skill](.agents/skills/hackerai-retention-analysis/SKILL.md).
+
+## Pull Request Review Workflow
+
+When a PR has been pushed and is ready for review, do not send the final
+completion message until CI and CodeRabbit are complete.
+
+Use this wait pattern:
+
+- Poll once within 30-60 seconds after PR creation to confirm checks started.
+- While CI, Vercel, or Trigger checks are active, poll every 2-3 minutes.
+- When only CodeRabbit remains, poll every 3-5 minutes.
+- Treat 12-15 minutes as normal CodeRabbit runtime before calling it delayed.
+- If the user asks for status, report briefly, then continue waiting unless told
+  to stop.
+
+After CodeRabbit finishes:
+
+1. Check PR checks, CodeRabbit review status, review comments, review threads,
+   and issue comments.
+2. Treat every CodeRabbit suggestion as a hypothesis, not automatically correct.
+3. For each actionable comment:
+   - If valid, fix it with the smallest appropriate change, commit, push, and
+     wait for checks/CodeRabbit again.
+   - If false positive or not applicable, leave a brief PR reply explaining why
+     no change is needed.
+   - If it is a nit, fix it when low-risk and useful; otherwise explain why it
+     was skipped.
+4. Repeat until CodeRabbit is complete and there are no unresolved valid
+   actionable comments.
+
+Only finish when:
+
+- The PR is not draft.
+- The branch is pushed.
+- The local worktree is clean.
+- Required CI checks are passing.
+- CodeRabbit is complete.
+- Valid CodeRabbit comments are fixed or explicitly answered.
+- Visual verification is done when the PR has meaningful UI/user-visible impact.
+- Manual verification steps are included when the PR is user-facing, risky,
+  important, or needs human validation.
+- The only remaining blocker is human review, merge approval, or the listed
+  manual verification.
+
+## Thread Coordination
+
+Codex can use separate threads for independent work when that improves
+execution, review, or verification.
+
+Consider a separate thread when the work has a clear boundary, such as:
+
+- a distinct feature or bug that should become its own PR;
+- broad or high-risk visual QA worth an independent pass;
+- a long investigation that can run while implementation or PR checks continue;
+- a validation or follow-up task that does not need the current thread's full
+  context.
+
+Keep work in the current thread when it is one PR, a tightly coupled refactor, a
+small follow-up, overlapping file edits, or depends heavily on context from the
+current conversation.
+
+When creating or handing off a thread, include a compact brief with: objective,
+repo/worktree/branch, relevant files or PR, constraints, what not to change,
+required verification, expected deliverable, and how results should be reported
+back.
+
+For multi-PR work, split threads only when each PR can be reviewed and merged
+independently. Keep one parent thread responsible for coordinating scope,
+avoiding overlap, and integrating results.
+
+## Visual Verification
+
+For new user-facing workflows, define one concrete acceptance example before
+implementation, including relevant history or environment changes. Inspect the
+first functional desktop and narrow-screen layouts early, before extensive
+polish. Ask the user only when a material product decision remains unclear.
+
+Use visual verification in the same PR thread by default when the PR changes UI,
+chat message rendering, file/image display, onboarding, pricing, sandbox
+selection, frontend routes/components, or prompt behavior that creates a
+meaningful user-visible UI result.
+
+Do not require browser/computer visual checks for backend-only, test-only,
+prompt-only, CI, logging, or non-visual agent orchestration changes unless there
+is a plausible user-facing UI impact.
+
+Create a separate visual QA thread only for broad or high-risk UI changes where
+independent review is worth the handoff cost, such as multi-page flows, many
+responsive states, login/session setup, or visual polish passes.
+
+## Local Desktop Acceptance
+
+For changes affecting Desktop behavior, native commands, or the Desktop sandbox
+transport, follow [Local Desktop acceptance](docs/desktop-local-acceptance.md).
+Build and launch the actual native app from the task's source and exercise the
+affected journey through Computer Use before claiming Desktop verification.
+PR creation, CI, unit tests, and website testing alone do not establish native
+acceptance. Rebuild and retest after native-code changes.
+
+Use an isolated checkout with its own dependencies, environment files, local
+Convex state, and services. Verify the frontend, backend, worker, relay, account
+environment, and actual command transport independently. Prefer local services;
+verify designated Development/Preview targets before using external services.
+Never use Production as a local-test fallback or copy credentials/state between
+checkouts. Preserve the installed app and unrelated services.
+
+Test completion and relevant failure/recovery paths, including reload/reconnect,
+normal/narrow windows, and native file dialogs when affected. Report PASS, FAIL,
+or BLOCKED with screenshots and recorded commit/build/runtime identities. If
+login or graphical access needs human action, explain the exact blocker and
+preserve partial evidence. Keep researcher-feedback and human release gates;
+testing does not authorize merging or releasing.
+
+## Manual Verification Notes
+
+After checks and CodeRabbit are complete, include short manual verification
+steps when the PR is user-facing, risky, important, or cannot be fully validated
+by tests.
+
+Use this for changes involving payments, auth/account security, agent or
+sandbox behavior, local/desktop connections, file uploads, browser automation,
+important prompt behavior, analytics, or major UI flows.
+
+Manual steps should say:
+
+- Where to test.
+- What to do.
+- What should happen.
+
+If manual verification is not needed, say automated validation was sufficient.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

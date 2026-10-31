@@ -2,7 +2,7 @@
 
 ## Changelog
 
-User-facing changes go in `CHANGELOG.md` under `## [Unreleased]` ([Keep a Changelog](https://keepachangelog.com/) format), filed in the right `### Added/Changed/Removed/Fixed` subsection with the PR number linked. Prefix `**Breaking:**` for changes that bump the major version. At release, the `[Unreleased]` section is promoted to the new version.
+Record user-facing changes to the packaged application as towncrier fragments, following `changelog.d/README.md`; never edit `CHANGELOG.md` directly. Changes confined to `examples/`, or documentation-only changes such as the README or `docs/`, are outside the changelog's scope. Prefix `**Breaking:**` for changes that bump the major version.
 
 ## Agent skills
 
@@ -10,13 +10,17 @@ User-facing changes go in `CHANGELOG.md` under `## [Unreleased]` ([Keep a Change
 
 Issues are tracked as GitHub issues on `wkentaro/labelme` via the `gh` CLI. See `docs/agents/issue-tracker.md`.
 
-### Triage labels
+### Issue and pull-request labels
 
-Five canonical triage roles map 1:1 to label strings of the same name (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`). See `docs/agents/triage-labels.md`.
+For issue triage and type labels or pull-request verdict labels, follow `docs/agents/triage-labels.md`.
+
+### GUI driving
+
+To see or drive the real app, follow `docs/agents/gui-driving.md`: e2e tests first, then the harness's own computer use on macOS or Windows, Xvfb on Linux, and hand-driven live desktop last.
 
 ### Domain docs
 
-Single-context layout: `CONTEXT.md` and `docs/adr/` at the repo root (created lazily by `/grill-with-docs`). See `docs/agents/domain.md`.
+Single-context layout: `GLOSSARY.md` and `docs/adr/` at the repo root (created lazily by `/domain-modeling`). See `docs/agents/domain.md`.
 
 ### AI Assist
 

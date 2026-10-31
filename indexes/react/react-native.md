@@ -1,7 +1,7 @@
 # react/react-native instruction files
 
-Upstream: [react/react-native](https://github.com/react/react-native) · License: `MIT` · Commit: `54905a20063124919efb0127fe65fecfd8d62d1d`
+Upstream: [react/react-native](https://github.com/react/react-native) · License: `MIT` · Commit: `d4fee6d9837c1044ce88d5eae54d948008d4c128`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/react/react-native/AGENTS.md) | [Source](https://github.com/react/react-native/blob/54905a20063124919efb0127fe65fecfd8d62d1d/AGENTS.md) | `c988d6a2d60f1d1c6c7c1003c2e045183a2983ead1e2874f0f116416abc6d1d4` | 6,141 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/react/react-native/AGENTS.md) | [Source](https://github.com/react/react-native/blob/d4fee6d9837c1044ce88d5eae54d948008d4c128/AGENTS.md) | `52750be92776e8eaf382d4989cd428c9e6507a26f607f56e116457e5787d8574` | 6,998 B |

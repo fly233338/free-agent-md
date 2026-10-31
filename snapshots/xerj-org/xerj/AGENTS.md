@@ -127,7 +127,9 @@ usage · `1` any error at all (read the `error:` line before acting) · `4`
 needs a decision (gate above; answer with `--approve`, never a retry). Exit `3`
 also carries `reason=catalog-alias-sweep-failed`: the corpus **is** indexed and
 the journal committed, and only the catalog's duplicate-alias cleanup could not
-run — read `reason`, not the bare code, to tell the two apart. Exit `3` can
+run — read `reason`, not the bare code, to tell the two apart. Exit `3` with `reason=stale-resume-plan` instead carries `ok=false`: files
+added after the plan was frozen were not indexed. Read `skipped_appeared` and
+rerun with `--fresh` to rebuild that plan. Exit `3` can
 also mean a **whole dataset is missing**: if the server answers HTTP 400 to one
 dataset's mapping, that dataset's files are recorded as junk with the server's
 reason, every other dataset is indexed, and `xerj-done` carries
@@ -166,27 +168,38 @@ that is already running; it does not start one.
 }
 ```
 
-Use an absolute path (`command -v xerj`): MCP hosts started from a desktop icon
+Use an absolute path (`command -v xerj`; PowerShell: `(Get-Command xerj).Source`). The `sh` installer, including Windows Git Bash, MSYS and Cygwin, puts `xerj.exe` in `~/.local/bin` and does not edit PATH. The PowerShell installer (`get.ps1`) puts `xerj.exe` in `%LOCALAPPDATA%\Programs\xerj` and adds that directory to the user PATH. MCP hosts started from a desktop icon
 do not inherit a shell `PATH`. Add `"XERJ_AUTH": "ApiKey <key>"` when the node
 is not running `--insecure` — the key is `<data-dir>/admin.key`. `--url` and
 `--auth` flags override the two environment variables.
 
-Twenty-one tools: `xerj_search`, `xerj_semantic_search`, `xerj_vector_search`,
+Twenty-three tools: `xerj_search`, `xerj_semantic_search`, `xerj_vector_search`,
 `xerj_hybrid_search`, `xerj_memory_store`, `xerj_memory_recall`,
 `xerj_brain_overview`, `xerj_brain_ego`, `xerj_brain_link`, `xerj_brain_unlink`,
-`xerj_plan`, `xerj_map`, `xerj_code_search`, `xerj_index_budget`,
+`xerj_plan`, `xerj_map`, `xerj_status`, `xerj_code_search`, `xerj_index_budget`,
 `xerj_autoindex_remove`, `xerj_field_report`, `xerj_corpus_feedback`,
-`xerj_hub_find`, `xerj_hub_def`, `xerj_hub_ask`, `xerj_def`. The first eleven are
+`xerj_hub_find`, `xerj_hub_def`, `xerj_hub_ask`, `xerj_def`, `xerj_batch_search`. The first eleven are
 each a *thin proxy*: they build exactly the request the ES-compatible surface already accepts
 (`xerj_plan` is `POST /_ask`, the deterministic rule-based planner) and hand back
 whatever the engine returned, errors and refusals verbatim — no capability of
 their own, so anything you can do over MCP you can also do with `curl`, and vice
-versa. `xerj_map` (#1055) reads the autoindex catalog and returns its per-index
+versa. `xerj_search` adds `match_line` and capped `match_lines` on each hit: the
+absolute 1-based source line of the best-scoring query term inside the passage.
+Cite `ax_path:match_line`. Both fields are omitted when no term is located or the
+passage start line is unknown. `start_line` stays the passage start. `xerj_map` (#1055) reads the autoindex catalog and returns its per-index
 field map, trimmed to a byte cap but otherwise verbatim. `xerj_code_search`
 (#977) is deliberately not a thin proxy: it runs
 the `xerj code` reference-coding pipeline ([`tools/xerj-code/`](tools/xerj-code/))
 — staleness refusal, licence warnings, no-match-as-guidance — and returns its
 rendered text rather than a raw response.
+
+`xerj_batch_search` and `xerj batch-search --input <file|->` share an ordered
+batch-retrieval adapter over `/_msearch`: up to 50 queries, independent errors
+and explicit empty-result abstentions, citations on every returned hit. Exact
+IDs require a caller-selected indexed keyword field. It does not generate
+answers or calibrate confidence. Whole-response token budgets preserve item
+outcomes and at least one citation per matched item, or refuse explicitly.
+See [docs/recipes/batch-search.md](./docs/recipes/batch-search.md).
 
 `xerj_def` finds definitions in local autoindexed data, sharing the query,
 lexical ranking and location deduplication of `xerj def --json`. For example,
@@ -208,7 +221,7 @@ true. `xerj_field_report` files an agent field report (a GitHub PR first, the
 `/api/field-report` endpoint when GitHub is unavailable). `xerj_corpus_feedback`
 rates a hub corpus. `xerj_hub_find`, `xerj_hub_def` and `xerj_hub_ask` answer
 from Corpus Hub packs already on the machine, the `xerj ask` flow. A binary with
-no hub key omits the three hub tools and serves eighteen.
+no hub key omits the three hub tools and serves nineteen.
 
 Two honesty notes that bind how you describe results: `xerj_semantic_search`
 embeds server-side with the **lexical feature-hashing** embedder unless the node
@@ -242,9 +255,11 @@ ships. Four rules keep a merge gate green:
 
 - **Do not hand-edit generated HTML.** `landing/answers/**`, `landing/compare/**`
   and their `.md` twins are rendered from `content/answers/*.md` and
-  `content/compare/*.md` by `scripts/seo/build_articles.py`; `sitemap.xml` is
-  derived from the filesystem and from `git log`. Every generated file says so on
-  its first line. Edit the source, run the generator, commit the output.
+  `content/compare/*.md` by `scripts/seo/build_articles.py`. Every generated file
+  says so on its first line. Edit the source, run the generator, commit the
+  output. `sitemap.xml` is derived the same way but is **not** committed: it is
+  a deploy artifact (`deploy-pages.yml` writes it before the upload, and it is
+  gitignored), so there is nothing to run or commit for it.
 - **Never write a `.html` internal link.** Pages serves this site
   extensionless — `/product.html` 308s to `/product`. `scripts/seo/urlmap.py` is
   the single source of truth, and canonical, `og:url` and the sitemap `<loc>`
