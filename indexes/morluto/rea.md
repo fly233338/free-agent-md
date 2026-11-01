@@ -1,7 +1,7 @@
 # morluto/rea instruction files
 
-Upstream: [morluto/rea](https://github.com/morluto/rea) · License: `MIT` · Commit: `23de10bb2849cdce8ddbe70504aa7cc57de75a98`
+Upstream: [morluto/rea](https://github.com/morluto/rea) · License: `MIT` · Commit: `293db94dd00e1ee084dd0fcc7a8a9e4b49f671a1`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/morluto/rea/AGENTS.md) | [Source](https://github.com/morluto/rea/blob/23de10bb2849cdce8ddbe70504aa7cc57de75a98/AGENTS.md) | `fd67a060e2686e17ca4c3e8f4c32626fc86a6350b412205972739c49a1c0a41a` | 12,683 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/morluto/rea/AGENTS.md) | [Source](https://github.com/morluto/rea/blob/293db94dd00e1ee084dd0fcc7a8a9e4b49f671a1/AGENTS.md) | `be04681d3923a05795cf267893aa8167c40aee04eec145a4a0df751cca565a58` | 13,073 B |

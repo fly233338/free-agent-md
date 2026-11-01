@@ -191,10 +191,17 @@ Delegation is explicit: build each worker `Agent` with its own `config`, `prompt
 
 ### Deprecated: `TaskConfig` / auto-injected `run_subtask` (removed in 1.4.0)
 
-See [ADR 0027](docs/adr/0027-taskconfig-is-deprecated-in-favour-of-explicit-delegates.md). Do not use `TaskConfig`, `Agent(tasks=...)` or `run_subtask` / `run_subtasks` in new code, docs or examples. The legacy path still ships in `ag2/agent.py` until removal.
+Do not use `TaskConfig`, `Agent(tasks=...)` or `run_subtask` / `run_subtasks` in new code, docs or examples. The legacy path still ships in `ag2/agent.py` until removal.
 
 - Tests that exercise it on purpose carry `@pytest.mark.filterwarnings("ignore:TaskConfig, Agent:DeprecationWarning")` (or a module-level `pytestmark`); new tests must not depend on it.
 - Removal in 1.4.0 covers: `TaskConfig` and its re-export from `ag2`, the `tasks=` parameter and `Agent.tasks`, `_build_subtask_toolkit` / `_spawn_subtask` / `_run_subtask` / `_task_slots_for`, the `agent.tasks` check in `ag2/ag_ui/capabilities.py`, those tests, and the deprecation notes in `website/docs/`.
+
+### Deprecated: `Agent(assembly=...)` (removed in 1.4.0)
+
+Register `Middleware(AssemblerMiddleware, policies=[...])` (plus `Middleware(HaltCheckMiddleware)` with `AlertPolicy`) in `middleware=` instead. Plugin, `add_policy()` and invocation-plugin policies join that assembler each turn.
+
+- Tests that exercise it on purpose carry `@pytest.mark.filterwarnings("ignore:Agent\\(assembly=:DeprecationWarning")` (or a module-level `pytestmark`); new tests must not depend on it.
+- Removal in 1.4.0 covers: the `assembly=` parameter and `ASSEMBLY_DEPRECATION`, the warning-filtered tests, and the deprecation notes in `website/docs/`. Keep `_attach_policies`: plugin policies still need it.
 
 ### persistent_stream
 

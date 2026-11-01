@@ -2,18 +2,6 @@
   "full_name": "PerryTS/perry",
   "points": [
     {
-      "checked_at": "2026-10-01T10:13:57Z",
-      "commit_sha": "b2ecb0b0384a9ccd835461ddc3ceec925317a4df",
-      "pushed_at": "2026-10-01T09:59:02Z",
-      "stars": 4922
-    },
-    {
-      "checked_at": "2026-10-02T09:51:48Z",
-      "commit_sha": "4b341bf5dc1a97a7dcc74432d25a723f96d6c059",
-      "pushed_at": "2026-10-02T09:30:26Z",
-      "stars": 4929
-    },
-    {
       "checked_at": "2026-10-03T09:14:01Z",
       "commit_sha": "69de7f3526134fabb8ee5c87c23fe9ba71d4de69",
       "pushed_at": "2026-10-03T09:13:25Z",
@@ -114,6 +102,12 @@
       "commit_sha": "ff4176189ece8ad2249478fd5bb7edcd91f876ba",
       "pushed_at": "2026-10-24T08:09:27Z",
       "stars": 5026
+    },
+    {
+      "checked_at": "2026-11-01T10:34:00Z",
+      "commit_sha": "49a8cb9118041bdbdfe215c51f5d98b1420ce2b4",
+      "pushed_at": "2026-11-01T10:34:02Z",
+      "stars": 5062
     }
   ],
   "repo_id": 1137306148

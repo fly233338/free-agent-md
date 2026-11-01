@@ -2,12 +2,6 @@
   "full_name": "TryGhost/Ghost",
   "points": [
     {
-      "checked_at": "2026-10-01T10:13:57Z",
-      "commit_sha": "970e724b6d8fd275b102439746e9f62f30b143d7",
-      "pushed_at": "2026-10-01T10:09:48Z",
-      "stars": 55472
-    },
-    {
       "checked_at": "2026-10-07T10:21:27Z",
       "commit_sha": "c71f445aecdac60e708a414ea502bcbed818123b",
       "pushed_at": "2026-10-07T10:18:27Z",

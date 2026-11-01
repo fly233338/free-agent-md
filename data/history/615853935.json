@@ -2,12 +2,6 @@
   "full_name": "apache/iggy",
   "points": [
     {
-      "checked_at": "2026-10-01T10:13:57Z",
-      "commit_sha": "ed6e6e71602ffc16ffefa1abb3385f862b8fc136",
-      "pushed_at": "2026-10-01T08:31:03Z",
-      "stars": 4999
-    },
-    {
       "checked_at": "2026-10-28T09:46:18Z",
       "commit_sha": "c938707c2321f2479a10fd5485892e0c49c99444",
       "pushed_at": "2026-10-28T09:44:48Z",
