@@ -1,8 +1,8 @@
 # rlaope/oh-my-hermes instruction files
 
-Upstream: [rlaope/oh-my-hermes](https://github.com/rlaope/oh-my-hermes) · License: `MIT` · Commit: `80090053c26d4d9aff226410043de43dbca8835f`
+Upstream: [rlaope/oh-my-hermes](https://github.com/rlaope/oh-my-hermes) · License: `MIT` · Commit: `7269a5ea8ffc98cb4796ad3bbf1446cc0eb662d4`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/rlaope/oh-my-hermes/AGENTS.md) | [Source](https://github.com/rlaope/oh-my-hermes/blob/80090053c26d4d9aff226410043de43dbca8835f/AGENTS.md) | `ee2061a700a7bc33e905e1def94429c413e70e577ac5ae87a6c249709efc9958` | 15,889 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/rlaope/oh-my-hermes/CLAUDE.md) | [Source](https://github.com/rlaope/oh-my-hermes/blob/80090053c26d4d9aff226410043de43dbca8835f/CLAUDE.md) | `363bf009bbb5bfd26b1d07b9dc577ea4a64e0bbde687d9e514592c228eb5dc96` | 20,193 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/rlaope/oh-my-hermes/AGENTS.md) | [Source](https://github.com/rlaope/oh-my-hermes/blob/7269a5ea8ffc98cb4796ad3bbf1446cc0eb662d4/AGENTS.md) | `b8c35a7b93fe1a8a4c71bcad0101ca1b3773a53f31e11834354a66605ba71a50` | 17,039 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/rlaope/oh-my-hermes/CLAUDE.md) | [Source](https://github.com/rlaope/oh-my-hermes/blob/7269a5ea8ffc98cb4796ad3bbf1446cc0eb662d4/CLAUDE.md) | `2cb8f3f3d6e57ef8336e5263ceb26f034c22bfcbb3451cc92630449334a2e097` | 20,815 B |

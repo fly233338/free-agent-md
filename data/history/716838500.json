@@ -2,12 +2,6 @@
   "full_name": "libnyanpasu/clash-nyanpasu",
   "points": [
     {
-      "checked_at": "2026-10-03T09:14:01Z",
-      "commit_sha": "5d1b73ec04a8f9fa4253b128892f4770aa47e859",
-      "pushed_at": "2026-10-03T09:13:28Z",
-      "stars": 13210
-    },
-    {
       "checked_at": "2026-10-07T10:21:27Z",
       "commit_sha": "8ac8ba84ccf1062f6b9208134ca50945e7c6324e",
       "pushed_at": "2026-10-07T10:17:44Z",
@@ -30,6 +24,12 @@
       "commit_sha": "f9a76ef07a15fd002b8f4fa8dedcd3f9ceeb32e4",
       "pushed_at": "2026-10-23T08:35:25Z",
       "stars": 13238
+    },
+    {
+      "checked_at": "2026-11-02T11:18:59Z",
+      "commit_sha": "1f377a502cbaebde249d5ada53c49ababd6a555a",
+      "pushed_at": "2026-11-02T11:14:41Z",
+      "stars": 13278
     }
   ],
   "repo_id": 716838500

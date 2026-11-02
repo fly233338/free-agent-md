@@ -2,12 +2,6 @@
   "full_name": "addyosmani/agent-skills",
   "points": [
     {
-      "checked_at": "2026-10-03T09:14:01Z",
-      "commit_sha": "a06bc63b3f8b829c14b0bbf53d99fefc39d58092",
-      "pushed_at": "2026-10-03T06:42:25Z",
-      "stars": 100634
-    },
-    {
       "checked_at": "2026-10-04T09:52:51Z",
       "commit_sha": "1401c8b8030e023baeebb31781a6653fe8e93026",
       "pushed_at": "2026-10-03T18:21:11Z",
@@ -174,6 +168,12 @@
       "commit_sha": "8bfcc1f9916f2eea55494d8c1fa7f4bde867dd9e",
       "pushed_at": "2026-10-31T06:40:29Z",
       "stars": 112378
+    },
+    {
+      "checked_at": "2026-11-02T11:18:59Z",
+      "commit_sha": "301b02b12bff98e4688e6984af6556802322bbde",
+      "pushed_at": "2026-11-01T19:24:49Z",
+      "stars": 112664
     }
   ],
   "repo_id": 1158722119

@@ -10,8 +10,6 @@ SyncClipboard is a cross-platform clipboard synchronization tool (Windows/macOS/
 
 This is a multi-platform .NET solution. The sln cannot be built as a whole (it contains platform-specific projects that fail on incompatible OS/arch). All projects use [central package management](https://learn.microsoft.com/en-us/nuget/consume-packages/Central-Package-Management) via `src/Directory.Packages.props`. Commands below are run from the repo root unless noted.
 
-The repository selects .NET SDK 10.0.302 with `latestPatch` roll-forward in `global.json`. Linux packaging still uses PupNet 1.8.0 and requires the .NET 8 runtime in addition to the .NET 10 SDK.
-
 ### Windows (WinUI3)
 
 WinUI3 is the primary Windows client (`net10.0-windows10.0.19041.0`). Requires the Windows App SDK — only builds on Windows. The CI uses msbuild, not dotnet CLI.
@@ -90,7 +88,9 @@ dotnet test src/SyncClipboard.Test.WinUI3   # Windows only
 dotnet test src/SyncClipboard.Test --filter "FullyQualifiedName~TestClassName"
 ```
 
-Tests use MSTest with Moq. `ServiceProviderDataSource` attributes drive DI validation tests that ensure all registered services can be resolved.
+#### Test organization
+
+- Mark tests that require real OS behavior with `[TestCategory("PlatformWindows")]`, `[TestCategory("PlatformMacOS")]`, or `[TestCategory("PlatformLinux")]`. Use multiple categories when appropriate; leave platform-independent tests unmarked. Platform-specific tests must also check the current OS and call `Assert.Inconclusive` on unsupported platforms before performing platform-specific setup or operations; categories alone do not skip tests when running the full suite locally.
 
 ### Code Style
 
@@ -100,6 +100,19 @@ dotnet format --verify-no-changes --severity info --no-restore
 ```
 
 Rules are defined in `src/.editorconfig`.
+
+#### XAML / AXAML
+
+Format changed `.xaml` and `.axaml` files with **XamlStyler.Console**, using `src/Settings.XamlStyler`. Restrict formatting to files changed by the current task or PR; do not reformat unrelated files. `dotnet format` does not replace this check.
+
+Use the globally installed `xstyler`. If it is not available, install it with the command below; no specific version is required. Run the formatting command from the repository root, replacing the example file list with the actual changed files:
+
+```bash
+dotnet tool install --global XamlStyler.Console
+xstyler -f "path/to/ChangedView.xaml,path/to/ChangedView.axaml" -c src/Settings.XamlStyler -i
+```
+
+`-f` accepts a comma-separated file list; `-i` allows `.axaml` files. Repeat the formatting command with `-p` to verify without writing files. Review the diff to ensure only formatting changed.
 
 ## Architecture
 
@@ -149,6 +162,11 @@ Compile-time constants (`WINDOWS`, `MACOS`, `LINUX`) are defined via `RuntimeIde
 
 Strings are in `SyncClipboard.Core/I18n/Strings.resx` (auto-generated `Strings.Designer.cs`). Supports Chinese and English. Language is set via `I18nHelper.SetProgramLanguage()` from the `ProgramConfig.Language` setting.
 
+## Git Workflow
+
+- Never push to remote `master`, including normal and force pushes.
+- Treat “提交到 master” (submit to master) as merging commits into the local `master` branch only. It does not authorize a remote push.
+
 ## Documentation
 
 - AI-generated or AI-maintained design documents must be stored in `docs/ai_design/`.
@@ -159,8 +177,16 @@ Strings are in `SyncClipboard.Core/I18n/Strings.resx` (auto-generated `Strings.D
 - Target framework: all product and test projects use `net10.0`, with `net10.0-macos` for the macOS project and `net10.0-windows10.0.19041.0` for WinUI3.
 - Nullable reference types enabled project-wide (`<Nullable>enable</Nullable>`).
 - Central package management: add/update versions only in `Directory.Packages.props`.
-- The project uses MSTest with Moq for mocking. Test data source attributes (`PlatformServiceProviderDataSource`, `SystemServiceProviderDataSource`) drive DI validation tests.
 - Commit messages follow conventional format with Chinese description prefixes (e.g., `fix:`, `feat:`).
 - `src/.editorconfig` defines C# code style rules.
+- Keep embedded control-statement bodies on their own line (IDE2001), including `if`, `for`, `foreach`, and `while`. Use `dotnet format style --diagnostics IDE2001` to migrate violations.
 - Use roughly 120 columns as a readability guideline for C#, not a hard limit. Prefer keeping short method calls and conditions on one line; wrap noticeably long or complex expressions at logical boundaries. Do not split cohesive expressions solely to meet 120 columns or mechanically put each argument on its own line. Reassess layout after edits and collapse unnecessary line breaks when expressions become shorter. Avoid unrelated formatting-only changes.
 - Before adding a file-level `using`, check the owning project's `global using` declarations (such as `GlobalUsings.cs` and `Usings.cs`) and SDK-generated implicit usings. Do not duplicate namespaces already imported globally; remove redundant usings in files touched by the task without expanding into unrelated cleanup. Global usings apply only within their project, do not propagate through project references, and do not implicitly import child namespaces.
+
+## 测试原则
+
+- 新增测试应验证明确的功能要求、重要失败路径或已确认缺陷，不应仅证明本次修改生效。
+- 用户要求删除或简化机制时，同步清理相关测试，不自动增加“旧机制不存在”的测试或把原断言取反。
+- “不保证”不等于“保证相反”：例如不保留旧权限，不代表新旧权限必须不同。
+- 优先验证实际行为，避免只检查内部标志、旧参数名称等实现细节。
+- 测试混有有效验证和废弃断言时，仅删除无效部分，保留必要的功能测试。

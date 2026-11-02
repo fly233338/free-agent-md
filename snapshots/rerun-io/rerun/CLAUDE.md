@@ -48,16 +48,23 @@ We use `pixi` for task management and dependency installation. Check `pixi.toml`
   - Update from failed CI run: `./scripts/update_snapshots_from_ci.sh`
   - Best practices: see [egui_kittest README](https://github.com/emilk/egui/tree/master/crates/egui_kittest#snapshot-testing)
 
+### Long-running commands (for agents)
+
+Builds and test runs here take a long time, so run them in the background.
+A background command notifies you when it exits, so never start a second command to watch the first one.
+No `sleep`-and-`tail` pollers, no `until` loops on the log.
+Start the build, do something else, and read its output once the notification arrives.
+
 ### Driving a running egui UI (for agents)
 
 Two MCP servers let an agent see and click a running UI instead of guessing from code:
 
 - `rerun viewer-mcp` drives a running Rerun Viewer over gRPC. See `docs/content/reference/viewer/mcp.md`.
 - `egui-mcp` drives *any* egui app started with `EGUI_INSPECTION=1`, including our example apps and headless `egui_kittest` harnesses.
-  It exposes `attach`, `query_tree`, `click`, `type_text`, `screenshot`, `wait_for`, and friends.
-  Both are configured in the repo-root `.mcp.json`; install with `cargo install --git https://github.com/rerun-io/kittest_inspector egui_mcp`.
+  It exposes `attach`, `widget_tree`, `click`, `type_text`, `screenshot`, `wait_for`, and friends.
+  Both are configured in the repo-root `.mcp.json`; install with `cargo install egui_mcp`.
 
-Typical loop: start the app with `EGUI_INSPECTION=1`, call `attach` (host `127.0.0.1`, port `5719`), `query_tree` to find widgets, `click`/`type_text`, then `screenshot` with a `save_path` and look at the image.
+Typical loop: start the app with `EGUI_INSPECTION=1`, call `attach` (host `127.0.0.1`, port `5719`), `widget_tree` to find widgets, `click`/`type_text`, then `screenshot` with a `save_path` and look at the image.
 `egui-mcp` needs the app to paint frames: windowed apps must not be occluded on macOS, so prefer a headless harness where one exists.
 A headless `egui_kittest` harness can opt in with `egui_inspection::attach_from_env(&harness.ctx, label)`.
 Example: `EGUI_INSPECTION=1 cargo run -p re_agent_ui --example agent_app -- --headless`.
@@ -93,6 +100,7 @@ To add custom functionality to generated types, create `_ext` files:
 
 - use `…` instead of `...` <!-- NOLINT -->
 - validate various custom conventions via `pixi run lint-rerun <file>` (not passing any file will check everything)
+- lint JS and TS code with `pixi run js-lint` (oxlint, needs a built web-viewer)
 - Use `format!("{x}")` over `format!("{}, x)` (same in log calls etc)
 - Don't write trivial comments that add nothing new
 - In error and log messages, put the error first and any file path at the end (e.g. `Failed to import: {err}\nFile path: {path}`), never in the middle.
@@ -225,3 +233,21 @@ Key things to know:
 Don't open pull requests or issues unless explicitly asked.
 When opening or interacting with one, follow the [pull request template](.github/pull_request_template.md) or [issue templates](.github/ISSUE_TEMPLATE/), and disclose that you are an LLM.
 Let the user know that you included this disclosure.
+
+### Before requesting review
+
+- CI is green, and the code is formatted (`pixi run rs-fmt`).
+- The branch history is clean: no broken merges, and no commits from unrelated work.
+- The description is honest about the scope, and says *why* the change is needed.
+- UI changes come with a screenshot or video.
+
+### Addressing review comments
+
+- When a reviewer flags one instance of a pattern, fix every instance in the diff, and say so in your reply.
+- A review comment phrased as a question wants an answer, not a code change — unless the answer is "yes, that is wrong".
+- When a reviewer asks for a change, make it in this PR.
+  Only defer it to a follow-up PR if the reviewer agrees.
+- If the fix belongs in a dependency we maintain (egui, egui_plot, egui_tiles, emath, quiver, puffin, …), suggest an upstream PR instead of a local workaround.
+- Reviewers want to talk to the human author.
+  When a comment asks for a judgement call (API shape, scope, product behavior), bring it to your user instead of deciding in the reply.
+- Always reply when mentioned, even if only to say you are unsure.

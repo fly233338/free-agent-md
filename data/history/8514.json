@@ -2,12 +2,6 @@
   "full_name": "rails/rails",
   "points": [
     {
-      "checked_at": "2026-10-03T09:14:01Z",
-      "commit_sha": "241de974daffe71a8a057d9fdf15badacfa240ea",
-      "pushed_at": "2026-10-03T09:11:09Z",
-      "stars": 58797
-    },
-    {
       "checked_at": "2026-10-21T08:39:21Z",
       "commit_sha": "2fb5234c36a16fe434550126212a0336b2cb9341",
       "pushed_at": "2026-10-21T08:37:04Z",
@@ -30,6 +24,12 @@
       "commit_sha": "cb7c7992a7175a355ca236fa2af0705b2498cdaa",
       "pushed_at": "2026-10-31T09:41:35Z",
       "stars": 58853
+    },
+    {
+      "checked_at": "2026-11-02T11:18:59Z",
+      "commit_sha": "e77813d4e8d794c65d43956c11b20c733e9dec52",
+      "pushed_at": "2026-11-02T11:16:05Z",
+      "stars": 58848
     }
   ],
   "repo_id": 8514

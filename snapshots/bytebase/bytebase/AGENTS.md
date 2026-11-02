@@ -12,7 +12,7 @@ Bytebase is the standard for database development. Every product and engineering
 - For frontend work, read [frontend/AGENTS.md](frontend/AGENTS.md); before changing UI, also read the [UX contract](docs/agents/frontend-ux.md).
 - Before adding or modifying metadata SQL, pagination, or multi-row transactions anywhere in the repo, read [backend/store/AGENTS.md](backend/store/AGENTS.md). This includes CEL-to-SQL filters and raw reads in tests.
 - Before changing metadata/DDL conversions or their golden fixtures, read [backend/plugin/schema/AGENTS.md](backend/plugin/schema/AGENTS.md). It covers what these packages test and the `record` process for regenerating fixtures.
-- For issue operations, read [issue-tracker.md](docs/agents/issue-tracker.md). Linear is the tracker; agent-created issues go to team `BOT`. For triage, also read [triage-labels.md](docs/agents/triage-labels.md).
+- For issue operations, read [issue-tracker.md](docs/agents/issue-tracker.md). Linear is the tracker. For triage, also read [triage-labels.md](docs/agents/triage-labels.md).
 - Before creating a PR, complete [docs/pre-pr-checklist.md](docs/pre-pr-checklist.md).
 - `AGENTS.md` files are the instruction source of truth; `CLAUDE.md` files import them.
 
@@ -24,6 +24,29 @@ Bytebase is the standard for database development. Every product and engineering
 - Follow Google language style guides and AIPs for API/proto design. AIPs take precedence over the proto guide. Enum values use `HELLO`, not `TYPE_HELLO`.
 - Use American English. Avoid collection names ending in `List`.
 - Annotating an RPC `mcp_method_class = READ` or `WRITE` also changes what the MCP Access policy page promises, and nothing enforces that. Before changing one, read [mcp-capability-ladder.md](docs/design/mcp-capability-ladder.md#keeping-the-rows-true).
+
+## Forked engine packages
+
+Some engines have their own copy of a package rather than sharing MySQL's or
+Postgres's: `mariadb` and `oceanbase` are forks of `mysql`, `starrocks` of
+`doris`, `redshift` of `pg`. A fork exists because omni gives each engine an
+independent AST, so one implementation cannot walk two of them.
+
+- A fix to a rule, parser or validator in a parent usually applies to its forks.
+  Check each one, port it in the same PR, and name every engine in the subject
+  (`fix(mysql,mariadb): ...`). This mirrors omni's own rule for parser forks.
+- Inherited facts need re-verifying per engine even where inherited code is
+  correct. StarRocks took Doris's EXPLAIN modifier list and was wrong about it.
+- A fork is partial where omni's tree is. `schema/mariadb` registers MariaDB but
+  owns no catalog work, because omni's `mariadb/catalog` has `New`, `Exec` and
+  `LoadSQL` and none of the `LoadMetadata`, `Diff`, `GenerateMigration` or
+  version handling `schema/mysql` needs; it simulates on omni's MySQL catalog
+  instead. Check the engine's omni tree before assuming a layer can fork, and
+  keep the engine's own package even when it only holds that decision.
+
+## Customer information
+
+The repository and its pull requests are public. Never identify a Bytebase customer or user in code, comments, test fixtures, docs, commit messages, or PR titles, bodies, and screenshots. That covers company names, their employees' names and emails, their domains, and the instance, database, and host names, schemas, SQL, or data copied from their environments. Describe the case generically, such as "a customer with 10k databases", and reference the Linear issue for details. Use placeholders such as `example.com` in fixtures, and redact screenshots.
 
 ## Code comments
 

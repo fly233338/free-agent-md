@@ -1,7 +1,7 @@
 # boykopovar/AnyPS5 instruction files
 
-Upstream: [boykopovar/AnyPS5](https://github.com/boykopovar/AnyPS5) · License: `GPL-2.0` · Commit: `d5ec8e6575be37f4340ded9c64c51b1d07076b51`
+Upstream: [boykopovar/AnyPS5](https://github.com/boykopovar/AnyPS5) · License: `GPL-2.0` · Commit: `98346b748caaf5e8e533540f3bb9e4ceacf3d7ab`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/boykopovar/AnyPS5/AGENTS.md) | [Source](https://github.com/boykopovar/AnyPS5/blob/d5ec8e6575be37f4340ded9c64c51b1d07076b51/AGENTS.md) | `7fa03d53cc792771025c2f02c9999122f30d0473bc64a6762894b100178b8b39` | 2,234 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/boykopovar/AnyPS5/AGENTS.md) | [Source](https://github.com/boykopovar/AnyPS5/blob/98346b748caaf5e8e533540f3bb9e4ceacf3d7ab/AGENTS.md) | `8cf6fe62b7905d2653a5cce9ba85316968383772494997f3e799e6db45d9c5af` | 2,262 B |
