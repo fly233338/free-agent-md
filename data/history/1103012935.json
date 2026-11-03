@@ -2,12 +2,6 @@
   "full_name": "openclaw/openclaw",
   "points": [
     {
-      "checked_at": "2026-10-04T09:52:51Z",
-      "commit_sha": "a0a1f184a3867aa4dd3493a743e0c59a4ebfbecd",
-      "pushed_at": "2026-10-04T09:51:58Z",
-      "stars": 391268
-    },
-    {
       "checked_at": "2026-10-05T10:33:57Z",
       "commit_sha": "1de5c75fd36da783bddf49549443f7bb2fe6f54f",
       "pushed_at": "2026-10-05T10:33:04Z",
@@ -174,6 +168,12 @@
       "commit_sha": "fe912d6852d89c4ac75b8438961f0dbf7791950f",
       "pushed_at": "2026-11-02T11:18:56Z",
       "stars": 393695
+    },
+    {
+      "checked_at": "2026-11-03T10:57:56Z",
+      "commit_sha": "30928b2e53b867ee50f5f3b97f5cbdaeefd50d8f",
+      "pushed_at": "2026-11-03T10:57:17Z",
+      "stars": 393798
     }
   ],
   "repo_id": 1103012935

@@ -2,12 +2,6 @@
   "full_name": "withcoral/coral",
   "points": [
     {
-      "checked_at": "2026-10-04T09:52:51Z",
-      "commit_sha": "2c58881841bf62fc52a44bb5c2571760e65a58dd",
-      "pushed_at": "2026-10-02T04:35:38Z",
-      "stars": 4942
-    },
-    {
       "checked_at": "2026-10-05T10:33:57Z",
       "commit_sha": "2c58881841bf62fc52a44bb5c2571760e65a58dd",
       "pushed_at": "2026-10-02T04:35:38Z",
@@ -174,6 +168,12 @@
       "commit_sha": "e9d7e4ad1efd283d3bd529cf8aae6904d5d2406f",
       "pushed_at": "2026-11-02T11:10:59Z",
       "stars": 4939
+    },
+    {
+      "checked_at": "2026-11-03T10:57:56Z",
+      "commit_sha": "c64d3c45ded7bf7bed2f7ccd46f67e544a322af2",
+      "pushed_at": "2026-11-03T10:44:59Z",
+      "stars": 4940
     }
   ],
   "repo_id": 1200798950

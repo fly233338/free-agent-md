@@ -1,9 +1,9 @@
 # n8n-io/n8n instruction files
 
-Upstream: [n8n-io/n8n](https://github.com/n8n-io/n8n) · License: `NOASSERTION` · Commit: `3eae292c02e0706b336641035691e8a54b78f72b`
+Upstream: [n8n-io/n8n](https://github.com/n8n-io/n8n) · License: `NOASSERTION` · Commit: `c1420c66253871bacecbe7148754ca050a81e7f2`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/n8n-io/n8n/AGENTS.md) | [Source](https://github.com/n8n-io/n8n/blob/3eae292c02e0706b336641035691e8a54b78f72b/AGENTS.md) | `83ff74b6c2c206e2e46d6f06672edb2b8d80a83db113317f6b7e6373272f9a5b` | 24,174 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/n8n-io/n8n/CLAUDE.md) | [Source](https://github.com/n8n-io/n8n/blob/3eae292c02e0706b336641035691e8a54b78f72b/CLAUDE.md) | `336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49` | 11 B |
-| `CLAUDE.md` | `.github/CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/n8n-io/n8n/.github/CLAUDE.md) | [Source](https://github.com/n8n-io/n8n/blob/3eae292c02e0706b336641035691e8a54b78f72b/.github/CLAUDE.md) | `db89c764884ef2370bfc7083268c2d12ed968bd286275002643d4ab483261e91` | 1,511 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/n8n-io/n8n/AGENTS.md) | [Source](https://github.com/n8n-io/n8n/blob/c1420c66253871bacecbe7148754ca050a81e7f2/AGENTS.md) | `83ff74b6c2c206e2e46d6f06672edb2b8d80a83db113317f6b7e6373272f9a5b` | 24,174 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/n8n-io/n8n/CLAUDE.md) | [Source](https://github.com/n8n-io/n8n/blob/c1420c66253871bacecbe7148754ca050a81e7f2/CLAUDE.md) | `336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49` | 11 B |
+| `CLAUDE.md` | `.github/CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/n8n-io/n8n/.github/CLAUDE.md) | [Source](https://github.com/n8n-io/n8n/blob/c1420c66253871bacecbe7148754ca050a81e7f2/.github/CLAUDE.md) | `db89c764884ef2370bfc7083268c2d12ed968bd286275002643d4ab483261e91` | 1,511 B |

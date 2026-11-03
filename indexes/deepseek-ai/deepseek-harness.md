@@ -1,9 +1,9 @@
 # deepseek-ai/deepseek-harness instruction files
 
-Upstream: [deepseek-ai/deepseek-harness](https://github.com/deepseek-ai/deepseek-harness) · License: `MIT` · Commit: `ce7073d51254c26cd63b22a60835b8f948deb447`
+Upstream: [deepseek-ai/deepseek-harness](https://github.com/deepseek-ai/deepseek-harness) · License: `MIT` · Commit: `8bd073392eef6f54e921a093b95076248eb08cbb`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/deepseek-ai/deepseek-harness/AGENTS.md) | [Source](https://github.com/deepseek-ai/deepseek-harness/blob/ce7073d51254c26cd63b22a60835b8f948deb447/AGENTS.md) | `fe6c542b0c8c041fb6de51d8c92b40caafe6d4b31711760de496f53fc41cc751` | 19,113 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/deepseek-ai/deepseek-harness/CLAUDE.md) | [Source](https://github.com/deepseek-ai/deepseek-harness/blob/ce7073d51254c26cd63b22a60835b8f948deb447/CLAUDE.md) | `fe6c542b0c8c041fb6de51d8c92b40caafe6d4b31711760de496f53fc41cc751` | 19,113 B |
-| `AGENTS.md` | `.github/AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/deepseek-ai/deepseek-harness/.github/AGENTS.md) | [Source](https://github.com/deepseek-ai/deepseek-harness/blob/ce7073d51254c26cd63b22a60835b8f948deb447/.github/AGENTS.md) | `d63d178069681c3d648e2c10ada0933f28bf2938576249198222010860871243` | 3,742 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/deepseek-ai/deepseek-harness/AGENTS.md) | [Source](https://github.com/deepseek-ai/deepseek-harness/blob/8bd073392eef6f54e921a093b95076248eb08cbb/AGENTS.md) | `1375f2d67527976028a26d31d8efd53ba69e3dfbd78a0d6f043338a5a8ababb9` | 19,162 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/deepseek-ai/deepseek-harness/CLAUDE.md) | [Source](https://github.com/deepseek-ai/deepseek-harness/blob/8bd073392eef6f54e921a093b95076248eb08cbb/CLAUDE.md) | `1375f2d67527976028a26d31d8efd53ba69e3dfbd78a0d6f043338a5a8ababb9` | 19,162 B |
+| `AGENTS.md` | `.github/AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/deepseek-ai/deepseek-harness/.github/AGENTS.md) | [Source](https://github.com/deepseek-ai/deepseek-harness/blob/8bd073392eef6f54e921a093b95076248eb08cbb/.github/AGENTS.md) | `d5cb2a8669de98d0b18729354043158c03f1b5eb864d7c65ea1f3967b9e95198` | 4,146 B |

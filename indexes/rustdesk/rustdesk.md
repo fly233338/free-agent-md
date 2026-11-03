@@ -1,9 +1,8 @@
 # rustdesk/rustdesk instruction files
 
-Upstream: [rustdesk/rustdesk](https://github.com/rustdesk/rustdesk) · License: `AGPL-3.0` · Commit: `f9586e171427c1b078b4f3fe81a5729a5d21aa5c`
+Upstream: [rustdesk/rustdesk](https://github.com/rustdesk/rustdesk) · License: `AGPL-3.0` · Commit: `55786aaa5709ac0a450aabcf06f9d1fee3119908`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/rustdesk/rustdesk/AGENTS.md) | [Source](https://github.com/rustdesk/rustdesk/blob/f9586e171427c1b078b4f3fe81a5729a5d21aa5c/AGENTS.md) | `6086c66ed1fcb663b5055eb5d605aa34536e566ddbab9ac7666f97fbb7db9c05` | 17,465 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/rustdesk/rustdesk/CLAUDE.md) | [Source](https://github.com/rustdesk/rustdesk/blob/f9586e171427c1b078b4f3fe81a5729a5d21aa5c/CLAUDE.md) | `336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49` | 11 B |
-| `GEMINI.md` | `GEMINI.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/rustdesk/rustdesk/GEMINI.md) | [Source](https://github.com/rustdesk/rustdesk/blob/f9586e171427c1b078b4f3fe81a5729a5d21aa5c/GEMINI.md) | `954ec5dad7eaf581ad4bfa090369b244ac0120b43722ef2efff5ba89fc52046f` | 10 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/rustdesk/rustdesk/AGENTS.md) | [Source](https://github.com/rustdesk/rustdesk/blob/55786aaa5709ac0a450aabcf06f9d1fee3119908/AGENTS.md) | `6086c66ed1fcb663b5055eb5d605aa34536e566ddbab9ac7666f97fbb7db9c05` | 17,465 B |
+| `GEMINI.md` | `GEMINI.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/rustdesk/rustdesk/GEMINI.md) | [Source](https://github.com/rustdesk/rustdesk/blob/55786aaa5709ac0a450aabcf06f9d1fee3119908/GEMINI.md) | `336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49` | 11 B |

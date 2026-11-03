@@ -2,12 +2,6 @@
   "full_name": "open-pencil/open-pencil",
   "points": [
     {
-      "checked_at": "2026-10-04T09:52:51Z",
-      "commit_sha": "b2499d83424ecb567204d34d6bb45b8b4702ed9b",
-      "pushed_at": "2026-10-04T09:51:52Z",
-      "stars": 8738
-    },
-    {
       "checked_at": "2026-10-09T10:40:00Z",
       "commit_sha": "1525583813efe46c859b6647ccf1a10dd4e9c7ca",
       "pushed_at": "2026-10-09T10:39:54Z",
@@ -36,6 +30,12 @@
       "commit_sha": "9ce0b19033370602d1b21ab19f4eb2174bd51f3a",
       "pushed_at": "2026-11-01T10:21:44Z",
       "stars": 9515
+    },
+    {
+      "checked_at": "2026-11-03T10:57:56Z",
+      "commit_sha": "c7891f62283e6a186cd3bfff3650b2ed82ed27f5",
+      "pushed_at": "2026-11-03T10:57:14Z",
+      "stars": 9571
     }
   ],
   "repo_id": 1168481509

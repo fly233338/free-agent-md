@@ -2,12 +2,6 @@
   "full_name": "TableProApp/TablePro",
   "points": [
     {
-      "checked_at": "2026-10-04T09:52:51Z",
-      "commit_sha": "064a15e00eb61ae324c0f9304a1355ad19e3ab42",
-      "pushed_at": "2026-10-04T09:41:32Z",
-      "stars": 6200
-    },
-    {
       "checked_at": "2026-10-10T09:56:02Z",
       "commit_sha": "48e76482ccb69d81d89215aed17462bf003cf912",
       "pushed_at": "2026-10-10T09:46:29Z",
@@ -48,6 +42,12 @@
       "commit_sha": "53c9affe1b66cb1b6919cd71edabc154c35abcb5",
       "pushed_at": "2026-11-02T11:16:03Z",
       "stars": 6357
+    },
+    {
+      "checked_at": "2026-11-03T10:57:56Z",
+      "commit_sha": "ca87a1a7f8d51aade9d88a2a94daa60785f910b6",
+      "pushed_at": "2026-11-03T10:57:31Z",
+      "stars": 6361
     }
   ],
   "repo_id": 1117891044
