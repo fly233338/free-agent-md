@@ -13,8 +13,8 @@ There is no separate spec. The code is the contract, pinned in three places:
   assertions (`@ts-expect-error` lines) for the parts that are easy to loosen
   by accident; it runs under the package `typecheck`, never under vitest.
 - Wire formats live in `packages/e2e/schema/*.schema.json` (report-1,
-  session-1, agent-judgment-2, the engine protocol's engine-manifest-1, and
-  the deprecated agent-judgment-1) with a valid and an invalid fixture
+  session-1, agent-judgment-2, the engine protocol's engine-manifest-1,
+  `e2e doctor`'s doctor-1, and the deprecated agent-judgment-1) with a valid and an invalid fixture
   each. Integration tests validate every generated report and session envelope
   against them; `tests/unit/schema-fixtures.test.ts` checks the fixtures. A
   wire change edits the schema, both fixtures, and the producer in one review.
@@ -114,7 +114,7 @@ suites that consume the built packages the way a user would.
 - `packages/lightpanda` - the published `@e2e-dev/lightpanda` package: a
   `BrowserProvider` that starts a local `lightpanda serve` per worker slot
   and stops it with the run; no vendor SDK, the binary is the dependency.
-- `packages/eas` - the published `@e2e-dev/eas` package: EAS Simulators
+- `packages/eas` - the published `@e2e-dev/eas` package: Expo Simulators
   hosted iOS simulators and Android emulators for the mobile engine
   (`DeviceProvider`). Expo publishes no SDK for the sessions API, so it calls
   Expo's GraphQL API with `fetch`, and `@e2e-dev/mobile` is its only peer.

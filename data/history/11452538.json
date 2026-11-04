@@ -2,12 +2,6 @@
   "full_name": "prometheus/alertmanager",
   "points": [
     {
-      "checked_at": "2026-10-05T10:33:57Z",
-      "commit_sha": "8968a2b01c6f54b22e823ef0afbca0defe3c31ec",
-      "pushed_at": "2026-10-05T10:33:10Z",
-      "stars": 8637
-    },
-    {
       "checked_at": "2026-10-29T10:04:58Z",
       "commit_sha": "9c7f89ff90a89c0e6f88b73131f97d31b9cfcfe9",
       "pushed_at": "2026-10-29T10:02:16Z",

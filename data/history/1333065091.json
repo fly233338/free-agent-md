@@ -2,12 +2,6 @@
   "full_name": "deepseek-ai/deepseek-harness",
   "points": [
     {
-      "checked_at": "2026-10-05T10:33:57Z",
-      "commit_sha": "5badb15009ae1756c3afe0ae0cef1faafc290ccc",
-      "pushed_at": "2026-10-03T06:02:48Z",
-      "stars": 243685
-    },
-    {
       "checked_at": "2026-10-06T10:25:49Z",
       "commit_sha": "5badb15009ae1756c3afe0ae0cef1faafc290ccc",
       "pushed_at": "2026-10-03T06:02:48Z",
@@ -174,6 +168,12 @@
       "commit_sha": "8bd073392eef6f54e921a093b95076248eb08cbb",
       "pushed_at": "2026-11-03T07:58:43Z",
       "stars": 270468
+    },
+    {
+      "checked_at": "2026-11-04T11:01:57Z",
+      "commit_sha": "8bd073392eef6f54e921a093b95076248eb08cbb",
+      "pushed_at": "2026-11-03T07:58:43Z",
+      "stars": 271914
     }
   ],
   "repo_id": 1333065091

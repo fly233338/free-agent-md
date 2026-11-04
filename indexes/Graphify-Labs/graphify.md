@@ -1,7 +1,7 @@
 # Graphify-Labs/graphify instruction files
 
-Upstream: [Graphify-Labs/graphify](https://github.com/Graphify-Labs/graphify) · License: `Apache-2.0` · Commit: `8e6a6d2129d4aeffc7a0e9ed79b153f7f057f42b`
+Upstream: [Graphify-Labs/graphify](https://github.com/Graphify-Labs/graphify) · License: `Apache-2.0` · Commit: `59b5ab1151e031fb42e39cfc9a50bf96f2d57ae0`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Graphify-Labs/graphify/AGENTS.md) | [Source](https://github.com/Graphify-Labs/graphify/blob/8e6a6d2129d4aeffc7a0e9ed79b153f7f057f42b/AGENTS.md) | `63b882af6af8e00c082cc865bbd1cb0e772ce199066398610a0abcc71c3a01e3` | 563 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Graphify-Labs/graphify/AGENTS.md) | [Source](https://github.com/Graphify-Labs/graphify/blob/59b5ab1151e031fb42e39cfc9a50bf96f2d57ae0/AGENTS.md) | `63b882af6af8e00c082cc865bbd1cb0e772ce199066398610a0abcc71c3a01e3` | 563 B |

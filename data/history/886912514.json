@@ -2,12 +2,6 @@
   "full_name": "ag2ai/ag2",
   "points": [
     {
-      "checked_at": "2026-10-05T10:33:57Z",
-      "commit_sha": "2d39f3412d6cd0f5622d3a2f7fc1e702a659aa02",
-      "pushed_at": "2026-10-05T00:22:05Z",
-      "stars": 4976
-    },
-    {
       "checked_at": "2026-10-06T10:25:49Z",
       "commit_sha": "11fb2e96e134b6cdc73452c2521612cc4353401c",
       "pushed_at": "2026-10-06T04:40:13Z",
@@ -84,6 +78,12 @@
       "commit_sha": "be11666a5d046e38bd3026f1e1a0b4887819261c",
       "pushed_at": "2026-11-01T10:32:33Z",
       "stars": 5037
+    },
+    {
+      "checked_at": "2026-11-04T11:01:57Z",
+      "commit_sha": "472627dccd15cc2c71ec2d4dd673bf809275a657",
+      "pushed_at": "2026-11-04T10:58:20Z",
+      "stars": 5045
     }
   ],
   "repo_id": 886912514

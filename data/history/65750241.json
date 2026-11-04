@@ -2,12 +2,6 @@
   "full_name": "expo/expo",
   "points": [
     {
-      "checked_at": "2026-10-05T10:33:57Z",
-      "commit_sha": "4c999f68cbd656bb29f0ea42df1b2b1088d19d86",
-      "pushed_at": "2026-10-05T10:31:04Z",
-      "stars": 52570
-    },
-    {
       "checked_at": "2026-10-07T10:21:27Z",
       "commit_sha": "ea5527adc421252fc46f0fa3ff7207f93a06e826",
       "pushed_at": "2026-10-07T10:21:23Z",
@@ -48,6 +42,12 @@
       "commit_sha": "273d10de534acc49a13d1e1ecff7fbf1185238ca",
       "pushed_at": "2026-11-02T11:18:57Z",
       "stars": 53289
+    },
+    {
+      "checked_at": "2026-11-04T11:01:57Z",
+      "commit_sha": "e67e74fcabf539675f1dd20fa99a49cc319f033b",
+      "pushed_at": "2026-11-04T10:58:03Z",
+      "stars": 53330
     }
   ],
   "repo_id": 65750241

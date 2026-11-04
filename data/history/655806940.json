@@ -2,12 +2,6 @@
   "full_name": "microsoft/generative-ai-for-beginners",
   "points": [
     {
-      "checked_at": "2026-10-05T10:33:57Z",
-      "commit_sha": "d8ec07e31c4b32bd283d565c1abd9b58bb5cf2e8",
-      "pushed_at": "2026-10-01T03:45:43Z",
-      "stars": 121020
-    },
-    {
       "checked_at": "2026-10-06T10:25:49Z",
       "commit_sha": "d8ec07e31c4b32bd283d565c1abd9b58bb5cf2e8",
       "pushed_at": "2026-10-05T10:44:17Z",
@@ -174,6 +168,12 @@
       "commit_sha": "79a4334e158147d4f36c27d805e0cb163c1e445b",
       "pushed_at": "2026-11-02T18:55:18Z",
       "stars": 122892
+    },
+    {
+      "checked_at": "2026-11-04T11:01:57Z",
+      "commit_sha": "79a4334e158147d4f36c27d805e0cb163c1e445b",
+      "pushed_at": "2026-11-02T18:55:18Z",
+      "stars": 122957
     }
   ],
   "repo_id": 655806940

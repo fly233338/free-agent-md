@@ -2,12 +2,6 @@
   "full_name": "JuliaLang/julia",
   "points": [
     {
-      "checked_at": "2026-10-05T10:33:57Z",
-      "commit_sha": "ea074bc78b423aa2ffe580527787165611fa0da9",
-      "pushed_at": "2026-10-05T10:27:39Z",
-      "stars": 49182
-    },
-    {
       "checked_at": "2026-10-26T09:02:50Z",
       "commit_sha": "6aa7e639f0bec85b9eafb19a5ec722659ff9af0e",
       "pushed_at": "2026-10-26T09:02:16Z",
@@ -18,6 +12,12 @@
       "commit_sha": "ad45ab67bdec1d3051c3595f0a620b7466144ab4",
       "pushed_at": "2026-10-28T09:40:55Z",
       "stars": 49218
+    },
+    {
+      "checked_at": "2026-11-04T11:01:57Z",
+      "commit_sha": "cf40a92bbde1b27cd918432adf14a14ed963dafd",
+      "pushed_at": "2026-11-04T10:58:38Z",
+      "stars": 49243
     }
   ],
   "repo_id": 1644196

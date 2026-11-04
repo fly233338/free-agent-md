@@ -1,7 +1,7 @@
 # nguyenphutrong/quotio instruction files
 
-Upstream: [nguyenphutrong/quotio](https://github.com/nguyenphutrong/quotio) · License: `MIT` · Commit: `c9555ad4cdcfb01d92ad34665a2478d081844dd2`
+Upstream: [nguyenphutrong/quotio](https://github.com/nguyenphutrong/quotio) · License: `MIT` · Commit: `d8039f36f8354f80695f8188b9649268c94a0f0a`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/nguyenphutrong/quotio/AGENTS.md) | [Source](https://github.com/nguyenphutrong/quotio/blob/c9555ad4cdcfb01d92ad34665a2478d081844dd2/AGENTS.md) | `8d5d1462a229d3b33146786cc9840cd5426d116bf968d173c95fb5fd703d47d3` | 1,214 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/nguyenphutrong/quotio/AGENTS.md) | [Source](https://github.com/nguyenphutrong/quotio/blob/d8039f36f8354f80695f8188b9649268c94a0f0a/AGENTS.md) | `003fbb1bbdfb16633c7a20ddb6952dabe47dffd8c450b201c384b381a6733ac9` | 1,269 B |

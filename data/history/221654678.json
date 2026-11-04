@@ -2,12 +2,6 @@
   "full_name": "deepset-ai/haystack",
   "points": [
     {
-      "checked_at": "2026-10-05T10:33:57Z",
-      "commit_sha": "09d3849539f8d022c6ac58d64f187c33241408ee",
-      "pushed_at": "2026-10-05T10:31:16Z",
-      "stars": 26654
-    },
-    {
       "checked_at": "2026-10-15T08:23:07Z",
       "commit_sha": "640b8f4d610c8060c957bb91dedeb99e773756b3",
       "pushed_at": "2026-10-15T08:18:07Z",
@@ -18,6 +12,12 @@
       "commit_sha": "6f10dd7fbd538dffc1edb84c628e2f6efed144a4",
       "pushed_at": "2026-10-22T08:39:43Z",
       "stars": 26808
+    },
+    {
+      "checked_at": "2026-11-04T11:01:57Z",
+      "commit_sha": "87e66738f22dd1fe6d262ba20e3f31bf50cc1d38",
+      "pushed_at": "2026-11-04T10:53:10Z",
+      "stars": 26926
     }
   ],
   "repo_id": 221654678

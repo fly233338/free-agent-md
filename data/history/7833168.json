@@ -2,12 +2,6 @@
   "full_name": "elastic/kibana",
   "points": [
     {
-      "checked_at": "2026-10-05T10:33:57Z",
-      "commit_sha": "f3afb0c0a647e7237955f2fc78fcc64b2419f49a",
-      "pushed_at": "2026-10-05T10:33:35Z",
-      "stars": 21307
-    },
-    {
       "checked_at": "2026-10-06T10:25:49Z",
       "commit_sha": "acad00d32e37739e97b939e0ab42e109bc9574b6",
       "pushed_at": "2026-10-06T10:25:31Z",
@@ -66,6 +60,12 @@
       "commit_sha": "775feb2e40187902d2fe29adb6c6e9489dddb45b",
       "pushed_at": "2026-11-02T11:17:26Z",
       "stars": 21354
+    },
+    {
+      "checked_at": "2026-11-04T11:01:57Z",
+      "commit_sha": "43b255bd43a3c273f1e92dc120f0013f4eef0b44",
+      "pushed_at": "2026-11-04T10:59:42Z",
+      "stars": 21355
     }
   ],
   "repo_id": 7833168

@@ -1,7 +1,7 @@
 # github/spec-kit instruction files
 
-Upstream: [github/spec-kit](https://github.com/github/spec-kit) · License: `MIT` · Commit: `ba8363f8ab56b2da456a81299cfdbfee1ef7b871`
+Upstream: [github/spec-kit](https://github.com/github/spec-kit) · License: `MIT` · Commit: `a227e38315cd38172b04f2fb8f06ce8b69b38331`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/github/spec-kit/AGENTS.md) | [Source](https://github.com/github/spec-kit/blob/ba8363f8ab56b2da456a81299cfdbfee1ef7b871/AGENTS.md) | `190597d5c47628e78c01565a528636b17f4643053a1a7e4cf61369f1add79151` | 3,747 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/github/spec-kit/AGENTS.md) | [Source](https://github.com/github/spec-kit/blob/a227e38315cd38172b04f2fb8f06ce8b69b38331/AGENTS.md) | `190597d5c47628e78c01565a528636b17f4643053a1a7e4cf61369f1add79151` | 3,747 B |

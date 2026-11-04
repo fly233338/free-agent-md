@@ -2,16 +2,16 @@
   "full_name": "novuhq/novu",
   "points": [
     {
-      "checked_at": "2026-10-05T10:33:57Z",
-      "commit_sha": "cca284eb3375d7be648728a4e5e3552303d8d528",
-      "pushed_at": "2026-10-05T10:31:55Z",
-      "stars": 40113
-    },
-    {
       "checked_at": "2026-10-12T10:58:37Z",
       "commit_sha": "7f491f96ddbc9e027be9b1218c5bcae67ca1ebc0",
       "pushed_at": "2026-10-12T10:58:20Z",
       "stars": 40143
+    },
+    {
+      "checked_at": "2026-11-04T11:01:57Z",
+      "commit_sha": "2125add02b795c74991d1f4a3f0a38d4f6d9615a",
+      "pushed_at": "2026-11-04T10:53:27Z",
+      "stars": 40260
     }
   ],
   "repo_id": 400215964

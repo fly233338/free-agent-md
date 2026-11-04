@@ -1,13 +1,13 @@
 # MAA 开发约定
 
-格式由 `.pre-commit-config.yaml` 钩子机器强制，各钩子有 files 范围；本地不处理好的话 GitHub CI 会定时代跑并生成额外的机器修复 commit，为避免此副作用，改完文件后须本地跑对应格式化（如 C++ 的 clang-formatter）。
+格式由 `.pre-commit-config.yaml` 钩子机器强制，各钩子按 files / types 限定范围；本地不处理好的话 GitHub CI 会定时代跑并生成额外的机器修复 commit，为避免此副作用，改完文件后须本地跑对应格式化（如 C++ 的 clang-formatter）。
 
-界面文案、代码注释、文档正文（含代码块内注释）的角引号统一用半角 ｢｣，左括号前、右括号后各加一个空格（紧贴 Markdown 语法边界如链接方括号、加粗星号时不加），禁止全角「」；代码块内字符串值保留游戏原文，名称自带全角引号的（如召唤物「逍遥」）维持全角不动。
+界面文案、代码注释、文档正文（含代码块内注释）的角引号统一用半角 ｢｣，禁止全角「」；代码块内字符串值保留游戏原文，名称自带全角引号的（如召唤物「逍遥」）维持全角不动。空格要求约束中文与日文文案（两者原生使用全角引号，空格用于模拟其占位）：与文字相邻时 ｢ 前、｣ 后各加一个空格，相邻角引号短语（｣ ｢）之间加空格，与标点相邻时不加（斜杠除外，其前后是否加空格跟随同场景既有文案），紧贴 Markdown 语法边界（链接方括号、加粗星号）时同样不加；韩文、英文不额外添加角引号空格，韩文与助词直接接续，英文引号旁的空格即其本来的单词间距。
 
 ## C++（MaaCore）
 
 - 格式化用 `python tools/ClangFormatter/clang-formatter.py --input=<改动文件或其所在子目录>`（`--input` 收目录递归或单个文件），只传本次改动的范围，确需全仓库批量时才传 `src/MaaCore`（全量幂等但白扫全仓库）；版本需求：clang-format 23.1.1（对齐 `.pre-commit-config.yaml` 锁定版本）；5 位以上整数字面量加千分位撇（`65'535`，存量尚有漏改，勿照抄）。
-- 日志用 `"Utils/Logger.hpp"`，日志走 `<<` 流式格式，正文一律英文。旧代码中存在使用函数式日志的情况，勿照抄。合理使用 `__FUNCTION__`、`LogTraceFunction` 标注当前函数，避免手动在日志中标记。避免匿名命名空间，会导致在日志中输出为 `<anonymous namespace>`，不利于定位。
+- 日志用 `"Utils/Logger.hpp"`，流式写法如 `LogWarn << __FUNCTION__ << "msg" << var`；等级宏为 `LogDebug` / `LogTrace` / `LogInfo` / `LogWarn` / `LogError`（展开为 `Log.info_()` 等流式入口），正文一律英文。旧代码中 `Log.info("x", var)` 变参函数式写法勿照抄。合理使用 `__FUNCTION__`、`LogTraceFunction` 标注当前函数，避免手动在日志中标记。避免匿名命名空间，会导致在日志中输出为 `<anonymous namespace>`，不利于定位。
 - 字符串一律 UTF-8 `std::string`，中文裸写、禁 `u8""` 前缀；文件路径必须经 `asst::utils::path()` 或 `"xxx"_p` 字面量构造，仅 Win32 API 边界转 `to_osstring`。
 - 错误处理返回 `bool` / `std::optional` / 空指针并记日志，常规任务与配置链路不用异常。
 - 避免返回裸指针，如有需要，使用引用或智能指针；引用返回值须保证生命周期，禁止返回局部变量引用。
@@ -23,7 +23,7 @@
 - `MaaWpfGui.Configuration.` 命名空间内的类用纯 auto-property（Fody PropertyChanged 织入通知），命名空间外织入不生效，必须手动 `SetAndNotify`，否则 UI 静默不刷新。
 - 配置持久化与迁移归口 `ConfigFactory`（全局 `Root.Gui.X`、当前档案 `CurrentConfig.X`，保存自动防抖）；GUI 设置值的读取一律走 `SettingsViewModel.XxxSettings.X`（设置 VM 属性与配置双向同步，static 属性类型名限定），直取 `CurrentConfig` 仅限 `TaskQueue` 任务对象（多任务间切换当前设置需直读配置，其余设置一律走设置 VM）；新任务类型须在 `BaseTask` 注册 `[JsonDerivedType(typeof(XxxTask), typeDiscriminator: nameof(XxxTask))]`；所有设置参数不应当直接存储 json / 字符串格式的 json 值，应当解析为对应的任务对象或配置对象，存储为对应的对象类型。
 - 服务在 Bootstrapper 用 StyletIoC 显式注册，跨对象取用走 `Instances.Xxx` 静态定位器，不做构造函数注入。
-- 回 UI 线程用 Stylet 的 `Execute.OnUIThread`（同步）或 `Execute.OnUIThreadAsync`；纯后台链路 await 加 `ConfigureAwait(false)`，后续要碰 UI 的不加。
+- 回 UI 线程用 Stylet 的 `Execute.OnUIThread`（异步）、`Execute.OnUIThreadAsync`（异步）返回 Task 或 `Execute.OnUIThreadSync`（同步）；纯后台链路 await 加 `ConfigureAwait(false)`，后续要碰 UI 的不加。
 - 日志用 Serilog `Log.ForContext<T>()`，结构化占位、消息英文；UI 可见日志另走 `Instances.TaskQueueViewModel.AddLog`（Copilot 相关链路用 `Instances.CopilotViewModel.AddLog`）。如有需要，类内声明`private static readonly ILogger _logger = Log.ForContext<T>();`，避免反复 `ForContext`。
 - View 与 VM 命名镜像由 Stylet 按约定解析，放错命名空间运行时找不到 View：`XxxView` 对应 `XxxViewModel`，`XxxUserControl` 对应 `XxxUserControlModel`（VM 类名以 Model 结尾）。
 - TaskQueue 任务对象类的命名参考为 `XxxTask`，VM 为 `XxxTaskViewModel`，View 为 `XxxTaskView`，UserControl 为 `XxxTaskUserControl`；Settings 配置类的命名参考为 `XxxSettings`，配置 VM 为 `XxxSettingsViewModel`，配置 View 为 `XxxSettingsView`。
@@ -34,23 +34,38 @@
 - 界面文本一律用 `controls:TextBlock` 而非原版 `TextBlock`；例外是文本样式需跟随宿主控件模板的场景（超链接、下拉选中项、按钮 Content、DataTemplate 内部等），这些用原版 `TextBlock`，不要套统一样式，保持原生表现。
 - 本地化 key 与主题 Brush 一律 `{DynamicResource ...}`，StaticResource 在语言或主题热切换后不刷新；引用本仓库自定义样式等不随主题/语言热切换的资源时用 StaticResource。
 - `Setter.Value` 里禁用不含运算符的 `c:Binding` 单路径表达式绑 `Visibility` 等类型不符的属性，含运算符的表达式会挂转换器不受此限——CalcBinding 在 Setter 上下文拿不到目标属性类型，不挂转换器的裸绑定转换失败后静默保持默认值（该 Setter 从未生效）；条件显隐改用 `DataTrigger`/`MultiDataTrigger` 直接设 `Collapsed`，或裸 `Binding` 显式挂 `Converter`。
-- 提示文案 key 加 `Tip` 后缀（`ForceScheduledStart` 与 `ForceScheduledStartTip`），句内复用其他 key 写 `{key=Xxx}` 内联。
+- `c:Binding` 表达式与枚举类型比较（`Xxx == ns:XxxEnum.Value` 形态）时必须显式指定 `Source`（如 `Source={x:Static vms:XxxModel.Instance}`）——枚举比较在转换器内按绑定首求值传入的值动态编译，相对 DataContext 继承的绑定在加载时序里首求值时值未就绪即编译失败，静默保持目标属性默认值（Visibility 恒 Visible、IsEnabled 恒可用），无任何报错；安全起见凡表达式引用枚举一律加 Source。
+- 滚动容器用 `hc:ScrollViewer` 并设 `IsInertiaEnabled="True"`：平滑滚动由该惯性开关控制，缺了滚轮就是跳格滚动；原生 `ScrollViewer` 无平滑行为，勿在新代码使用（设置页、各弹窗、日志区等既有滚动区均为 hc 版带惯性开关）。
+- 本地化 key 按 `Domain[.Topic].Name[.Tip|.Title]` 点分命名，新 key 的域与子主题须与同功能既有 key 一致：先搜同界面已有 key 的前缀照用（如定时执行相关一律 `TaskQueue.Schedule.*`），不得另起近义前缀；提示文案用 `.Tip` 尾段（`TaskQueue.Schedule.ForceScheduledStart` 与 `TaskQueue.Schedule.ForceScheduledStart.Tip`），句内复用其他 key 写 `{key=Xxx}` 内联。
 - `TooltipBlock` 长文案按句界显式换行，一句一行即可；无句界的长句不必强行拆，由 TooltipText 默认 MaxWidth 500 的软换行兜底。资源串内写 `&#10;` 或字面换行均可，且必须声明 `xml:space="preserve"`，否则换行符被 XAML 归一化；各语言在自己句界处换行，行数不要求一致。
-- 固定选项的下拉框用 `LocalizedObservableList<T>`（`src/MaaWpfGui/Utilities/ValueType/LocalizedObservableList.cs`），构造给 (值, 本地化 key)，勿手动 GetString 固化 Display（热切换语言后该项停留旧语言）；ViewModel 订阅 `LocalizationHelper.LanguageChanged` 并在回调里 `RefreshLocalization()`；增删用自带 Add/Remove/Insert/Clear，勿直接操作 Items。
+- 固定选项的下拉框用 `LocalizedObservableList<T>`，条目写 (值, 本地化 key)，需要括号后缀、悬浮提示或初始不可选时在二元组后链式调用 `WithSecondaryKey` / `WithTip` / `WithEnabled`，勿手动 GetString 固化 Display（热切换语言后该项停留旧语言）；ViewModel 订阅 `LocalizationHelper.LanguageChanged` 并在回调里 `RefreshLocalization()`，`WithSecondaryKey` 带显示条件时，条件依赖的状态变化后同样须调用 `RefreshLocalization()`（条件只在刷新时求值），外服未适配的选项统一用 `Common.NotAdapted` 后缀；增删用自带 Add/Remove/Insert/Clear，勿直接操作 Items。
 - 设置页新增区块复用 Expander + Border + UserControl 既有结构（样板见 `SettingsView.xaml`），否则破坏搜索过滤与折叠持久化。
+- 增删改 `Res/Localizations/*.xaml` 的 key 后，运行 `python tools/SortLocalizationKeys.py` 把各语言文件按 key 字节序重排：脚本只决定条目的排列位置，不检查也不修正前缀分类，key 本身仍须按本节的 key 命名规范取对；CI 用 `--check` 校验排序，未重排的改动会使 CI 失败。
 
 ## 资源与工程文件
 
 - `resource/tasks/tasks.json` 字段须在 TaskData 白名单内，自定义字段须配 `xxx_Doc` 注释字段，校验只在 `ASST_DEBUG` 加载期（Release 静默）；`next` 列表特殊引用用 `#` 前缀（`#self` / `#next` / `#back`）。
 - MaaCore 源文件由 CMake `file(GLOB_RECURSE)` 自动收集，新增 `.h/.cpp` 无需登记 CMakeLists。
-- 改 `Res/Localizations/*.xaml` 中 stub 相关文案（如 ErrorCongratulations）须同步 `src/MaaAppHostStub/MaaAppHostStub.cpp`，CI 有硬校验。
+- 改 `Res/Localizations/*.xaml` 中 stub 相关文案（如 Error.Congratulations）须同步 `src/MaaAppHostStub/MaaAppHostStub.cpp`，CI 有硬校验。
 
 ## 文档维护
 
+- 全仓库 Markdown 由 markdownlint 检查和自动修复，配置位于根目录 `.markdownlint-cli2.yaml`；Prettier 不再处理 Markdown，但根目录 `.prettierrc` 与 `docs/.prettierrc.cjs` 保留相同的 Markdown 显式选项，维护时须同步。可表达的样式对齐 Prettier：ATX 标题、`-` 无序列表、`---` 分隔线、`_强调_`、`**加粗**`、表格两侧竖线。表格仍使用 `MD060: compact` 紧凑样式；CHANGELOG 保持以二级版本标题开头，根目录 CHANGELOG 沿用发布模板的 `*` 列表与 `----` 分隔线。`proseWrap: preserve` 不限制正文行长，不能将 `printWidth: 120` 当作 `MD013` 的硬限制。
 - 改任一语言后同步其余四语言（zh-cn/zh-tw/en-us/ja-jp/ko-kr）的对应段落（行号未必对应）：语义一致即可，某语言本就缺段落则保持现状但提示。
 - 文档中的 UI 均指 WPF UI，修改时不必处理 Avalonia（MAAUnified）等社区实现的相关描述；明日方舟 PC 端不进文档。
 - 新活动/模式尚无官方译名时以各语言 UI 显示为准（见 `Res/Localizations/*.xaml`），UI 也无译文则写中文并括号加描述，勿自行发明译名。
 - docs 新增文档须建五语言同名文件，frontmatter 带 `icon` 与 `order`（侧边栏排序）；站内链接用相对路径，CI 有死链检查。
+- `:::` 容器的开启行、内容行与闭合行行尾各加两个空格（Markdown 硬换行），使不支持 `:::` 渲染的预览也能逐行显示；开启行冒号与容器名之间留一个空格（`::: info`）；列表与代码块前须空一行；下一行是空行或已到文件末尾时可省略两个空格；代码块内部的行、表格行、下一行仍是列表项的列表项不加。
+
+  ```markdown
+  ::: tip 标题（可省略）  
+  xxx  
+  :::  
+  ```
+
+  `::: field` 的 `@type` 等元数据行同样加两个空格（插件逐行去掉首尾空白，不影响解析）；描述行的行尾两个空格在站点上不产生换行，描述内需要换行时另起一行写 `<br>`，`<br>` 的上一行不加两个空格，否则不支持 `:::` 的预览会出现双换行。
+
+- `:::` 容器（hint / field / field-group 等）内容以列表结尾时，闭合行前须留空行且与开启行同缩进（通常顶格）；列表后的闭合行不能缩进为列表延续，缩进与开启行不等的闭合行在部分容器插件下永不闭合。
 
 ## 发布 / 打包
 
@@ -60,7 +75,7 @@
 
 ## 测试
 
-- MaaCore 本地测试一律 Debug 构建：加载期检查整体在 `ASST_DEBUG` 内，Release 下零错误是假象。
+- 本地测试一律 Debug 构建，Release 下零错误是假象。
 - MSB3026/MSB3021 构建复制失败时，挡构建的是占用仓库构建版 `build\bin\Debug\MAA.exe` 的进程（与安装版无关），临时验证程序引用 MaaWpfGui 时同理。
 - 文档站在主仓库 `docs/` 下直接跑，日常验证改完文件看 `pnpm dev` 热重载即可，无必要不跑 build；非交互 install 加 `CI=true`。
-- 纯 UI 验证（改 XAML、文案、截图）用 `MAA.exe --skip-core-init` 启动：安静预览态，无需编译布置 MaaCore 及其运行时依赖；验证涉及内核的链路时不适用。
+- 纯 UI 验证（改 XAML、文案、截图）用 `MAA.exe --skip-core-init` 启动，无需编译布置 MaaCore 及其运行时依赖；验证涉及内核的链路时不适用。
