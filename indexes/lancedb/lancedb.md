@@ -1,0 +1,7 @@
+# lancedb/lancedb instruction files
+
+Upstream: [lancedb/lancedb](https://github.com/lancedb/lancedb) · License: `Apache-2.0` · Commit: `3dc779d0ee4db432217d4c8e70a4ef37c57fd498`
+
+| Type | Path | Snapshot | Fixed source | SHA-256 | Size |
+|---|---|---|---|---|---:|
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/lancedb/lancedb/AGENTS.md) | [Source](https://github.com/lancedb/lancedb/blob/3dc779d0ee4db432217d4c8e70a4ef37c57fd498/AGENTS.md) | `1f1380ee6ca8e63904b55ba45428d50426c3bf4bc615e597cc08eee4e2937cd0` | 8,101 B |

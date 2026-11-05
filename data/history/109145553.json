@@ -2,10 +2,10 @@
   "full_name": "podman-container-tools/podman",
   "points": [
     {
-      "checked_at": "2026-10-06T10:25:49Z",
-      "commit_sha": "2952b85e71e318d4942caeceefaa30d1b08d0d39",
-      "pushed_at": "2026-10-06T10:25:36Z",
-      "stars": 33002
+      "checked_at": "2026-11-05T11:03:12Z",
+      "commit_sha": "c3b297331ee4e79582d44c8b8a28f2a030f39cdc",
+      "pushed_at": "2026-11-05T10:57:58Z",
+      "stars": 33184
     }
   ],
   "repo_id": 109145553

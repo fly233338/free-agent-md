@@ -2,12 +2,6 @@
   "full_name": "foundry-rs/foundry",
   "points": [
     {
-      "checked_at": "2026-10-06T10:25:49Z",
-      "commit_sha": "305648d9e134b2ac7e5d0d6642f5c63beac48a6e",
-      "pushed_at": "2026-10-06T10:25:04Z",
-      "stars": 10640
-    },
-    {
       "checked_at": "2026-10-09T10:40:00Z",
       "commit_sha": "2f9b593596bf5148e2a1f73bc595b3c6bf0daae0",
       "pushed_at": "2026-10-09T10:33:42Z",
@@ -24,6 +18,12 @@
       "commit_sha": "96afa9d134615fbc17f37266dc13acf5afe95ba0",
       "pushed_at": "2026-10-29T10:01:05Z",
       "stars": 10740
+    },
+    {
+      "checked_at": "2026-11-05T11:03:12Z",
+      "commit_sha": "fb9098f0c7c00eacc43ffa8a9eed65fceefca34a",
+      "pushed_at": "2026-11-05T10:59:55Z",
+      "stars": 10754
     }
   ],
   "repo_id": 404320053

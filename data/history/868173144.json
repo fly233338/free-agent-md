@@ -1,12 +1,6 @@
 {
-  "full_name": "kortix-ai/suna",
+  "full_name": "kortix-ai/CompanyOS",
   "points": [
-    {
-      "checked_at": "2026-10-06T10:25:49Z",
-      "commit_sha": "1276bc2dadab9c7a85e1f09cd62124e1c4a47f4d",
-      "pushed_at": "2026-10-06T10:19:44Z",
-      "stars": 20249
-    },
     {
       "checked_at": "2026-10-07T10:21:27Z",
       "commit_sha": "23a40e1acaf6d40373b19540a4fcdedf93a9f29a",
@@ -42,6 +36,12 @@
       "commit_sha": "b067966b298cbfacbb966e6cab465ae647e1f069",
       "pushed_at": "2026-10-31T09:43:45Z",
       "stars": 20337
+    },
+    {
+      "checked_at": "2026-11-05T11:03:12Z",
+      "commit_sha": "f693b9639367a511bc918f94c11b6557b75df95d",
+      "pushed_at": "2026-11-05T10:58:14Z",
+      "stars": 20388
     }
   ],
   "repo_id": 868173144

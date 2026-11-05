@@ -2,12 +2,6 @@
   "full_name": "neovim/neovim",
   "points": [
     {
-      "checked_at": "2026-10-06T10:25:49Z",
-      "commit_sha": "b03d8f1788185afcd396fe5fe45a72850079b12b",
-      "pushed_at": "2026-10-06T09:22:44Z",
-      "stars": 102863
-    },
-    {
       "checked_at": "2026-10-07T10:21:27Z",
       "commit_sha": "27ee55c09d088c88b6c5ab5e8e2c4eaf86d6df71",
       "pushed_at": "2026-10-07T08:42:06Z",

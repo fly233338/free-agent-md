@@ -19,6 +19,11 @@
 
 - Keep transport and presentation adapters thin. Put domain behavior behind a
   transport-neutral interface.
+- Coral keeps no MCP session: every MCP request stands on its own credential,
+  so any Coral Instance serves it
+  ([ADR 0029](docs/adr/0029-mcp-requests-are-served-without-sessions-and-a-required-action-reaches-its-user-through-the-assistants-link.md)). Do
+  not hold state between a client's requests in the Adapter, and do not send a
+  client anything outside the response to its own request.
 - Read process environment only at process bootstrap. Pass explicit values to
   domain code.
 - Route untrusted outbound HTTP through `coral-outbound::Client`. Pass the
@@ -81,8 +86,9 @@
   the owner's own writes read the
   clock only for their own sample (the start mark, the terminal write and a
   recovered owner's one chunk date a timeout they find passed; the Policy
-  Enforcement Point judges an approved
-  request's deadline at dispatch, contract line 3, and records no expiry),
+  Enforcement Point compares, at dispatch, an approved request's decision
+  time (the owner's sample when it applied the decision, not when its chunk
+  commits) with its deadline, contract line 3, and records no expiry),
   and no chunk commit is predicated on the clock (contract line 5). Nothing
   outside the owner compares `now` with those deadlines to write TimedOut
   or Expired: readers show the recorded state beside the deadline. A
@@ -212,6 +218,9 @@
 - Extend the nearest shared helper (`coral-test-support` or the crate's test
   harness) and write near-duplicate cases as one table test. After a TDD loop,
   fold the tracer tests into that table before you open the PR.
+- A test that compiles TypeScript but is not about the compilation deadline
+  uses `coral_test_support::TEST_COMPILATION_TIMEOUT`. The production deadline
+  fails such tests on a starved runner.
 - Inject faults through the owning crate's API or
   `TestDatabase::execute_fixture_sql`, so the test runs on both databases.
   Production `#[cfg(test)]` hooks only synchronize timing; every tested path is

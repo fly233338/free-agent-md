@@ -2,12 +2,6 @@
   "full_name": "elastic/kibana",
   "points": [
     {
-      "checked_at": "2026-10-06T10:25:49Z",
-      "commit_sha": "acad00d32e37739e97b939e0ab42e109bc9574b6",
-      "pushed_at": "2026-10-06T10:25:31Z",
-      "stars": 21309
-    },
-    {
       "checked_at": "2026-10-07T10:21:27Z",
       "commit_sha": "572bfc4ed3f29aa024dbac9868870d7681928988",
       "pushed_at": "2026-10-07T10:21:06Z",

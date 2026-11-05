@@ -2,12 +2,6 @@
   "full_name": "axios/axios",
   "points": [
     {
-      "checked_at": "2026-10-06T10:25:49Z",
-      "commit_sha": "28e9b84ac59c034260c1927f4a0b7c022b6b0071",
-      "pushed_at": "2026-10-06T10:13:06Z",
-      "stars": 109318
-    },
-    {
       "checked_at": "2026-10-07T10:21:27Z",
       "commit_sha": "2b169bbb0cf67e6539e4cec222ced5ac8a923e00",
       "pushed_at": "2026-10-06T14:59:03Z",

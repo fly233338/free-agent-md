@@ -2,12 +2,6 @@
   "full_name": "homeassistant-ai/ha-mcp",
   "points": [
     {
-      "checked_at": "2026-10-06T10:25:49Z",
-      "commit_sha": "c72303049f4af569e02f6c04ad7ff98b0dddbb54",
-      "pushed_at": "2026-10-06T09:53:24Z",
-      "stars": 4956
-    },
-    {
       "checked_at": "2026-10-07T10:21:27Z",
       "commit_sha": "09e4741db465b292328534dd145aa88c030ceabb",
       "pushed_at": "2026-10-07T10:10:50Z",
@@ -30,6 +24,12 @@
       "commit_sha": "dc09cf42843cb32604eae8ddc4a2c75b6873c852",
       "pushed_at": "2026-10-30T10:08:11Z",
       "stars": 5363
+    },
+    {
+      "checked_at": "2026-11-05T11:03:12Z",
+      "commit_sha": "51866f840bc85ae13ae51e47bdd8bdc8e4339b3b",
+      "pushed_at": "2026-11-05T10:59:31Z",
+      "stars": 5439
     }
   ],
   "repo_id": 1056618941

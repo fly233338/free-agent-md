@@ -51,7 +51,7 @@ Any text a notification carries can be that long: a response body or a log a des
 
 ### Emails load nothing from outside the installation
 
-An email is read wherever its reader is - on a network without the internet, behind a mail gateway that flags remote images - and every image it fetches tells whoever serves it who opened the email, and when (issue #5124: every email's header loaded its logo from res.cloudinary.com). So an email's own markup loads nothing it does not carry: an image is either inside the email - OneUptime's logo (`oneUptimeLogoUrl`, `packages/Common/Server/Utils/Mail/EmailLogo.ts`) and screenshots go out as inline attachments the HTML points at by Content-ID (`EmailInlineImages.ts`) - or an address the installation builds on its own host and hands the template (a logo its operator uploaded). Never a CDN, a web font, a tracking pixel or any other address a template or the code that writes email markup spells out; the only host a template names is `oneuptime.com`, in the footer's link of an installation that is not renamed. `OfflineAssetHygiene.test.ts` (packages/Common/Tests/Server/Utils) reads every email template, in any format, and every string of the code that writes email markup; `EmailsLoadNothingFromOutside.test.ts` (packages/App/Tests/Notification) renders and sends every template on every transport.
+An email is read wherever its reader is - on a network without the internet, behind a mail gateway that flags remote images - and every image it fetches tells whoever serves it who opened the email, and when (issue #5124: every email's header loaded its logo from res.cloudinary.com). So an email's own markup loads nothing it does not carry: an image is either inside the email - OneUptime's logo (`oneUptimeLogoUrl`, `packages/Common/Server/Utils/Mail/EmailLogo.ts`) and screenshots go out as inline attachments the HTML points at by Content-ID (`EmailInlineImages.ts`) - or an address the installation builds on its own host and hands the template (a logo its operator uploaded). Just before an email is sent, a logo an operator uploaded - the installation's own, a status page's - goes inside the email in place of that address when it is a PNG, JPEG or GIF of at most 512 KB (`EmailCarriedLogos.ts`; the readers are `getCarriedProductLogo` in App's EmailBranding and `StatusPageCarriedLogo`, which the notification service registers when it starts); any other keeps its address. Never a CDN, a web font, a tracking pixel or any other address a template or the code that writes email markup spells out; the only host a template names is `oneuptime.com`, in the footer's link of an installation that is not renamed. `OfflineAssetHygiene.test.ts` (packages/Common/Tests/Server/Utils) reads every email template, in any format, and every string of the code that writes email markup; `EmailsLoadNothingFromOutside.test.ts` (packages/App/Tests/Notification) renders and sends every template on every transport.
 
 ### After you make a change.
 
@@ -85,6 +85,24 @@ rather than as a failed deploy. Prefer a render assertion over a careful reading
 cluster-backed suites that install the chart on a throwaway KinD cluster. That is the
 `helm-test` job in the "Common Jobs" workflow. Suites live in `HelmChart/Tests/suites`;
 see `HelmChart/README.md` for how to add one.
+
+### Release notes
+
+Each release's notes on GitHub, which the upgrade guide sends self-hosters to and the website links to as the Changelog, are written by `Scripts/Release/GenerateReleaseNotes.js` from what the release ships: the title of every pull request and the subject of every commit pushed straight to master. So a title is a line someone reads on the release page. Write it as `type(area): what changed, for the person using OneUptime`, not what the code does.
+
+- `feat`, `fix`, `perf` and `docs` each have a section. `test`, `ci`, `chore`, `refactor`, `style` and `build` go under Maintenance, which is folded, and so does anything in an area of the repository rather than the product (`fix(ci): ...`; `INTERNAL_AREAS` in the script).
+- The scope is the area the line is filed under: use the product's name (`exceptions`, `on-call`, `status-pages`). A title with no type can open with its area instead (`Workflows: every template in five steps`); it goes under New and improved.
+- A `!` after the type or scope (`feat(helm)!: ...`) puts the change under Breaking changes, at the top. Use it whenever an upgrade asks something of the person upgrading.
+- A label wins over a title (`bug`, `enhancement`, `documentation`, `dependencies`), and `ignore` leaves a pull request out.
+
+To see a release's notes, or write a published release's again:
+
+```bash
+GH_TOKEN=$(gh auth token) node Scripts/Release/GenerateReleaseNotes.js --version 14.0.98 --output notes.md
+gh release edit 14.0.98 --notes-file notes.md
+```
+
+With `--to master` and no `--version`, it shows what the next release will say.
 
 ### Mobile app releases
 
@@ -141,6 +159,18 @@ any of these, the `enterpriseMarketplace` chart values, or anything in those lis
 how an installation is billed and licensed, how each edition is built, pushed, tested and submitted, and which steps
 only a maintainer may do.
 
+### Continue with Google
+
+The **Continue with Google** button on the sign-in and sign-up pages runs on a Google OAuth client in Google Cloud, not
+in this repository: merging code turns nothing on, and a server offers the button only once `GOOGLE_SIGN_IN_CLIENT_ID`
+and `GOOGLE_SIGN_IN_CLIENT_SECRET` are set (Helm `googleSignInApp`). Its code is the Google client in
+`packages/Common/Server/Utils/GoogleSignIn` and the provider sign-in it shares with Sign in with Microsoft
+(`packages/App/FeatureSet/Identity/Utils/ProviderSignIn.ts`: who may sign in, the state cookie, the campaign a new
+account keeps). Before changing that code, the button, or anything in Google Cloud, read
+[the Continue with Google guide](packages/Common/Server/Utils/GoogleSignIn/RELEASING.md). It says how to set up the
+consent screen and the OAuth client and their redirect URI, what the button must look like under Google's branding
+rules, how to test it end to end, and which steps only a maintainer may do.
+
 ### Infrastructure agent package managers
 
 Each release publishes the infrastructure agent (`agents/InfrastructureAgent`) to apt and yum (packages.oneuptime.com,
@@ -153,6 +183,19 @@ release gets to each package manager, which repositories, keys and secrets each 
 To check or follow up on a release of the agent (a winget pull request, the Pages deploy, the signing key), read
 [agents/InfrastructureAgent/RELEASING.md](agents/InfrastructureAgent/RELEASING.md). The "Infrastructure Agent Release
 Status" workflow checks every place after each release and every day; its run summary is the release's record.
+
+### Iron Bank
+
+The App (its Enterprise Edition), ingress, runner and probe images are also packaged for Iron Bank, the US Department of
+Defense's registry of hardened images (registry1.dso.mil), from `IronBank/App`, `IronBank/Ingress`, `IronBank/Runner` and
+`IronBank/Probe`. Iron Bank's pipeline does not build them: each project's Dockerfile copies what a release's image adds
+(`/usr/src`, and the ingress's nginx configuration, the runner's kubectl, the probe's browsers and Node.js) onto an Iron
+Bank base image of the same distribution, and sets again what the release's Dockerfile sets. So when you change
+`packages/App/Dockerfile.tpl`, `packages/Nginx/Dockerfile.tpl`, `packages/Runner/Dockerfile.tpl` or
+`packages/Probe/Dockerfile.tpl` - a start command, entrypoint, user, environment variable, label or package, or what the
+image copies or builds in - `Tests/Ops/IronBankApp.test.js` or `IronBankProjects.test.js` fails until the project's
+Dockerfile does the same. Before changing anything in `IronBank/`, `Scripts/IronBank/` or `.github/workflows/iron-bank.yml`
+(the "Iron Bank Preflight" workflow), read [the Iron Bank guide](IronBank/README.md).
 
 ### Commit frequently
 

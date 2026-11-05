@@ -83,6 +83,7 @@ The library and CLI must be **as fast as possible.**
 
 - Exercise core functionality and edge cases with **Rust tests** on the **`grit-lib`** public API (and workspace integration tests where CLI wiring matters). Cross-check against the system **`git`** binary inside tests where compatibility matters (formats, protocols, fsck).
 - Write **coverage tests for every public library interface**.
+- Integration tests build as **one binary per crate** (`tests/integration.rs`). After adding, renaming or removing a `tests/*.rs` file, run `python3 scripts/sync_integration_tests.py` (see **TESTING.md**, *Adding tests*).
 - Do not weaken or delete tests to green a change.
 
 Detail: **TESTING.md** and ROADMAP testing items.
@@ -248,6 +249,8 @@ Aligns with **how work is judged** above:
 
 The Git engine lives in **`grit-lib`**. Binaries stay thin: parse CLI, open a `Repository`, call library APIs, map `grit_lib::Error` to exit codes and output sinks.
 
+**API conventions and stability:** [`grit-lib/API.md`](grit-lib/API.md) (seven conventions, 0.6.0 semver policy, checklist for new public items). Canonical module paths: [`content/docs/library/api-layout.md`](content/docs/library/api-layout.md).
+
 ### When to use one crate vs several
 
 - **Start with one library crate** plus binary crates in a workspace unless a split is clearly needed. Prefer **modules** (`objects`, `index`, `refs`, `odb`, `tree`, `worktree`, …) for boundaries before adding more crates.
@@ -291,7 +294,7 @@ Agents version-control with **GitButler (`but`)** and **GitButler Mesh**. Nothin
 
 ## Cursor cloud specific instructions
 
-- **Rust toolchain**: Ensure stable ≥ 1.85 (`rustup update stable && rustup default stable`) for edition 2024 workspace deps.
+- **Rust toolchain**: Contributors use the pin in `rust-toolchain.toml` (**1.99.0**). Published crates declare **MSRV 1.95** via `rust-version` in `[workspace.package]` (inherited by `grit-lib`, `grit-cli`, `grit-protocol`, `grit-http-server`).
 - **No external services**: Build and test via Cargo.
 - **Pre-integration gate**: **`make gate`** (`scripts/gate.sh`: fmt, clippy with **`-D warnings`**, **`cargo test --workspace`**).
 - **Unit tests**: `cargo test -p grit-lib --lib` during development; the gate runs the full workspace suite.

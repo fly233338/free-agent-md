@@ -1,8 +1,8 @@
 # flipt-io/flipt instruction files
 
-Upstream: [flipt-io/flipt](https://github.com/flipt-io/flipt) · License: `NOASSERTION` · Commit: `4cacb7ca5032952429cb980d08aeaeffa22d97f3`
+Upstream: [flipt-io/flipt](https://github.com/flipt-io/flipt) · License: `NOASSERTION` · Commit: `30e79d170b4a95622a0384a679b28c0520627d3d`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/flipt-io/flipt/AGENTS.md) | [Source](https://github.com/flipt-io/flipt/blob/4cacb7ca5032952429cb980d08aeaeffa22d97f3/AGENTS.md) | `8d7fb431932e08577bc7add8e55a6dfb5532b6bca2e009c0d19101e20f2bdf70` | 4,886 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/flipt-io/flipt/CLAUDE.md) | [Source](https://github.com/flipt-io/flipt/blob/4cacb7ca5032952429cb980d08aeaeffa22d97f3/CLAUDE.md) | `8d7fb431932e08577bc7add8e55a6dfb5532b6bca2e009c0d19101e20f2bdf70` | 4,886 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/flipt-io/flipt/AGENTS.md) | [Source](https://github.com/flipt-io/flipt/blob/30e79d170b4a95622a0384a679b28c0520627d3d/AGENTS.md) | `8d7fb431932e08577bc7add8e55a6dfb5532b6bca2e009c0d19101e20f2bdf70` | 4,886 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/flipt-io/flipt/CLAUDE.md) | [Source](https://github.com/flipt-io/flipt/blob/30e79d170b4a95622a0384a679b28c0520627d3d/CLAUDE.md) | `8d7fb431932e08577bc7add8e55a6dfb5532b6bca2e009c0d19101e20f2bdf70` | 4,886 B |

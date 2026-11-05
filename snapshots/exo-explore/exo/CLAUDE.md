@@ -18,8 +18,11 @@ uv run exo
 # Run with verbose logging
 uv run exo -v   # or -vv for more verbose
 
-# Run tests (excludes slow tests by default)
+# Run tests (excludes slow and cluster tests by default)
 uv run pytest
+
+# Run the fast cluster scenarios (real exo nodes on this machine, stub engine; ~5 min)
+uv run pytest -m "cluster and not slow"
 
 # Run all tests including slow tests
 uv run pytest -m ""
@@ -81,7 +84,7 @@ Components communicate via typed pub/sub topics (src/exo/routing/topics.py):
 - `LOCAL_EVENTS`: Workers send events to master for indexing
 - `COMMANDS`: Workers/API send commands to master
 - `ELECTION_MESSAGES`: Election protocol messages
-- `CONNECTION_MESSAGES`: zenoh connection updates
+- `MEMBERSHIP`: each node's state (Alive / Suspect / Gone) as this node's networking sees it, local only
 
 ### Event Sourcing
 The system uses event sourcing for state management:

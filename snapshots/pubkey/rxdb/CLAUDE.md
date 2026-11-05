@@ -14,6 +14,7 @@
 - **Lint**: `npm run lint`
 - **Lint Fix**: `npm run lint:fix`
 - **Check Types**: `npm run check-types`
+- **Bundle Size Check**: `npm run test:bundle-size` (after `npm run build`). If a size change is intended, run `npm run bundle-size:update` and commit `config/bundle-size/limits.json`.
 
 ## Development Scripts
 - **Unwatch Tests**: `npm run dev`
@@ -24,6 +25,8 @@
 ## Docs Hosting
 - The docs at rxdb.info are deployed via GitHub Pages from the `docs` branch. They are NOT hosted on Cloudflare Pages; the deploy step in `.github/workflows/cloudflare-pages.yml` is commented out and inactive.
 - GitHub Pages serves static files only: there are no server-side functions and no access to request logs. Any feature that needs server-side logic or log analysis requires an external endpoint.
+- Do NOT suggest putting Cloudflare (or another CDN) in front of the docs, for example to change cache headers. The docs stay on plain GitHub Pages.
+- The docs font is embedded as base64 WOFF2 inside `docs-src/src/css/custom.css` on purpose, so the initial page load needs fewer network requests. Do NOT move it into a separate font file or suggest preloading it instead.
 
 ## Code Style & Patterns
 - **Language**: TypeScript
@@ -35,6 +38,7 @@
 - **TypeScript**: Do not use enums. Prefer types instead of interfaces.
 - **Errors**: Do not use `throw new Error()`. Use `throw newRxError()` or `throw newRxTypeError()` instead to reduce build size and do not include full error messages in production builds. Use the error codes from `src/rx-error.ts` and add new error codes if needed like `PL1`, `PL2`. Example: `throw newRxError('PL1', { plugin });`
 - **Comments**: Do NOT write comments that explain why code was changed, replaced, or removed. Nobody reading the code later cares that an API used to be something else or that it was deprecated. Examples of comments that must NOT be added: `// fs.rmdirSync() is deprecated, fs.rmSync() is the replacement`, `// this used to be a forwardRef`, `// renamed from oldName`. That kind of reasoning belongs in the commit message, the pull request, or the changelog entry under `orga/changelog/`. Comments in the code must only explain what the current code does or why the current code has to be this way.
+- **Bugs in dependencies**: When a dependency (for example `mingo`) has a bug, do NOT rewrite or reimplement the dependency's function inside RxDB to work around it. Keep importing the original function. Instead, ask the user to fork the dependency and open a PR there that fixes the broken behavior, and give the user a ready-to-run prompt for a new session that does this. The prompt must name the dependency repository, the affected file and function, a minimal reproduction, the expected behavior with a link to the reference (for example the MongoDB docs), and the steps: add a failing test, fix it, run the dependency's own checks, open the PR upstream. If an RxDB test is affected, keep the test and do not hide the bug with a local reimplementation.
 ## Development Workflow
 
 ```sh
@@ -55,8 +59,57 @@ npm run check-types
 
 ## Changelog Rule
 - Whenever you add a testcase or implement a FIX, add a changelog entry file under `orga/changelog/`.
-- Prefer including a link to the root issue or pull request in that changelog line.
+- Changelog entries are JSON files that must match `orga/changelog/schema.json` with the fields `text`, `links` (`url` and `linkText`) and `priority` (1 to 10). See `orga/changelog/README.md`.
+- Prefer including a link to the root issue or pull request in the `links` of that changelog entry.
 - Do NOT add a changelog entry for changes that are neither a testcase nor a FIX. For example, adding a SEM landingpage under `docs-src/src/pages/sem/` must not produce a changelog entry.
+
+## Example Schema Rule
+- Whenever a docs page needs an example schema, example documents, or example queries, use the shared `todos` example schema from the "Example Schema" section of `docs-src/docs/rx-schema.md`. Do NOT invent a new schema (heroes, humans, users, etc.).
+- Use the same names everywhere: database variable `myDatabase`, collection `todos`, schema `todoSchema`, document type `TodoDocType`.
+- Whenever a page needs example documents, use these (`todo3` and `todo4` leave out `done` and `tags` to show the defaults), so that query results shown as `// > ...` comments are consistent across pages:
+
+```ts
+await myDatabase.todos.bulkInsert([
+    {
+        id: 'todo1',
+        name: 'Learn RxDB',
+        done: false,
+        dueAt: '2026-01-01T10:00:00.000Z',
+        priority: 8,
+        tags: ['learning', 'rxdb'],
+        assignee: { name: 'Alice', email: 'alice@example.com' },
+        subtasks: ['todo3']
+    },
+    {
+        id: 'todo2',
+        name: 'Buy groceries',
+        done: true,
+        dueAt: '2026-01-02T09:30:00.000Z',
+        priority: 3,
+        tags: ['home'],
+        assignee: { name: 'Bob' },
+        note: 'Milk, eggs, bread'
+    },
+    {
+        id: 'todo3',
+        name: 'Set up replication',
+        dueAt: '2026-01-03T14:15:00.000Z',
+        priority: 10,
+        tags: ['rxdb', 'backend']
+    },
+    {
+        id: 'todo4',
+        name: 'Clean the kitchen',
+        dueAt: '2026-01-04T18:00:00.000Z',
+        priority: 1
+    }
+]);
+```
+
+- Do NOT rename or remove fields. A page may only extend the schema when its feature requires it, for example adding `note` to `encrypted`, adding `attachments: {}`, bumping `version` for migrations, or adding a numeric `updatedAt` for replication checkpoints.
+- Pages may show a shorter schema with only the fields the example needs, but those fields must keep the names and types of the shared schema.
+- Only use a different schema when the feature cannot be shown with the `todos` schema, for example composite primary keys or vector embeddings.
+- When the shared schema in `rx-schema.md` changes, update the pages that use it.
 
 ## Article Internal Linking Rule
 - Whenever you CREATE a new article under `docs-src/docs/` (for example a page under `docs-src/docs/articles/`), internal links MUST go in both directions.
@@ -213,10 +266,12 @@ Do not reproduce (authentic errors in old pages; write the correct form):
 - Inline code for API names, options, operators (`$gt`), field names (`_rev`), and counts like `10k`.
 - Images are centered raw HTML: `<p align="center"><img src="./files/x.png" alt="keyword phrase" width="450" /></p>`. Alt text is a short keyword phrase. Use `className`, not `class`.
 - Internal links are relative with the `.md` extension: `[RxStorage](./rx-storage.md)`, `[replication](../replication.md)` from articles. Site-root links for non-doc pages: `/premium/`, `/code/`, `/chat/`. Anchor text is a descriptive keyword phrase, never "click here". No UTM parameters.
+- Error codes: whenever an RxDB error code like `QU13` or `COL5` is mentioned in the docs, link it directly to its entry on the [error page](docs-src/docs/errors.md). The anchor is the plain error code: [`QU13`](./errors.md#QU13), or `../errors.md#QU13` from a page in `articles/`. Never leave a bare error code in prose.
 - Link densely: nearly every first mention of an RxDB concept links to its page. Repeat links to canonical pages (replication, rx-storage, quickstart, offline-first) are fine.
 - Admonitions `:::note` and `:::warning` (optionally titled) sparingly; not part of the default template.
+- When a product discussed on a page has shut down or is deprecated (a hosted service closing, an end-of-life date, an archived repository), state it in a titled `:::note` admonition right after the intro paragraph, with the date and a link to the primary source. Example: `:::note Electric Cloud has been shut down`.
 - Comparison tables may use ✅ / ❌ / ⚠️ cells.
-- Emoji only where functional: 👑 always accompanies "RxDB Premium" links, ⭐ for the star CTA, ✅/❌/⚠️ in tables. Never decorative emoji in prose.
+- Premium marker: never use the crown emoji character. Use the globally registered `<PremiumIcon />` crown component (no import needed) next to "RxDB Premium" links and premium features. Emoji only where functional: ⭐ for the star CTA, ✅/❌/⚠️ in tables. Never decorative emoji in prose.
 - FAQ answers open with a "Yes." or "No." verdict, then 2 to 5 sentences with a bold internal link like `**[RxDB](./rx-database.md)**`. Questions are phrased as real search queries.
 
 ### Components (import from `@site/src/components/...`)
@@ -229,6 +284,7 @@ Do not reproduce (authentic errors in old pages; write the correct form):
 - `<QuoteBlock author="..." year="..." sourceLink="...">quote</QuoteBlock>` for cited quotes.
 - `<HeadlineWithIcon h1 icon={<IconX />}>Title</HeadlineWithIcon>` for icon headlines.
 - `<RxdbLogo alt="..." />` is global and needs no import.
+- `<PremiumIcon />` is global and needs no import. It renders the inline crown that marks RxDB Premium features.
 
 ### Terminology and spelling
 - US English ("behavior", "optimize", "synchronize"). The corpus has rare UK slips ("initialisation", "realised", "optimisation"); do not copy them. Oxford comma throughout.

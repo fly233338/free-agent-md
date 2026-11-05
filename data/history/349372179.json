@@ -2,12 +2,6 @@
   "full_name": "lightdash/lightdash",
   "points": [
     {
-      "checked_at": "2026-10-06T10:25:49Z",
-      "commit_sha": "4ce9a35b0b90619d2decccaa483799259fd84aa2",
-      "pushed_at": "2026-10-06T10:23:33Z",
-      "stars": 6175
-    },
-    {
       "checked_at": "2026-10-08T10:40:59Z",
       "commit_sha": "026e9eccb4bdf3196a5c8bd15d40a60a66e4fbd6",
       "pushed_at": "2026-10-08T10:39:53Z",
@@ -60,6 +54,12 @@
       "commit_sha": "bfc573e8fcd44743ed995ab32ec9d25f3a5efa64",
       "pushed_at": "2026-11-03T10:57:38Z",
       "stars": 6221
+    },
+    {
+      "checked_at": "2026-11-05T11:03:12Z",
+      "commit_sha": "37a190320d6ee1864108a24bfc2e21550d87d3ac",
+      "pushed_at": "2026-11-05T11:00:23Z",
+      "stars": 6223
     }
   ],
   "repo_id": 349372179
