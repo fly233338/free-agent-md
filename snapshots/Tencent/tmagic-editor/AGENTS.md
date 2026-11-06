@@ -10,7 +10,7 @@ TMagic Editor 是魔方平台的可视化编辑器核心库，提供拖拽式组
 编辑器本体使用 Vue 3；UI 通过 `@tmagic/design` + adapter 接入 Element Plus 或 TDesign Vue Next。
 
 **技术栈：** Vue 3, TypeScript, Vite, rolldown, vitest, VitePress, Element Plus / TDesign Vue Next
-**环境：** Node.js `^20.19.0 || >=22.12.0`，pnpm `11.21.0`
+**环境：** Node.js `^20.19.0 || >=22.12.0`，pnpm `12.16.1`
 **当前版本：** `1.8.0-beta.25`
 **主仓库：** `https://git.woa.com/vft-magic/tmagic-editor.git`
 **开源仓库：** `https://github.com/Tencent/tmagic-editor.git`
@@ -42,6 +42,13 @@ pre-commit 跑 lint-staged 与 `pnpm check:type`，pre-push 跑 `pnpm coverage`�
 - 禁止在核心包中引入腾讯内部专有依赖（开源项目）
 - 禁止直接修改 CHANGELOG.md，应通过 `pnpm changelog` 生成
 - 禁止提交未达 85% 测试覆盖率的新增/修改代码
+
+## 编码原则
+
+1. **防过度防御**：几乎不会发生的边界/并发问题，讲清概率并经用户确认后再加，严禁为“理论上更稳”私自膨胀代码。
+2. **入口单次校验**：外部数据只在边界校验一次，内部靠类型系统流转，禁止层层重复判断。
+3. **拒绝提前抽象**：单次使用的逻辑就近内联，不随意提前拆分无意义的 helper。
+4. **控制复杂度**：非必要不用 try/catch，能单函数清晰搞定的别硬拆。
 
 ## 常用命令
 

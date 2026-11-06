@@ -2,12 +2,6 @@
   "full_name": "langwatch/langwatch",
   "points": [
     {
-      "checked_at": "2026-10-07T10:21:27Z",
-      "commit_sha": "7486b588bdd052501a6073d0e3b13c7366963135",
-      "pushed_at": "2026-10-07T10:06:30Z",
-      "stars": 4923
-    },
-    {
       "checked_at": "2026-10-08T10:40:59Z",
       "commit_sha": "db9558755ff93911209d9a0d1c5f5c47868905bc",
       "pushed_at": "2026-10-08T10:36:39Z",

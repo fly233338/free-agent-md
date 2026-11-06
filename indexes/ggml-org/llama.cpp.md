@@ -1,8 +1,8 @@
 # ggml-org/llama.cpp instruction files
 
-Upstream: [ggml-org/llama.cpp](https://github.com/ggml-org/llama.cpp) · License: `MIT` · Commit: `15e50990bb2110e04798cbced77b7d0a5e1d772b`
+Upstream: [ggml-org/llama.cpp](https://github.com/ggml-org/llama.cpp) · License: `MIT` · Commit: `18ab62a8ec5144ae5d2f65e78374ba69652d75dd`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/ggml-org/llama.cpp/AGENTS.md) | [Source](https://github.com/ggml-org/llama.cpp/blob/15e50990bb2110e04798cbced77b7d0a5e1d772b/AGENTS.md) | `67d92a8d2f75a85b640afcfcfb8f8f8d92c0e719f9587d9584f936860bf59c38` | 11,761 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/ggml-org/llama.cpp/CLAUDE.md) | [Source](https://github.com/ggml-org/llama.cpp/blob/15e50990bb2110e04798cbced77b7d0a5e1d772b/CLAUDE.md) | `e0b8575f59e7017fd17b7f34c38b5c173208445f52ca1bd4b46e2d5506f2f957` | 106 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/ggml-org/llama.cpp/AGENTS.md) | [Source](https://github.com/ggml-org/llama.cpp/blob/18ab62a8ec5144ae5d2f65e78374ba69652d75dd/AGENTS.md) | `67d92a8d2f75a85b640afcfcfb8f8f8d92c0e719f9587d9584f936860bf59c38` | 11,761 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/ggml-org/llama.cpp/CLAUDE.md) | [Source](https://github.com/ggml-org/llama.cpp/blob/18ab62a8ec5144ae5d2f65e78374ba69652d75dd/CLAUDE.md) | `e0b8575f59e7017fd17b7f34c38b5c173208445f52ca1bd4b46e2d5506f2f957` | 106 B |

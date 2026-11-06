@@ -2,12 +2,6 @@
   "full_name": "mautic/mautic",
   "points": [
     {
-      "checked_at": "2026-10-07T10:21:27Z",
-      "commit_sha": "3e3f263488008d908bda67ac9d99ad7b05c55734",
-      "pushed_at": "2026-10-07T10:18:09Z",
-      "stars": 10720
-    },
-    {
       "checked_at": "2026-11-02T11:18:59Z",
       "commit_sha": "677a85c53673eb5ed64629008bc38d4ab680e007",
       "pushed_at": "2026-11-02T11:18:32Z",

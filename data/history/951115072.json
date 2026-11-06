@@ -2,12 +2,6 @@
   "full_name": "maximhq/bifrost",
   "points": [
     {
-      "checked_at": "2026-10-07T10:21:27Z",
-      "commit_sha": "a5baff6eb3897d5e1311a09b377afe6001efc503",
-      "pushed_at": "2026-10-07T10:21:01Z",
-      "stars": 8598
-    },
-    {
       "checked_at": "2026-10-15T08:23:07Z",
       "commit_sha": "0e66dd8e10a352c6b8683557d6635c8b552b6b93",
       "pushed_at": "2026-10-15T08:22:21Z",
@@ -42,6 +36,12 @@
       "commit_sha": "cf250b9d85744cb996a5735665af49680d4db499",
       "pushed_at": "2026-11-05T11:01:32Z",
       "stars": 9381
+    },
+    {
+      "checked_at": "2026-11-06T11:00:19Z",
+      "commit_sha": "d9f5ae0474811cd1ff38b6fb76a2ef83c6431e2d",
+      "pushed_at": "2026-11-06T10:55:04Z",
+      "stars": 9402
     }
   ],
   "repo_id": 951115072

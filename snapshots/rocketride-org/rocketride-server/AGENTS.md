@@ -54,10 +54,21 @@ node scripts/build.js docs:check                     # export drift gate (CI-enf
 - **Branches**: `feat/RR-<ticket>-short-description`, `fix/RR-<ticket>-...`; PR base is `develop`.
 - **Python**: 3.10+, single quotes, ruff for lint/format.
 - **TypeScript**: tabs, single quotes, semicolons.
-- **VS Code extension only**: wrap errors with `Callout.call()` (no raw
-  try/catch), throw `AppError` (never plain `Error`), log via `logger.*`
-  (never `console.log`). Docs-site theme components (`docs/docusaurus`) are
-  exempt by design.
+- **Store apps**: pipelines bundled in an app for the public store use
+  catalog nodes only (the nodes that ship with the engine; see 'Catalog
+  nodes only' in `docs/agents/context/ROCKETRIDE_APPS.md`). `scaffold_node`
+  and `local_nodes` are for self-hosted engines and for nodes contributed
+  to the catalog, never for a store app.
+- **VS Code extension only**: log through `getLogger()` from
+  `src/shared/util/output.ts` (the Output-channel logger — never
+  `console.*`); throw plain `Error` with a user-readable message. Docs-site
+  theme components (`docs/docusaurus`) are exempt by design.
+- **Shell/webview communication rides the shell bus** (three lanes:
+  realm-local events, `request`/`handle` ops, retained `publish`/`subscribe`
+  topics — `packages/shell/src/ops/`). A `requestId` field in a webview
+  protocol is a bug report: hand-rolled request/response correlation means
+  the message should be a bus op (the bridge correlates). New webview
+  surfaces attach as bus realms; per-page postMessage protocols are legacy.
 
 ## Documentation rules
 

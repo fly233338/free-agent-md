@@ -2,12 +2,6 @@
   "full_name": "open-telemetry/opentelemetry-collector-contrib",
   "points": [
     {
-      "checked_at": "2026-10-07T10:21:27Z",
-      "commit_sha": "37ea4a814c84a4097400c609c2f9fed291bfa250",
-      "pushed_at": "2026-10-07T09:11:33Z",
-      "stars": 4978
-    },
-    {
       "checked_at": "2026-10-08T10:40:59Z",
       "commit_sha": "104b0be085a1d7bc5006edb129ddf5339537178d",
       "pushed_at": "2026-10-08T06:45:33Z",

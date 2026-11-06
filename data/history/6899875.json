@@ -2,12 +2,6 @@
   "full_name": "opf/openproject",
   "points": [
     {
-      "checked_at": "2026-10-07T10:21:27Z",
-      "commit_sha": "922547af36ad92014740088bfb2693bfc36f788f",
-      "pushed_at": "2026-10-07T10:19:47Z",
-      "stars": 16336
-    },
-    {
       "checked_at": "2026-10-09T10:40:00Z",
       "commit_sha": "ec78fce5e1ceddf3982bd0c4e43eaf0d3e5c62f5",
       "pushed_at": "2026-10-09T10:36:57Z",
@@ -48,6 +42,12 @@
       "commit_sha": "651153f58e03c5dab11d93949812b57d67f50884",
       "pushed_at": "2026-11-02T11:14:21Z",
       "stars": 16919
+    },
+    {
+      "checked_at": "2026-11-06T11:00:19Z",
+      "commit_sha": "de281d89d0825c520a16c07eb83436a80dde451f",
+      "pushed_at": "2026-11-06T10:56:12Z",
+      "stars": 17041
     }
   ],
   "repo_id": 6899875

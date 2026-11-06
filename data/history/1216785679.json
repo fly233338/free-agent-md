@@ -2,12 +2,6 @@
   "full_name": "esengine/DeepSeek-Reasonix",
   "points": [
     {
-      "checked_at": "2026-10-07T10:21:27Z",
-      "commit_sha": "b2e3576d202b4095452a23b204c5e99f99d2bbfd",
-      "pushed_at": "2026-10-07T10:18:50Z",
-      "stars": 35745
-    },
-    {
       "checked_at": "2026-10-09T10:40:00Z",
       "commit_sha": "6a901e845880e2f4464eeecf09ef86a24ba0bd0a",
       "pushed_at": "2026-10-09T10:35:06Z",
@@ -54,6 +48,12 @@
       "commit_sha": "d03be98bcbc8b8374befcf1e39e7bc96f04e18d6",
       "pushed_at": "2026-10-25T08:22:31Z",
       "stars": 35957
+    },
+    {
+      "checked_at": "2026-11-06T11:00:19Z",
+      "commit_sha": "a3303025fed17c0d9df7a20a95ab913cf88d6fe0",
+      "pushed_at": "2026-11-06T10:57:45Z",
+      "stars": 36105
     }
   ],
   "repo_id": 1216785679
