@@ -26,6 +26,10 @@ precedence over repository guidance.
   [Naming and terminology](#naming-and-terminology), and fix any violation.
   Passing pre-commit does not replace this review; these rules are not all
   checked mechanically.
+- When reviewing a pull request, check each new or changed type against
+  [Define every type with mathematical rigor](CONTRIBUTING.md#define-every-type-with-mathematical-rigor).
+  Report a definition that is not exact, complete, or consistent as a blocking
+  finding.
 - Before submitting a pull request that changes documentation, complete the
   [Documentation review checklist](#documentation-review-checklist) and fix
   any issues. Review the resulting sections in context, not only the diff.
@@ -46,19 +50,18 @@ affected package's `__init__.py` docstring to find the owner of a change.
 | Location | Responsibility |
 | --- | --- |
 | `reef/core/` | Shared value types, wire contracts, and errors |
-| `reef/dispatcher.py`, `reef/scenario/` | Coordination, scenario state, commit ordering, and recovery |
+| `reef/dispatcher/`, `reef/scenario/` | Coordination, scenario state, commit ordering, and recovery |
 | `reef/service/` | HTTP, authentication, streaming, and deployment |
-| `reef/recipe/`, `reef/train/` | Recipe contracts, built-in recipes, the training pipeline, training, evaluation, and backend integrations |
-| `reef/runtime/` | Backend-neutral runtime contracts, scheduling, and publication coordination |
-| `reef/inference/` | Concrete inference integrations, engine control, and weight reception |
-| `reef/surface/` | Delivery of published artifacts |
-| `reef/artifact/` | Versioned artifacts and repositories |
+| `reef/recipe/`, `reef/train/` | Recipe contracts, built-in recipes, the training pipeline, training, and backend integrations |
+| `reef/evaluation/` | Candidate evaluation: running and scoring evaluation runs, deciding whether a candidate is published, and plugin configuration |
+| `reef/inference/` | Inference contracts, serving runtimes, and concrete inference integrations, engine control, and weight reception |
+| `reef/tinker/` | Tinker SDK pieces that the Tinker training component and the Tinker serving runtime share |
+| `reef/artifact/` | Versioned artifacts, repositories, and the components a recipe declares |
 | `reef/storage/` | Record storage contracts, persistence, and retention |
 | `reef/harness/` | Harness adapters, rendering, runners, and trajectories |
-| `reef/record2record/` | The record-to-record stage: which records Reef uses and in what order (report grouping, judging, eligibility checks, selection order) |
-| `reef/background_jobs.py` | A worker that runs asynchronous jobs, such as judge calls, off the trainer thread |
-| `reef/record2task/` | The record-to-task stage: one record set into tasks (`Record2Task`), and the generator service that writes, checks, and plays Harbor tasks (`generator/`) |
-| `reef/task2batch/` | The task-to-batch stage: the tasks of the selected record sets into one batch (`Task2Batch`) |
+| `reef/execution/` | Shared job scheduling, local process ownership, worker executors, sandbox isolation, file transfer, and cleanup |
+| `reef/record2sample/` | The record-to-sample stage (`Record2Sample`): which records Reef uses, which train together (report grouping, judging, eligibility checks, the staleness check), and their samples; the samples service (`service/`); and the generator service that writes, checks, and plays Harbor tasks (`generator/`) |
+| `reef/sample2job/` | The sample-to-job stage: the samples of the next job into one training job's data (`Sample2Job`), and the job size `job_samples` |
 | `reef/pipeline_context.py` | The context that the training pipeline and its stages read for one scenario |
 | `recipes/`, `tutorials/` | Method implementations, runnable examples, and tutorials |
 | `tests/`, `docs/`, `docker/` | Verification, documentation, and deployment environments |
@@ -156,6 +159,15 @@ is a reference; the rules here take precedence where it differs.
 - **Describe types explicitly.** Do not use `Any` fields or annotations to
   bypass pre-commit, mypy, or other checks. Model the actual value types and
   interfaces instead of weakening annotations to silence failures.
+- **Define each type with mathematical rigor.** For each new or changed type,
+  state in its docstring the membership condition of its values (fields,
+  domains, invariants) and its one purpose (the code that makes and reads the
+  values). Define each operation on the type by the relation between its
+  inputs and outputs. The definition must be complete, so that no value
+  reaches an undefined state, and consistent, so that a subclass only adds
+  conditions to its base class. Check the invariants at construction. Give each
+  type one role, and split a type that has two. See
+  [Define every type with mathematical rigor](CONTRIBUTING.md#define-every-type-with-mathematical-rigor).
 - **Name the actual quantity or concept.** Variable and function names must
   express their domain, scientific, or physical meaning. Include units or
   representation where needed, such as `timeout_seconds`, `token_count`, or
@@ -304,6 +316,11 @@ endorsements of every sentence or historical API detail:
 
 ## Tests and checks
 
+Read [tests/AGENTS.md](tests/AGENTS.md) before adding or moving tests. Place new
+tests under their owning component, not directly under `tests/`. Keep
+`tests/reef_service/` for service contracts and service workflows. Update CI
+selection and fixture paths with every move; preserve existing test coverage.
+
 Start with the smallest existing suite that exercises the changed behavior.
 Extend nearby tests and fixtures; check observable results and failure cases.
 Public interface changes need contract tests. For training or performance
@@ -311,7 +328,7 @@ changes, include relevant evaluation or baseline comparisons.
 
 ```bash
 # Focused test example; substitute the suite relevant to the change.
-.venv/bin/python -m pytest tests/reef_service/test_reef_artifacts.py -q
+.venv/bin/python -m pytest tests/artifact/test_reef_artifacts.py -q
 
 # Python checks (activate .venv first for pre-commit's local hooks).
 pre-commit run --files path/to/changed_file.py
@@ -319,8 +336,15 @@ pre-commit run --files path/to/changed_file.py
 
 # Full checks before requesting review for Python changes.
 pre-commit run --all-files
-.venv/bin/python -m pytest tests/
+.venv/bin/python -m pytest tests/ -n 8
 ```
+
+Run the full suite in parallel, as CI does. `pyproject.toml` selects
+`--dist worksteal`, so `-n 8` spreads single tests, not files, over the
+workers. Each test must pass alone and in any order: keep state in `tmp_path`,
+allocate ports dynamically, and share a module-scoped fixture only for
+read-only setup. `pytest-xdist` ships in the `dev` extra. Use `-n 0` for a
+serial run when you diagnose a failure.
 
 The full suite needs training dependencies even for collection. Some tests
 skip unavailable optional runtimes; others import Slime and torch directly.
@@ -330,7 +354,7 @@ CI uses `GIT_CONFIG_GLOBAL=/dev/null` and `GIT_CONFIG_SYSTEM=/dev/null` for
 Git LFS test isolation. Record skipped or unavailable checks honestly.
 
 For full-suite coverage on Python 3.12, use
-`.venv/bin/python -m pytest tests --cov=reef --cov-report=term`.
+`.venv/bin/python -m pytest tests -n 8 --cov=reef --cov-report=term`.
 The configured coverage floor applies to the whole package, not a focused run.
 
 Pre-commit includes repository-wide Python design, statement, and README
@@ -345,7 +369,7 @@ keep unrelated working-tree changes intact.
   method's README. Keep examples self-contained.
 - For harness adapters, read
   [harness-adapters.rst](docs/developer-guide/harness-adapters.rst).
-  Golden harness trees under `tests/reef_service/data/harness_goldens/` are
+  Golden harness trees under `tests/harness/data/harness_goldens/` are
   test fixtures, including their instruction files; preserve exact output.
 - For documentation site changes, read [docs/site/AGENTS.md](docs/site/AGENTS.md).
   With Node.js 22, run `npm ci`, `npm run check:docs`, `npm run lint`, and

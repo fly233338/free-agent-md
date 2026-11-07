@@ -12,17 +12,26 @@
 
 ## Task Routes
 
-| Task or path                                                                  | Read before editing                  |
-| ----------------------------------------------------------------------------- | ------------------------------------ |
-| Features, bug fixes, tests, or test helpers                                   | `docs/agents/testing.md`             |
-| SQLite, PostgreSQL, CockroachDB, DuckDB, archive resync, or storage queries   | `docs/agents/storage.md`             |
-| Watchers, polling, sync scheduling, background work, or memory investigations | `docs/agents/background-work.md`     |
-| Build commands, toolchains, CI build tags, or dependencies                    | `docs/agents/build.md`               |
-| Any frontend file                                                             | `frontend/AGENTS.md`                 |
-| Frontend controls, styling, or reusable components                            | `frontend/AGENTS.md` and `DESIGN.md` |
+| Task or path                                                                            | Read before editing                  |
+| --------------------------------------------------------------------------------------- | ------------------------------------ |
+| Features, bug fixes, tests, or test helpers                                             | `docs/agents/testing.md`             |
+| SQLite, PostgreSQL, CockroachDB, DuckDB, ClickHouse, archive resync, or storage queries | `docs/agents/storage.md`             |
+| Watchers, polling, sync scheduling, background work, or memory investigations           | `docs/agents/background-work.md`     |
+| Build commands, toolchains, CI build tags, or dependencies                              | `docs/agents/build.md`               |
+| S3 ingest, `S3Provider`, or `Source.S3Discovery`                                        | `docs/agents/s3-providers.md`        |
+| Any frontend file                                                                       | `frontend/AGENTS.md`                 |
+| Frontend controls, styling, or reusable components                                      | `frontend/AGENTS.md` and `DESIGN.md` |
 
 The `README.md` and `Makefile` are the sources for project facts, setup, and
 commands. Do not copy their catalogues into this file.
+
+For CI runner selection and caching, read the
+[CI runner policy](docs/agents/build.md#ci-runner-policy).
+
+The `CI gate` job runs on a Namespace profile that uses Namespace's
+[Restricted access level](https://namespace.so/docs/solutions/github-actions/runner-controls/access-levels),
+which disables workload access to Namespace features and APIs. GitHub fork
+approvals, token permissions, and secrets are separate controls.
 
 ## Roborev
 
@@ -39,12 +48,41 @@ commands. Do not copy their catalogues into this file.
 1. Commit every turn that changes tracked files. Do not make empty commits. If a
    turn is read-only or changes only ignored files, say that no commit was
    made.
-1. Keep commits focused and use clear conventional commit messages.
+1. Keep commits focused. Write commit messages and pull request titles as
+   [Commit Messages](#commit-messages) requires.
 1. Do not amend, squash, rebase, push, or pull unless the user asks.
 1. Do not add generated-with lines, attribution blocks, validation footers, or
    command transcripts to commit messages.
 1. Deliver changes through pull requests from feature branches. Never merge a
    pull request; merging is the user's decision.
+
+## Commit Messages
+
+Commit subjects must use the Conventional Commits format. Pull requests are
+squash-merged: the PR title becomes the commit subject and the PR description
+becomes the commit body, so PR titles use the same format.
+
+```text
+type(scope): summary
+```
+
+The scope is optional and names the part of the project the change touches. Use
+one of these types:
+
+- `feat`: a new capability users can see or use.
+- `fix`: a bug fix users can notice.
+- `perf`: faster or lighter behavior users can notice.
+- `refactor`, `test`, `docs`, `build`, `ci`, or `chore`: a change that leaves
+  product behavior as it was.
+
+Mark a breaking change with `!` before the colon, as in
+`feat(api)!: remove the v1 endpoints`, and describe the break in a
+`BREAKING CHANGE:` footer at the end of the commit body or PR description.
+
+This format is required. Releases and release notes are generated from these
+messages: the type decides whether a change appears in the notes and under which
+heading, and the version bump follows the largest change since the last release,
+from a breaking change to `feat` to `fix`.
 
 ## Safety
 
@@ -65,8 +103,44 @@ commands. Do not copy their catalogues into this file.
   details, and absolute user paths out of code, tests, fixtures,
   documentation, commit messages, and pull request text. Run the private-data
   scrub before publishing.
+- Write changelog entries in plain language for people who do not live in the
+  codebase. Lead each entry with the outcome a user or operator will notice.
+  Put implementation details after that outcome, and include them only when
+  they help the reader act or understand a limit.
 - Keep pull request titles and descriptions in sync with the current diff.
 - Do not post pull request or issue comments unless the user asks.
+
+## Documentation
+
+- Write for the person trying to use or maintain AgentsView. Lead with the
+  outcome, name who does what, use short sentences, and explain unfamiliar
+  terms.
+- Organize around reader questions. Put purpose and current capabilities first;
+  separate limitations and future work. Use only the sections the topic needs.
+- Give each bullet one main idea. Use numbered steps for sequences, paragraphs
+  for rationale, and tables or diagrams when they clarify a comparison or
+  flow.
+- State rules directly. Preserve exact commands, field names, authorization
+  checks, limits, and failure behavior when simplifying the wording.
+- Give each fact an owning guide or reference and link to it elsewhere. Update
+  that section instead of appending a narrative of the latest change. Indexes
+  should route readers, not repeat implementation status.
+- Describe current architecture separately from approved but unbuilt work,
+  proposals, and historical decisions. Preserve rationale, approvals, and
+  active exceptions with their removal conditions. Label superseded designs
+  and keep them outside normal navigation.
+- Keep the website, its Markdown companions, README, and documentation on
+  message. Distinguish the latest release from newer `main` functionality.
+  Follow [docs/README.md](docs/README.md) for the publishing layout and
+  checks.
+- Verify release notes against the release tags and source. Credit contributors
+  from merged pull requests or commit history; do not infer contributions from
+  names or issue participation alone.
+- Regenerate the full screenshot set for every release and store it on the
+  `docs-generated-assets` orphan branch. Add captures for new visible
+  features, inspect the images, and preview the assembled website locally
+  before opening the release documentation pull request. Follow
+  `docs/screenshots/README.md`.
 
 ## Definition of Done
 
@@ -88,12 +162,15 @@ only until its separately owned format-alignment work lands.
 ## Project Map
 
 agentsview syncs local AI agent sessions into SQLite, serves a Svelte 5 web UI,
-and can mirror data to PostgreSQL or DuckDB.
+and can mirror data to PostgreSQL, DuckDB, or ClickHouse.
 
 - `cmd/agentsview/`: CLI and server entry points
 - `internal/db/`: SQLite archive and search
+- `internal/readbase/`: shared replica and mirror catalog, analytics, session
+  and transcript reads, and read-only stubs
 - `internal/postgres/`: PostgreSQL sync and read store
 - `internal/duckdb/`: disposable DuckDB mirror and Quack reads
+- `internal/clickhouse/`: ClickHouse remote mirror and read store
 - `internal/parser/`: agent session parsers
 - `internal/server/`: HTTP API and SSE
 - `internal/sync/`: discovery, file watching, and sync
@@ -103,12 +180,53 @@ and can mirror data to PostgreSQL or DuckDB.
 ## Conventions
 
 - Prefer the standard library over new dependencies.
+- Use `internal/stringutil.SafeTruncate` for byte-limited display text. Add
+  truncation markers at the call site and reserve their bytes when the limit
+  includes them. Use `internal/stringutil.TruncateRunes` for rune-count
+  limits; its limit excludes the supplied suffix. Keep rune-count limits
+  distinct from byte limits. Both helpers assume valid UTF-8 and do not
+  sanitize malformed input.
 - Do not use emojis in code or output.
+- Tests must bind loopback (`127.0.0.1:0` or `[::1]:0`, or `httptest`, which
+  already does). A wildcard listen (`0.0.0.0`, `[::]`, bare `:0`) makes the
+  host firewall prompt for the test binary, and because `go test` relinks it
+  into a fresh temporary directory every run, the prompt returns every run. A
+  test that genuinely needs wildcard bind semantics must call
+  `internal/testutil.RequireWildcardListen(t)` first, which skips it on local
+  Windows runs unless `CI=true`. `AGENTSVIEW_TEST_WILDCARD_LISTEN=1` enables
+  these tests; `0` skips them on every platform.
 - Format Markdown with `mdformat --wrap 80` when `mdformat` and
   `mdformat-tables` are available.
 
+## Go Contexts
+
+- A function that does I/O, queries a database, calls a process or service,
+  sleeps, retries, or waits on a channel takes `ctx context.Context` first and
+  passes it on. Cobra commands start from `cmd.Context()`. Do not add a
+  wrapper that calls `context.Background()` for callers without a context;
+  give them the context-taking function.
+- Pass contexts as arguments. Only types that adapt a context to another
+  interface, such as `internal/ctxio`, and owners of a lifetime, such as the
+  server's base context or a background coordinator, may store one.
+- Detach only work that must outlive its caller: shutdown, final flushes,
+  cleanup after cancellation, and shared work that one waiter must not cancel
+  (see
+  [usage cache backfill](docs/agents/background-work.md#usage-cache-backfill)).
+  Cleanup that finishes one caller's work uses `context.WithoutCancel(ctx)`.
+  Shared work that belongs to no single caller starts from
+  `context.Background()`, so it carries no caller's request values. Bound
+  detached work and say why in a comment.
+- Tests use `t.Context()`. Inside `t.Cleanup`, where `t.Context()` is already
+  canceled, use `context.WithoutCancel(t.Context())`.
+- `make lint` checks part of this with `noctx`, `usetesting`, `fatcontext`, and
+  govet `lostcancel`. It compiles only `fts5` files, so check `pgtest`,
+  `chtest`, `duckdbtest`, and `s3test` files by hand.
+
 ## Pull Requests
 
+- Pull requests must have a user-facing benefit or improve the developer
+  experience, and the body must say which one.
+- Write issues and pull requests in English.
 - Do not poll or watch GitHub Actions checks unless the developer explicitly
   requests it.
 - Do not use `gh api` to watch CI jobs unless the user explicitly requests it.

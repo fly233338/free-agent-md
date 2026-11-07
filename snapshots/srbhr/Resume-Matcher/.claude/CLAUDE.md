@@ -28,7 +28,7 @@ Before exploring code, read [docs/agent/README.md](../docs/agent/README.md) for 
 1. **All frontend UI changes** MUST follow [Swiss International Style](../docs/portable/swiss-design-system/README.md) — see [tokens](../docs/portable/swiss-design-system/tokens.md), [components](../docs/portable/swiss-design-system/components.md), [anti-patterns](../docs/portable/swiss-design-system/anti-patterns.md)
 2. **All Python functions** MUST have type hints
 3. **Run `npm run lint`** before committing frontend changes
-4. **Run `npm run format`** (Prettier) before committing
+4. **Format only the files you changed** before committing: `npx oxfmt <files>` (from `apps/frontend`) and `uv run ruff format <files>` (from `apps/backend`). Never run a whole-repo format (`npm run format`, bare `uv run ruff format`): it rewrites files you didn't touch and buries your change in unrelated diffs
 5. **Log detailed errors server-side**, return generic messages to clients
 6. **Do NOT modify** `.github/workflows/` files without explicit request
 
@@ -51,7 +51,7 @@ npm run test                                         # Run frontend tests (vites
 
 # Quality checks (from apps/frontend)
 npm run lint          # Lint frontend
-npm run format        # Format with Prettier
+npx oxfmt <files>     # Format only the files you changed (never bare npm run format)
 
 # Build (from apps/frontend)
 npm run build
@@ -84,7 +84,7 @@ apps/
     ├── components/          # UI components (incl. tracker/)
     ├── lib/                 # Utilities, API client (incl. api/tracker.ts)
     ├── hooks/               # Custom React hooks
-    └── messages/            # i18n translations (en, es, zh, ja, pt)
+    └── messages/            # i18n translations (en, es, fr, ja, ko, pt-BR, zh)
 ```
 
 ---
@@ -119,6 +119,9 @@ apps/
 | i18n | [i18n.md](../docs/agent/features/i18n.md) |
 | AI enrichment | [enrichment.md](../docs/agent/features/enrichment.md) |
 | JD matching | [jd-match.md](../docs/agent/features/jd-match.md) |
+| MCP server | [mcp-server.md](../docs/agent/features/mcp-server.md) |
+| ATS parse-check | [ats-parse-check.md](../docs/agent/features/ats-parse-check.md) |
+| PostgreSQL backend | [postgres-backend.md](../docs/agent/features/postgres-backend.md) |
 
 ---
 
@@ -168,16 +171,27 @@ Both apps have real test suites, and **tests are in scope** (deliberate testing 
 
 | Element | Value |
 |---------|-------|
-| Canvas background | `#F0F0E8` |
-| Ink (text) | `#000000` |
-| Hyper Blue (links) | `#1D4ED8` |
-| Signal Green (success) | `#15803D` |
-| Alert Orange (warning) | `#F97316` |
-| Alert Red (error) | `#DC2626` |
-| Headers font | `font-serif` |
-| Body font | `font-sans` |
-| Metadata font | `font-mono` |
-| Borders | `rounded-none`, 1px black, hard shadows |
+| Canvas background (`canvas`) | `#F0F0E8` |
+| White (cards, inputs, dialogs) | `#FFFFFF` |
+| Ink (headings, borders) | `#000000` |
+| Body text (`ink-soft`) | `#3D424C` |
+| Steel (secondary text; never on `panel`) | `#696D75` |
+| `paper` / `panel` / `panel-hover` | `#F5F5F0` / `#E5E5E0` / `#D8D8D2` |
+| Hyper Blue (`primary`, links) | `#1D4ED8` |
+| Signal Green (`success`) | `#127E3B` |
+| Alert Orange (`warning` fill, ink text only) | `#F97316` |
+| `warning-text` (orange labels and icons) | `#B44F02` |
+| Alert Red (`destructive`) | `#D61E21` |
+| Alert tints (`info`/`success`/`warning`/`destructive`-tint) | `#EFF6FF` / `#F0FDF4` / `#FFF7ED` / `#FEF2F2` |
+| Headers font | `font-serif` (Tailwind default stack) |
+| Body font | `font-sans` (Helvetica, Arial) |
+| Label / metadata font | `font-mono` (resolves to Space Grotesk) |
+| Borders | `rounded-none`; 1px ink controls, 2px alerts |
+| Shadows | Hard, by role. Solid ink: `shadow-sw-sm` controls, `-default` menus and popovers, `-lg` dialogs and `PageFrame`. Translucent ink: `shadow-sw-nested` for every card or box inside a frame or dialog |
+| Motion | `import { m } from 'motion/react'` only; feedback only |
+| Drift guard | `cd apps/frontend && npm run guard -- <path>` |
+
+Full token set and rules: [Swiss design system pack](../docs/portable/swiss-design-system/README.md); frontend specifics in [`apps/frontend/CLAUDE.md`](../apps/frontend/CLAUDE.md).
 
 ---
 

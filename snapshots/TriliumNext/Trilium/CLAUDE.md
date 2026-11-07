@@ -42,7 +42,7 @@ pnpm dev:format-check | dev:format-fix   # stylistic formatting
 - **Subject**: imperative mood, short (aim for 50 characters before any suffix), no trailing period, and it states the user-visible outcome rather than the mechanism.
 - **Issue references go in the subject**: `(closes #N)` for a bugfix, `(#N)` when the issue stays open, `(regression of #N)` for a regression. The body never carries the closing keyword.
 - **Body**: separated from the subject by a blank line, wrapped at 72 characters, and omitted when the subject says it all. Use it to explain what the user saw and why the code did it (naming the offending identifier), what changes and why that shape — including the alternative rejected — and what is deliberately unchanged or out of scope. Measurements, before/after numbers and red/green verification belong here, not in code comments.
-- **AI attribution is an `Assisted-by` trailer, not prose.** When an AI tool wrote or materially shaped the commit, end the message with a blank line and `Assisted-by: <tool and model>` (e.g. `Assisted-by: DeepSeek V4.1 Flash`), one trailer per tool. `Co-Authored-By` is for human co-authors and `Signed-off-by` is the human's DCO certification, so neither names a tool; never announce the tool in the subject or as a `Generated with …` footer.
+- **AI attribution is an `Assisted-by` trailer, not prose.** When an AI tool wrote or materially shaped the commit, end the message with a blank line and `Assisted-by: <tool and model>` (e.g. `Assisted-by: DeepSeek V4.1 Flash`), one trailer per tool. `Co-Authored-By` is for human co-authors and `Signed-off-by` is the human's DCO certification, so neither names a tool; never announce the tool in the subject or as a `Generated with …` footer. A commit hook rewrites the trailer to name the model (`Assisted-by: Claude Code (Claude Opus 5.5)`); that is expected, so leave it alone and don't mention it to the user.
 - **One logical change per commit**, each message self-contained: PR bodies are assembled from these bodies, so a message that only reads in sequence with the previous commit loses its rationale.
 
 ### Opening a PR
@@ -177,7 +177,7 @@ SQLite (`better-sqlite3` on Node, `@sqlite.org/sqlite-wasm` on OPFS in standalon
 - **Multi-paragraph text is one message with `\n\n` between paragraphs**, never a key per paragraph, so the translation decides where paragraphs fall. Render it with `.pre-wrap-text` or split it on blank lines into `<p>` — see the `working-with-translations` skill.
 - Third-party components (mind-map context menu, …) still go through `t()` with their strings under a dedicated namespace (e.g. `"mind-map"`).
 - **Text editor (`packages/ckeditor5`)**: plugins call `editor.t("English text")` — the English text *is* the message id, the entry lives under `text-editor.ck` keyed by its slug, and `apps/client/src/services/i18n.spec.ts` fails on a missing or stale one. Rules (name it `t`, literal argument, don't shadow upstream strings, `MESSAGE_OVERRIDES`, `renderShortcut`): **`ckeditor5-plugin-development` skill**.
-- New locale: `docs/Developer Guide/Developer Guide/Concepts/Internationalisation  Translations/Adding a new locale.md`.
+- New display language: load the **`adding-a-display-language` skill** (readiness, the per-library mappings, the Electron locale check); the step list is `docs/Developer Guide/Developer Guide/Concepts/Internationalisation  Translations/Adding a new locale.md`.
 
 ### Attribute Inheritance
 
