@@ -2,12 +2,6 @@
   "full_name": "angular/angular",
   "points": [
     {
-      "checked_at": "2026-10-08T10:40:59Z",
-      "commit_sha": "97e6aa4a5579e7c968231b0864a3b3890c348863",
-      "pushed_at": "2026-10-08T00:36:20Z",
-      "stars": 101022
-    },
-    {
       "checked_at": "2026-10-09T10:40:00Z",
       "commit_sha": "4e4ad75144e55538cedc65f0ac3ff5b68cb34ce9",
       "pushed_at": "2026-10-08T21:23:49Z",

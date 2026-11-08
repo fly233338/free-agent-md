@@ -2,12 +2,6 @@
   "full_name": "morluto/rea",
   "points": [
     {
-      "checked_at": "2026-10-08T10:40:59Z",
-      "commit_sha": "8a31508c8958800364e255540ded1586298d7008",
-      "pushed_at": "2026-10-08T10:35:06Z",
-      "stars": 18906
-    },
-    {
       "checked_at": "2026-10-09T10:40:00Z",
       "commit_sha": "9426c3f1bbb94711d8b33097e604b9b8ed853b5e",
       "pushed_at": "2026-10-09T10:39:19Z",
@@ -180,6 +174,12 @@
       "commit_sha": "c5301e6145a9c8e06719f27e83da55af8e5480fc",
       "pushed_at": "2026-11-07T10:00:50Z",
       "stars": 439210
+    },
+    {
+      "checked_at": "2026-11-08T10:29:23Z",
+      "commit_sha": "72d5e72e6d7b7997c4ecb11972fc405be8ec67d2",
+      "pushed_at": "2026-11-08T07:16:34Z",
+      "stars": 442110
     }
   ],
   "repo_id": 1209966933

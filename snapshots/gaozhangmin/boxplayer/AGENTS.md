@@ -1,5 +1,19 @@
 # AGENTS.md — BoxPlayer (aliyunpan)
 
+## 问题反馈默认检查所有平台
+
+- 用户每次反馈问题或要求修复时，默认分别检查 Electron（Windows/macOS/Linux）、Android 手机/平板/TV、Apple iOS/iPadOS/macOS/tvOS，无需用户再次声明所有平台。
+- 按各平台实际支持的功能检查对应实现及共享数据影响；不把手机端功能套到 TV。tvOS 和 Android TV 不支持添加本地文件夹，此类问题检查是否错误暴露入口或占位项，不新增本地文件夹能力。
+- 分别检查三个仓库并修复实际发现的同类问题；交付区分代码检查、实际运行验证及未覆盖范围。
+- 本地设备占位父项只用于已存储共享等来源管理入口；支持本地文件夹的平台，主页和文件首页应显示用户添加的实际文件夹。
+- 本机仓库位于 /Users/zhangao/Downloads/BoxPlayer 下的 aliyunpan、BoxPlayer_Android、XbyVideoHub；其他机器按实际路径定位。
+
+## “All Platforms” Scope
+
+- When the user says “all platforms” (`所有平台`), treat it as one request spanning all three repositories: `~/aliyunpan`, `~/BoxPlayer_Android`, and `~/XbyVideoHub`.
+- Implement the Electron/aliyunpan surface in `~/aliyunpan`; implement Android phone, tablet, and Android TV in `~/BoxPlayer_Android`; implement macOS, iOS/iPadOS, and tvOS in `~/XbyVideoHub`.
+- Inspect and modify each repository independently. Do not assume a change in one repository propagates to the other two.
+
 ## Quick reference
 
 ```bash
@@ -9,6 +23,14 @@ pnpm run build        # typecheck + bundle (vue-tsc --noEmit && vite build)
 pnpm run test         # focused Vitest suite (not full repo)
 pnpm run test:clouddrive-cli  # clouddrive-cli tests only
 ```
+
+## Home Category Context Menus
+
+- Categories and independently placeable subcategories, including series, playlists, movie/TV child categories, genre, rating, score, and release-date values, use the same placement context-menu state machine.
+- An unplaced item shows “Add to Home” and “Add to Favorites”; both actions prompt for a user-defined display name.
+- After either add action succeeds, or when the item is initially visible on Home, the menu immediately switches to “Remove from Home” and “Rename Favorite.” The menu must not allow simultaneous Home and Favorites placement.
+- “Remove from Home” clears whichever placement contains the item. Renaming a favorite changes only its Favorites card title and does not rename the Home or sidebar title.
+- Exception: media server categories expose only Favorites actions (plus play / loop / shuffle); their Home shelf is managed in the Add to Home sheet and is independent of the Favorites card.
 
 ## Package manager: pnpm only
 
@@ -63,7 +85,33 @@ Path aliases (set in `tsconfig.json`, `vite.config.ts`, `vitest.config.ts`):
 
 Cloud provider API modules in `src/`: `aliapi/`, `cloudbaidu/`, `cloud123/`, `cloud115/`, `pikpak/`, `onedrive/`, `box/`, `dropbox/`, `quark/`, `cloud139/`, `cloud189/`.
 
+## GitHub Issue workflow
+
+When the user asks to handle GitHub Issues, first fetch the complete list of unfinished/open Issues in the requested repository. Review each Issue individually, identify its likely cause and affected code, and report the triage before changing code. Then implement fixes and run focused regression tests for each applicable Issue. Do not jump straight into a code change based only on the newest Issue or close an Issue before its fix is verified. If the repository or Issue access is unavailable, state that limitation rather than assuming the list is complete.
+
 ## Testing: Vitest, Node environment, selective includes
+
+### Default app inspection: attach to the existing dev app
+
+- Unless the user explicitly asks to execute E2E tests, always connect to the app the user already started with `pnpm run dev` for inspection, reproduction, debugging, and UI verification.
+- Use the existing Electron CDP endpoint (normally `http://127.0.0.1:9223`; confirm the active endpoint). Playwright may attach with `chromium.connectOverCDP`; do not use `electron.launch`, spawn another Electron process, or start another `pnpm run dev` instance.
+- Preserve the running app's real user-data directory, accounts, settings, and playback state. Do not substitute an isolated/temporary profile or seed test data into the user's app.
+- Requests to review, investigate, reproduce, fix, or verify a bug are not explicit requests to run E2E tests. Do not automatically run `pretest:e2e`, `test:e2e`, or Playwright specs whose fixtures launch a separate app.
+- If the existing app or relevant window is unavailable, report that and ask the user to start/reopen it. Do not silently launch a replacement. Request approval before restarting the user's dev app when a main-process or native-module change requires it.
+- This rule takes precedence over the E2E workflow below. Record what was actually verified in the existing dev app; do not describe attached-session checks as production E2E acceptance. A pending E2E gate does not authorize launching another app.
+
+### Playwright acceptance gate when E2E execution is explicitly requested
+
+When the user explicitly asks to execute E2E tests, verify bug fixes through Playwright against an actually launched Electron application using the workflow below. Unit tests, type checks, source inspection, and merely starting `pnpm run dev` cannot replace this E2E gate.
+
+1. Add or update a Playwright regression test that reproduces the reported failure through the user-visible application flow.
+2. Build the production Electron entry with `pnpm run pretest:e2e`; do not test stale `dist/` output or an installed older BoxPlayer build.
+3. Run the focused Playwright regression test and record the exact command and result.
+4. For cloud-drive bugs, use the configured real account and exercise the real provider API. Do not skip the relevant real-account case or replace it with mocks.
+5. For platform-specific behavior that cannot execute on the current host, run Playwright on the target platform before calling the bug fixed. If that is unavailable, report the fix as unverified/blocked rather than complete.
+6. A failed, skipped, or unexecuted Playwright regression test blocks declaring the bug fixed and blocks release publication.
+
+Keep the regression test after the fix so the same bug cannot silently return.
 
 Tests run in Node environment (not jsdom). The `vitest.config.ts` lists explicit test directories — not a glob over `**/*.test.ts`. Tests outside these paths are not picked up:
 
@@ -276,6 +324,46 @@ Standalone CLI + MCP server for agent-driven cloud-drive operations. Docs: `clou
 
 Manual trigger only (`workflow_dispatch`) via `.github/workflows/release.yml`. Builds on `windows-latest` + `ubuntu-latest`, publishes draft GitHub Release. No automatic CI on push/PR.
 
+### Release publication authorization
+
+- On 2026-11-04, the user explicitly authorized automatic public GitHub Releases after the fix is confirmed and relevant tests pass, including the daily BoxPlayer inspection automation. No additional per-release publication confirmation is required within that scope.
+- Prepare the release as a draft while builds and checks are pending. Keep electron-builder builds in draft state until the intended platform assets are complete and verified; then the agent may publish the new release and verify its public downloads and update feeds.
+- A source change, passing unit tests alone, or a queued build is not proof of the reported fix. Record actual runtime verification and its platform limits; do not publish an unverified fix as complete.
+- Do not delete, recreate, demote, overwrite assets on, or otherwise modify an already-public release without a separate explicit request for that exact operation. A rerun targeting a public tag must stop rather than modify that release.
+- Determine the next version from the latest **public** release plus one patch version, unless the user explicitly specifies a different version. Do not move an existing public tag to new code.
+- Report draft creation and build/test status accurately. Never describe a draft or queued workflow as a published release.
+
 ## Subprojects (gitignored, referenced locally)
 
 `Motrix/`, `koodo-reader/`, `CloudServiceKit/`, `XbyVideoHub/`, `OpenCLI/`, `QuarkPan/`, `PikPakAPI/` — these are local-only and not part of the main repo build.
+
+## 文件来源浏览与收藏规则
+
+- 网盘、网络共享、媒体服务器沿用本地文件夹的来源浏览与收藏交互；取消网盘、网络共享的文件夹收藏（子文件夹或整盘“所有文件”）会移除收藏卡片，并清除从该文件夹（整盘即整个网盘）刮削到媒体库的媒体，但保留来源，也不删除网盘或共享里的文件。媒体库里可添加到收藏夹和主屏幕的类别（如电影下的按类型、按评价或某个具体类别）取消收藏只移除快捷卡片，不影响已收录媒体。删除来源会清理该来源的全部关联媒体。
+- 媒体服务器使用服务端元数据，不为服务器目录启用本地刮削。
+- 远端视频列表行右侧提供可操作的下载入口；解析与下载均使用文件所属账号，并保留所需请求头。
+- 媒体服务器分类的收藏夹卡片与主页横排相互独立、可同时存在：分类卡片菜单只提供 播放 / 循环播放 / 随机播放 / 添加到收藏夹（已收藏时为 从收藏夹移除 / 重命名收藏夹），不提供添加到主屏幕，主页横排在“添加到主页”弹窗中管理；具体电视剧、季等内容条目只允许收藏卡片。本地媒体库分类仍按主屏/收藏夹互斥规则。
+- 网盘、网络共享没有收藏时，文件 tab 显示网盘卡片，进入后为文件浏览（显示所有类型）。有任一收藏后文件 tab 隐藏该网盘卡片、只显示收藏卡片，取消最后一个收藏后恢复；已存储共享始终列出所有网盘。Electron 没有已存储共享页，网盘卡片始终显示。
+- 整盘收藏有两个入口且效果相同：网盘卡片菜单的“添加到收藏夹”和已存储共享中网盘根目录“所有文件夹”占位的五角星。卡片名为“所有文件”，list 视图显示所属网盘名；整盘收藏与子文件夹收藏可同时存在。
+- 从收藏卡片（主屏幕收藏夹或文件 tab）进入时为海报样式，只显示文件夹和视频，仍按目录逐级进入。文件 tab 卡片、主屏幕收藏夹卡片和已存储共享五角星都可取消收藏。
+- 媒体服务器不走刮削，文件 tab 内默认海报浏览；添加后固定显示在主屏幕收藏夹，不能取消收藏。
+- “添加到收藏夹”与“添加到主页”是两种行为。主屏幕编辑弹窗标题为“添加到主页”；只添加到收藏夹的项目不出现在其“显示项目”中。
+- 浏览样式按入口区分。新增文件来源 → 已存储共享（网盘、网络共享、媒体服务器）是纯文件浏览：紧凑列表行（小的橙色图标、名称、“日期 - 大小”），文件夹行右侧五角星，视频行右侧下载入口，空目录显示“空文件夹 / 这儿什么都没有。”。文件 tab 和主屏幕进入的文件夹是媒体库海报样式，列表（海报底板 + 标题 + 简介）和网格两种布局可切换：已收藏刮削的文件夹显示刮削海报、只显示视频；文件 tab 未收藏的网盘、共享卡片没有刮削，开启“显示视频预览”时用视频缩略图代替海报，否则显示图标，非视频文件也显示，列表副标题为“日期 - 大小”。两种海报浏览里的子文件夹都可添加到收藏夹。
+- 点击视频直接播放；手机上点击图片、PDF 直接预览，TV 可预览图片。
+- 在已收藏并刮削过的文件夹（含整盘收藏）里再收藏子文件夹，不重新刮削，只新增收藏卡片。
+- 取消这类仍被其他收藏覆盖的子文件夹收藏（整盘“所有文件”或上级文件夹收藏还在）时，只移除卡片，媒体库里的媒体保留，因为它们属于覆盖它的那个收藏。
+- 用户添加的本地文件夹从文件 tab 和主屏幕进入时，视频优先显示刮削海报，刮削不到元数据时才回退到本地视频缩略图。
+- 媒体服务器的收藏卡片（主屏幕收藏夹与文件 tab 一致）按类型使用不同菜单：分类文件夹为 播放 / 循环播放 / 随机播放 / 从收藏夹中移除 / 重命名收藏夹 / 在主屏幕隐藏（已隐藏时为在主屏幕显示）/ 选择封面；电视剧等内容文件夹为 播放 / 循环播放 / 随机播放 / 收藏（切换服务器端收藏）/ 选择封面。“在主屏幕隐藏”只影响主屏幕，文件 tab 仍显示该卡片。
+- 主屏幕收藏夹卡片和文件 tab 对应卡片使用一致的菜单与收藏状态；按实际能力覆盖 Apple、Android（含 TV）和 Electron，TV 不新增本地文件夹入口。
+
+
+## 正式发布后同步官网更新日志（持久规则）
+
+- 每次任何平台正式发布后，都必须同步 `gaozhangmin/boxplayer-site` 官网更新日志；这属于发布任务的必要步骤，不因本次只发布某一端而跳过。官网模块为 `/changelog/` 与 `/en/changelog/`，顶部导航为“更新日志 / Changelog”。
+- 官网分组：Android（手机/平板/TV）、Windows/Linux（桌面端）、Apple（iOS/iPadOS、macOS、tvOS）。Apple 各平台可独立发布，按实际发布的平台标注 targets，不将其他未上线平台一起标记发布。
+- 收录起点：Android 与 Apple 从 2.0.0 起；Windows/Linux 从 5.0.38 起。不生成更早历史。版本号、实际发布日期、平台与正式发布证据必须可核对，不能以构建时间冒充发布时间。
+- Agent 在准备发布时，根据该正式二进制对应代码 diff 编写简中、繁中、英文三语说明，区分新增、改进、修复；复用该版本已批准/已保存的文案。CI 不调用 AI，不需要 OPENAI_API_KEY。不能把发布之后的 main 或未包含在二进制里的工作区改动写入正式说明。
+- “正式发布”必须确认公开可用：Android 官方签名 APK 已发布到正式下载入口；Windows/Linux 稳定版 Release 已公开且有对应下载产物；Apple 已在 App Store 上架。仅 TF 上传/Beta 审核、商店送审、等待开发者发布、草稿 Release、排队或仅构建成功均不更新为已发布。可预存 draft，但不展示为正式记录。
+- 定位官网仓库时核对 git remote；本机可有 `boxplayer-site`、`boxplayer-site-release-ci`、`boxplayer-site-changelog` 等工作区，不覆盖其他任务的脏文件。官网数据在 `src/content/changelog/releases.json`，字段与流程见 `docs/changelog.md`。运行 `node scripts/upsert-changelog.mjs <confirmed-release.json>`，按平台/版本/targets 幂等更新，保留其他端记录。
+- 完成正式发布后，提交并推送官网这一条版本记录，等待官网部署成功并检查对应公开页面；交付时分别报告客户端发布、官网提交和官网部署状态。不能仅改本地数据就声称官网已更新。如部署或权限受阻，完成可做步骤并明确报告，不能漏掉官网同步。
+- 用户说“触发 TF”时，Agent 先根据版本差异生成并保存文案供后续商店流程复用；该动作本身不触发官网正式发布记录。用户说“触发 App Store”时复用指定构建说明，待真正上架再同步官网；审核提交成功不等于上架。

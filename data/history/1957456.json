@@ -2,12 +2,6 @@
   "full_name": "Dolibarr/dolibarr",
   "points": [
     {
-      "checked_at": "2026-10-08T10:40:59Z",
-      "commit_sha": "5a0b65a64766c12e444880d8628d00797ea856f9",
-      "pushed_at": "2026-10-08T10:35:12Z",
-      "stars": 7703
-    },
-    {
       "checked_at": "2026-10-13T10:42:33Z",
       "commit_sha": "8c2493e8698b1fdc56c070c765be6b3719317c25",
       "pushed_at": "2026-10-13T10:41:07Z",
@@ -18,6 +12,12 @@
       "commit_sha": "66fd42bb2f20318d60eb3ebdcb5e39a85fabb8ad",
       "pushed_at": "2026-11-05T11:02:56Z",
       "stars": 7832
+    },
+    {
+      "checked_at": "2026-11-08T10:29:23Z",
+      "commit_sha": "e074d14cc6445533f5b0b27e3025cb1253e251ad",
+      "pushed_at": "2026-11-08T10:29:23Z",
+      "stars": 7842
     }
   ],
   "repo_id": 1957456

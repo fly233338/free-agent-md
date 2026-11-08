@@ -1,7 +1,7 @@
 # torvalds/linux instruction files
 
-Upstream: [torvalds/linux](https://github.com/torvalds/linux) · License: `NOASSERTION` · Commit: `d48723711bae9b8cdc56719c448ba42fef28cbee`
+Upstream: [torvalds/linux](https://github.com/torvalds/linux) · License: `NOASSERTION` · Commit: `fa4ad798f6f681031775266044ba1b0cf3c670bd`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/torvalds/linux/AGENTS.md) | [Source](https://github.com/torvalds/linux/blob/d48723711bae9b8cdc56719c448ba42fef28cbee/AGENTS.md) | `d9e6892ff2c83807c34f4aeb06bff724068803d0e03470bfb81a8f5cbde5f090` | 6,034 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/torvalds/linux/AGENTS.md) | [Source](https://github.com/torvalds/linux/blob/fa4ad798f6f681031775266044ba1b0cf3c670bd/AGENTS.md) | `d9e6892ff2c83807c34f4aeb06bff724068803d0e03470bfb81a8f5cbde5f090` | 6,034 B |

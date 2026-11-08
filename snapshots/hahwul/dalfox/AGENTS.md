@@ -37,7 +37,12 @@ Primary modules:
 - `src/utils/`: shared CLI helpers (banner, color, logging)
 - `src/server/`: async scan API server, split into focused submodules — `mod.rs` (router + `ServerArgs`), `types.rs` (`ScanOptions` + request/response bodies), `handlers.rs` (route handlers), `job_runner.rs` (`run_scan_job`), `auth.rs` (API key), `cors.rs`, `response.rs` (JSON/JSONP rendering), `util.rs` (option validation + logging)
 - `src/job/`: shared job model — `JobStatus` enum, `Job` record, progress counters, retention/cap purging, and bounds helpers (`effective_rate_limit`, `effective_scan_timeout`) used by server + MCP
-- `src/mcp/`: MCP stdio tool server — `mod.rs` keeps the `#[tool_router]` impl with the six tool handlers (`scan_with_dalfox`, `get_results_dalfox`, `list_scans_dalfox`, `cancel_scan_dalfox`, `delete_scan_dalfox`, `preflight_dalfox`); `params.rs` holds the `*Params` input structs + serde defaults, `job_runtime.rs` / `pagination.rs` the helpers
+- `src/mcp/`: MCP stdio tool server — `mod.rs` keeps the `#[tool_router]` impl with the six tool handlers (`scan_with_dalfox`, `get_results_dalfox`, `list_scans_dalfox`, `cancel_scan_dalfox`, `delete_scan_dalfox`, `preflight_dalfox`); `params.rs` holds the `*Params` input structs + serde defaults, `outputs.rs` the published `outputSchema` mirror types, `job_runtime.rs` / `pagination.rs` the helpers
+
+Outside `src/`, distribution recipes live under `packaging/` (`aur/`, `chocolatey/`, `docker/`).
+Two stay at the root because their tool only looks there: `flake.nix` + `flake.lock` (a flake
+must sit at the repo root) and `snap/snapcraft.yaml` (snapcraft finds its project file only
+inside the directory it packs).
 
 Top-level commands:
 - `scan`
@@ -53,7 +58,7 @@ banner/config machinery writes anything, so stdout stays a pure artifact.
 
 Behavioral default:
 - No subcommand => defaults to `scan` in `src/main.rs`.
-- Banner is suppressed automatically for `mcp` and for machine-readable formats (`json`, `jsonl`, `sarif`, `toml`) so stdout stays parseable.
+- Banner is suppressed automatically for `mcp` and for every `--format` other than `plain` (`format_is_machine`: `json`, `jsonl`, `sarif`, `toml`, `markdown`) so stdout stays parseable.
 
 CLI exit codes (`ScanOutcome` in `src/cmd/scan/mod.rs`):
 - `0` Clean — scan finished, no findings
@@ -180,7 +185,7 @@ CLI exit codes (`ScanOutcome` in `src/cmd/scan/mod.rs`):
   - `skills/dalfox/references/results.md` carries a curated "common ones" list
     that points back to `src/cmd/mod.rs` as the canonical list; add the new code
     there only if consumers will commonly surface it, not mechanically for every code.
-  - Existing codes: `NO_TARGETS`, `NO_FILE`, `INVALID_INPUT_TYPE`, `PARSE_ERROR`, `FILE_READ_ERROR`, `STDIN_ERROR`, `STDIN_NOT_PIPED`, `INPUT_TOO_LARGE`, `CONNECTION_FAILED`, `DNS_RESOLUTION_FAILED`, `TLS_HANDSHAKE_FAILED`, `REQUEST_TIMEOUT`, `CONTENT_TYPE_MISMATCH`, `TRUNCATED_PER_HOST_CAP`, `SESSION_LOST`, `INTERNAL_ERROR`
+  - Existing codes: `NO_TARGETS`, `NO_FILE`, `INVALID_INPUT_TYPE`, `PARSE_ERROR`, `FILE_READ_ERROR`, `STDIN_ERROR`, `STDIN_NOT_PIPED`, `INPUT_TOO_LARGE`, `CONNECTION_FAILED`, `DNS_RESOLUTION_FAILED`, `TLS_HANDSHAKE_FAILED`, `REQUEST_TIMEOUT`, `CONTENT_TYPE_MISMATCH`, `TRUNCATED_PER_HOST_CAP`, `SESSION_LOST`, `INTERNAL_ERROR`, `SCAN_TIMEOUT`
 
 ---
 

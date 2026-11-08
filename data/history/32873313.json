@@ -2,12 +2,6 @@
   "full_name": "systemd/systemd",
   "points": [
     {
-      "checked_at": "2026-10-08T10:40:59Z",
-      "commit_sha": "14ad01ddf30e4ec74f56a972dde9a99b1f9b28f1",
-      "pushed_at": "2026-10-08T10:39:58Z",
-      "stars": 16792
-    },
-    {
       "checked_at": "2026-10-10T09:56:02Z",
       "commit_sha": "c673d9985dedccafc1a67d17d50ad42318d4c254",
       "pushed_at": "2026-10-10T09:55:49Z",

@@ -1,11 +1,17 @@
 {
-  "full_name": "Djihads80/Eglantine",
+  "full_name": "Eglantine-Community/Eglantine",
   "points": [
     {
       "checked_at": "2026-11-07T10:20:55Z",
       "commit_sha": "a017245408212015bb3c13688695e3f857a4bed5",
       "pushed_at": "2026-11-07T10:20:31Z",
       "stars": 5011
+    },
+    {
+      "checked_at": "2026-11-08T10:29:23Z",
+      "commit_sha": "74db2371242f9eba6c79ab608072434d202a7412",
+      "pushed_at": "2026-11-08T10:15:29Z",
+      "stars": 5289
     }
   ],
   "repo_id": 1437774066

@@ -51,7 +51,8 @@ Visual style: dark, low-contrast greys, one cool accent
 
 Follow `CONTRIBUTING.md` and `.github/pull_request_template.md`: one problem per PR
 (`Closes #<n>` when it resolves an issue), reproduce first, keep the diff focused, short plain description, and a
-**How it was verified** section with commands run, results and (for UI) before/after screenshots.
+**How it was verified** section with commands run, results and, when the change alters what users
+see, before/after screenshots (not for UI removed along with a feature, copy-only or non-visual changes).
 Unclear product decisions → `needs-decision` and stop.
 
 ## Skills
@@ -78,6 +79,8 @@ Shared agent skills live in `.agents/skills/` (`.claude/skills/` links to them):
   `pnpm gen:bindings`.
 - `pnpm perf` (UI interaction latency / frames / leaks), `pnpm perf:rust` (criterion
   benches vs budgets). Budgets: `perf/budgets.json`.
+- `pnpm release:prepare <version>` — the release commit's changes: app version everywhere,
+  `Cargo.lock`, and the plugin API snapshot when `wit/` moved to a new version.
 
 ## Before opening a PR
 
