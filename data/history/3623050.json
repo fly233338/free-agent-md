@@ -2,12 +2,6 @@
   "full_name": "Homebrew/homebrew-cask",
   "points": [
     {
-      "checked_at": "2026-10-09T10:40:00Z",
-      "commit_sha": "bdc5cac040a8b268ee079b6b2257c04d81cbb2f0",
-      "pushed_at": "2026-10-09T10:39:16Z",
-      "stars": 22246
-    },
-    {
       "checked_at": "2026-10-13T10:42:33Z",
       "commit_sha": "e6840631404b62590cb1766f6ae49eebc1dac352",
       "pushed_at": "2026-10-13T10:41:38Z",

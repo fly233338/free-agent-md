@@ -2,18 +2,6 @@
   "full_name": "GreptimeTeam/greptimedb",
   "points": [
     {
-      "checked_at": "2026-10-09T10:40:00Z",
-      "commit_sha": "764ab8bc1a1e8d9e579576109deb7d554e523fb9",
-      "pushed_at": "2026-10-09T10:38:09Z",
-      "stars": 6727
-    },
-    {
-      "checked_at": "2026-10-10T09:56:02Z",
-      "commit_sha": "ad83232ad1da0eaf992bee70654dbdee15e76d56",
-      "pushed_at": "2026-10-10T09:51:10Z",
-      "stars": 6728
-    },
-    {
       "checked_at": "2026-10-12T10:58:37Z",
       "commit_sha": "7c32c38ba33f488cf08196bb7311f464958c4115",
       "pushed_at": "2026-10-12T10:56:59Z",

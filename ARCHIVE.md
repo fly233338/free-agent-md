@@ -5,12 +5,15 @@ Archived entries do not participate in current rankings.
 
 | Repository | Status | License | Last checked | Files |
 |---|---|---|---:|---:|
+| [0xJacky/nginx-ui](https://github.com/0xJacky/nginx-ui) | `inactive` | `AGPL-3.0` | 2026-11-09 | 2 |
 | [0xPlaygrounds/rig](https://github.com/0xPlaygrounds/rig) | `inactive` | `MIT` | 2026-08-07 | 1 |
+| [1jehuang/jcode](https://github.com/1jehuang/jcode) | `inactive` | `MIT` | 2026-11-09 | 2 |
 | [1lck/Lithe-IDEA](https://github.com/1lck/Lithe-IDEA) | `inactive` | `Apache-2.0` | 2026-09-02 | 2 |
 | [1Panel-dev/MaxKB](https://github.com/1Panel-dev/MaxKB) | `inactive` | `GPL-3.0` | 2026-10-29 | 2 |
 | [1weiho/open-slide](https://github.com/1weiho/open-slide) | `inactive` | `MIT` | 2026-09-22 | 2 |
 | [2dust/v2rayNG](https://github.com/2dust/v2rayNG) | `inactive` | `GPL-3.0` | 2026-09-20 | 3 |
 | [47ng/nuqs](https://github.com/47ng/nuqs) | `inactive` | `MIT` | 2026-10-28 | 2 |
+| [4gray/iptvnator](https://github.com/4gray/iptvnator) | `inactive` | `MIT` | 2026-11-09 | 2 |
 | [777genius/agent-teams-ai](https://github.com/777genius/agent-teams-ai) | `inactive` | `AGPL-3.0` | 2026-10-23 | 2 |
 | [a-ghorbani/pocketpal-ai](https://github.com/a-ghorbani/pocketpal-ai) | `inactive` | `MIT` | 2026-10-24 | 1 |
 | [a2ui-project/a2ui](https://github.com/a2ui-project/a2ui) | `inactive` | `Apache-2.0` | 2026-08-20 | 2 |
@@ -27,6 +30,7 @@ Archived entries do not participate in current rankings.
 | [agalwood/Motrix](https://github.com/agalwood/Motrix) | `inactive` | `NOASSERTION` | 2026-10-07 | 2 |
 | [agegr/pi-web](https://github.com/agegr/pi-web) | `inactive` | `MIT` | 2026-11-04 | 1 |
 | [agentclientprotocol/agent-client-protocol](https://github.com/agentclientprotocol/agent-client-protocol) | `inactive` | `Apache-2.0` | 2026-08-21 | 2 |
+| [agentlas-ai/Agentlas-OS](https://github.com/agentlas-ai/Agentlas-OS) | `inactive` | `Apache-2.0` | 2026-11-09 | 3 |
 | [agentscope-ai/agentscope-java](https://github.com/agentscope-ai/agentscope-java) | `inactive` | `Apache-2.0` | 2026-10-21 | 2 |
 | [agentscope-ai/AgentTeams](https://github.com/agentscope-ai/AgentTeams) | `inactive` | `Apache-2.0` | 2026-11-02 | 1 |
 | [agentscope-ai/ReMe](https://github.com/agentscope-ai/ReMe) | `inactive` | `Apache-2.0` | 2026-08-29 | 2 |
@@ -66,9 +70,10 @@ Archived entries do not participate in current rankings.
 | [angular/angular](https://github.com/angular/angular) | `inactive` | `MIT` | 2026-10-13 | 1 |
 | [angular/angular-cli](https://github.com/angular/angular-cli) | `inactive` | `MIT` | 2026-10-27 | 1 |
 | [Anil-matcha/open-duet](https://github.com/Anil-matcha/open-duet) | `inactive` | `Apache-2.0` | 2026-11-03 | 1 |
+| [AnInsomniacy/rayburst](https://github.com/AnInsomniacy/rayburst) | `inactive` | `MIT` | 2026-11-09 | 1 |
 | [ankidroid/Anki-Android](https://github.com/ankidroid/Anki-Android) | `inactive` | `GPL-3.0` | 2026-10-12 | 1 |
 | [ankitects/anki](https://github.com/ankitects/anki) | `inactive` | `NOASSERTION` | 2026-10-07 | 2 |
-| [anomalyco/hex](https://github.com/anomalyco/hex) | `inactive` | `MIT` | 2026-11-08 | 1 |
+| [anomalyco/models.dev](https://github.com/anomalyco/models.dev) | `inactive` | `MIT` | 2026-11-09 | 1 |
 | [anomalyco/opentui](https://github.com/anomalyco/opentui) | `inactive` | `MIT` | 2026-09-26 | 1 |
 | [ant-design/ant-design](https://github.com/ant-design/ant-design) | `inactive` | `MIT` | 2026-10-11 | 2 |
 | [AntennaPod/AntennaPod](https://github.com/AntennaPod/AntennaPod) | `inactive` | `GPL-3.0` | 2026-10-05 | 2 |
@@ -79,6 +84,7 @@ Archived entries do not participate in current rankings.
 | [apache/airflow](https://github.com/apache/airflow) | `inactive` | `Apache-2.0` | 2026-11-04 | 3 |
 | [apache/brpc](https://github.com/apache/brpc) | `inactive` | `Apache-2.0` | 2026-10-07 | 2 |
 | [apache/calcite](https://github.com/apache/calcite) | `inactive` | `Apache-2.0` | 2026-08-18 | 1 |
+| [apache/camel](https://github.com/apache/camel) | `inactive` | `Apache-2.0` | 2026-11-09 | 2 |
 | [apache/camel-k](https://github.com/apache/camel-k) | `inactive` | `Apache-2.0` | 2026-07-31 | 2 |
 | [apache/cassandra](https://github.com/apache/cassandra) | `inactive` | `Apache-2.0` | 2026-09-14 | 2 |
 | [apache/datafusion](https://github.com/apache/datafusion) | `inactive` | `Apache-2.0` | 2026-10-29 | 2 |
@@ -116,7 +122,6 @@ Archived entries do not participate in current rankings.
 | [apereo/cas](https://github.com/apereo/cas) | `inactive` | `Apache-2.0` | 2026-10-23 | 2 |
 | [apify/apify-mcp-server](https://github.com/apify/apify-mcp-server) | `inactive` | `MIT` | 2026-10-28 | 2 |
 | [apify/crawlee](https://github.com/apify/crawlee) | `inactive` | `Apache-2.0` | 2026-09-15 | 1 |
-| [apify/crawlee-python](https://github.com/apify/crawlee-python) | `inactive` | `Apache-2.0` | 2026-08-05 | 3 |
 | [apollographql/apollo-client](https://github.com/apollographql/apollo-client) | `inactive` | `MIT` | 2026-07-19 | 1 |
 | [appwrite/appwrite](https://github.com/appwrite/appwrite) | `inactive` | `BSD-3-Clause` | 2026-11-07 | 2 |
 | [AprilNEA/OpenLogi](https://github.com/AprilNEA/OpenLogi) | `inactive` | `Apache-2.0` | 2026-11-02 | 3 |
@@ -160,6 +165,7 @@ Archived entries do not participate in current rankings.
 | [azerothcore/azerothcore-wotlk](https://github.com/azerothcore/azerothcore-wotlk) | `inactive` | `GPL-2.0` | 2026-10-29 | 2 |
 | [Azure/azure-sdk-for-net](https://github.com/Azure/azure-sdk-for-net) | `inactive` | `MIT` | 2026-09-10 | 1 |
 | [Azure/azure-sdk-for-python](https://github.com/Azure/azure-sdk-for-python) | `inactive` | `MIT` | 2026-10-10 | 1 |
+| [Azure/Azure-Sentinel](https://github.com/Azure/Azure-Sentinel) | `inactive` | `MIT` | 2026-11-09 | 2 |
 | [B-M-Capital-Research/honeclaw](https://github.com/B-M-Capital-Research/honeclaw) | `inactive` | `MIT` | 2026-08-06 | 2 |
 | [babalae/bettergi-scripts-list](https://github.com/babalae/bettergi-scripts-list) | `inactive` | `NOASSERTION` | 2026-10-20 | 1 |
 | [babel/babel](https://github.com/babel/babel) | `inactive` | `MIT` | 2026-10-07 | 1 |
@@ -178,7 +184,9 @@ Archived entries do not participate in current rankings.
 | [beenuar/AiSOC](https://github.com/beenuar/AiSOC) | `inactive` | `MIT` | 2026-11-08 | 1 |
 | [ben-manes/caffeine](https://github.com/ben-manes/caffeine) | `inactive` | `Apache-2.0` | 2026-08-31 | 2 |
 | [bendlang/bend](https://github.com/bendlang/bend) | `inactive` | `Apache-2.0` | 2026-11-07 | 1 |
+| [BerriAI/litellm](https://github.com/BerriAI/litellm) | `inactive` | `NOASSERTION` | 2026-11-09 | 3 |
 | [better-auth/better-auth](https://github.com/better-auth/better-auth) | `inactive` | `MIT` | 2026-10-24 | 2 |
+| [bex-co/bex](https://github.com/bex-co/bex) | `inactive` | `Apache-2.0` | 2026-11-09 | 1 |
 | [bigbluebutton/bigbluebutton](https://github.com/bigbluebutton/bigbluebutton) | `inactive` | `LGPL-3.0` | 2026-07-18 | 2 |
 | [BigPizzaV3/CodexPlusPlus](https://github.com/BigPizzaV3/CodexPlusPlus) | `inactive` | `AGPL-3.0` | 2026-10-19 | 1 |
 | [binaricat/Netcatty](https://github.com/binaricat/Netcatty) | `inactive` | `GPL-3.0` | 2026-10-23 | 2 |
@@ -197,13 +205,13 @@ Archived entries do not participate in current rankings.
 | [bmad-code-org/BMAD-METHOD](https://github.com/bmad-code-org/BMAD-METHOD) | `inactive` | `NOASSERTION` | 2026-10-19 | 1 |
 | [bookorbit/bookorbit](https://github.com/bookorbit/bookorbit) | `inactive` | `AGPL-3.0` | 2026-10-01 | 2 |
 | [bowser-js/bowser](https://github.com/bowser-js/bowser) | `inactive` | `NOASSERTION` | 2026-09-28 | 1 |
+| [boykopovar/AnyPS5](https://github.com/boykopovar/AnyPS5) | `inactive` | `GPL-2.0` | 2026-11-09 | 1 |
 | [breferrari/obsidian-mind](https://github.com/breferrari/obsidian-mind) | `inactive` | `MIT` | 2026-10-11 | 3 |
 | [browser-use/browser-harness](https://github.com/browser-use/browser-harness) | `inactive` | `MIT` | 2026-08-31 | 2 |
 | [browserbase/stagehand](https://github.com/browserbase/stagehand) | `inactive` | `MIT` | 2026-09-18 | 1 |
 | [browserless/browserless](https://github.com/browserless/browserless) | `inactive` | `NOASSERTION` | 2026-07-25 | 1 |
 | [BrowserMCP/mcp](https://github.com/BrowserMCP/mcp) | `inactive` | `Apache-2.0` | 2026-10-28 | 1 |
 | [btcpayserver/btcpayserver](https://github.com/btcpayserver/btcpayserver) | `inactive` | `MIT` | 2026-09-30 | 1 |
-| [Budibase/budibase](https://github.com/Budibase/budibase) | `inactive` | `NOASSERTION` | 2026-10-13 | 2 |
 | [BuilderIO/agent-native](https://github.com/BuilderIO/agent-native) | `inactive` | `MIT` | 2026-10-28 | 2 |
 | [builderz-labs/mission-control](https://github.com/builderz-labs/mission-control) | `inactive` | `MIT` | 2026-07-26 | 1 |
 | [burrowers/garble](https://github.com/burrowers/garble) | `inactive` | `BSD-3-Clause` | 2026-10-12 | 2 |
@@ -217,6 +225,7 @@ Archived entries do not participate in current rankings.
 | [Caho1/open-claude-ui](https://github.com/Caho1/open-claude-ui) | `inactive` | `MIT` | 2026-10-22 | 2 |
 | [callstack/agent-device](https://github.com/callstack/agent-device) | `inactive` | `MIT` | 2026-10-16 | 1 |
 | [camunda/camunda](https://github.com/camunda/camunda) | `inactive` | `NOASSERTION` | 2026-10-26 | 2 |
+| [can1357/oh-my-pi](https://github.com/can1357/oh-my-pi) | `inactive` | `MIT` | 2026-11-09 | 1 |
 | [Canner/WrenAI](https://github.com/Canner/WrenAI) | `inactive` | `NOASSERTION` | 2026-10-23 | 2 |
 | [CapSoftware/Cap](https://github.com/CapSoftware/Cap) | `inactive` | `NOASSERTION` | 2026-10-27 | 2 |
 | [capstone-engine/capstone](https://github.com/capstone-engine/capstone) | `inactive` | `NOASSERTION` | 2026-10-09 | 1 |
@@ -270,17 +279,15 @@ Archived entries do not participate in current rankings.
 | [cloudflare/workers-sdk](https://github.com/cloudflare/workers-sdk) | `inactive` | `Apache-2.0` | 2026-10-15 | 2 |
 | [cobusgreyling/loop-engineering](https://github.com/cobusgreyling/loop-engineering) | `inactive` | `MIT` | 2026-09-12 | 1 |
 | [cocoindex-io/cocoindex](https://github.com/cocoindex-io/cocoindex) | `inactive` | `Apache-2.0` | 2026-07-24 | 2 |
+| [code-yeongyu/oh-my-openagent](https://github.com/code-yeongyu/oh-my-openagent) | `inactive` | `NOASSERTION` | 2026-11-09 | 3 |
 | [CodebuffAI/freebuff](https://github.com/CodebuffAI/freebuff) | `inactive` | `Apache-2.0` | 2026-10-30 | 1 |
 | [codeigniter4/CodeIgniter4](https://github.com/codeigniter4/CodeIgniter4) | `inactive` | `MIT` | 2026-10-26 | 1 |
-| [coder/coder](https://github.com/coder/coder) | `inactive` | `AGPL-3.0` | 2026-10-22 | 2 |
 | [codewhale-hq/Codewhale](https://github.com/codewhale-hq/Codewhale) | `inactive` | `MIT` | 2026-11-02 | 2 |
 | [CodeWithCJ/SparkyFitness](https://github.com/CodeWithCJ/SparkyFitness) | `inactive` | `NOASSERTION` | 2026-07-30 | 2 |
 | [coil-kt/coil](https://github.com/coil-kt/coil) | `inactive` | `Apache-2.0` | 2026-09-04 | 3 |
 | [colbymchenry/codegraph](https://github.com/colbymchenry/codegraph) | `inactive` | `MIT` | 2026-10-24 | 2 |
-| [coleam00/Archon](https://github.com/coleam00/Archon) | `inactive` | `MIT` | 2026-11-07 | 2 |
 | [colinhacks/zod](https://github.com/colinhacks/zod) | `inactive` | `MIT` | 2026-08-26 | 2 |
 | [colmap/colmap](https://github.com/colmap/colmap) | `inactive` | `NOASSERTION` | 2026-10-23 | 1 |
-| [comet-ml/opik](https://github.com/comet-ml/opik) | `inactive` | `Apache-2.0` | 2026-11-06 | 1 |
 | [Comfy-Org/ComfyUI_frontend](https://github.com/Comfy-Org/ComfyUI_frontend) | `inactive` | `GPL-3.0` | 2026-08-10 | 4 |
 | [Companion-Inc/feynman](https://github.com/Companion-Inc/feynman) | `inactive` | `MIT` | 2026-09-28 | 2 |
 | [compiler-explorer/compiler-explorer](https://github.com/compiler-explorer/compiler-explorer) | `inactive` | `BSD-2-Clause` | 2026-07-29 | 1 |
@@ -370,6 +377,7 @@ Archived entries do not participate in current rankings.
 | [dograh-hq/dograh](https://github.com/dograh-hq/dograh) | `inactive` | `BSD-2-Clause` | 2026-07-25 | 2 |
 | [Dokploy/dokploy](https://github.com/Dokploy/dokploy) | `inactive` | `NOASSERTION` | 2026-11-08 | 1 |
 | [dolanmiu/docx](https://github.com/dolanmiu/docx) | `inactive` | `MIT` | 2026-10-06 | 1 |
+| [Dolibarr/dolibarr](https://github.com/Dolibarr/dolibarr) | `inactive` | `GPL-3.0` | 2026-11-09 | 1 |
 | [doocs/leetcode](https://github.com/doocs/leetcode) | `inactive` | `CC-BY-SA-4.0` | 2026-10-11 | 2 |
 | [doocs/md](https://github.com/doocs/md) | `inactive` | `WTFPL` | 2026-09-30 | 2 |
 | [doorkeeper-gem/doorkeeper](https://github.com/doorkeeper-gem/doorkeeper) | `inactive` | `MIT` | 2026-08-02 | 1 |
@@ -395,6 +403,7 @@ Archived entries do not participate in current rankings.
 | [eclipse-theia/theia](https://github.com/eclipse-theia/theia) | `inactive` | `EPL-2.0` | 2026-10-10 | 1 |
 | [eclipse-vertx/vert.x](https://github.com/eclipse-vertx/vert.x) | `inactive` | `NOASSERTION` | 2026-09-08 | 1 |
 | [Effect-TS/effect](https://github.com/Effect-TS/effect) | `inactive` | `MIT` | 2026-11-01 | 1 |
+| [Eglantine-Community/Eglantine](https://github.com/Eglantine-Community/Eglantine) | `inactive` | `GPL-3.0` | 2026-11-09 | 1 |
 | [egoist/mygo](https://github.com/egoist/mygo) | `inactive` | `MIT` | 2026-11-08 | 1 |
 | [eigent-ai/eigent](https://github.com/eigent-ai/eigent) | `inactive` | `Apache-2.0` | 2026-09-22 | 1 |
 | [EKKOLearnAI/ekko-studio](https://github.com/EKKOLearnAI/ekko-studio) | `inactive` | `NOASSERTION` | 2026-11-05 | 1 |
@@ -442,6 +451,7 @@ Archived entries do not participate in current rankings.
 | [exo-explore/exo](https://github.com/exo-explore/exo) | `inactive` | `Apache-2.0` | 2026-11-06 | 2 |
 | [Expensify/App](https://github.com/Expensify/App) | `inactive` | `MIT` | 2026-11-07 | 2 |
 | [experientiallabs/experiential](https://github.com/experientiallabs/experiential) | `inactive` | `Apache-2.0` | 2026-10-04 | 2 |
+| [expo/expo](https://github.com/expo/expo) | `inactive` | `MIT` | 2026-11-09 | 2 |
 | [external-secrets/external-secrets](https://github.com/external-secrets/external-secrets) | `inactive` | `Apache-2.0` | 2026-10-16 | 2 |
 | [eyalgolan/statecraft-israel](https://github.com/eyalgolan/statecraft-israel) | `inactive` | `NOASSERTION` | 2026-11-08 | 1 |
 | [eythaann/Seelen-UI](https://github.com/eythaann/Seelen-UI) | `inactive` | `AGPL-3.0` | 2026-09-21 | 1 |
@@ -460,6 +470,7 @@ Archived entries do not participate in current rankings.
 | [Fei-Away/Codex-Dream-Skin](https://github.com/Fei-Away/Codex-Dream-Skin) | `inactive` | `MIT` | 2026-08-09 | 1 |
 | [fengshao1227/ccg-workflow](https://github.com/fengshao1227/ccg-workflow) | `inactive` | `MIT` | 2026-10-22 | 1 |
 | [FEX-Emu/FEX](https://github.com/FEX-Emu/FEX) | `inactive` | `MIT` | 2026-08-08 | 2 |
+| [filamentphp/filament](https://github.com/filamentphp/filament) | `inactive` | `MIT` | 2026-11-09 | 2 |
 | [filebrowser/filebrowser](https://github.com/filebrowser/filebrowser) | `inactive` | `Apache-2.0` | 2026-07-29 | 1 |
 | [files-community/Files](https://github.com/files-community/Files) | `inactive` | `MIT` | 2026-08-29 | 2 |
 | [firebase/flutterfire](https://github.com/firebase/flutterfire) | `inactive` | `BSD-3-Clause` | 2026-10-23 | 1 |
@@ -491,6 +502,7 @@ Archived entries do not participate in current rankings.
 | [foundry-rs/foundry](https://github.com/foundry-rs/foundry) | `inactive` | `Apache-2.0` | 2026-11-06 | 2 |
 | [frappe/frappe](https://github.com/frappe/frappe) | `inactive` | `MIT` | 2026-10-25 | 2 |
 | [frappe/press](https://github.com/frappe/press) | `inactive` | `AGPL-3.0` | 2026-08-12 | 2 |
+| [FreeCAD/FreeCAD](https://github.com/FreeCAD/FreeCAD) | `inactive` | `LGPL-2.1` | 2026-11-09 | 1 |
 | [freelensapp/freelens](https://github.com/freelensapp/freelens) | `inactive` | `MIT` | 2026-11-06 | 2 |
 | [freeplane/freeplane](https://github.com/freeplane/freeplane) | `inactive` | `GPL-2.0` | 2026-09-19 | 2 |
 | [FreshRSS/FreshRSS](https://github.com/FreshRSS/FreshRSS) | `inactive` | `AGPL-3.0` | 2026-09-20 | 1 |
@@ -498,8 +510,8 @@ Archived entries do not participate in current rankings.
 | [FxEmbed/FxEmbed](https://github.com/FxEmbed/FxEmbed) | `inactive` | `MIT` | 2026-09-10 | 1 |
 | [gadievron/raptor](https://github.com/gadievron/raptor) | `inactive` | `NOASSERTION` | 2026-07-18 | 1 |
 | [Galaxy-Dawn/claude-scholar](https://github.com/Galaxy-Dawn/claude-scholar) | `inactive` | `MIT` | 2026-08-01 | 1 |
+| [gaozhangmin/boxplayer](https://github.com/gaozhangmin/boxplayer) | `inactive` | `GPL-3.0` | 2026-11-09 | 2 |
 | [GargantuaX/gemini-watermark-remover](https://github.com/GargantuaX/gemini-watermark-remover) | `inactive` | `MIT` | 2026-08-15 | 1 |
-| [garrytan/gbrain](https://github.com/garrytan/gbrain) | `inactive` | `MIT` | 2026-10-31 | 2 |
 | [gastownhall/beads](https://github.com/gastownhall/beads) | `inactive` | `MIT` | 2026-11-08 | 2 |
 | [gastownhall/gastown](https://github.com/gastownhall/gastown) | `inactive` | `MIT` | 2026-08-06 | 1 |
 | [Gathin23/cleanyourtv](https://github.com/Gathin23/cleanyourtv) | `inactive` | `NOASSERTION` | 2026-10-25 | 3 |
@@ -520,8 +532,6 @@ Archived entries do not participate in current rankings.
 | [getopenscreen/openscreen](https://github.com/getopenscreen/openscreen) | `inactive` | `MIT` | 2026-10-28 | 1 |
 | [getpaseo/paseo](https://github.com/getpaseo/paseo) | `inactive` | `NOASSERTION` | 2026-11-05 | 2 |
 | [getsentry/self-hosted](https://github.com/getsentry/self-hosted) | `inactive` | `NOASSERTION` | 2026-10-08 | 1 |
-| [getsentry/sentry](https://github.com/getsentry/sentry) | `inactive` | `NOASSERTION` | 2026-10-31 | 2 |
-| [getsentry/sentry-javascript](https://github.com/getsentry/sentry-javascript) | `inactive` | `NOASSERTION` | 2026-10-23 | 2 |
 | [getsentry/sentry-python](https://github.com/getsentry/sentry-python) | `inactive` | `MIT` | 2026-09-12 | 2 |
 | [GetStream/Vision-Agents](https://github.com/GetStream/Vision-Agents) | `inactive` | `Apache-2.0` | 2026-08-14 | 1 |
 | [getzep/graphiti](https://github.com/getzep/graphiti) | `inactive` | `Apache-2.0` | 2026-10-05 | 2 |
@@ -561,6 +571,7 @@ Archived entries do not participate in current rankings.
 | [googleapis/mcp-toolbox](https://github.com/googleapis/mcp-toolbox) | `inactive` | `Apache-2.0` | 2026-09-26 | 3 |
 | [GoogleCloudPlatform/scion](https://github.com/GoogleCloudPlatform/scion) | `inactive` | `Apache-2.0` | 2026-10-08 | 3 |
 | [gopasspw/gopass](https://github.com/gopasspw/gopass) | `inactive` | `MIT` | 2026-10-04 | 1 |
+| [gosom/google-maps-scraper](https://github.com/gosom/google-maps-scraper) | `inactive` | `MIT` | 2026-11-09 | 1 |
 | [gotenberg/gotenberg](https://github.com/gotenberg/gotenberg) | `inactive` | `MIT` | 2026-09-14 | 3 |
 | [gpustack/gpustack](https://github.com/gpustack/gpustack) | `inactive` | `Apache-2.0` | 2026-11-05 | 2 |
 | [gradle/gradle](https://github.com/gradle/gradle) | `inactive` | `Apache-2.0` | 2026-10-21 | 3 |
@@ -580,10 +591,10 @@ Archived entries do not participate in current rankings.
 | [h4ckf0r0day/obscura](https://github.com/h4ckf0r0day/obscura) | `inactive` | `Apache-2.0` | 2026-11-03 | 1 |
 | [hackerai-tech/hackerai](https://github.com/hackerai-tech/hackerai) | `inactive` | `NOASSERTION` | 2026-11-01 | 2 |
 | [HackTricks-wiki/hacktricks](https://github.com/HackTricks-wiki/hacktricks) | `inactive` | `NOASSERTION` | 2026-08-13 | 1 |
+| [hahwul/dalfox](https://github.com/hahwul/dalfox) | `inactive` | `MIT` | 2026-11-09 | 1 |
 | [hajimehoshi/ebiten](https://github.com/hajimehoshi/ebiten) | `inactive` | `Apache-2.0` | 2026-11-04 | 1 |
 | [halide/Halide](https://github.com/halide/Halide) | `inactive` | `NOASSERTION` | 2026-08-17 | 1 |
 | [halo-dev/halo](https://github.com/halo-dev/halo) | `inactive` | `GPL-3.0` | 2026-10-16 | 2 |
-| [handsontable/handsontable](https://github.com/handsontable/handsontable) | `inactive` | `NOASSERTION` | 2026-11-06 | 2 |
 | [HapeLee/legado-with-MD3](https://github.com/HapeLee/legado-with-MD3) | `inactive` | `GPL-3.0` | 2026-08-15 | 2 |
 | [happycola233/tchMaterial-parser](https://github.com/happycola233/tchMaterial-parser) | `inactive` | `MIT` | 2026-09-27 | 2 |
 | [harbor-framework/harbor](https://github.com/harbor-framework/harbor) | `inactive` | `Apache-2.0` | 2026-09-07 | 2 |
@@ -595,7 +606,6 @@ Archived entries do not participate in current rankings.
 | [hashicorp/packer](https://github.com/hashicorp/packer) | `inactive` | `NOASSERTION` | 2026-07-25 | 1 |
 | [hashicorp/terraform-provider-aws](https://github.com/hashicorp/terraform-provider-aws) | `inactive` | `MPL-2.0` | 2026-07-30 | 1 |
 | [hasura/graphql-engine](https://github.com/hasura/graphql-engine) | `inactive` | `Apache-2.0` | 2026-10-13 | 2 |
-| [hatchet-dev/hatchet](https://github.com/hatchet-dev/hatchet) | `inactive` | `MIT` | 2026-10-24 | 1 |
 | [hathach/tinyusb](https://github.com/hathach/tinyusb) | `inactive` | `MIT` | 2026-10-19 | 2 |
 | [hcengineering/platform](https://github.com/hcengineering/platform) | `inactive` | `EPL-2.0` | 2026-07-21 | 1 |
 | [HD838A/remote-mic-app](https://github.com/HD838A/remote-mic-app) | `inactive` | `GPL-3.0` | 2026-10-01 | 1 |
@@ -617,11 +627,13 @@ Archived entries do not participate in current rankings.
 | [HMCL-dev/HMCL](https://github.com/HMCL-dev/HMCL) | `inactive` | `GPL-3.0` | 2026-10-21 | 1 |
 | [holaboss-ai/holaOS](https://github.com/holaboss-ai/holaOS) | `inactive` | `NOASSERTION` | 2026-08-19 | 2 |
 | [homarr-labs/homarr](https://github.com/homarr-labs/homarr) | `inactive` | `Apache-2.0` | 2026-10-31 | 1 |
+| [home-assistant/core](https://github.com/home-assistant/core) | `inactive` | `Apache-2.0` | 2026-11-09 | 2 |
 | [home-assistant/frontend](https://github.com/home-assistant/frontend) | `inactive` | `Apache-2.0` | 2026-11-06 | 2 |
 | [home-assistant/home-assistant.io](https://github.com/home-assistant/home-assistant.io) | `inactive` | `NOASSERTION` | 2026-10-18 | 3 |
 | [homeassistant-ai/ha-mcp](https://github.com/homeassistant-ai/ha-mcp) | `inactive` | `MIT` | 2026-11-06 | 2 |
 | [Homebrew/brew](https://github.com/Homebrew/brew) | `inactive` | `BSD-2-Clause` | 2026-10-24 | 2 |
-| [Homebrew/homebrew-core](https://github.com/Homebrew/homebrew-core) | `inactive` | `BSD-2-Clause` | 2026-11-08 | 2 |
+| [Homebrew/homebrew-cask](https://github.com/Homebrew/homebrew-cask) | `inactive` | `BSD-2-Clause` | 2026-11-09 | 2 |
+| [horizon-rust/horizon](https://github.com/horizon-rust/horizon) | `inactive` | `MIT` | 2026-11-09 | 2 |
 | [hovancik/stretchly](https://github.com/hovancik/stretchly) | `inactive` | `BSD-2-Clause` | 2026-10-21 | 3 |
 | [hrydgard/ppsspp](https://github.com/hrydgard/ppsspp) | `inactive` | `NOASSERTION` | 2026-10-26 | 2 |
 | [htdt/godogen](https://github.com/htdt/godogen) | `inactive` | `MIT` | 2026-07-26 | 2 |
@@ -649,7 +661,6 @@ Archived entries do not participate in current rankings.
 | [IncarnaMind/IncarnaMind](https://github.com/IncarnaMind/IncarnaMind) | `inactive` | `Apache-2.0` | 2026-10-17 | 2 |
 | [indexable-inc/blaze](https://github.com/indexable-inc/blaze) | `inactive` | `Apache-2.0` | 2026-10-29 | 2 |
 | [indiff/qttabbar](https://github.com/indiff/qttabbar) | `inactive` | `GPL-3.0` | 2026-11-07 | 1 |
-| [infiniflow/ragflow](https://github.com/infiniflow/ragflow) | `inactive` | `Apache-2.0` | 2026-11-03 | 2 |
 | [Infisical/infisical](https://github.com/Infisical/infisical) | `inactive` | `NOASSERTION` | 2026-11-08 | 2 |
 | [infracost/infracost](https://github.com/infracost/infracost) | `inactive` | `Apache-2.0` | 2026-10-16 | 2 |
 | [InternLM/xtuner](https://github.com/InternLM/xtuner) | `inactive` | `Apache-2.0` | 2026-09-05 | 2 |
@@ -660,10 +671,10 @@ Archived entries do not participate in current rankings.
 | [iOfficeAI/AionUi](https://github.com/iOfficeAI/AionUi) | `inactive` | `Apache-2.0` | 2026-09-01 | 2 |
 | [iorate/ublacklist](https://github.com/iorate/ublacklist) | `inactive` | `MIT` | 2026-09-07 | 1 |
 | [ipython/ipython](https://github.com/ipython/ipython) | `inactive` | `BSD-3-Clause` | 2026-10-29 | 1 |
-| [is-a-dev/register](https://github.com/is-a-dev/register) | `inactive` | `MIT` | 2026-11-04 | 1 |
 | [isaac-sim/IsaacLab](https://github.com/isaac-sim/IsaacLab) | `inactive` | `BSD-3-Clause` | 2026-09-06 | 2 |
 | [isl-org/Open3D](https://github.com/isl-org/Open3D) | `inactive` | `NOASSERTION` | 2026-08-02 | 1 |
 | [IsmaelMartinez/teams-for-linux](https://github.com/IsmaelMartinez/teams-for-linux) | `inactive` | `GPL-3.0` | 2026-11-08 | 1 |
+| [iterate-ch/cyberduck](https://github.com/iterate-ch/cyberduck) | `inactive` | `GPL-3.0` | 2026-11-09 | 2 |
 | [itwanger/toBeBetterJavaer](https://github.com/itwanger/toBeBetterJavaer) | `inactive` | `NOASSERTION` | 2026-10-18 | 2 |
 | [ix-infrastructure/Ix](https://github.com/ix-infrastructure/Ix) | `inactive` | `Apache-2.0` | 2026-08-11 | 1 |
 | [j178/prek](https://github.com/j178/prek) | `inactive` | `MIT` | 2026-09-28 | 1 |
@@ -685,7 +696,6 @@ Archived entries do not participate in current rankings.
 | [JetBrains/ideavim](https://github.com/JetBrains/ideavim) | `inactive` | `MIT` | 2026-11-06 | 1 |
 | [JetBrains/intellij-community](https://github.com/JetBrains/intellij-community) | `inactive` | `NOASSERTION` | 2026-11-06 | 1 |
 | [JetBrains/kotlin](https://github.com/JetBrains/kotlin) | `inactive` | `NOASSERTION` | 2026-11-05 | 2 |
-| [JetBrains/thinkrail](https://github.com/JetBrains/thinkrail) | `inactive` | `Apache-2.0` | 2026-11-06 | 1 |
 | [jgraph/drawio-mcp](https://github.com/jgraph/drawio-mcp) | `inactive` | `Apache-2.0` | 2026-10-16 | 2 |
 | [jhipster/generator-jhipster](https://github.com/jhipster/generator-jhipster) | `inactive` | `Apache-2.0` | 2026-11-07 | 2 |
 | [jihe520/MathModelAgent](https://github.com/jihe520/MathModelAgent) | `inactive` | `NOASSERTION` | 2026-09-13 | 1 |
@@ -711,8 +721,8 @@ Archived entries do not participate in current rankings.
 | [kedacore/keda](https://github.com/kedacore/keda) | `inactive` | `Apache-2.0` | 2026-09-16 | 1 |
 | [kenn-io/agentsview](https://github.com/kenn-io/agentsview) | `inactive` | `MIT` | 2026-11-08 | 2 |
 | [kenryu42/cc-safety-net](https://github.com/kenryu42/cc-safety-net) | `inactive` | `MIT` | 2026-10-31 | 2 |
+| [keploy/keploy](https://github.com/keploy/keploy) | `inactive` | `Apache-2.0` | 2026-11-09 | 1 |
 | [kerpopule/hermes-jev-skills](https://github.com/kerpopule/hermes-jev-skills) | `inactive` | `MIT` | 2026-10-08 | 1 |
-| [kestra-io/kestra](https://github.com/kestra-io/kestra) | `inactive` | `Apache-2.0` | 2026-11-07 | 2 |
 | [keycloak/keycloak](https://github.com/keycloak/keycloak) | `inactive` | `Apache-2.0` | 2026-11-06 | 1 |
 | [KeygraphHQ/shannon](https://github.com/KeygraphHQ/shannon) | `inactive` | `AGPL-3.0` | 2026-07-21 | 1 |
 | [Kiln-AI/Kiln](https://github.com/Kiln-AI/Kiln) | `inactive` | `NOASSERTION` | 2026-08-16 | 1 |
@@ -737,12 +747,14 @@ Archived entries do not participate in current rankings.
 | [kunchenguid/firstmate](https://github.com/kunchenguid/firstmate) | `inactive` | `MIT` | 2026-11-03 | 2 |
 | [kunchenguid/no-mistakes](https://github.com/kunchenguid/no-mistakes) | `inactive` | `MIT` | 2026-09-27 | 2 |
 | [kungfu-systems/kungfu](https://github.com/kungfu-systems/kungfu) | `inactive` | `Apache-2.0` | 2026-08-27 | 2 |
+| [kunobi-ninja/kache](https://github.com/kunobi-ninja/kache) | `inactive` | `Apache-2.0` | 2026-11-09 | 1 |
 | [kurrent-io/KurrentDB](https://github.com/kurrent-io/KurrentDB) | `inactive` | `NOASSERTION` | 2026-07-18 | 1 |
 | [kvcache-ai/Mooncake](https://github.com/kvcache-ai/Mooncake) | `inactive` | `Apache-2.0` | 2026-11-03 | 2 |
 | [kyegomez/swarms](https://github.com/kyegomez/swarms) | `inactive` | `Apache-2.0` | 2026-07-18 | 1 |
 | [kyutai-labs/pocket-tts](https://github.com/kyutai-labs/pocket-tts) | `inactive` | `MIT` | 2026-09-15 | 1 |
 | [kyverno/kyverno](https://github.com/kyverno/kyverno) | `inactive` | `Apache-2.0` | 2026-10-11 | 3 |
 | [kzahel/yepanywhere](https://github.com/kzahel/yepanywhere) | `inactive` | `NOASSERTION` | 2026-08-31 | 3 |
+| [l0ng-ai/openidea](https://github.com/l0ng-ai/openidea) | `inactive` | `Apache-2.0` | 2026-11-09 | 2 |
 | [l2beat/l2beat](https://github.com/l2beat/l2beat) | `inactive` | `MIT` | 2026-10-02 | 2 |
 | [labex-labs/python-cheatsheet](https://github.com/labex-labs/python-cheatsheet) | `inactive` | `MIT` | 2026-11-06 | 1 |
 | [labring/FastGPT](https://github.com/labring/FastGPT) | `inactive` | `NOASSERTION` | 2026-11-06 | 2 |
@@ -762,7 +774,9 @@ Archived entries do not participate in current rankings.
 | [laurent22/joplin](https://github.com/laurent22/joplin) | `inactive` | `NOASSERTION` | 2026-10-12 | 1 |
 | [lballabio/QuantLib](https://github.com/lballabio/QuantLib) | `inactive` | `NOASSERTION` | 2026-11-03 | 2 |
 | [Leadaxe/LxBox](https://github.com/Leadaxe/LxBox) | `inactive` | `GPL-3.0` | 2026-09-29 | 1 |
+| [Leaflet/Leaflet](https://github.com/Leaflet/Leaflet) | `inactive` | `BSD-2-Clause` | 2026-11-09 | 1 |
 | [leanprover/lean4](https://github.com/leanprover/lean4) | `inactive` | `Apache-2.0` | 2026-11-05 | 2 |
+| [LearningCircuit/local-deep-research](https://github.com/LearningCircuit/local-deep-research) | `inactive` | `MIT` | 2026-11-09 | 3 |
 | [LedgerHQ/ledger-live](https://github.com/LedgerHQ/ledger-live) | `inactive` | `MIT` | 2026-09-15 | 2 |
 | [leejet/stable-diffusion.cpp](https://github.com/leejet/stable-diffusion.cpp) | `inactive` | `MIT` | 2026-10-19 | 2 |
 | [lemonade-sdk/lemonade](https://github.com/lemonade-sdk/lemonade) | `inactive` | `Apache-2.0` | 2026-08-27 | 2 |
@@ -771,6 +785,7 @@ Archived entries do not participate in current rankings.
 | [letta-ai/letta](https://github.com/letta-ai/letta) | `inactive` | `Apache-2.0` | 2026-08-17 | 1 |
 | [lexifina/global-law](https://github.com/lexifina/global-law) | `inactive` | `NOASSERTION` | 2026-11-05 | 2 |
 | [lexiforest/curl_cffi](https://github.com/lexiforest/curl_cffi) | `inactive` | `MIT` | 2026-09-05 | 1 |
+| [lexmount/moli](https://github.com/lexmount/moli) | `inactive` | `Apache-2.0` | 2026-11-09 | 1 |
 | [liam-hq/liam](https://github.com/liam-hq/liam) | `inactive` | `Apache-2.0` | 2026-08-16 | 2 |
 | [LibChecker/LibChecker](https://github.com/LibChecker/LibChecker) | `inactive` | `Apache-2.0` | 2026-08-31 | 1 |
 | [libnyanpasu/clash-nyanpasu](https://github.com/libnyanpasu/clash-nyanpasu) | `inactive` | `GPL-3.0` | 2026-11-03 | 2 |
@@ -794,6 +809,7 @@ Archived entries do not participate in current rankings.
 | [livekit/agents](https://github.com/livekit/agents) | `inactive` | `Apache-2.0` | 2026-10-30 | 2 |
 | [LizardByte/Sunshine](https://github.com/LizardByte/Sunshine) | `inactive` | `GPL-3.0` | 2026-09-17 | 1 |
 | [LMCache/LMCache](https://github.com/LMCache/LMCache) | `inactive` | `Apache-2.0` | 2026-10-11 | 2 |
+| [LNPANDY/NX2Apple](https://github.com/LNPANDY/NX2Apple) | `inactive` | `MIT` | 2026-11-09 | 2 |
 | [lobehub/lobehub](https://github.com/lobehub/lobehub) | `inactive` | `NOASSERTION` | 2026-11-08 | 3 |
 | [logancyang/obsidian-copilot](https://github.com/logancyang/obsidian-copilot) | `inactive` | `AGPL-3.0` | 2026-09-20 | 2 |
 | [logseq/logseq](https://github.com/logseq/logseq) | `inactive` | `AGPL-3.0` | 2026-10-04 | 1 |
@@ -801,6 +817,7 @@ Archived entries do not participate in current rankings.
 | [lollipopkit/flutter_server_box](https://github.com/lollipopkit/flutter_server_box) | `inactive` | `AGPL-3.0` | 2026-11-01 | 1 |
 | [longbridge/gpui-kit](https://github.com/longbridge/gpui-kit) | `inactive` | `NOASSERTION` | 2026-11-04 | 2 |
 | [looplj/axonhub](https://github.com/looplj/axonhub) | `inactive` | `NOASSERTION` | 2026-09-05 | 2 |
+| [loopx-project/loopx](https://github.com/loopx-project/loopx) | `inactive` | `Apache-2.0` | 2026-11-09 | 2 |
 | [lorien/awesome-web-scraping](https://github.com/lorien/awesome-web-scraping) | `inactive` | `NOASSERTION` | 2026-10-28 | 1 |
 | [loro-dev/loro](https://github.com/loro-dev/loro) | `inactive` | `MIT` | 2026-10-01 | 2 |
 | [lostisland/faraday](https://github.com/lostisland/faraday) | `inactive` | `MIT` | 2026-10-27 | 1 |
@@ -810,7 +827,6 @@ Archived entries do not participate in current rankings.
 | [lxc/incus](https://github.com/lxc/incus) | `inactive` | `Apache-2.0` | 2026-09-30 | 1 |
 | [lynx-family/lynx](https://github.com/lynx-family/lynx) | `inactive` | `Apache-2.0` | 2026-10-30 | 1 |
 | [lz4/lz4](https://github.com/lz4/lz4) | `inactive` | `NOASSERTION` | 2026-10-27 | 1 |
-| [MaaAssistantArknights/MaaAssistantArknights](https://github.com/MaaAssistantArknights/MaaAssistantArknights) | `inactive` | `AGPL-3.0` | 2026-11-05 | 1 |
 | [MaaXYZ/MaaFramework](https://github.com/MaaXYZ/MaaFramework) | `inactive` | `LGPL-3.0` | 2026-11-08 | 1 |
 | [macro-inc/macro](https://github.com/macro-inc/macro) | `inactive` | `AGPL-3.0` | 2026-10-27 | 2 |
 | [maddada/Ghostex](https://github.com/maddada/Ghostex) | `inactive` | `MIT` | 2026-07-29 | 2 |
@@ -820,7 +836,6 @@ Archived entries do not participate in current rankings.
 | [majiayu000/claude-skill-registry](https://github.com/majiayu000/claude-skill-registry) | `inactive` | `MIT` | 2026-10-20 | 2 |
 | [major/MySQLTuner-perl](https://github.com/major/MySQLTuner-perl) | `inactive` | `GPL-3.0` | 2026-07-31 | 2 |
 | [MakazhanAlpamys/Soup](https://github.com/MakazhanAlpamys/Soup) | `inactive` | `Apache-2.0` | 2026-11-07 | 1 |
-| [makecindy/cindy](https://github.com/makecindy/cindy) | `inactive` | `Apache-2.0` | 2026-11-05 | 2 |
 | [makeplane/plane](https://github.com/makeplane/plane) | `inactive` | `AGPL-3.0` | 2026-09-01 | 1 |
 | [MalpenZibo/ashell](https://github.com/MalpenZibo/ashell) | `inactive` | `GPL-3.0` | 2026-10-23 | 2 |
 | [manaflow-ai/cmux](https://github.com/manaflow-ai/cmux) | `inactive` | `NOASSERTION` | 2026-11-08 | 2 |
@@ -833,7 +848,6 @@ Archived entries do not participate in current rankings.
 | [MarlinFirmware/Marlin](https://github.com/MarlinFirmware/Marlin) | `inactive` | `GPL-3.0` | 2026-08-17 | 1 |
 | [Marve10s/Better-Fullstack](https://github.com/Marve10s/Better-Fullstack) | `inactive` | `MIT` | 2026-11-04 | 2 |
 | [mas-bandwidth/yojimbo](https://github.com/mas-bandwidth/yojimbo) | `inactive` | `BSD-3-Clause` | 2026-08-27 | 1 |
-| [mastra-ai/mastra](https://github.com/mastra-ai/mastra) | `inactive` | `NOASSERTION` | 2026-10-30 | 2 |
 | [MaterializeInc/materialize](https://github.com/MaterializeInc/materialize) | `inactive` | `NOASSERTION` | 2026-11-04 | 2 |
 | [matomo-org/matomo](https://github.com/matomo-org/matomo) | `inactive` | `GPL-3.0` | 2026-11-01 | 1 |
 | [mattermost/mattermost](https://github.com/mattermost/mattermost) | `inactive` | `NOASSERTION` | 2026-11-06 | 1 |
@@ -852,7 +866,6 @@ Archived entries do not participate in current rankings.
 | [mckinsey/vizro](https://github.com/mckinsey/vizro) | `inactive` | `Apache-2.0` | 2026-10-20 | 2 |
 | [mcmonkeyprojects/SwarmUI](https://github.com/mcmonkeyprojects/SwarmUI) | `inactive` | `MIT` | 2026-08-30 | 1 |
 | [MCSManager/MCSManager](https://github.com/MCSManager/MCSManager) | `inactive` | `Apache-2.0` | 2026-10-25 | 1 |
-| [mealie-recipes/mealie](https://github.com/mealie-recipes/mealie) | `inactive` | `AGPL-3.0` | 2026-09-03 | 2 |
 | [medic/cht-core](https://github.com/medic/cht-core) | `inactive` | `AGPL-3.0` | 2026-10-31 | 2 |
 | [medusajs/medusa](https://github.com/medusajs/medusa) | `inactive` | `NOASSERTION` | 2026-10-30 | 2 |
 | [melgarafael/DeskcommCRM](https://github.com/melgarafael/DeskcommCRM) | `inactive` | `MIT` | 2026-11-06 | 2 |
@@ -873,25 +886,27 @@ Archived entries do not participate in current rankings.
 | [MetaMask/metamask-mobile](https://github.com/MetaMask/metamask-mobile) | `inactive` | `NOASSERTION` | 2026-09-26 | 2 |
 | [metasequoiaime/msime](https://github.com/metasequoiaime/msime) | `inactive` | `GPL-3.0` | 2026-10-12 | 2 |
 | [MetrolistGroup/Metrolist](https://github.com/MetrolistGroup/Metrolist) | `inactive` | `GPL-3.0` | 2026-09-08 | 1 |
-| [mg-chao/snow-apps](https://github.com/mg-chao/snow-apps) | `inactive` | `NOASSERTION` | 2026-10-27 | 1 |
 | [MHSanaei/3x-ui](https://github.com/MHSanaei/3x-ui) | `inactive` | `GPL-3.0` | 2026-09-16 | 1 |
 | [MIC-DKFZ/nnUNet](https://github.com/MIC-DKFZ/nnUNet) | `inactive` | `Apache-2.0` | 2026-11-05 | 1 |
 | [microsoft/agent-governance-toolkit](https://github.com/microsoft/agent-governance-toolkit) | `inactive` | `MIT` | 2026-07-29 | 1 |
 | [microsoft/aspire](https://github.com/microsoft/aspire) | `inactive` | `MIT` | 2026-10-31 | 1 |
 | [microsoft/azurelinux](https://github.com/microsoft/azurelinux) | `inactive` | `MIT` | 2026-10-25 | 1 |
 | [microsoft/fluentui](https://github.com/microsoft/fluentui) | `inactive` | `NOASSERTION` | 2026-10-16 | 2 |
-| [microsoft/FluidFramework](https://github.com/microsoft/FluidFramework) | `deleted` | `MIT` | 2026-11-08 | 1 |
+| [microsoft/FluidFramework](https://github.com/microsoft/FluidFramework) | `deleted` | `MIT` | 2026-11-09 | 1 |
 | [microsoft/onnxruntime](https://github.com/microsoft/onnxruntime) | `inactive` | `MIT` | 2026-10-11 | 1 |
 | [microsoft/Ontology-Playground](https://github.com/microsoft/Ontology-Playground) | `inactive` | `MIT` | 2026-10-13 | 1 |
 | [microsoft/playwright](https://github.com/microsoft/playwright) | `inactive` | `Apache-2.0` | 2026-10-18 | 1 |
 | [microsoft/terminal](https://github.com/microsoft/terminal) | `inactive` | `MIT` | 2026-10-26 | 2 |
 | [microsoft/testfx](https://github.com/microsoft/testfx) | `inactive` | `MIT` | 2026-10-15 | 1 |
+| [microsoft/TokenEconomizer](https://github.com/microsoft/TokenEconomizer) | `inactive` | `Apache-2.0` | 2026-11-09 | 1 |
 | [microsoft/TypeScript](https://github.com/microsoft/TypeScript) | `deleted` | `Apache-2.0` | 2026-11-08 | 2 |
 | [microsoft/typespec](https://github.com/microsoft/typespec) | `inactive` | `MIT` | 2026-08-11 | 1 |
 | [microsoft/vcpkg](https://github.com/microsoft/vcpkg) | `inactive` | `MIT` | 2026-10-04 | 2 |
 | [microsoft/Web-Dev-For-Beginners](https://github.com/microsoft/Web-Dev-For-Beginners) | `inactive` | `MIT` | 2026-07-25 | 1 |
+| [microsoft/winget-pkgs](https://github.com/microsoft/winget-pkgs) | `inactive` | `MIT` | 2026-11-09 | 1 |
 | [middleapi/orpc](https://github.com/middleapi/orpc) | `inactive` | `MIT` | 2026-10-20 | 1 |
 | [mikefarah/yq](https://github.com/mikefarah/yq) | `inactive` | `MIT` | 2026-08-20 | 1 |
+| [milind-soni/OpenMausBot](https://github.com/milind-soni/OpenMausBot) | `inactive` | `Apache-2.0` | 2026-11-09 | 1 |
 | [millionco/react-doctor](https://github.com/millionco/react-doctor) | `inactive` | `NOASSERTION` | 2026-08-14 | 2 |
 | [milvus-io/milvus](https://github.com/milvus-io/milvus) | `inactive` | `Apache-2.0` | 2026-10-31 | 2 |
 | [mindfold-ai/Trellis](https://github.com/mindfold-ai/Trellis) | `inactive` | `AGPL-3.0` | 2026-08-07 | 2 |
@@ -906,6 +921,7 @@ Archived entries do not participate in current rankings.
 | [mksglu/context-mode](https://github.com/mksglu/context-mode) | `inactive` | `NOASSERTION` | 2026-11-02 | 1 |
 | [ml-explore/mlx](https://github.com/ml-explore/mlx) | `inactive` | `MIT` | 2026-09-30 | 2 |
 | [ml-explore/mlx-lm](https://github.com/ml-explore/mlx-lm) | `inactive` | `MIT` | 2026-09-02 | 2 |
+| [mlflow/mlflow](https://github.com/mlflow/mlflow) | `inactive` | `Apache-2.0` | 2026-11-09 | 2 |
 | [mnfst/llm-gateway](https://github.com/mnfst/llm-gateway) | `inactive` | `MIT` | 2026-10-30 | 2 |
 | [mobile-dev-inc/Maestro](https://github.com/mobile-dev-inc/Maestro) | `inactive` | `Apache-2.0` | 2026-07-29 | 1 |
 | [mock-server/mockserver-monorepo](https://github.com/mock-server/mockserver-monorepo) | `inactive` | `Apache-2.0` | 2026-10-29 | 2 |
@@ -950,15 +966,14 @@ Archived entries do not participate in current rankings.
 | [NanmiCoder/cc-haha](https://github.com/NanmiCoder/cc-haha) | `inactive` | `NOASSERTION` | 2026-11-04 | 2 |
 | [nanocoai/nanoclaw](https://github.com/nanocoai/nanoclaw) | `inactive` | `MIT` | 2026-10-17 | 2 |
 | [napi-rs/napi-rs](https://github.com/napi-rs/napi-rs) | `inactive` | `NOASSERTION` | 2026-07-22 | 1 |
-| [nats-io/nats-server](https://github.com/nats-io/nats-server) | `inactive` | `Apache-2.0` | 2026-11-07 | 1 |
 | [nautechsystems/nautilus_trader](https://github.com/nautechsystems/nautilus_trader) | `inactive` | `LGPL-3.0` | 2026-11-02 | 2 |
 | [nearai/ironclaw](https://github.com/nearai/ironclaw) | `inactive` | `Apache-2.0` | 2026-09-02 | 2 |
 | [neoclide/coc.nvim](https://github.com/neoclide/coc.nvim) | `inactive` | `MIT` | 2026-09-06 | 1 |
-| [neovim/neovim](https://github.com/neovim/neovim) | `inactive` | `NOASSERTION` | 2026-11-02 | 1 |
 | [neovim/nvim-lspconfig](https://github.com/neovim/nvim-lspconfig) | `inactive` | `Apache-2.0` | 2026-10-31 | 1 |
 | [nesquena/hermes-webui](https://github.com/nesquena/hermes-webui) | `inactive` | `MIT` | 2026-10-21 | 1 |
 | [netbirdio/netbird](https://github.com/netbirdio/netbird) | `inactive` | `NOASSERTION` | 2026-11-04 | 2 |
 | [netbox-community/netbox](https://github.com/netbox-community/netbox) | `inactive` | `Apache-2.0` | 2026-08-07 | 2 |
+| [netdata/netdata](https://github.com/netdata/netdata) | `inactive` | `GPL-3.0` | 2026-11-09 | 3 |
 | [netease-youdao/LobsterAI](https://github.com/netease-youdao/LobsterAI) | `inactive` | `MIT` | 2026-09-18 | 2 |
 | [NethermindEth/nethermind](https://github.com/NethermindEth/nethermind) | `inactive` | `GPL-3.0` | 2026-10-06 | 1 |
 | [NevaMind-AI/memU](https://github.com/NevaMind-AI/memU) | `inactive` | `NOASSERTION` | 2026-10-17 | 1 |
@@ -971,6 +986,7 @@ Archived entries do not participate in current rankings.
 | [nexu-io/open-design](https://github.com/nexu-io/open-design) | `inactive` | `Apache-2.0` | 2026-10-28 | 3 |
 | [nginx/kubernetes-ingress](https://github.com/nginx/kubernetes-ingress) | `inactive` | `Apache-2.0` | 2026-10-06 | 2 |
 | [ngrok/webernetes](https://github.com/ngrok/webernetes) | `inactive` | `Apache-2.0` | 2026-07-18 | 2 |
+| [nguyenphutrong/quotio](https://github.com/nguyenphutrong/quotio) | `inactive` | `MIT` | 2026-11-09 | 1 |
 | [nhost/nhost](https://github.com/nhost/nhost) | `inactive` | `MIT` | 2026-10-01 | 1 |
 | [nianzhibai/91](https://github.com/nianzhibai/91) | `inactive` | `MIT` | 2026-08-30 | 1 |
 | [nibzard/awesome-agentic-patterns](https://github.com/nibzard/awesome-agentic-patterns) | `inactive` | `Apache-2.0` | 2026-09-28 | 1 |
@@ -985,7 +1001,6 @@ Archived entries do not participate in current rankings.
 | [NomicFoundation/hardhat](https://github.com/NomicFoundation/hardhat) | `inactive` | `NOASSERTION` | 2026-10-31 | 2 |
 | [novuhq/novu](https://github.com/novuhq/novu) | `inactive` | `NOASSERTION` | 2026-11-05 | 1 |
 | [nrwl/nx](https://github.com/nrwl/nx) | `inactive` | `MIT` | 2026-10-07 | 2 |
-| [ntop/ntopng](https://github.com/ntop/ntopng) | `inactive` | `GPL-3.0` | 2026-11-06 | 2 |
 | [nullclaw/nullclaw](https://github.com/nullclaw/nullclaw) | `inactive` | `MIT` | 2026-10-05 | 2 |
 | [nuxt/nuxt](https://github.com/nuxt/nuxt) | `inactive` | `MIT` | 2026-10-12 | 2 |
 | [nuxt/ui](https://github.com/nuxt/ui) | `inactive` | `MIT` | 2026-10-09 | 2 |
@@ -998,6 +1013,7 @@ Archived entries do not participate in current rankings.
 | [NVIDIA/NemoClaw](https://github.com/NVIDIA/NemoClaw) | `inactive` | `Apache-2.0` | 2026-10-29 | 2 |
 | [NVIDIA/OpenShell](https://github.com/NVIDIA/OpenShell) | `inactive` | `Apache-2.0` | 2026-10-17 | 2 |
 | [NVIDIA/TensorRT-LLM](https://github.com/NVIDIA/TensorRT-LLM) | `inactive` | `NOASSERTION` | 2026-10-17 | 3 |
+| [NVIDIA/warp](https://github.com/NVIDIA/warp) | `inactive` | `Apache-2.0` | 2026-11-09 | 2 |
 | [nyblnet/bento](https://github.com/nyblnet/bento) | `inactive` | `MIT` | 2026-09-14 | 2 |
 | [Octane0411/open-vibe-island](https://github.com/Octane0411/open-vibe-island) | `inactive` | `GPL-3.0` | 2026-09-04 | 2 |
 | [OctoPrint/OctoPrint](https://github.com/OctoPrint/OctoPrint) | `inactive` | `AGPL-3.0` | 2026-10-23 | 1 |
@@ -1007,8 +1023,10 @@ Archived entries do not participate in current rankings.
 | [ok-oldking/ok-wuthering-waves](https://github.com/ok-oldking/ok-wuthering-waves) | `inactive` | `AGPL-3.0` | 2026-10-04 | 1 |
 | [olimorris/codecompanion.nvim](https://github.com/olimorris/codecompanion.nvim) | `inactive` | `Apache-2.0` | 2026-09-22 | 2 |
 | [omacom/omarchy](https://github.com/omacom/omarchy) | `inactive` | `MIT` | 2026-10-26 | 2 |
+| [omdsh-dev/DSH-better-sidebar](https://github.com/omdsh-dev/DSH-better-sidebar) | `inactive` | `MIT` | 2026-11-09 | 1 |
 | [omnigent-ai/omnigent](https://github.com/omnigent-ai/omnigent) | `inactive` | `Apache-2.0` | 2026-11-05 | 2 |
 | [OneDragon-Anything/ZenlessZoneZero-OneDragon](https://github.com/OneDragon-Anything/ZenlessZoneZero-OneDragon) | `inactive` | `GPL-3.0` | 2026-11-01 | 2 |
+| [OneUptime/oneuptime](https://github.com/OneUptime/oneuptime) | `inactive` | `NOASSERTION` | 2026-11-09 | 2 |
 | [online-ml/river](https://github.com/online-ml/river) | `inactive` | `BSD-3-Clause` | 2026-09-04 | 2 |
 | [onnx/onnx](https://github.com/onnx/onnx) | `inactive` | `Apache-2.0` | 2026-09-22 | 2 |
 | [onyx-dot-app/onyx](https://github.com/onyx-dot-app/onyx) | `inactive` | `NOASSERTION` | 2026-10-09 | 2 |
@@ -1020,7 +1038,6 @@ Archived entries do not participate in current rankings.
 | [open-ani/animeko](https://github.com/open-ani/animeko) | `inactive` | `AGPL-3.0` | 2026-09-07 | 1 |
 | [open-circle/valibot](https://github.com/open-circle/valibot) | `inactive` | `MIT` | 2026-08-18 | 2 |
 | [open-edge-platform/anomalib](https://github.com/open-edge-platform/anomalib) | `inactive` | `Apache-2.0` | 2026-11-07 | 1 |
-| [open-gsd/gsd-core](https://github.com/open-gsd/gsd-core) | `inactive` | `MIT` | 2026-10-27 | 1 |
 | [open-metadata/OpenMetadata](https://github.com/open-metadata/OpenMetadata) | `inactive` | `Apache-2.0` | 2026-11-07 | 2 |
 | [open-multi-agent/open-multi-agent](https://github.com/open-multi-agent/open-multi-agent) | `inactive` | `MIT` | 2026-08-11 | 2 |
 | [open-pencil/open-pencil](https://github.com/open-pencil/open-pencil) | `inactive` | `MIT` | 2026-11-08 | 1 |
@@ -1028,7 +1045,7 @@ Archived entries do not participate in current rankings.
 | [open-telemetry/opentelemetry-collector](https://github.com/open-telemetry/opentelemetry-collector) | `inactive` | `Apache-2.0` | 2026-11-04 | 2 |
 | [open-telemetry/opentelemetry-collector-contrib](https://github.com/open-telemetry/opentelemetry-collector-contrib) | `inactive` | `Apache-2.0` | 2026-10-16 | 2 |
 | [open-telemetry/opentelemetry-go](https://github.com/open-telemetry/opentelemetry-go) | `inactive` | `Apache-2.0` | 2026-10-16 | 2 |
-| [openai/codex](https://github.com/openai/codex) | `deleted` | `Apache-2.0` | 2026-11-08 | 1 |
+| [openai/codex](https://github.com/openai/codex) | `deleted` | `Apache-2.0` | 2026-11-09 | 1 |
 | [openai/codex-security](https://github.com/openai/codex-security) | `inactive` | `Apache-2.0` | 2026-11-02 | 1 |
 | [openai/openai-agents-python](https://github.com/openai/openai-agents-python) | `inactive` | `MIT` | 2026-09-22 | 2 |
 | [openai/openai-cookbook](https://github.com/openai/openai-cookbook) | `inactive` | `MIT` | 2026-09-18 | 1 |
@@ -1049,6 +1066,7 @@ Archived entries do not participate in current rankings.
 | [openemr/openemr](https://github.com/openemr/openemr) | `inactive` | `GPL-3.0` | 2026-09-20 | 1 |
 | [openfga/openfga](https://github.com/openfga/openfga) | `inactive` | `Apache-2.0` | 2026-11-04 | 2 |
 | [opengeos/GeoLibre](https://github.com/opengeos/GeoLibre) | `inactive` | `MIT` | 2026-08-28 | 1 |
+| [OpenHands/OpenHands](https://github.com/OpenHands/OpenHands) | `inactive` | `MIT` | 2026-11-09 | 1 |
 | [openinterpreter/openinterpreter](https://github.com/openinterpreter/openinterpreter) | `inactive` | `Apache-2.0` | 2026-07-19 | 1 |
 | [openJiuwen-ai/jiuwenswarm](https://github.com/openJiuwen-ai/jiuwenswarm) | `inactive` | `Apache-2.0` | 2026-11-04 | 1 |
 | [OpenListTeam/OpenList](https://github.com/OpenListTeam/OpenList) | `inactive` | `AGPL-3.0` | 2026-10-23 | 1 |
@@ -1072,12 +1090,12 @@ Archived entries do not participate in current rankings.
 | [oraios/serena](https://github.com/oraios/serena) | `inactive` | `NOASSERTION` | 2026-10-13 | 2 |
 | [OrcaSlicer/OrcaSlicer](https://github.com/OrcaSlicer/OrcaSlicer) | `inactive` | `AGPL-3.0` | 2026-11-07 | 2 |
 | [OrchardCMS/OrchardCore](https://github.com/OrchardCMS/OrchardCore) | `inactive` | `BSD-3-Clause` | 2026-07-27 | 1 |
+| [OrchestratorInc/agent-orchestrator](https://github.com/OrchestratorInc/agent-orchestrator) | `inactive` | `Apache-2.0` | 2026-11-09 | 2 |
 | [org2AI/ORG2](https://github.com/org2AI/ORG2) | `inactive` | `AGPL-3.0` | 2026-08-30 | 2 |
 | [organicmaps/organicmaps](https://github.com/organicmaps/organicmaps) | `inactive` | `NOASSERTION` | 2026-10-10 | 2 |
 | [osaurus-ai/osaurus](https://github.com/osaurus-ai/osaurus) | `inactive` | `MIT` | 2026-10-05 | 1 |
 | [OSGeo/gdal](https://github.com/OSGeo/gdal) | `inactive` | `NOASSERTION` | 2026-09-08 | 1 |
 | [oshi/oshi](https://github.com/oshi/oshi) | `inactive` | `MIT` | 2026-08-24 | 1 |
-| [osmandapp/OsmAnd](https://github.com/osmandapp/OsmAnd) | `inactive` | `NOASSERTION` | 2026-11-03 | 1 |
 | [Osmantic/ODS](https://github.com/Osmantic/ODS) | `inactive` | `Apache-2.0` | 2026-10-25 | 1 |
 | [OthmanAdi/planning-with-files](https://github.com/OthmanAdi/planning-with-files) | `inactive` | `MIT` | 2026-10-11 | 1 |
 | [OtterMind/Chat2DB](https://github.com/OtterMind/Chat2DB) | `inactive` | `NOASSERTION` | 2026-08-20 | 1 |
@@ -1089,7 +1107,6 @@ Archived entries do not participate in current rankings.
 | [pandas-dev/pandas](https://github.com/pandas-dev/pandas) | `inactive` | `BSD-3-Clause` | 2026-07-18 | 1 |
 | [papers-we-love/papers-we-love](https://github.com/papers-we-love/papers-we-love) | `inactive` | `NOASSERTION` | 2026-11-07 | 1 |
 | [ParadevAI/Paradev](https://github.com/ParadevAI/Paradev) | `inactive` | `NOASSERTION` | 2026-10-28 | 2 |
-| [paradigmxyz/reth](https://github.com/paradigmxyz/reth) | `inactive` | `Apache-2.0` | 2026-11-04 | 2 |
 | [pascalorg/editor](https://github.com/pascalorg/editor) | `inactive` | `MIT` | 2026-09-10 | 3 |
 | [passteque/gluetun](https://github.com/passteque/gluetun) | `inactive` | `MIT` | 2026-07-30 | 1 |
 | [pastelsky/bundlephobia](https://github.com/pastelsky/bundlephobia) | `inactive` | `MIT` | 2026-10-25 | 1 |
@@ -1099,7 +1116,7 @@ Archived entries do not participate in current rankings.
 | [pbek/QOwnNotes](https://github.com/pbek/QOwnNotes) | `inactive` | `GPL-2.0` | 2026-10-25 | 1 |
 | [pdfme/pdfme](https://github.com/pdfme/pdfme) | `inactive` | `MIT` | 2026-11-04 | 2 |
 | [pdm-project/pdm](https://github.com/pdm-project/pdm) | `inactive` | `MIT` | 2026-11-01 | 2 |
-| [peass-ng/PEASS-ng](https://github.com/peass-ng/PEASS-ng) | `inactive` | `NOASSERTION` | 2026-11-06 | 1 |
+| [peach-mitao/peach](https://github.com/peach-mitao/peach) | `inactive` | `AGPL-3.0` | 2026-11-09 | 2 |
 | [PeerDB-io/peerdb](https://github.com/PeerDB-io/peerdb) | `inactive` | `AGPL-3.0` | 2026-08-08 | 1 |
 | [peetzweg/opendisplay](https://github.com/peetzweg/opendisplay) | `inactive` | `GPL-3.0` | 2026-10-03 | 1 |
 | [penpot/penpot](https://github.com/penpot/penpot) | `inactive` | `MPL-2.0` | 2026-10-28 | 2 |
@@ -1124,14 +1141,13 @@ Archived entries do not participate in current rankings.
 | [pocket-id/pocket-id](https://github.com/pocket-id/pocket-id) | `inactive` | `BSD-2-Clause` | 2026-08-11 | 1 |
 | [podman-container-tools/podman](https://github.com/podman-container-tools/podman) | `inactive` | `Apache-2.0` | 2026-11-06 | 1 |
 | [podman-desktop/podman-desktop](https://github.com/podman-desktop/podman-desktop) | `inactive` | `Apache-2.0` | 2026-10-20 | 2 |
-| [polarsource/polar](https://github.com/polarsource/polar) | `inactive` | `Apache-2.0` | 2026-11-04 | 2 |
 | [pollen-robotics/microduck](https://github.com/pollen-robotics/microduck) | `inactive` | `Apache-2.0` | 2026-10-30 | 2 |
 | [pollinations/pollinations](https://github.com/pollinations/pollinations) | `inactive` | `MIT` | 2026-11-03 | 2 |
 | [polterguy/magic](https://github.com/polterguy/magic) | `inactive` | `MIT` | 2026-11-02 | 1 |
 | [pomerium/pomerium](https://github.com/pomerium/pomerium) | `inactive` | `Apache-2.0` | 2026-09-10 | 1 |
-| [PostHog/posthog](https://github.com/PostHog/posthog) | `inactive` | `NOASSERTION` | 2026-11-07 | 2 |
 | [PostHog/posthog-foss](https://github.com/PostHog/posthog-foss) | `inactive` | `MIT` | 2026-10-28 | 2 |
 | [PostHog/posthog.com](https://github.com/PostHog/posthog.com) | `inactive` | `NOASSERTION` | 2026-10-02 | 2 |
+| [powerfullz/override-rules](https://github.com/powerfullz/override-rules) | `inactive` | `MIT` | 2026-11-09 | 1 |
 | [PrefectHQ/fastmcp](https://github.com/PrefectHQ/fastmcp) | `inactive` | `Apache-2.0` | 2026-11-03 | 2 |
 | [prefix-dev/pixi](https://github.com/prefix-dev/pixi) | `inactive` | `BSD-3-Clause` | 2026-11-04 | 1 |
 | [PrestaShop/PrestaShop](https://github.com/PrestaShop/PrestaShop) | `inactive` | `NOASSERTION` | 2026-09-12 | 3 |
@@ -1168,7 +1184,6 @@ Archived entries do not participate in current rankings.
 | [python-pillow/Pillow](https://github.com/python-pillow/Pillow) | `inactive` | `NOASSERTION` | 2026-11-02 | 1 |
 | [python/cpython](https://github.com/python/cpython) | `inactive` | `NOASSERTION` | 2026-11-01 | 2 |
 | [python/typeshed](https://github.com/python/typeshed) | `inactive` | `NOASSERTION` | 2026-08-31 | 1 |
-| [pytorch/executorch](https://github.com/pytorch/executorch) | `inactive` | `NOASSERTION` | 2026-10-28 | 2 |
 | [pytorch/pytorch](https://github.com/pytorch/pytorch) | `inactive` | `NOASSERTION` | 2026-11-05 | 2 |
 | [pytorch/torchtitan](https://github.com/pytorch/torchtitan) | `inactive` | `BSD-3-Clause` | 2026-11-06 | 2 |
 | [Q00/ouroboros](https://github.com/Q00/ouroboros) | `inactive` | `MIT` | 2026-11-06 | 2 |
@@ -1185,6 +1200,7 @@ Archived entries do not participate in current rankings.
 | [questdb/questdb](https://github.com/questdb/questdb) | `inactive` | `Apache-2.0` | 2026-11-05 | 1 |
 | [quii/learn-go-with-tests](https://github.com/quii/learn-go-with-tests) | `inactive` | `MIT` | 2026-10-27 | 1 |
 | [QwenLM/qwen-code](https://github.com/QwenLM/qwen-code) | `inactive` | `Apache-2.0` | 2026-10-29 | 2 |
+| [QwikDev/qwik](https://github.com/QwikDev/qwik) | `inactive` | `MIT` | 2026-11-09 | 2 |
 | [rabbitmq/rabbitmq-server](https://github.com/rabbitmq/rabbitmq-server) | `inactive` | `NOASSERTION` | 2026-09-04 | 3 |
 | [rachelos/we-mp-rss](https://github.com/rachelos/we-mp-rss) | `inactive` | `NOASSERTION` | 2026-10-23 | 1 |
 | [radareorg/radare2](https://github.com/radareorg/radare2) | `inactive` | `NOASSERTION` | 2026-11-08 | 1 |
@@ -1207,7 +1223,6 @@ Archived entries do not participate in current rankings.
 | [refactoringhq/tolaria](https://github.com/refactoringhq/tolaria) | `inactive` | `AGPL-3.0` | 2026-11-04 | 3 |
 | [refined-github/refined-github](https://github.com/refined-github/refined-github) | `inactive` | `MIT` | 2026-11-02 | 2 |
 | [remeda/remeda](https://github.com/remeda/remeda) | `inactive` | `MIT` | 2026-10-26 | 2 |
-| [remotion-dev/remotion](https://github.com/remotion-dev/remotion) | `inactive` | `NOASSERTION` | 2026-11-06 | 2 |
 | [remsky/Kokoro-FastAPI](https://github.com/remsky/Kokoro-FastAPI) | `inactive` | `Apache-2.0` | 2026-08-15 | 1 |
 | [renovatebot/renovate](https://github.com/renovatebot/renovate) | `inactive` | `AGPL-3.0` | 2026-10-11 | 2 |
 | [requarks/wiki](https://github.com/requarks/wiki) | `inactive` | `AGPL-3.0` | 2026-10-25 | 1 |
@@ -1218,7 +1233,6 @@ Archived entries do not participate in current rankings.
 | [RevenueCat/react-native-purchases](https://github.com/RevenueCat/react-native-purchases) | `inactive` | `MIT` | 2026-11-03 | 2 |
 | [revive-lint/revive](https://github.com/revive-lint/revive) | `inactive` | `MIT` | 2026-10-08 | 1 |
 | [reyamira/models](https://github.com/reyamira/models) | `inactive` | `MIT` | 2026-08-31 | 1 |
-| [RfidResearchGroup/proxmark3](https://github.com/RfidResearchGroup/proxmark3) | `inactive` | `GPL-3.0` | 2026-09-17 | 2 |
 | [Rich-Harris/degit](https://github.com/Rich-Harris/degit) | `inactive` | `MIT` | 2026-08-03 | 1 |
 | [rikkahub/rikkahub](https://github.com/rikkahub/rikkahub) | `inactive` | `AGPL-3.0` | 2026-11-08 | 2 |
 | [Ripple-TS/ripple](https://github.com/Ripple-TS/ripple) | `inactive` | `MIT` | 2026-07-20 | 3 |
@@ -1241,6 +1255,7 @@ Archived entries do not participate in current rankings.
 | [rolldown/rolldown](https://github.com/rolldown/rolldown) | `inactive` | `MIT` | 2026-10-31 | 2 |
 | [rollup/rollup](https://github.com/rollup/rollup) | `inactive` | `NOASSERTION` | 2026-07-19 | 1 |
 | [rook/rook](https://github.com/rook/rook) | `inactive` | `Apache-2.0` | 2026-08-11 | 1 |
+| [root-project/root](https://github.com/root-project/root) | `inactive` | `NOASSERTION` | 2026-11-09 | 1 |
 | [rorkai/App-Store-Connect-CLI](https://github.com/rorkai/App-Store-Connect-CLI) | `inactive` | `MIT` | 2026-09-27 | 2 |
 | [rorygallagher2024/glasshouse](https://github.com/rorygallagher2024/glasshouse) | `inactive` | `MIT` | 2026-10-31 | 2 |
 | [router-for-me/CLIProxyAPI](https://github.com/router-for-me/CLIProxyAPI) | `inactive` | `MIT` | 2026-10-31 | 2 |
@@ -1272,7 +1287,6 @@ Archived entries do not participate in current rankings.
 | [sapientinc/PRAXIST](https://github.com/sapientinc/PRAXIST) | `inactive` | `NOASSERTION` | 2026-09-29 | 1 |
 | [SBoudrias/Inquirer.js](https://github.com/SBoudrias/Inquirer.js) | `inactive` | `MIT` | 2026-07-31 | 2 |
 | [scala/scala3](https://github.com/scala/scala3) | `inactive` | `Apache-2.0` | 2026-10-31 | 1 |
-| [scalar/scalar](https://github.com/scalar/scalar) | `inactive` | `MIT` | 2026-11-06 | 2 |
 | [scikit-learn/scikit-learn](https://github.com/scikit-learn/scikit-learn) | `inactive` | `BSD-3-Clause` | 2026-10-08 | 1 |
 | [scrapy/scrapy](https://github.com/scrapy/scrapy) | `inactive` | `BSD-3-Clause` | 2026-11-06 | 1 |
 | [screenpipe/screenpipe](https://github.com/screenpipe/screenpipe) | `inactive` | `NOASSERTION` | 2026-09-28 | 2 |
@@ -1280,7 +1294,6 @@ Archived entries do not participate in current rankings.
 | [se2p/pynguin](https://github.com/se2p/pynguin) | `inactive` | `MIT` | 2026-07-25 | 3 |
 | [secdev/scapy](https://github.com/secdev/scapy) | `inactive` | `GPL-2.0` | 2026-10-01 | 1 |
 | [securego/gosec](https://github.com/securego/gosec) | `inactive` | `Apache-2.0` | 2026-09-08 | 1 |
-| [seedds/nxnative](https://github.com/seedds/nxnative) | `inactive` | `MIT` | 2026-11-03 | 1 |
 | [SeleniumHQ/selenium](https://github.com/SeleniumHQ/selenium) | `inactive` | `Apache-2.0` | 2026-09-28 | 2 |
 | [selkies-project/selkies](https://github.com/selkies-project/selkies) | `inactive` | `MPL-2.0` | 2026-10-19 | 2 |
 | [semaphoreui/semaphore](https://github.com/semaphoreui/semaphore) | `inactive` | `MIT` | 2026-11-01 | 2 |
@@ -1309,6 +1322,7 @@ Archived entries do not participate in current rankings.
 | [skypilot-org/skypilot](https://github.com/skypilot-org/skypilot) | `inactive` | `Apache-2.0` | 2026-11-04 | 2 |
 | [Skyvern-AI/skyvern](https://github.com/Skyvern-AI/skyvern) | `inactive` | `AGPL-3.0` | 2026-11-08 | 2 |
 | [slint-ui/slint](https://github.com/slint-ui/slint) | `inactive` | `NOASSERTION` | 2026-11-07 | 2 |
+| [slopus/happy](https://github.com/slopus/happy) | `inactive` | `MIT` | 2026-11-09 | 1 |
 | [smartcontractkit/chainlink](https://github.com/smartcontractkit/chainlink) | `inactive` | `NOASSERTION` | 2026-11-06 | 1 |
 | [smol-machines/smolvm](https://github.com/smol-machines/smolvm) | `inactive` | `Apache-2.0` | 2026-10-18 | 1 |
 | [snyk/cli](https://github.com/snyk/cli) | `inactive` | `NOASSERTION` | 2026-10-24 | 2 |
@@ -1335,27 +1349,22 @@ Archived entries do not participate in current rankings.
 | [statsmodels/statsmodels](https://github.com/statsmodels/statsmodels) | `inactive` | `BSD-3-Clause` | 2026-10-26 | 1 |
 | [steipete/CodexBar](https://github.com/steipete/CodexBar) | `inactive` | `MIT` | 2026-11-06 | 2 |
 | [stenzek/duckstation](https://github.com/stenzek/duckstation) | `inactive` | `NOASSERTION` | 2026-11-08 | 1 |
-| [Stirling-Tools/Stirling-PDF](https://github.com/Stirling-Tools/Stirling-PDF) | `inactive` | `NOASSERTION` | 2026-10-19 | 2 |
 | [stoplightio/prism](https://github.com/stoplightio/prism) | `inactive` | `Apache-2.0` | 2026-08-06 | 1 |
-| [storybookjs/storybook](https://github.com/storybookjs/storybook) | `inactive` | `MIT` | 2026-10-21 | 2 |
 | [storytold/cadcraft](https://github.com/storytold/cadcraft) | `inactive` | `Apache-2.0` | 2026-10-16 | 2 |
-| [storytold/craft-anything](https://github.com/storytold/craft-anything) | `inactive` | `Apache-2.0` | 2026-11-08 | 2 |
 | [storytold/craft-launcher](https://github.com/storytold/craft-launcher) | `inactive` | `Apache-2.0` | 2026-11-06 | 2 |
 | [storytold/designcraft](https://github.com/storytold/designcraft) | `inactive` | `Apache-2.0` | 2026-11-02 | 2 |
 | [storytold/effectcraft](https://github.com/storytold/effectcraft) | `inactive` | `Apache-2.0` | 2026-10-31 | 2 |
 | [storytold/filmcraft](https://github.com/storytold/filmcraft) | `inactive` | `Apache-2.0` | 2026-10-11 | 2 |
 | [storytold/gridcraft](https://github.com/storytold/gridcraft) | `inactive` | `Apache-2.0` | 2026-10-26 | 2 |
-| [storytold/pdfcraft](https://github.com/storytold/pdfcraft) | `inactive` | `Apache-2.0` | 2026-11-05 | 2 |
 | [storytold/photocraft](https://github.com/storytold/photocraft) | `inactive` | `Apache-2.0` | 2026-11-03 | 1 |
 | [storytold/vectorcraft](https://github.com/storytold/vectorcraft) | `inactive` | `Apache-2.0` | 2026-10-25 | 2 |
 | [storytold/wordcraft](https://github.com/storytold/wordcraft) | `inactive` | `Apache-2.0` | 2026-11-05 | 2 |
 | [strands-agents/harness-sdk](https://github.com/strands-agents/harness-sdk) | `inactive` | `Apache-2.0` | 2026-10-02 | 2 |
-| [strapi/strapi](https://github.com/strapi/strapi) | `inactive` | `NOASSERTION` | 2026-10-16 | 2 |
 | [streamlit/streamlit](https://github.com/streamlit/streamlit) | `inactive` | `Apache-2.0` | 2026-11-08 | 2 |
 | [streamyfin/streamyfin](https://github.com/streamyfin/streamyfin) | `inactive` | `MPL-2.0` | 2026-10-05 | 1 |
-| [strimzi/strimzi-kafka-operator](https://github.com/strimzi/strimzi-kafka-operator) | `inactive` | `Apache-2.0` | 2026-09-23 | 2 |
 | [styled-components/styled-components](https://github.com/styled-components/styled-components) | `inactive` | `MIT` | 2026-08-09 | 2 |
 | [suitenumerique/docs](https://github.com/suitenumerique/docs) | `inactive` | `MIT` | 2026-11-04 | 1 |
+| [sumatrapdfreader/sumatrapdf](https://github.com/sumatrapdfreader/sumatrapdf) | `inactive` | `GPL-3.0` | 2026-11-09 | 2 |
 | [supabase-community/postgres-language-server](https://github.com/supabase-community/postgres-language-server) | `inactive` | `MIT` | 2026-11-05 | 2 |
 | [supabase/realtime](https://github.com/supabase/realtime) | `inactive` | `Apache-2.0` | 2026-10-29 | 1 |
 | [super-productivity/super-productivity](https://github.com/super-productivity/super-productivity) | `inactive` | `MIT` | 2026-11-08 | 2 |
@@ -1373,7 +1382,6 @@ Archived entries do not participate in current rankings.
 | [Sylius/Sylius](https://github.com/Sylius/Sylius) | `inactive` | `MIT` | 2026-09-28 | 2 |
 | [sympozium-ai/sympozium](https://github.com/sympozium-ai/sympozium) | `inactive` | `MIT` | 2026-09-20 | 2 |
 | [sysown/proxysql](https://github.com/sysown/proxysql) | `inactive` | `GPL-3.0` | 2026-10-24 | 1 |
-| [systemd/systemd](https://github.com/systemd/systemd) | `inactive` | `GPL-2.0` | 2026-10-11 | 2 |
 | [T-Auto/dsh-ops](https://github.com/T-Auto/dsh-ops) | `inactive` | `MIT` | 2026-11-02 | 1 |
 | [TableProApp/TablePro](https://github.com/TableProApp/TablePro) | `inactive` | `AGPL-3.0` | 2026-11-04 | 2 |
 | [TabularisDB/tabularis](https://github.com/TabularisDB/tabularis) | `inactive` | `Apache-2.0` | 2026-10-30 | 2 |
@@ -1404,10 +1412,11 @@ Archived entries do not participate in current rankings.
 | [TencentCloud/Octop](https://github.com/TencentCloud/Octop) | `inactive` | `MIT` | 2026-10-16 | 1 |
 | [tencentmusic/supersonic](https://github.com/tencentmusic/supersonic) | `inactive` | `NOASSERTION` | 2026-08-13 | 1 |
 | [teng-lin/notebooklm-py](https://github.com/teng-lin/notebooklm-py) | `inactive` | `MIT` | 2026-08-04 | 2 |
-| [tester-army/e2e](https://github.com/tester-army/e2e) | `inactive` | `Apache-2.0` | 2026-11-08 | 1 |
 | [tetherto/qvac](https://github.com/tetherto/qvac) | `inactive` | `Apache-2.0` | 2026-10-15 | 3 |
 | [the-open-agent/openagent](https://github.com/the-open-agent/openagent) | `inactive` | `Apache-2.0` | 2026-09-30 | 1 |
+| [The-PR-Agent/pr-agent](https://github.com/The-PR-Agent/pr-agent) | `inactive` | `MIT` | 2026-11-09 | 2 |
 | [The-Vibe-Company/quivr](https://github.com/The-Vibe-Company/quivr) | `inactive` | `MIT` | 2026-10-09 | 1 |
+| [thedevdojo/wave](https://github.com/thedevdojo/wave) | `inactive` | `MIT` | 2026-11-09 | 1 |
 | [theonedev/onedev](https://github.com/theonedev/onedev) | `inactive` | `MIT` | 2026-10-01 | 1 |
 | [TheOrcDev/videorc](https://github.com/TheOrcDev/videorc) | `inactive` | `AGPL-3.0` | 2026-10-29 | 1 |
 | [ThinkInAIXYZ/deepchat](https://github.com/ThinkInAIXYZ/deepchat) | `inactive` | `Apache-2.0` | 2026-09-17 | 2 |
@@ -1421,6 +1430,7 @@ Archived entries do not participate in current rankings.
 | [tikv/pd](https://github.com/tikv/pd) | `inactive` | `Apache-2.0` | 2026-09-12 | 2 |
 | [tinacms/tinacms](https://github.com/tinacms/tinacms) | `inactive` | `Apache-2.0` | 2026-08-25 | 2 |
 | [tingaicompass/AI-Compass](https://github.com/tingaicompass/AI-Compass) | `inactive` | `NOASSERTION` | 2026-07-30 | 1 |
+| [tinygo-org/tinygo](https://github.com/tinygo-org/tinygo) | `inactive` | `NOASSERTION` | 2026-11-09 | 1 |
 | [tinygrad/tinygrad](https://github.com/tinygrad/tinygrad) | `inactive` | `MIT` | 2026-10-31 | 1 |
 | [tinyhumansai/openhuman](https://github.com/tinyhumansai/openhuman) | `inactive` | `GPL-3.0` | 2026-10-25 | 2 |
 | [tirth8205/code-review-graph](https://github.com/tirth8205/code-review-graph) | `inactive` | `MIT` | 2026-07-18 | 3 |
@@ -1449,6 +1459,7 @@ Archived entries do not participate in current rankings.
 | [transmission/transmission](https://github.com/transmission/transmission) | `inactive` | `NOASSERTION` | 2026-08-22 | 1 |
 | [trezor/trezor-suite](https://github.com/trezor/trezor-suite) | `inactive` | `NOASSERTION` | 2026-10-30 | 2 |
 | [triggerdotdev/trigger.dev](https://github.com/triggerdotdev/trigger.dev) | `inactive` | `Apache-2.0` | 2026-10-30 | 2 |
+| [TriliumNext/Trilium](https://github.com/TriliumNext/Trilium) | `inactive` | `AGPL-3.0` | 2026-11-09 | 1 |
 | [trinodb/trino](https://github.com/trinodb/trino) | `inactive` | `Apache-2.0` | 2026-10-22 | 2 |
 | [triton-lang/triton](https://github.com/triton-lang/triton) | `inactive` | `MIT` | 2026-10-22 | 1 |
 | [truefoundry/trueforge](https://github.com/truefoundry/trueforge) | `inactive` | `MIT` | 2026-10-27 | 2 |
@@ -1465,6 +1476,7 @@ Archived entries do not participate in current rankings.
 | [tw93/Mole](https://github.com/tw93/Mole) | `inactive` | `GPL-3.0` | 2026-10-25 | 2 |
 | [tw93/Pake](https://github.com/tw93/Pake) | `inactive` | `GPL-3.0` | 2026-08-23 | 2 |
 | [tw93/Waza](https://github.com/tw93/Waza) | `inactive` | `MIT` | 2026-09-06 | 2 |
+| [twentyhq/twenty](https://github.com/twentyhq/twenty) | `inactive` | `NOASSERTION` | 2026-11-09 | 2 |
 | [Twigpine/openclaude](https://github.com/Twigpine/openclaude) | `inactive` | `NOASSERTION` | 2026-10-25 | 1 |
 | [udecode/plate](https://github.com/udecode/plate) | `inactive` | `NOASSERTION` | 2026-10-10 | 3 |
 | [uditgoenka/autoresearch](https://github.com/uditgoenka/autoresearch) | `inactive` | `MIT` | 2026-11-01 | 1 |
@@ -1485,7 +1497,6 @@ Archived entries do not participate in current rankings.
 | [utmapp/UTM](https://github.com/utmapp/UTM) | `inactive` | `Apache-2.0` | 2026-08-02 | 2 |
 | [uutils/coreutils](https://github.com/uutils/coreutils) | `inactive` | `MIT` | 2026-11-07 | 1 |
 | [vaadin/web-components](https://github.com/vaadin/web-components) | `inactive` | `NOASSERTION` | 2026-10-17 | 1 |
-| [valentderah/totk-pc-recomp](https://github.com/valentderah/totk-pc-recomp) | `inactive` | `MIT` | 2026-11-06 | 2 |
 | [valhalla/valhalla](https://github.com/valhalla/valhalla) | `inactive` | `NOASSERTION` | 2026-10-29 | 3 |
 | [valkey-io/valkey](https://github.com/valkey-io/valkey) | `inactive` | `BSD-3-Clause` | 2026-08-07 | 1 |
 | [ValueCell-ai/ClawX](https://github.com/ValueCell-ai/ClawX) | `inactive` | `MIT` | 2026-07-23 | 1 |
@@ -1511,6 +1522,7 @@ Archived entries do not participate in current rankings.
 | [vitessio/vitess](https://github.com/vitessio/vitess) | `inactive` | `Apache-2.0` | 2026-10-21 | 2 |
 | [vitest-dev/vitest](https://github.com/vitest-dev/vitest) | `inactive` | `MIT` | 2026-10-21 | 2 |
 | [vladmandic/sdnext](https://github.com/vladmandic/sdnext) | `inactive` | `Apache-2.0` | 2026-10-30 | 1 |
+| [vlang/v](https://github.com/vlang/v) | `inactive` | `MIT` | 2026-11-09 | 1 |
 | [vllm-project/semantic-router](https://github.com/vllm-project/semantic-router) | `inactive` | `Apache-2.0` | 2026-11-08 | 2 |
 | [vllm-project/vllm](https://github.com/vllm-project/vllm) | `inactive` | `Apache-2.0` | 2026-10-30 | 2 |
 | [vllm-project/vllm-omni](https://github.com/vllm-project/vllm-omni) | `inactive` | `Apache-2.0` | 2026-11-01 | 2 |
@@ -1582,6 +1594,7 @@ Archived entries do not participate in current rankings.
 | [XiaoYouChR/Ghost-Downloader-3](https://github.com/XiaoYouChR/Ghost-Downloader-3) | `inactive` | `GPL-3.0` | 2026-10-28 | 2 |
 | [xifan2333/fcitx5-vinput](https://github.com/xifan2333/fcitx5-vinput) | `inactive` | `GPL-3.0` | 2026-11-07 | 2 |
 | [xiufengsun/TokenTracker](https://github.com/xiufengsun/TokenTracker) | `inactive` | `MIT` | 2026-10-13 | 2 |
+| [xorbitsai/inference](https://github.com/xorbitsai/inference) | `inactive` | `Apache-2.0` | 2026-11-09 | 2 |
 | [xtekky/gpt4free](https://github.com/xtekky/gpt4free) | `inactive` | `GPL-3.0` | 2026-11-02 | 1 |
 | [y3owk1n/neru](https://github.com/y3owk1n/neru) | `inactive` | `MIT` | 2026-08-08 | 2 |
 | [yaklang/yakit](https://github.com/yaklang/yakit) | `inactive` | `AGPL-3.0` | 2026-10-24 | 1 |
@@ -1589,7 +1602,9 @@ Archived entries do not participate in current rankings.
 | [yang0/handraw-style](https://github.com/yang0/handraw-style) | `inactive` | `NOASSERTION` | 2026-10-12 | 1 |
 | [yangshun/tech-interview-handbook](https://github.com/yangshun/tech-interview-handbook) | `inactive` | `MIT` | 2026-09-07 | 1 |
 | [yc-software/qm](https://github.com/yc-software/qm) | `inactive` | `MIT` | 2026-09-20 | 2 |
+| [Yeachan-Heo/oh-my-claudecode](https://github.com/Yeachan-Heo/oh-my-claudecode) | `inactive` | `MIT` | 2026-11-09 | 3 |
 | [Yeraze/meshmonitor](https://github.com/Yeraze/meshmonitor) | `inactive` | `BSD-3-Clause` | 2026-08-10 | 1 |
+| [yetone/magpie](https://github.com/yetone/magpie) | `inactive` | `MIT` | 2026-11-09 | 2 |
 | [yikart/AiToEarn](https://github.com/yikart/AiToEarn) | `inactive` | `MIT` | 2026-11-05 | 1 |
 | [YishenTu/claudian](https://github.com/YishenTu/claudian) | `inactive` | `MIT` | 2026-08-02 | 2 |
 | [yksr-melt/Meltype](https://github.com/yksr-melt/Meltype) | `inactive` | `GPL-3.0` | 2026-10-25 | 2 |
@@ -1599,7 +1614,6 @@ Archived entries do not participate in current rankings.
 | [YunYouJun/cook](https://github.com/YunYouJun/cook) | `inactive` | `MIT` | 2026-10-27 | 1 |
 | [zauberzeug/nicegui](https://github.com/zauberzeug/nicegui) | `inactive` | `MIT` | 2026-10-21 | 2 |
 | [zavora-ai/adk-rust](https://github.com/zavora-ai/adk-rust) | `inactive` | `NOASSERTION` | 2026-07-30 | 1 |
-| [zed-industries/zed](https://github.com/zed-industries/zed) | `inactive` | `NOASSERTION` | 2026-10-31 | 3 |
 | [zeek/zeek](https://github.com/zeek/zeek) | `inactive` | `NOASSERTION` | 2026-11-04 | 1 |
 | [zephyrproject-rtos/zephyr](https://github.com/zephyrproject-rtos/zephyr) | `inactive` | `Apache-2.0` | 2026-09-23 | 2 |
 | [zeroclaw-labs/zeroclaw](https://github.com/zeroclaw-labs/zeroclaw) | `inactive` | `Apache-2.0` | 2026-10-17 | 2 |
@@ -1608,6 +1622,7 @@ Archived entries do not participate in current rankings.
 | [zhouxiaoka/autoclip](https://github.com/zhouxiaoka/autoclip) | `inactive` | `MIT` | 2026-10-11 | 2 |
 | [zhu1090093659/dsh-web](https://github.com/zhu1090093659/dsh-web) | `inactive` | `Apache-2.0` | 2026-10-30 | 1 |
 | [ZhuLinsen/daily_stock_analysis](https://github.com/ZhuLinsen/daily_stock_analysis) | `inactive` | `MIT` | 2026-09-14 | 2 |
+| [zortos293/Lichii](https://github.com/zortos293/Lichii) | `inactive` | `GPL-3.0` | 2026-11-09 | 1 |
 | [ZSeven-W/openpencil](https://github.com/ZSeven-W/openpencil) | `inactive` | `MIT` | 2026-09-22 | 2 |
 | [zsviczian/obsidian-excalidraw-plugin](https://github.com/zsviczian/obsidian-excalidraw-plugin) | `inactive` | `AGPL-3.0` | 2026-09-27 | 1 |
 | [zszz3/AgentRecall](https://github.com/zszz3/AgentRecall) | `inactive` | `MIT` | 2026-09-20 | 2 |
@@ -1618,7 +1633,11 @@ Archived entries do not participate in current rankings.
 
 | Repository | Path | Status | Snapshot | Fixed source | Last seen |
 |---|---|---|---|---|---:|
+| 0xJacky/nginx-ui | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/0xJacky/nginx-ui/AGENTS.md) | [Source](https://github.com/0xJacky/nginx-ui/blob/79fd40d4db1ee1ae65311f539466778eed7dd74c/AGENTS.md) | 2026-11-08 |
+| 0xJacky/nginx-ui | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/0xJacky/nginx-ui/CLAUDE.md) | [Source](https://github.com/0xJacky/nginx-ui/blob/79fd40d4db1ee1ae65311f539466778eed7dd74c/CLAUDE.md) | 2026-11-08 |
 | 0xPlaygrounds/rig | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/0xPlaygrounds/rig/AGENTS.md) | [Source](https://github.com/0xPlaygrounds/rig/blob/1f9547774edb4c269be991ac42eb043fd7b6e87f/AGENTS.md) | 2026-08-06 |
+| 1jehuang/jcode | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/1jehuang/jcode/AGENTS.md) | [Source](https://github.com/1jehuang/jcode/blob/9904e71cd16a2c050e34aa5c62efe006a643e216/AGENTS.md) | 2026-11-08 |
+| 1jehuang/jcode | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/1jehuang/jcode/CLAUDE.md) | [Source](https://github.com/1jehuang/jcode/blob/9904e71cd16a2c050e34aa5c62efe006a643e216/CLAUDE.md) | 2026-11-08 |
 | 1lck/Lithe-IDEA | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/1lck/Lithe-IDEA/AGENTS.md) | [Source](https://github.com/1lck/Lithe-IDEA/blob/142a12b01906cda68abffe3150f34b262bb7c04a/AGENTS.md) | 2026-09-01 |
 | 1lck/Lithe-IDEA | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/1lck/Lithe-IDEA/CLAUDE.md) | [Source](https://github.com/1lck/Lithe-IDEA/blob/142a12b01906cda68abffe3150f34b262bb7c04a/CLAUDE.md) | 2026-09-01 |
 | 1Panel-dev/MaxKB | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/1Panel-dev/MaxKB/AGENTS.md) | [Source](https://github.com/1Panel-dev/MaxKB/blob/71f54c834b8bf2bfb543c38dd2515f8e115246ea/AGENTS.md) | 2026-10-28 |
@@ -1630,6 +1649,7 @@ Archived entries do not participate in current rankings.
 | 2dust/v2rayNG | `GEMINI.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/2dust/v2rayNG/GEMINI.md) | [Source](https://github.com/2dust/v2rayNG/blob/53fce9a8f5597e03eca445114c86f9faee3d8a7e/GEMINI.md) | 2026-09-19 |
 | 47ng/nuqs | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/47ng/nuqs/AGENTS.md) | [Source](https://github.com/47ng/nuqs/blob/9d3ad29aa224f241e95428a4ed39ae864703c3fc/AGENTS.md) | 2026-10-27 |
 | 47ng/nuqs | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/47ng/nuqs/CLAUDE.md) | [Source](https://github.com/47ng/nuqs/blob/9d3ad29aa224f241e95428a4ed39ae864703c3fc/CLAUDE.md) | 2026-10-27 |
+| 4gray/iptvnator | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/4gray/iptvnator/AGENTS.md) | [Source](https://github.com/4gray/iptvnator/blob/73d8898855642e2819d6a8b60f082e4c01aff827/AGENTS.md) | 2026-11-08 |
 | 4gray/iptvnator | `CLAUDE.md` | `deleted` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/4gray/iptvnator/CLAUDE.md) | [Source](https://github.com/4gray/iptvnator/blob/197fbee7815a757784e076637ec7671d2a9237d0/CLAUDE.md) | 2026-10-11 |
 | 777genius/agent-teams-ai | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/777genius/agent-teams-ai/AGENTS.md) | [Source](https://github.com/777genius/agent-teams-ai/blob/bdc9a926a0620b06967ef51b2c3ad011a8f69089/AGENTS.md) | 2026-10-22 |
 | 777genius/agent-teams-ai | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/777genius/agent-teams-ai/CLAUDE.md) | [Source](https://github.com/777genius/agent-teams-ai/blob/bdc9a926a0620b06967ef51b2c3ad011a8f69089/CLAUDE.md) | 2026-10-22 |
@@ -1660,6 +1680,9 @@ Archived entries do not participate in current rankings.
 | agegr/pi-web | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/agegr/pi-web/AGENTS.md) | [Source](https://github.com/agegr/pi-web/blob/6386fa43d9961e993d946cf6b44702c3321ddf7c/AGENTS.md) | 2026-11-03 |
 | agentclientprotocol/agent-client-protocol | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/agentclientprotocol/agent-client-protocol/AGENTS.md) | [Source](https://github.com/agentclientprotocol/agent-client-protocol/blob/58ec01fa34a54901744e8ed5c60b1b34c232ec1d/AGENTS.md) | 2026-08-20 |
 | agentclientprotocol/agent-client-protocol | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/agentclientprotocol/agent-client-protocol/CLAUDE.md) | [Source](https://github.com/agentclientprotocol/agent-client-protocol/blob/58ec01fa34a54901744e8ed5c60b1b34c232ec1d/CLAUDE.md) | 2026-08-20 |
+| agentlas-ai/Agentlas-OS | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/agentlas-ai/Agentlas-OS/AGENTS.md) | [Source](https://github.com/agentlas-ai/Agentlas-OS/blob/f498ee1294218fbef9be6839128f8268128f4d54/AGENTS.md) | 2026-11-08 |
+| agentlas-ai/Agentlas-OS | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/agentlas-ai/Agentlas-OS/CLAUDE.md) | [Source](https://github.com/agentlas-ai/Agentlas-OS/blob/f498ee1294218fbef9be6839128f8268128f4d54/CLAUDE.md) | 2026-11-08 |
+| agentlas-ai/Agentlas-OS | `GEMINI.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/agentlas-ai/Agentlas-OS/GEMINI.md) | [Source](https://github.com/agentlas-ai/Agentlas-OS/blob/f498ee1294218fbef9be6839128f8268128f4d54/GEMINI.md) | 2026-11-08 |
 | agentscope-ai/agentscope-java | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/agentscope-ai/agentscope-java/AGENTS.md) | [Source](https://github.com/agentscope-ai/agentscope-java/blob/73cb2da4a33b05be170ae8c43027009b8f8aff12/AGENTS.md) | 2026-10-20 |
 | agentscope-ai/agentscope-java | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/agentscope-ai/agentscope-java/CLAUDE.md) | [Source](https://github.com/agentscope-ai/agentscope-java/blob/73cb2da4a33b05be170ae8c43027009b8f8aff12/CLAUDE.md) | 2026-10-20 |
 | agentscope-ai/AgentTeams | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/agentscope-ai/AgentTeams/AGENTS.md) | [Source](https://github.com/agentscope-ai/AgentTeams/blob/48fee9051e22a5e29f937f004bda2340805490cd/AGENTS.md) | 2026-11-01 |
@@ -1715,10 +1738,11 @@ Archived entries do not participate in current rankings.
 | angular/angular | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/angular/angular/AGENTS.md) | [Source](https://github.com/angular/angular/blob/0fc6e4d23316daaf54828b335429713298507dd8/AGENTS.md) | 2026-10-12 |
 | angular/angular-cli | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/angular/angular-cli/AGENTS.md) | [Source](https://github.com/angular/angular-cli/blob/537a47a48295a9973a90e59c22d7b5a8f5aae4e6/AGENTS.md) | 2026-10-26 |
 | Anil-matcha/open-duet | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Anil-matcha/open-duet/AGENTS.md) | [Source](https://github.com/Anil-matcha/open-duet/blob/f517e1cd28f4628579259d42d644060ec80ba9a1/AGENTS.md) | 2026-11-02 |
+| AnInsomniacy/rayburst | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/AnInsomniacy/rayburst/AGENTS.md) | [Source](https://github.com/AnInsomniacy/rayburst/blob/800659a188a8571e0431f7c437a95446a43aaf28/AGENTS.md) | 2026-11-08 |
 | ankidroid/Anki-Android | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/ankidroid/Anki-Android/CLAUDE.md) | [Source](https://github.com/ankidroid/Anki-Android/blob/dcd46b38f04920129cac81aff1340b4ba4c06867/CLAUDE.md) | 2026-10-11 |
 | ankitects/anki | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/ankitects/anki/AGENTS.md) | [Source](https://github.com/ankitects/anki/blob/54ca6c0a2dac4f8f7916bf68ba4cbf7e3d5227bd/AGENTS.md) | 2026-10-06 |
 | ankitects/anki | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/ankitects/anki/CLAUDE.md) | [Source](https://github.com/ankitects/anki/blob/54ca6c0a2dac4f8f7916bf68ba4cbf7e3d5227bd/CLAUDE.md) | 2026-10-06 |
-| anomalyco/hex | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/anomalyco/hex/AGENTS.md) | [Source](https://github.com/anomalyco/hex/blob/8d73dd61cefdf94c1cb211a1a057e3c91d1ecfb1/AGENTS.md) | 2026-11-07 |
+| anomalyco/models.dev | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/anomalyco/models.dev/AGENTS.md) | [Source](https://github.com/anomalyco/models.dev/blob/6eed0315b02b17deb542c259bd7f593112a7062d/AGENTS.md) | 2026-11-08 |
 | anomalyco/opentui | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/anomalyco/opentui/AGENTS.md) | [Source](https://github.com/anomalyco/opentui/blob/a11bf6851e975f48296e1a9d1ce3e84426aab85e/AGENTS.md) | 2026-09-25 |
 | ant-design/ant-design | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/ant-design/ant-design/AGENTS.md) | [Source](https://github.com/ant-design/ant-design/blob/c70a4c5a936b1442b291b615cf0702b76d4ec873/AGENTS.md) | 2026-10-10 |
 | ant-design/ant-design | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/ant-design/ant-design/CLAUDE.md) | [Source](https://github.com/ant-design/ant-design/blob/c70a4c5a936b1442b291b615cf0702b76d4ec873/CLAUDE.md) | 2026-10-10 |
@@ -1738,6 +1762,8 @@ Archived entries do not participate in current rankings.
 | apache/brpc | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/apache/brpc/AGENTS.md) | [Source](https://github.com/apache/brpc/blob/d03cf2d4ce9bac299845c6d43724af96c5e45cd2/AGENTS.md) | 2026-10-06 |
 | apache/brpc | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/apache/brpc/CLAUDE.md) | [Source](https://github.com/apache/brpc/blob/d03cf2d4ce9bac299845c6d43724af96c5e45cd2/CLAUDE.md) | 2026-10-06 |
 | apache/calcite | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/apache/calcite/AGENTS.md) | [Source](https://github.com/apache/calcite/blob/437398834e49c8086a64870427214fec428684fc/AGENTS.md) | 2026-08-17 |
+| apache/camel | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/apache/camel/AGENTS.md) | [Source](https://github.com/apache/camel/blob/4d7629668f684efcc5bc5a14ef54c9f95323aff8/AGENTS.md) | 2026-11-08 |
+| apache/camel | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/apache/camel/CLAUDE.md) | [Source](https://github.com/apache/camel/blob/4d7629668f684efcc5bc5a14ef54c9f95323aff8/CLAUDE.md) | 2026-11-08 |
 | apache/camel-k | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/apache/camel-k/AGENTS.md) | [Source](https://github.com/apache/camel-k/blob/3729607cfd59b76165e6b1a5918041ab83592088/AGENTS.md) | 2026-07-30 |
 | apache/camel-k | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/apache/camel-k/CLAUDE.md) | [Source](https://github.com/apache/camel-k/blob/3729607cfd59b76165e6b1a5918041ab83592088/CLAUDE.md) | 2026-07-30 |
 | apache/cassandra | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/apache/cassandra/AGENTS.md) | [Source](https://github.com/apache/cassandra/blob/d2fa1a85e93c7d35dbbf1f6dfafd41b3d088101c/AGENTS.md) | 2026-09-13 |
@@ -1793,9 +1819,6 @@ Archived entries do not participate in current rankings.
 | apify/apify-mcp-server | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/apify/apify-mcp-server/AGENTS.md) | [Source](https://github.com/apify/apify-mcp-server/blob/d3bee2ec2c0569911d379b79ac3d9097c5117723/AGENTS.md) | 2026-10-27 |
 | apify/apify-mcp-server | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/apify/apify-mcp-server/CLAUDE.md) | [Source](https://github.com/apify/apify-mcp-server/blob/d3bee2ec2c0569911d379b79ac3d9097c5117723/CLAUDE.md) | 2026-10-27 |
 | apify/crawlee | `.claude/CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/apify/crawlee/.claude/CLAUDE.md) | [Source](https://github.com/apify/crawlee/blob/3a248f4c0b18230310d46c7dd9dfefadb9c4b87e/.claude/CLAUDE.md) | 2026-09-14 |
-| apify/crawlee-python | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/apify/crawlee-python/AGENTS.md) | [Source](https://github.com/apify/crawlee-python/blob/5882c6b51a0134097615c6d4e12a3765d963fc28/AGENTS.md) | 2026-08-04 |
-| apify/crawlee-python | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/apify/crawlee-python/CLAUDE.md) | [Source](https://github.com/apify/crawlee-python/blob/5882c6b51a0134097615c6d4e12a3765d963fc28/CLAUDE.md) | 2026-08-04 |
-| apify/crawlee-python | `GEMINI.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/apify/crawlee-python/GEMINI.md) | [Source](https://github.com/apify/crawlee-python/blob/5882c6b51a0134097615c6d4e12a3765d963fc28/GEMINI.md) | 2026-08-04 |
 | apollographql/apollo-client | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/apollographql/apollo-client/CLAUDE.md) | [Source](https://github.com/apollographql/apollo-client/blob/544daab8e400c5dd4d6dc4f1953769e8519c09f0/CLAUDE.md) | 2026-07-18 |
 | appwrite/appwrite | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/appwrite/appwrite/AGENTS.md) | [Source](https://github.com/appwrite/appwrite/blob/0bcd059e144a791fa2bbbd32d7333347482dc766/AGENTS.md) | 2026-11-06 |
 | appwrite/appwrite | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/appwrite/appwrite/CLAUDE.md) | [Source](https://github.com/appwrite/appwrite/blob/0bcd059e144a791fa2bbbd32d7333347482dc766/CLAUDE.md) | 2026-11-06 |
@@ -1867,6 +1890,8 @@ Archived entries do not participate in current rankings.
 | azerothcore/azerothcore-wotlk | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/azerothcore/azerothcore-wotlk/CLAUDE.md) | [Source](https://github.com/azerothcore/azerothcore-wotlk/blob/7488434c01717d639ca710984d888cb5f855e992/CLAUDE.md) | 2026-10-28 |
 | Azure/azure-sdk-for-net | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Azure/azure-sdk-for-net/AGENTS.md) | [Source](https://github.com/Azure/azure-sdk-for-net/blob/a7ea74d2d4f46602151111f0b84798a5c965da11/AGENTS.md) | 2026-09-09 |
 | Azure/azure-sdk-for-python | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Azure/azure-sdk-for-python/AGENTS.md) | [Source](https://github.com/Azure/azure-sdk-for-python/blob/990e0be8976b04b4680769350862a6b0170233d4/AGENTS.md) | 2026-10-09 |
+| Azure/Azure-Sentinel | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Azure/Azure-Sentinel/AGENTS.md) | [Source](https://github.com/Azure/Azure-Sentinel/blob/876269b9d3dfb8144bcc9c3ae1dcf490a4566ca5/AGENTS.md) | 2026-11-08 |
+| Azure/Azure-Sentinel | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Azure/Azure-Sentinel/CLAUDE.md) | [Source](https://github.com/Azure/Azure-Sentinel/blob/876269b9d3dfb8144bcc9c3ae1dcf490a4566ca5/CLAUDE.md) | 2026-11-08 |
 | B-M-Capital-Research/honeclaw | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/B-M-Capital-Research/honeclaw/AGENTS.md) | [Source](https://github.com/B-M-Capital-Research/honeclaw/blob/859a0ecce65963aac73e58adcc91127bb500d714/AGENTS.md) | 2026-08-05 |
 | B-M-Capital-Research/honeclaw | `GEMINI.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/B-M-Capital-Research/honeclaw/GEMINI.md) | [Source](https://github.com/B-M-Capital-Research/honeclaw/blob/859a0ecce65963aac73e58adcc91127bb500d714/GEMINI.md) | 2026-08-05 |
 | babalae/bettergi-scripts-list | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/babalae/bettergi-scripts-list/AGENTS.md) | [Source](https://github.com/babalae/bettergi-scripts-list/blob/d56198adb444864d34a3ba5807333e602797cfe3/AGENTS.md) | 2026-10-19 |
@@ -1894,9 +1919,12 @@ Archived entries do not participate in current rankings.
 | ben-manes/caffeine | `.claude/CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/ben-manes/caffeine/.claude/CLAUDE.md) | [Source](https://github.com/ben-manes/caffeine/blob/c607adb4148b8bb5fc35aeab2c865518bb32afc9/.claude/CLAUDE.md) | 2026-08-30 |
 | ben-manes/caffeine | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/ben-manes/caffeine/AGENTS.md) | [Source](https://github.com/ben-manes/caffeine/blob/c607adb4148b8bb5fc35aeab2c865518bb32afc9/AGENTS.md) | 2026-08-30 |
 | bendlang/bend | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/bendlang/bend/AGENTS.md) | [Source](https://github.com/bendlang/bend/blob/e75ccac0dcbb7234708b1bb54d407e758f4a3457/AGENTS.md) | 2026-11-06 |
+| BerriAI/litellm | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/BerriAI/litellm/AGENTS.md) | [Source](https://github.com/BerriAI/litellm/blob/43112547fb9c0a8d482f4fe031e09a6c2cc234e1/AGENTS.md) | 2026-11-08 |
 | BerriAI/litellm | `CLAUDE.md` | `deleted` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/BerriAI/litellm/CLAUDE.md) | [Source](https://github.com/BerriAI/litellm/blob/a8979fe05466346d78ab4573c8a61b53a4dd9cf6/CLAUDE.md) | 2026-09-16 |
+| BerriAI/litellm | `GEMINI.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/BerriAI/litellm/GEMINI.md) | [Source](https://github.com/BerriAI/litellm/blob/43112547fb9c0a8d482f4fe031e09a6c2cc234e1/GEMINI.md) | 2026-11-08 |
 | better-auth/better-auth | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/better-auth/better-auth/AGENTS.md) | [Source](https://github.com/better-auth/better-auth/blob/d32b5b271ce6f36f62a3296f0c9fbc1427d33a7f/AGENTS.md) | 2026-10-23 |
 | better-auth/better-auth | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/better-auth/better-auth/CLAUDE.md) | [Source](https://github.com/better-auth/better-auth/blob/d32b5b271ce6f36f62a3296f0c9fbc1427d33a7f/CLAUDE.md) | 2026-10-23 |
+| bex-co/bex | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/bex-co/bex/AGENTS.md) | [Source](https://github.com/bex-co/bex/blob/050259aa3a554d0272b536f7930c83ebd1a3569a/AGENTS.md) | 2026-11-08 |
 | bigbluebutton/bigbluebutton | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/bigbluebutton/bigbluebutton/AGENTS.md) | [Source](https://github.com/bigbluebutton/bigbluebutton/blob/434841e30d3566de57f2dcf385b1bf4e2f456a28/AGENTS.md) | 2026-07-17 |
 | bigbluebutton/bigbluebutton | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/bigbluebutton/bigbluebutton/CLAUDE.md) | [Source](https://github.com/bigbluebutton/bigbluebutton/blob/434841e30d3566de57f2dcf385b1bf4e2f456a28/CLAUDE.md) | 2026-07-17 |
 | BigPizzaV3/CodexPlusPlus | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/BigPizzaV3/CodexPlusPlus/AGENTS.md) | [Source](https://github.com/BigPizzaV3/CodexPlusPlus/blob/db3566c3c2c5164429f00d6410a8c020e8f75bb1/AGENTS.md) | 2026-10-18 |
@@ -1923,6 +1951,7 @@ Archived entries do not participate in current rankings.
 | bookorbit/bookorbit | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/bookorbit/bookorbit/AGENTS.md) | [Source](https://github.com/bookorbit/bookorbit/blob/09e4f1b5bd50ae2580b66d863801ac9443204cb0/AGENTS.md) | 2026-09-30 |
 | bookorbit/bookorbit | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/bookorbit/bookorbit/CLAUDE.md) | [Source](https://github.com/bookorbit/bookorbit/blob/09e4f1b5bd50ae2580b66d863801ac9443204cb0/CLAUDE.md) | 2026-09-30 |
 | bowser-js/bowser | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/bowser-js/bowser/AGENTS.md) | [Source](https://github.com/bowser-js/bowser/blob/fd556800ee3c044a6920721c8e197fa1b23aa72b/AGENTS.md) | 2026-09-27 |
+| boykopovar/AnyPS5 | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/boykopovar/AnyPS5/AGENTS.md) | [Source](https://github.com/boykopovar/AnyPS5/blob/9fb2d9bb837f95afa8c6cfaa9c444a4dd0823516/AGENTS.md) | 2026-11-08 |
 | breferrari/obsidian-mind | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/breferrari/obsidian-mind/AGENTS.md) | [Source](https://github.com/breferrari/obsidian-mind/blob/d02e3ccfdff212544f77b67b48313d7b681ee28f/AGENTS.md) | 2026-10-10 |
 | breferrari/obsidian-mind | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/breferrari/obsidian-mind/CLAUDE.md) | [Source](https://github.com/breferrari/obsidian-mind/blob/d02e3ccfdff212544f77b67b48313d7b681ee28f/CLAUDE.md) | 2026-10-10 |
 | breferrari/obsidian-mind | `GEMINI.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/breferrari/obsidian-mind/GEMINI.md) | [Source](https://github.com/breferrari/obsidian-mind/blob/d02e3ccfdff212544f77b67b48313d7b681ee28f/GEMINI.md) | 2026-10-10 |
@@ -1932,8 +1961,6 @@ Archived entries do not participate in current rankings.
 | browserless/browserless | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/browserless/browserless/CLAUDE.md) | [Source](https://github.com/browserless/browserless/blob/6c093530b813063a53a809e484a63faa48567c02/CLAUDE.md) | 2026-07-24 |
 | BrowserMCP/mcp | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/BrowserMCP/mcp/AGENTS.md) | [Source](https://github.com/BrowserMCP/mcp/blob/43bcd1ddce1f6f4ea83100aa4714aa8d27e56b2d/AGENTS.md) | 2026-10-27 |
 | btcpayserver/btcpayserver | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/btcpayserver/btcpayserver/AGENTS.md) | [Source](https://github.com/btcpayserver/btcpayserver/blob/69c44f1e2a98ea18dc8b2c53fac23398c6fca2d5/AGENTS.md) | 2026-09-29 |
-| Budibase/budibase | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Budibase/budibase/AGENTS.md) | [Source](https://github.com/Budibase/budibase/blob/df536c7da2de1b6740056102cceef286d60e0be2/AGENTS.md) | 2026-10-12 |
-| Budibase/budibase | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Budibase/budibase/CLAUDE.md) | [Source](https://github.com/Budibase/budibase/blob/df536c7da2de1b6740056102cceef286d60e0be2/CLAUDE.md) | 2026-10-12 |
 | BuilderIO/agent-native | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/BuilderIO/agent-native/AGENTS.md) | [Source](https://github.com/BuilderIO/agent-native/blob/ee8ba3a0fcaddf440e910c4ad6b2a9a150ba8ee9/AGENTS.md) | 2026-10-27 |
 | BuilderIO/agent-native | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/BuilderIO/agent-native/CLAUDE.md) | [Source](https://github.com/BuilderIO/agent-native/blob/ee8ba3a0fcaddf440e910c4ad6b2a9a150ba8ee9/CLAUDE.md) | 2026-10-27 |
 | builderz-labs/mission-control | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/builderz-labs/mission-control/CLAUDE.md) | [Source](https://github.com/builderz-labs/mission-control/blob/086c702ee483df7ed96c781abf67e0ae45de4196/CLAUDE.md) | 2026-07-25 |
@@ -1956,6 +1983,7 @@ Archived entries do not participate in current rankings.
 | callstack/agent-device | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/callstack/agent-device/AGENTS.md) | [Source](https://github.com/callstack/agent-device/blob/f6074a9c13c0a5a23bf6cb353b65d6cf06826814/AGENTS.md) | 2026-10-15 |
 | camunda/camunda | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/camunda/camunda/AGENTS.md) | [Source](https://github.com/camunda/camunda/blob/6b2fa59ff60eaf9b8cdfc87cf9bc8723896bd066/AGENTS.md) | 2026-10-25 |
 | camunda/camunda | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/camunda/camunda/CLAUDE.md) | [Source](https://github.com/camunda/camunda/blob/6b2fa59ff60eaf9b8cdfc87cf9bc8723896bd066/CLAUDE.md) | 2026-10-25 |
+| can1357/oh-my-pi | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/can1357/oh-my-pi/AGENTS.md) | [Source](https://github.com/can1357/oh-my-pi/blob/66876efe7b5f0b67f21cc95a9e0ad2f8844f8b47/AGENTS.md) | 2026-11-08 |
 | Canner/WrenAI | `.claude/CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Canner/WrenAI/.claude/CLAUDE.md) | [Source](https://github.com/Canner/WrenAI/blob/190ed1ee09c6f07d906e81274ad6d5733e13b93c/.claude/CLAUDE.md) | 2026-10-22 |
 | Canner/WrenAI | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Canner/WrenAI/AGENTS.md) | [Source](https://github.com/Canner/WrenAI/blob/190ed1ee09c6f07d906e81274ad6d5733e13b93c/AGENTS.md) | 2026-10-22 |
 | CapSoftware/Cap | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/CapSoftware/Cap/AGENTS.md) | [Source](https://github.com/CapSoftware/Cap/blob/98fe6cb46d3f3bf4d90a1397bf5ac755223a8dfa/AGENTS.md) | 2026-10-26 |
@@ -2040,10 +2068,11 @@ Archived entries do not participate in current rankings.
 | cobusgreyling/loop-engineering | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/cobusgreyling/loop-engineering/AGENTS.md) | [Source](https://github.com/cobusgreyling/loop-engineering/blob/712117ad4dbcf3860442bfc7fe217b0d9e2490ac/AGENTS.md) | 2026-09-11 |
 | cocoindex-io/cocoindex | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/cocoindex-io/cocoindex/AGENTS.md) | [Source](https://github.com/cocoindex-io/cocoindex/blob/2923cf2b435262dfa29e620e3c630594a0cb86b9/AGENTS.md) | 2026-07-23 |
 | cocoindex-io/cocoindex | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/cocoindex-io/cocoindex/CLAUDE.md) | [Source](https://github.com/cocoindex-io/cocoindex/blob/2923cf2b435262dfa29e620e3c630594a0cb86b9/CLAUDE.md) | 2026-07-23 |
+| code-yeongyu/oh-my-openagent | `.agents/AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/code-yeongyu/oh-my-openagent/.agents/AGENTS.md) | [Source](https://github.com/code-yeongyu/oh-my-openagent/blob/8af3fae18874e823508d90e0b729d6b2848458ca/.agents/AGENTS.md) | 2026-11-08 |
+| code-yeongyu/oh-my-openagent | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/code-yeongyu/oh-my-openagent/AGENTS.md) | [Source](https://github.com/code-yeongyu/oh-my-openagent/blob/8af3fae18874e823508d90e0b729d6b2848458ca/AGENTS.md) | 2026-11-08 |
+| code-yeongyu/oh-my-openagent | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/code-yeongyu/oh-my-openagent/CLAUDE.md) | [Source](https://github.com/code-yeongyu/oh-my-openagent/blob/8af3fae18874e823508d90e0b729d6b2848458ca/CLAUDE.md) | 2026-11-08 |
 | CodebuffAI/freebuff | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/CodebuffAI/freebuff/AGENTS.md) | [Source](https://github.com/CodebuffAI/freebuff/blob/45fcc5e54f59f71dfdcea3c41bacc79f9276e457/AGENTS.md) | 2026-10-29 |
 | codeigniter4/CodeIgniter4 | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/codeigniter4/CodeIgniter4/AGENTS.md) | [Source](https://github.com/codeigniter4/CodeIgniter4/blob/62f54202b5d701cd8fc16e0e7e7cb03f564f2c0c/AGENTS.md) | 2026-10-25 |
-| coder/coder | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/coder/coder/AGENTS.md) | [Source](https://github.com/coder/coder/blob/409cdf62148cafc1181d7acc456718137994fea1/AGENTS.md) | 2026-10-21 |
-| coder/coder | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/coder/coder/CLAUDE.md) | [Source](https://github.com/coder/coder/blob/409cdf62148cafc1181d7acc456718137994fea1/CLAUDE.md) | 2026-10-21 |
 | codewhale-hq/Codewhale | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/codewhale-hq/Codewhale/AGENTS.md) | [Source](https://github.com/codewhale-hq/Codewhale/blob/daceee7d1930dc6f170dd0ccb9c29bf0fd0420e3/AGENTS.md) | 2026-11-01 |
 | codewhale-hq/Codewhale | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/codewhale-hq/Codewhale/CLAUDE.md) | [Source](https://github.com/codewhale-hq/Codewhale/blob/daceee7d1930dc6f170dd0ccb9c29bf0fd0420e3/CLAUDE.md) | 2026-11-01 |
 | CodeWithCJ/SparkyFitness | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/CodeWithCJ/SparkyFitness/AGENTS.md) | [Source](https://github.com/CodeWithCJ/SparkyFitness/blob/edd9e0e8daf9e7820b3aef02c6d1a32d08d88278/AGENTS.md) | 2026-07-29 |
@@ -2053,12 +2082,9 @@ Archived entries do not participate in current rankings.
 | coil-kt/coil | `GEMINI.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/coil-kt/coil/GEMINI.md) | [Source](https://github.com/coil-kt/coil/blob/79ad5764f45d2b56662c23d3dc42c31b4fec7e77/GEMINI.md) | 2026-09-03 |
 | colbymchenry/codegraph | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/colbymchenry/codegraph/AGENTS.md) | [Source](https://github.com/colbymchenry/codegraph/blob/16a8e77c469a4b24552cbb631730212264bbf53f/AGENTS.md) | 2026-10-23 |
 | colbymchenry/codegraph | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/colbymchenry/codegraph/CLAUDE.md) | [Source](https://github.com/colbymchenry/codegraph/blob/16a8e77c469a4b24552cbb631730212264bbf53f/CLAUDE.md) | 2026-10-23 |
-| coleam00/Archon | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/coleam00/Archon/AGENTS.md) | [Source](https://github.com/coleam00/Archon/blob/cffcc79075db77da971e7161eb96662fc27f04aa/AGENTS.md) | 2026-11-06 |
-| coleam00/Archon | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/coleam00/Archon/CLAUDE.md) | [Source](https://github.com/coleam00/Archon/blob/cffcc79075db77da971e7161eb96662fc27f04aa/CLAUDE.md) | 2026-11-06 |
 | colinhacks/zod | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/colinhacks/zod/AGENTS.md) | [Source](https://github.com/colinhacks/zod/blob/badf0b7894a4f777d41fcd7ed2433e5f8c9c23ea/AGENTS.md) | 2026-08-25 |
 | colinhacks/zod | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/colinhacks/zod/CLAUDE.md) | [Source](https://github.com/colinhacks/zod/blob/badf0b7894a4f777d41fcd7ed2433e5f8c9c23ea/CLAUDE.md) | 2026-08-25 |
 | colmap/colmap | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/colmap/colmap/AGENTS.md) | [Source](https://github.com/colmap/colmap/blob/f6cc3e27bc59fda8f2ab3042574b2998d1cbca2e/AGENTS.md) | 2026-10-22 |
-| comet-ml/opik | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/comet-ml/opik/AGENTS.md) | [Source](https://github.com/comet-ml/opik/blob/0f6f12b3a27e0c477546666a8b49a74ff7afd99e/AGENTS.md) | 2026-11-05 |
 | Comfy-Org/ComfyUI_frontend | `.github/AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Comfy-Org/ComfyUI_frontend/.github/AGENTS.md) | [Source](https://github.com/Comfy-Org/ComfyUI_frontend/blob/dc76f3e7d264d1911c4abfe14cb74d6c2db52aa9/.github/AGENTS.md) | 2026-08-09 |
 | Comfy-Org/ComfyUI_frontend | `.github/CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Comfy-Org/ComfyUI_frontend/.github/CLAUDE.md) | [Source](https://github.com/Comfy-Org/ComfyUI_frontend/blob/dc76f3e7d264d1911c4abfe14cb74d6c2db52aa9/.github/CLAUDE.md) | 2026-08-09 |
 | Comfy-Org/ComfyUI_frontend | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Comfy-Org/ComfyUI_frontend/AGENTS.md) | [Source](https://github.com/Comfy-Org/ComfyUI_frontend/blob/dc76f3e7d264d1911c4abfe14cb74d6c2db52aa9/AGENTS.md) | 2026-08-09 |
@@ -2199,6 +2225,7 @@ Archived entries do not participate in current rankings.
 | dograh-hq/dograh | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/dograh-hq/dograh/CLAUDE.md) | [Source](https://github.com/dograh-hq/dograh/blob/d236169f4a9bc377d539dedd2ec623c94a6f0166/CLAUDE.md) | 2026-07-24 |
 | Dokploy/dokploy | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Dokploy/dokploy/CLAUDE.md) | [Source](https://github.com/Dokploy/dokploy/blob/3c6d5f611389fdb0eeab9e13285ae3d6828800c0/CLAUDE.md) | 2026-11-07 |
 | dolanmiu/docx | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/dolanmiu/docx/CLAUDE.md) | [Source](https://github.com/dolanmiu/docx/blob/68f31ec02918376d5e7d2989884a78aa1a7c4322/CLAUDE.md) | 2026-10-05 |
+| Dolibarr/dolibarr | `.agents/AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Dolibarr/dolibarr/.agents/AGENTS.md) | [Source](https://github.com/Dolibarr/dolibarr/blob/e074d14cc6445533f5b0b27e3025cb1253e251ad/.agents/AGENTS.md) | 2026-11-08 |
 | doocs/leetcode | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/doocs/leetcode/AGENTS.md) | [Source](https://github.com/doocs/leetcode/blob/1ef2630ea559c67c50f94af9977f0d66b1328b98/AGENTS.md) | 2026-10-10 |
 | doocs/leetcode | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/doocs/leetcode/CLAUDE.md) | [Source](https://github.com/doocs/leetcode/blob/1ef2630ea559c67c50f94af9977f0d66b1328b98/CLAUDE.md) | 2026-10-10 |
 | doocs/md | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/doocs/md/AGENTS.md) | [Source](https://github.com/doocs/md/blob/a7c17fc4cda92e3c13aa7e24f06615cfa4219b31/AGENTS.md) | 2026-09-29 |
@@ -2235,6 +2262,7 @@ Archived entries do not participate in current rankings.
 | eclipse-theia/theia | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/eclipse-theia/theia/CLAUDE.md) | [Source](https://github.com/eclipse-theia/theia/blob/29411e76a3bd914b78b4ef672743fece0e7d3edc/CLAUDE.md) | 2026-10-09 |
 | eclipse-vertx/vert.x | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/eclipse-vertx/vert.x/AGENTS.md) | [Source](https://github.com/eclipse-vertx/vert.x/blob/f84126978088abe09d8f0bddb2bf90f00f810b6a/AGENTS.md) | 2026-09-07 |
 | Effect-TS/effect | `.agents/AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Effect-TS/effect/.agents/AGENTS.md) | [Source](https://github.com/Effect-TS/effect/blob/79b8246eb3af6759aef3cb368219eab71cfdd230/.agents/AGENTS.md) | 2026-10-31 |
+| Eglantine-Community/Eglantine | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Eglantine-Community/Eglantine/AGENTS.md) | [Source](https://github.com/Eglantine-Community/Eglantine/blob/74db2371242f9eba6c79ab608072434d202a7412/AGENTS.md) | 2026-11-08 |
 | egoist/mygo | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/egoist/mygo/AGENTS.md) | [Source](https://github.com/egoist/mygo/blob/b87bf329242482f9d7b6ec4aa8dc90b9c36c3a1a/AGENTS.md) | 2026-11-07 |
 | eigent-ai/eigent | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/eigent-ai/eigent/AGENTS.md) | [Source](https://github.com/eigent-ai/eigent/blob/b7722776485e3c7a9e10fab38178aa9ed1bb72b4/AGENTS.md) | 2026-09-21 |
 | EKKOLearnAI/ekko-studio | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/EKKOLearnAI/ekko-studio/AGENTS.md) | [Source](https://github.com/EKKOLearnAI/ekko-studio/blob/6e9eee5020fa91edf9bb4995d5732ff160337c6e/AGENTS.md) | 2026-11-04 |
@@ -2315,6 +2343,7 @@ Archived entries do not participate in current rankings.
 | experientiallabs/experiential | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/experientiallabs/experiential/AGENTS.md) | [Source](https://github.com/experientiallabs/experiential/blob/a7cea0cfed60c1012efabd7d38b9293d0e332360/AGENTS.md) | 2026-10-03 |
 | experientiallabs/experiential | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/experientiallabs/experiential/CLAUDE.md) | [Source](https://github.com/experientiallabs/experiential/blob/a7cea0cfed60c1012efabd7d38b9293d0e332360/CLAUDE.md) | 2026-10-03 |
 | expo/expo | `.claude/CLAUDE.md` | `deleted` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/expo/expo/.claude/CLAUDE.md) | [Source](https://github.com/expo/expo/blob/ea5527adc421252fc46f0fa3ff7207f93a06e826/.claude/CLAUDE.md) | 2026-10-07 |
+| expo/expo | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/expo/expo/AGENTS.md) | [Source](https://github.com/expo/expo/blob/8948385b3d3a3586c537b07dabb2717dea6e5321/AGENTS.md) | 2026-11-08 |
 | external-secrets/external-secrets | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/external-secrets/external-secrets/AGENTS.md) | [Source](https://github.com/external-secrets/external-secrets/blob/2204545633fcd374af671a0f2414165d1a439e85/AGENTS.md) | 2026-10-15 |
 | external-secrets/external-secrets | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/external-secrets/external-secrets/CLAUDE.md) | [Source](https://github.com/external-secrets/external-secrets/blob/2204545633fcd374af671a0f2414165d1a439e85/CLAUDE.md) | 2026-10-15 |
 | eyalgolan/statecraft-israel | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/eyalgolan/statecraft-israel/AGENTS.md) | [Source](https://github.com/eyalgolan/statecraft-israel/blob/dd56e9db869a38a89d589dd5c19f22e657b7cfd4/AGENTS.md) | 2026-11-07 |
@@ -2345,6 +2374,8 @@ Archived entries do not participate in current rankings.
 | fengshao1227/ccg-workflow | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/fengshao1227/ccg-workflow/CLAUDE.md) | [Source](https://github.com/fengshao1227/ccg-workflow/blob/51b1e0094317f64cfbe1fc6f14f79a6d13989f69/CLAUDE.md) | 2026-10-21 |
 | FEX-Emu/FEX | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/FEX-Emu/FEX/AGENTS.md) | [Source](https://github.com/FEX-Emu/FEX/blob/fd141ed6d721d03062619e4702bca1a0c93b6dd9/AGENTS.md) | 2026-08-07 |
 | FEX-Emu/FEX | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/FEX-Emu/FEX/CLAUDE.md) | [Source](https://github.com/FEX-Emu/FEX/blob/fd141ed6d721d03062619e4702bca1a0c93b6dd9/CLAUDE.md) | 2026-08-07 |
+| filamentphp/filament | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/filamentphp/filament/AGENTS.md) | [Source](https://github.com/filamentphp/filament/blob/1ca22e44bbbee0d8d4bb6d5b2e8bf156c9f1ddb1/AGENTS.md) | 2026-11-08 |
+| filamentphp/filament | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/filamentphp/filament/CLAUDE.md) | [Source](https://github.com/filamentphp/filament/blob/1ca22e44bbbee0d8d4bb6d5b2e8bf156c9f1ddb1/CLAUDE.md) | 2026-11-08 |
 | filebrowser/filebrowser | `.claude/CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/filebrowser/filebrowser/.claude/CLAUDE.md) | [Source](https://github.com/filebrowser/filebrowser/blob/833d908884d5c801f30f5c098d7977177eb3a36b/.claude/CLAUDE.md) | 2026-07-28 |
 | files-community/Files | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/files-community/Files/AGENTS.md) | [Source](https://github.com/files-community/Files/blob/abdfcb543adc7fcdf7f75672feb83760c48d9087/AGENTS.md) | 2026-08-28 |
 | files-community/Files | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/files-community/Files/CLAUDE.md) | [Source](https://github.com/files-community/Files/blob/abdfcb543adc7fcdf7f75672feb83760c48d9087/CLAUDE.md) | 2026-08-28 |
@@ -2393,6 +2424,7 @@ Archived entries do not participate in current rankings.
 | frappe/frappe | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/frappe/frappe/CLAUDE.md) | [Source](https://github.com/frappe/frappe/blob/ccfcffd134440185e26d7b910404ff9f537ee5ac/CLAUDE.md) | 2026-10-24 |
 | frappe/press | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/frappe/press/AGENTS.md) | [Source](https://github.com/frappe/press/blob/db8ad57b226ab5410971a7c18108b01c0fa611bf/AGENTS.md) | 2026-08-11 |
 | frappe/press | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/frappe/press/CLAUDE.md) | [Source](https://github.com/frappe/press/blob/db8ad57b226ab5410971a7c18108b01c0fa611bf/CLAUDE.md) | 2026-08-11 |
+| FreeCAD/FreeCAD | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/FreeCAD/FreeCAD/AGENTS.md) | [Source](https://github.com/FreeCAD/FreeCAD/blob/164ded35ead45588a24abee82dbf4a9679ce077d/AGENTS.md) | 2026-11-08 |
 | freelensapp/freelens | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/freelensapp/freelens/AGENTS.md) | [Source](https://github.com/freelensapp/freelens/blob/5e58010f2d6671f732b96e28326cba5757000568/AGENTS.md) | 2026-11-05 |
 | freelensapp/freelens | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/freelensapp/freelens/CLAUDE.md) | [Source](https://github.com/freelensapp/freelens/blob/5e58010f2d6671f732b96e28326cba5757000568/CLAUDE.md) | 2026-11-05 |
 | freeplane/freeplane | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/freeplane/freeplane/AGENTS.md) | [Source](https://github.com/freeplane/freeplane/blob/2670b4212c57fe18514139396d876d0d15131dff/AGENTS.md) | 2026-09-18 |
@@ -2402,9 +2434,9 @@ Archived entries do not participate in current rankings.
 | FxEmbed/FxEmbed | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/FxEmbed/FxEmbed/AGENTS.md) | [Source](https://github.com/FxEmbed/FxEmbed/blob/c71c3f096aee9cad1a0dc2d6e907e8a923c1c933/AGENTS.md) | 2026-09-09 |
 | gadievron/raptor | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/gadievron/raptor/CLAUDE.md) | [Source](https://github.com/gadievron/raptor/blob/94ecb3423d2d1db012d2521cd29bd832071f63d7/CLAUDE.md) | 2026-07-17 |
 | Galaxy-Dawn/claude-scholar | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Galaxy-Dawn/claude-scholar/CLAUDE.md) | [Source](https://github.com/Galaxy-Dawn/claude-scholar/blob/2f7766fd541a723d4ddc6230b3277f948d61b093/CLAUDE.md) | 2026-07-31 |
+| gaozhangmin/boxplayer | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/gaozhangmin/boxplayer/AGENTS.md) | [Source](https://github.com/gaozhangmin/boxplayer/blob/d599dc0db4f260d958a73361e3e297d2108994d7/AGENTS.md) | 2026-11-08 |
+| gaozhangmin/boxplayer | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/gaozhangmin/boxplayer/CLAUDE.md) | [Source](https://github.com/gaozhangmin/boxplayer/blob/d599dc0db4f260d958a73361e3e297d2108994d7/CLAUDE.md) | 2026-11-08 |
 | GargantuaX/gemini-watermark-remover | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/GargantuaX/gemini-watermark-remover/AGENTS.md) | [Source](https://github.com/GargantuaX/gemini-watermark-remover/blob/507da4e50e2c4f6d4e5a2ba8f8a99aa5d6d2a549/AGENTS.md) | 2026-08-14 |
-| garrytan/gbrain | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/garrytan/gbrain/AGENTS.md) | [Source](https://github.com/garrytan/gbrain/blob/4957aad6bd96e24c141d51d48c1c5116ac404db7/AGENTS.md) | 2026-10-30 |
-| garrytan/gbrain | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/garrytan/gbrain/CLAUDE.md) | [Source](https://github.com/garrytan/gbrain/blob/4957aad6bd96e24c141d51d48c1c5116ac404db7/CLAUDE.md) | 2026-10-30 |
 | gastownhall/beads | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/gastownhall/beads/AGENTS.md) | [Source](https://github.com/gastownhall/beads/blob/12f387d20f514442298eeffa7dcfedae0ad32f65/AGENTS.md) | 2026-11-07 |
 | gastownhall/beads | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/gastownhall/beads/CLAUDE.md) | [Source](https://github.com/gastownhall/beads/blob/12f387d20f514442298eeffa7dcfedae0ad32f65/CLAUDE.md) | 2026-11-07 |
 | gastownhall/gastown | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/gastownhall/gastown/AGENTS.md) | [Source](https://github.com/gastownhall/gastown/blob/649b832b7672bc7a2dbef26f5983aba6198b819b/AGENTS.md) | 2026-08-05 |
@@ -2434,9 +2466,6 @@ Archived entries do not participate in current rankings.
 | getpaseo/paseo | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/getpaseo/paseo/AGENTS.md) | [Source](https://github.com/getpaseo/paseo/blob/4407283a134502bf4a7704bfa823fcfed7f702b0/AGENTS.md) | 2026-11-04 |
 | getpaseo/paseo | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/getpaseo/paseo/CLAUDE.md) | [Source](https://github.com/getpaseo/paseo/blob/4407283a134502bf4a7704bfa823fcfed7f702b0/CLAUDE.md) | 2026-11-04 |
 | getsentry/self-hosted | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/getsentry/self-hosted/AGENTS.md) | [Source](https://github.com/getsentry/self-hosted/blob/3f77a67d2ab092753c4bd1ba7240cda5ecd4572f/AGENTS.md) | 2026-10-07 |
-| getsentry/sentry | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/getsentry/sentry/AGENTS.md) | [Source](https://github.com/getsentry/sentry/blob/9bf42685dc1663b9be15f3c5e71969c0aa3a47fb/AGENTS.md) | 2026-10-30 |
-| getsentry/sentry | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/getsentry/sentry/CLAUDE.md) | [Source](https://github.com/getsentry/sentry/blob/9bf42685dc1663b9be15f3c5e71969c0aa3a47fb/CLAUDE.md) | 2026-10-30 |
-| getsentry/sentry-javascript | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/getsentry/sentry-javascript/AGENTS.md) | [Source](https://github.com/getsentry/sentry-javascript/blob/b94aeb024612c702e529b057e7cf3223fd26eca0/AGENTS.md) | 2026-10-22 |
 | getsentry/sentry-javascript | `CLAUDE.md` | `deleted` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/getsentry/sentry-javascript/CLAUDE.md) | [Source](https://github.com/getsentry/sentry-javascript/blob/0546da5e5682d8cd6712f42b001159fee497162b/CLAUDE.md) | 2026-09-22 |
 | getsentry/sentry-python | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/getsentry/sentry-python/AGENTS.md) | [Source](https://github.com/getsentry/sentry-python/blob/89320ff3adedd6925bc20882d5ca3ab74776b650/AGENTS.md) | 2026-09-11 |
 | getsentry/sentry-python | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/getsentry/sentry-python/CLAUDE.md) | [Source](https://github.com/getsentry/sentry-python/blob/89320ff3adedd6925bc20882d5ca3ab74776b650/CLAUDE.md) | 2026-09-11 |
@@ -2499,6 +2528,7 @@ Archived entries do not participate in current rankings.
 | GoogleCloudPlatform/scion | `claude.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/GoogleCloudPlatform/scion/claude.md) | [Source](https://github.com/GoogleCloudPlatform/scion/blob/6bc2bc64f93265a1dc39aec31d7d00fbf122c61f/claude.md) | 2026-10-07 |
 | GoogleCloudPlatform/scion | `GEMINI.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/GoogleCloudPlatform/scion/GEMINI.md) | [Source](https://github.com/GoogleCloudPlatform/scion/blob/6bc2bc64f93265a1dc39aec31d7d00fbf122c61f/GEMINI.md) | 2026-10-07 |
 | gopasspw/gopass | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/gopasspw/gopass/AGENTS.md) | [Source](https://github.com/gopasspw/gopass/blob/caebdfe7d9b9947cbba025e21594e6b5bf9648ac/AGENTS.md) | 2026-10-03 |
+| gosom/google-maps-scraper | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/gosom/google-maps-scraper/AGENTS.md) | [Source](https://github.com/gosom/google-maps-scraper/blob/723e8af09af91a0f31ccadc8a08966e79797b653/AGENTS.md) | 2026-11-08 |
 | gotenberg/gotenberg | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/gotenberg/gotenberg/AGENTS.md) | [Source](https://github.com/gotenberg/gotenberg/blob/8e850b1c932452627fba397f2005dd6fd57b9617/AGENTS.md) | 2026-09-13 |
 | gotenberg/gotenberg | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/gotenberg/gotenberg/CLAUDE.md) | [Source](https://github.com/gotenberg/gotenberg/blob/8e850b1c932452627fba397f2005dd6fd57b9617/CLAUDE.md) | 2026-09-13 |
 | gotenberg/gotenberg | `GEMINI.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/gotenberg/gotenberg/GEMINI.md) | [Source](https://github.com/gotenberg/gotenberg/blob/8e850b1c932452627fba397f2005dd6fd57b9617/GEMINI.md) | 2026-09-13 |
@@ -2532,12 +2562,11 @@ Archived entries do not participate in current rankings.
 | hackerai-tech/hackerai | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/hackerai-tech/hackerai/AGENTS.md) | [Source](https://github.com/hackerai-tech/hackerai/blob/33c6fe56678a97b449621aaed5eb135e320f2b3a/AGENTS.md) | 2026-10-31 |
 | hackerai-tech/hackerai | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/hackerai-tech/hackerai/CLAUDE.md) | [Source](https://github.com/hackerai-tech/hackerai/blob/33c6fe56678a97b449621aaed5eb135e320f2b3a/CLAUDE.md) | 2026-10-31 |
 | HackTricks-wiki/hacktricks | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/HackTricks-wiki/hacktricks/AGENTS.md) | [Source](https://github.com/HackTricks-wiki/hacktricks/blob/8fbe6ea1c7350e4cced8046c9967270c9917593e/AGENTS.md) | 2026-08-12 |
+| hahwul/dalfox | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/hahwul/dalfox/AGENTS.md) | [Source](https://github.com/hahwul/dalfox/blob/382252a55f5462530fbaac338f3489f112e17f67/AGENTS.md) | 2026-11-08 |
 | hajimehoshi/ebiten | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/hajimehoshi/ebiten/AGENTS.md) | [Source](https://github.com/hajimehoshi/ebiten/blob/e8cadcc60e2ac7a08746b4513f6636e9fc575306/AGENTS.md) | 2026-11-03 |
 | halide/Halide | `.claude/CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/halide/Halide/.claude/CLAUDE.md) | [Source](https://github.com/halide/Halide/blob/bfabe099faba25bdcb4e16bf05f76100241650b3/.claude/CLAUDE.md) | 2026-08-16 |
 | halo-dev/halo | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/halo-dev/halo/AGENTS.md) | [Source](https://github.com/halo-dev/halo/blob/6aa408a724ab156c2eac7d6ef04a6a577bbfc304/AGENTS.md) | 2026-10-15 |
 | halo-dev/halo | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/halo-dev/halo/CLAUDE.md) | [Source](https://github.com/halo-dev/halo/blob/6aa408a724ab156c2eac7d6ef04a6a577bbfc304/CLAUDE.md) | 2026-10-15 |
-| handsontable/handsontable | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/handsontable/handsontable/AGENTS.md) | [Source](https://github.com/handsontable/handsontable/blob/fd8efbe4ff2f6428229ef70132cfe8043e1cd099/AGENTS.md) | 2026-11-05 |
-| handsontable/handsontable | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/handsontable/handsontable/CLAUDE.md) | [Source](https://github.com/handsontable/handsontable/blob/fd8efbe4ff2f6428229ef70132cfe8043e1cd099/CLAUDE.md) | 2026-11-05 |
 | HapeLee/legado-with-MD3 | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/HapeLee/legado-with-MD3/AGENTS.md) | [Source](https://github.com/HapeLee/legado-with-MD3/blob/1e797f61d632e774345a7b876a305c32eed23428/AGENTS.md) | 2026-08-14 |
 | HapeLee/legado-with-MD3 | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/HapeLee/legado-with-MD3/CLAUDE.md) | [Source](https://github.com/HapeLee/legado-with-MD3/blob/1e797f61d632e774345a7b876a305c32eed23428/CLAUDE.md) | 2026-08-14 |
 | happycola233/tchMaterial-parser | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/happycola233/tchMaterial-parser/AGENTS.md) | [Source](https://github.com/happycola233/tchMaterial-parser/blob/e9a1604279cba98d58c3905886a69e720c3a65fb/AGENTS.md) | 2026-09-26 |
@@ -2555,7 +2584,6 @@ Archived entries do not participate in current rankings.
 | hashicorp/terraform-provider-aws | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/hashicorp/terraform-provider-aws/AGENTS.md) | [Source](https://github.com/hashicorp/terraform-provider-aws/blob/541fd91da7dc38c92fcbd102f35220ffd6701a28/AGENTS.md) | 2026-07-29 |
 | hasura/graphql-engine | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/hasura/graphql-engine/AGENTS.md) | [Source](https://github.com/hasura/graphql-engine/blob/895e7e957306433201428621c9d12f062c2eafa5/AGENTS.md) | 2026-10-12 |
 | hasura/graphql-engine | `CLAUDE.md` | `deleted` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/hasura/graphql-engine/CLAUDE.md) | [Source](https://github.com/hasura/graphql-engine/blob/c2d6184930c7e9d0d2fe5b7822cc6a8bc9ebdf0b/CLAUDE.md) | 2026-07-28 |
-| hatchet-dev/hatchet | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/hatchet-dev/hatchet/AGENTS.md) | [Source](https://github.com/hatchet-dev/hatchet/blob/51c6e516f31a8897375583f203579c888319f2c9/AGENTS.md) | 2026-10-23 |
 | hathach/tinyusb | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/hathach/tinyusb/AGENTS.md) | [Source](https://github.com/hathach/tinyusb/blob/2f675abdd182163d03d4b25b47ad03497da23b1a/AGENTS.md) | 2026-10-18 |
 | hathach/tinyusb | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/hathach/tinyusb/CLAUDE.md) | [Source](https://github.com/hathach/tinyusb/blob/2f675abdd182163d03d4b25b47ad03497da23b1a/CLAUDE.md) | 2026-10-18 |
 | hcengineering/platform | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/hcengineering/platform/AGENTS.md) | [Source](https://github.com/hcengineering/platform/blob/4c94335cc11e8919144c7d9df7c4fde02fb2ab62/AGENTS.md) | 2026-07-20 |
@@ -2588,6 +2616,7 @@ Archived entries do not participate in current rankings.
 | holaboss-ai/holaOS | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/holaboss-ai/holaOS/AGENTS.md) | [Source](https://github.com/holaboss-ai/holaOS/blob/9a83755c019b71777c606cd88d7abc5bed54e2cf/AGENTS.md) | 2026-08-18 |
 | holaboss-ai/holaOS | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/holaboss-ai/holaOS/CLAUDE.md) | [Source](https://github.com/holaboss-ai/holaOS/blob/9a83755c019b71777c606cd88d7abc5bed54e2cf/CLAUDE.md) | 2026-08-18 |
 | homarr-labs/homarr | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/homarr-labs/homarr/AGENTS.md) | [Source](https://github.com/homarr-labs/homarr/blob/fdcae59a438d331187c47545f4ffbab52e3219da/AGENTS.md) | 2026-10-30 |
+| home-assistant/core | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/home-assistant/core/AGENTS.md) | [Source](https://github.com/home-assistant/core/blob/5f43388a3e2f732d7d131a2dd1c06a04a17a9051/AGENTS.md) | 2026-11-08 |
 | home-assistant/core | `CLAUDE.md` | `deleted` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/home-assistant/core/CLAUDE.md) | [Source](https://github.com/home-assistant/core/blob/43efcde292eb8c5d9e0b5ec9ded9113abd1336eb/CLAUDE.md) | 2026-11-02 |
 | home-assistant/frontend | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/home-assistant/frontend/AGENTS.md) | [Source](https://github.com/home-assistant/frontend/blob/8b6caeecddb9d0f01cb96bfebf4caf701defbaaf/AGENTS.md) | 2026-11-05 |
 | home-assistant/frontend | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/home-assistant/frontend/CLAUDE.md) | [Source](https://github.com/home-assistant/frontend/blob/8b6caeecddb9d0f01cb96bfebf4caf701defbaaf/CLAUDE.md) | 2026-11-05 |
@@ -2598,8 +2627,10 @@ Archived entries do not participate in current rankings.
 | homeassistant-ai/ha-mcp | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/homeassistant-ai/ha-mcp/CLAUDE.md) | [Source](https://github.com/homeassistant-ai/ha-mcp/blob/51866f840bc85ae13ae51e47bdd8bdc8e4339b3b/CLAUDE.md) | 2026-11-05 |
 | Homebrew/brew | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Homebrew/brew/AGENTS.md) | [Source](https://github.com/Homebrew/brew/blob/786fc9e8c4786b20bc69f387c60692593468301b/AGENTS.md) | 2026-10-23 |
 | Homebrew/brew | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Homebrew/brew/CLAUDE.md) | [Source](https://github.com/Homebrew/brew/blob/786fc9e8c4786b20bc69f387c60692593468301b/CLAUDE.md) | 2026-10-23 |
-| Homebrew/homebrew-core | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Homebrew/homebrew-core/AGENTS.md) | [Source](https://github.com/Homebrew/homebrew-core/blob/c0fba78f810cb4a306510de1f373ef302b788bfa/AGENTS.md) | 2026-11-07 |
-| Homebrew/homebrew-core | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Homebrew/homebrew-core/CLAUDE.md) | [Source](https://github.com/Homebrew/homebrew-core/blob/c0fba78f810cb4a306510de1f373ef302b788bfa/CLAUDE.md) | 2026-11-07 |
+| Homebrew/homebrew-cask | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Homebrew/homebrew-cask/AGENTS.md) | [Source](https://github.com/Homebrew/homebrew-cask/blob/ccda925db3a882309bd208fcd0dc91faa1980573/AGENTS.md) | 2026-11-08 |
+| Homebrew/homebrew-cask | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Homebrew/homebrew-cask/CLAUDE.md) | [Source](https://github.com/Homebrew/homebrew-cask/blob/ccda925db3a882309bd208fcd0dc91faa1980573/CLAUDE.md) | 2026-11-08 |
+| horizon-rust/horizon | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/horizon-rust/horizon/AGENTS.md) | [Source](https://github.com/horizon-rust/horizon/blob/79bd30197348e45cd20c19841ace789f0cc63cdf/AGENTS.md) | 2026-11-08 |
+| horizon-rust/horizon | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/horizon-rust/horizon/CLAUDE.md) | [Source](https://github.com/horizon-rust/horizon/blob/79bd30197348e45cd20c19841ace789f0cc63cdf/CLAUDE.md) | 2026-11-08 |
 | hovancik/stretchly | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/hovancik/stretchly/AGENTS.md) | [Source](https://github.com/hovancik/stretchly/blob/029aa8e2984e646cf35c6677d8cf55c8dc262f30/AGENTS.md) | 2026-10-20 |
 | hovancik/stretchly | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/hovancik/stretchly/CLAUDE.md) | [Source](https://github.com/hovancik/stretchly/blob/029aa8e2984e646cf35c6677d8cf55c8dc262f30/CLAUDE.md) | 2026-10-20 |
 | hovancik/stretchly | `GEMINI.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/hovancik/stretchly/GEMINI.md) | [Source](https://github.com/hovancik/stretchly/blob/029aa8e2984e646cf35c6677d8cf55c8dc262f30/GEMINI.md) | 2026-10-20 |
@@ -2644,7 +2675,6 @@ Archived entries do not participate in current rankings.
 | indexable-inc/blaze | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/indexable-inc/blaze/AGENTS.md) | [Source](https://github.com/indexable-inc/blaze/blob/ffd0e074ba02f15233ba0d96abc2f8da45ded787/AGENTS.md) | 2026-10-28 |
 | indexable-inc/blaze | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/indexable-inc/blaze/CLAUDE.md) | [Source](https://github.com/indexable-inc/blaze/blob/ffd0e074ba02f15233ba0d96abc2f8da45ded787/CLAUDE.md) | 2026-10-28 |
 | indiff/qttabbar | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/indiff/qttabbar/CLAUDE.md) | [Source](https://github.com/indiff/qttabbar/blob/9b81f7222fc47356659c224855bdd799d044e93c/CLAUDE.md) | 2026-11-06 |
-| infiniflow/ragflow | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/infiniflow/ragflow/AGENTS.md) | [Source](https://github.com/infiniflow/ragflow/blob/f1a2fa5dacbbb97eb8379348bd05f0b00909ec36/AGENTS.md) | 2026-11-02 |
 | infiniflow/ragflow | `CLAUDE.md` | `deleted` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/infiniflow/ragflow/CLAUDE.md) | [Source](https://github.com/infiniflow/ragflow/blob/035cc702b22f8d4d4b2595402b81152c1bdd70dd/CLAUDE.md) | 2026-09-20 |
 | Infisical/infisical | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Infisical/infisical/AGENTS.md) | [Source](https://github.com/Infisical/infisical/blob/4755b8f418422c7f9f0d22edf42575b3042bb6c3/AGENTS.md) | 2026-11-07 |
 | Infisical/infisical | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Infisical/infisical/CLAUDE.md) | [Source](https://github.com/Infisical/infisical/blob/4755b8f418422c7f9f0d22edf42575b3042bb6c3/CLAUDE.md) | 2026-11-07 |
@@ -2662,11 +2692,12 @@ Archived entries do not participate in current rankings.
 | iOfficeAI/AionUi | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/iOfficeAI/AionUi/CLAUDE.md) | [Source](https://github.com/iOfficeAI/AionUi/blob/18022a49684d5a2b54b0a47f904e76b17f758b3b/CLAUDE.md) | 2026-08-31 |
 | iorate/ublacklist | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/iorate/ublacklist/AGENTS.md) | [Source](https://github.com/iorate/ublacklist/blob/045a72250d7580196d374b07fa88a3c3d3daf3fb/AGENTS.md) | 2026-09-06 |
 | ipython/ipython | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/ipython/ipython/AGENTS.md) | [Source](https://github.com/ipython/ipython/blob/fc54220e2b2787bd60bacb0b83ad52fa926ff57f/AGENTS.md) | 2026-10-28 |
-| is-a-dev/register | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/is-a-dev/register/AGENTS.md) | [Source](https://github.com/is-a-dev/register/blob/13e30cea96d9ee96059c669a8a01474a553f59ed/AGENTS.md) | 2026-11-03 |
 | isaac-sim/IsaacLab | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/isaac-sim/IsaacLab/AGENTS.md) | [Source](https://github.com/isaac-sim/IsaacLab/blob/99f1423e5d4a26216c0eedeb2aa78099a8c3a7d1/AGENTS.md) | 2026-09-05 |
 | isaac-sim/IsaacLab | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/isaac-sim/IsaacLab/CLAUDE.md) | [Source](https://github.com/isaac-sim/IsaacLab/blob/99f1423e5d4a26216c0eedeb2aa78099a8c3a7d1/CLAUDE.md) | 2026-09-05 |
 | isl-org/Open3D | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/isl-org/Open3D/AGENTS.md) | [Source](https://github.com/isl-org/Open3D/blob/d7d057445bd28200cda5301b2f65c0f11490d2ef/AGENTS.md) | 2026-08-01 |
 | IsmaelMartinez/teams-for-linux | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/IsmaelMartinez/teams-for-linux/CLAUDE.md) | [Source](https://github.com/IsmaelMartinez/teams-for-linux/blob/9e34f4ac82f3375fc7754ab351112b8eb6215151/CLAUDE.md) | 2026-11-07 |
+| iterate-ch/cyberduck | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/iterate-ch/cyberduck/AGENTS.md) | [Source](https://github.com/iterate-ch/cyberduck/blob/6d4627c03427cd0d5bf4f332929b5c71c3317658/AGENTS.md) | 2026-11-08 |
+| iterate-ch/cyberduck | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/iterate-ch/cyberduck/CLAUDE.md) | [Source](https://github.com/iterate-ch/cyberduck/blob/6d4627c03427cd0d5bf4f332929b5c71c3317658/CLAUDE.md) | 2026-11-08 |
 | itwanger/toBeBetterJavaer | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/itwanger/toBeBetterJavaer/AGENTS.md) | [Source](https://github.com/itwanger/toBeBetterJavaer/blob/bc01d7f1c9ec1049316388ae43721675a30f3f85/AGENTS.md) | 2026-10-17 |
 | itwanger/toBeBetterJavaer | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/itwanger/toBeBetterJavaer/CLAUDE.md) | [Source](https://github.com/itwanger/toBeBetterJavaer/blob/bc01d7f1c9ec1049316388ae43721675a30f3f85/CLAUDE.md) | 2026-10-17 |
 | ix-infrastructure/Ix | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/ix-infrastructure/Ix/CLAUDE.md) | [Source](https://github.com/ix-infrastructure/Ix/blob/c4f8fea3916c87e83167bdfaaee945159f64ad0f/CLAUDE.md) | 2026-08-10 |
@@ -2696,7 +2727,6 @@ Archived entries do not participate in current rankings.
 | JetBrains/intellij-community | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/JetBrains/intellij-community/AGENTS.md) | [Source](https://github.com/JetBrains/intellij-community/blob/c5c3980893780c56bd9823cccd4dda454e9a3ede/AGENTS.md) | 2026-11-05 |
 | JetBrains/kotlin | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/JetBrains/kotlin/AGENTS.md) | [Source](https://github.com/JetBrains/kotlin/blob/ffe31eaac7fa5684dc2341baf616059f4afed6da/AGENTS.md) | 2026-11-04 |
 | JetBrains/kotlin | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/JetBrains/kotlin/CLAUDE.md) | [Source](https://github.com/JetBrains/kotlin/blob/ffe31eaac7fa5684dc2341baf616059f4afed6da/CLAUDE.md) | 2026-11-04 |
-| JetBrains/thinkrail | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/JetBrains/thinkrail/AGENTS.md) | [Source](https://github.com/JetBrains/thinkrail/blob/b91834a5b7a372a14949190ba1559ffd0b24d710/AGENTS.md) | 2026-11-05 |
 | jgraph/drawio-mcp | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/jgraph/drawio-mcp/AGENTS.md) | [Source](https://github.com/jgraph/drawio-mcp/blob/8226ddec1581f696e35f67e561aabf7a564e2a76/AGENTS.md) | 2026-10-15 |
 | jgraph/drawio-mcp | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/jgraph/drawio-mcp/CLAUDE.md) | [Source](https://github.com/jgraph/drawio-mcp/blob/8226ddec1581f696e35f67e561aabf7a564e2a76/CLAUDE.md) | 2026-10-15 |
 | jhipster/generator-jhipster | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/jhipster/generator-jhipster/AGENTS.md) | [Source](https://github.com/jhipster/generator-jhipster/blob/908f53c0ce0cda75bbd909ae7e4419e97918e6b7/AGENTS.md) | 2026-11-06 |
@@ -2740,9 +2770,8 @@ Archived entries do not participate in current rankings.
 | kenn-io/agentsview | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/kenn-io/agentsview/CLAUDE.md) | [Source](https://github.com/kenn-io/agentsview/blob/04b1dc091fb1f203db8295bffcf4d2061aa1f5a7/CLAUDE.md) | 2026-11-07 |
 | kenryu42/cc-safety-net | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/kenryu42/cc-safety-net/AGENTS.md) | [Source](https://github.com/kenryu42/cc-safety-net/blob/91395b3a391fd9eb65bb25167380ef29358211d1/AGENTS.md) | 2026-10-30 |
 | kenryu42/cc-safety-net | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/kenryu42/cc-safety-net/CLAUDE.md) | [Source](https://github.com/kenryu42/cc-safety-net/blob/91395b3a391fd9eb65bb25167380ef29358211d1/CLAUDE.md) | 2026-10-30 |
+| keploy/keploy | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/keploy/keploy/AGENTS.md) | [Source](https://github.com/keploy/keploy/blob/c596c5f718ddd70d31c4911d81699a1be1851489/AGENTS.md) | 2026-11-08 |
 | kerpopule/hermes-jev-skills | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/kerpopule/hermes-jev-skills/AGENTS.md) | [Source](https://github.com/kerpopule/hermes-jev-skills/blob/dddaa39ead316a8ac63e5d54352068d33c00c2b0/AGENTS.md) | 2026-10-07 |
-| kestra-io/kestra | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/kestra-io/kestra/AGENTS.md) | [Source](https://github.com/kestra-io/kestra/blob/79f6b357106da073c1213ff42c10538dd5771d3c/AGENTS.md) | 2026-11-06 |
-| kestra-io/kestra | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/kestra-io/kestra/CLAUDE.md) | [Source](https://github.com/kestra-io/kestra/blob/79f6b357106da073c1213ff42c10538dd5771d3c/CLAUDE.md) | 2026-11-06 |
 | keycloak/keycloak | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/keycloak/keycloak/AGENTS.md) | [Source](https://github.com/keycloak/keycloak/blob/3a0333036ddc82c33646580402387f14257f6a62/AGENTS.md) | 2026-11-05 |
 | KeygraphHQ/shannon | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/KeygraphHQ/shannon/CLAUDE.md) | [Source](https://github.com/KeygraphHQ/shannon/blob/ab1d2fb72bfb6380193e8705ab8e96af0d609810/CLAUDE.md) | 2026-07-20 |
 | Kiln-AI/Kiln | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Kiln-AI/Kiln/AGENTS.md) | [Source](https://github.com/Kiln-AI/Kiln/blob/7b70de19830462573b7cad153f6411f3422ef4f8/AGENTS.md) | 2026-08-15 |
@@ -2781,6 +2810,7 @@ Archived entries do not participate in current rankings.
 | kunchenguid/no-mistakes | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/kunchenguid/no-mistakes/CLAUDE.md) | [Source](https://github.com/kunchenguid/no-mistakes/blob/4822244e763fd4c3d7f48be6433f92df10bb5b33/CLAUDE.md) | 2026-09-26 |
 | kungfu-systems/kungfu | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/kungfu-systems/kungfu/AGENTS.md) | [Source](https://github.com/kungfu-systems/kungfu/blob/5c59323082a45b80e234fb0ee007df96dd50c8c9/AGENTS.md) | 2026-08-26 |
 | kungfu-systems/kungfu | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/kungfu-systems/kungfu/CLAUDE.md) | [Source](https://github.com/kungfu-systems/kungfu/blob/5c59323082a45b80e234fb0ee007df96dd50c8c9/CLAUDE.md) | 2026-08-26 |
+| kunobi-ninja/kache | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/kunobi-ninja/kache/AGENTS.md) | [Source](https://github.com/kunobi-ninja/kache/blob/d1cf91320bc231809cb8581cb5db98d7a742b0c4/AGENTS.md) | 2026-11-08 |
 | kurrent-io/KurrentDB | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/kurrent-io/KurrentDB/CLAUDE.md) | [Source](https://github.com/kurrent-io/KurrentDB/blob/db973318370cffac83ba4b3852e3f621a8597c20/CLAUDE.md) | 2026-07-17 |
 | kvcache-ai/Mooncake | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/kvcache-ai/Mooncake/AGENTS.md) | [Source](https://github.com/kvcache-ai/Mooncake/blob/e33fe7b83c06d77418fabc76f62ccd99a16a0d89/AGENTS.md) | 2026-11-02 |
 | kvcache-ai/Mooncake | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/kvcache-ai/Mooncake/CLAUDE.md) | [Source](https://github.com/kvcache-ai/Mooncake/blob/e33fe7b83c06d77418fabc76f62ccd99a16a0d89/CLAUDE.md) | 2026-11-02 |
@@ -2792,6 +2822,8 @@ Archived entries do not participate in current rankings.
 | kzahel/yepanywhere | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/kzahel/yepanywhere/AGENTS.md) | [Source](https://github.com/kzahel/yepanywhere/blob/f69e807d175f44f147a9530374e9aa324f6e99c5/AGENTS.md) | 2026-08-30 |
 | kzahel/yepanywhere | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/kzahel/yepanywhere/CLAUDE.md) | [Source](https://github.com/kzahel/yepanywhere/blob/f69e807d175f44f147a9530374e9aa324f6e99c5/CLAUDE.md) | 2026-08-30 |
 | kzahel/yepanywhere | `GEMINI.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/kzahel/yepanywhere/GEMINI.md) | [Source](https://github.com/kzahel/yepanywhere/blob/f69e807d175f44f147a9530374e9aa324f6e99c5/GEMINI.md) | 2026-08-30 |
+| l0ng-ai/openidea | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/l0ng-ai/openidea/AGENTS.md) | [Source](https://github.com/l0ng-ai/openidea/blob/cbe4355b8d5ef90cbb09d2d7172bdd3d5af35892/AGENTS.md) | 2026-11-08 |
+| l0ng-ai/openidea | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/l0ng-ai/openidea/CLAUDE.md) | [Source](https://github.com/l0ng-ai/openidea/blob/cbe4355b8d5ef90cbb09d2d7172bdd3d5af35892/CLAUDE.md) | 2026-11-08 |
 | l2beat/l2beat | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/l2beat/l2beat/AGENTS.md) | [Source](https://github.com/l2beat/l2beat/blob/ed7cdd77b1978c118fb9b1f824ae6cb10dfb566e/AGENTS.md) | 2026-10-01 |
 | l2beat/l2beat | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/l2beat/l2beat/CLAUDE.md) | [Source](https://github.com/l2beat/l2beat/blob/ed7cdd77b1978c118fb9b1f824ae6cb10dfb566e/CLAUDE.md) | 2026-10-01 |
 | labex-labs/python-cheatsheet | `GEMINI.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/labex-labs/python-cheatsheet/GEMINI.md) | [Source](https://github.com/labex-labs/python-cheatsheet/blob/fbde5ff71e9c9dd9d5c54b468373029bc3ac87a1/GEMINI.md) | 2026-11-05 |
@@ -2824,8 +2856,12 @@ Archived entries do not participate in current rankings.
 | lballabio/QuantLib | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/lballabio/QuantLib/AGENTS.md) | [Source](https://github.com/lballabio/QuantLib/blob/4b575ac561e0ddbc2c39f4621be13d890e9a9bae/AGENTS.md) | 2026-11-02 |
 | lballabio/QuantLib | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/lballabio/QuantLib/CLAUDE.md) | [Source](https://github.com/lballabio/QuantLib/blob/4b575ac561e0ddbc2c39f4621be13d890e9a9bae/CLAUDE.md) | 2026-11-02 |
 | Leadaxe/LxBox | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Leadaxe/LxBox/AGENTS.md) | [Source](https://github.com/Leadaxe/LxBox/blob/77cd872a31d89ded6f80cc84d2411705a499b05d/AGENTS.md) | 2026-09-28 |
+| Leaflet/Leaflet | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Leaflet/Leaflet/AGENTS.md) | [Source](https://github.com/Leaflet/Leaflet/blob/b28f2ec0f712926ed977e9c5550ef156e13b8e18/AGENTS.md) | 2026-11-08 |
 | leanprover/lean4 | `.claude/CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/leanprover/lean4/.claude/CLAUDE.md) | [Source](https://github.com/leanprover/lean4/blob/817bd56683471b156d1e9b4877ff7afa89d94c19/.claude/CLAUDE.md) | 2026-11-04 |
 | leanprover/lean4 | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/leanprover/lean4/AGENTS.md) | [Source](https://github.com/leanprover/lean4/blob/817bd56683471b156d1e9b4877ff7afa89d94c19/AGENTS.md) | 2026-11-04 |
+| LearningCircuit/local-deep-research | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/LearningCircuit/local-deep-research/AGENTS.md) | [Source](https://github.com/LearningCircuit/local-deep-research/blob/8c8e55c2c1a52ebbad436e404fedbf4273c9d838/AGENTS.md) | 2026-11-08 |
+| LearningCircuit/local-deep-research | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/LearningCircuit/local-deep-research/CLAUDE.md) | [Source](https://github.com/LearningCircuit/local-deep-research/blob/8c8e55c2c1a52ebbad436e404fedbf4273c9d838/CLAUDE.md) | 2026-11-08 |
+| LearningCircuit/local-deep-research | `GEMINI.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/LearningCircuit/local-deep-research/GEMINI.md) | [Source](https://github.com/LearningCircuit/local-deep-research/blob/8c8e55c2c1a52ebbad436e404fedbf4273c9d838/GEMINI.md) | 2026-11-08 |
 | LedgerHQ/ledger-live | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/LedgerHQ/ledger-live/AGENTS.md) | [Source](https://github.com/LedgerHQ/ledger-live/blob/01533d3b5869c2aba35a9ea515774944844da274/AGENTS.md) | 2026-09-14 |
 | LedgerHQ/ledger-live | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/LedgerHQ/ledger-live/CLAUDE.md) | [Source](https://github.com/LedgerHQ/ledger-live/blob/01533d3b5869c2aba35a9ea515774944844da274/CLAUDE.md) | 2026-09-14 |
 | leejet/stable-diffusion.cpp | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/leejet/stable-diffusion.cpp/AGENTS.md) | [Source](https://github.com/leejet/stable-diffusion.cpp/blob/95b3090664d019fcf8fa032a44d1d4793ba244b8/AGENTS.md) | 2026-10-18 |
@@ -2839,6 +2875,7 @@ Archived entries do not participate in current rankings.
 | lexifina/global-law | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/lexifina/global-law/AGENTS.md) | [Source](https://github.com/lexifina/global-law/blob/1228395014d31b43d7ebafd21a053a23dc5df270/AGENTS.md) | 2026-11-04 |
 | lexifina/global-law | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/lexifina/global-law/CLAUDE.md) | [Source](https://github.com/lexifina/global-law/blob/1228395014d31b43d7ebafd21a053a23dc5df270/CLAUDE.md) | 2026-11-04 |
 | lexiforest/curl_cffi | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/lexiforest/curl_cffi/AGENTS.md) | [Source](https://github.com/lexiforest/curl_cffi/blob/571560b562fe2d379a5fd9bcb3cdf032383d1e3f/AGENTS.md) | 2026-09-04 |
+| lexmount/moli | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/lexmount/moli/AGENTS.md) | [Source](https://github.com/lexmount/moli/blob/f727916dcbbfdb3756d110395f4d1c39fb611877/AGENTS.md) | 2026-11-08 |
 | liam-hq/liam | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/liam-hq/liam/AGENTS.md) | [Source](https://github.com/liam-hq/liam/blob/92156eac5ef497fffe5a64bad94d6856985273df/AGENTS.md) | 2026-08-15 |
 | liam-hq/liam | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/liam-hq/liam/CLAUDE.md) | [Source](https://github.com/liam-hq/liam/blob/92156eac5ef497fffe5a64bad94d6856985273df/CLAUDE.md) | 2026-08-15 |
 | LibChecker/LibChecker | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/LibChecker/LibChecker/AGENTS.md) | [Source](https://github.com/LibChecker/LibChecker/blob/fa2f157543a8882f05fe7fa58bee3ac17883878b/AGENTS.md) | 2026-08-30 |
@@ -2880,6 +2917,8 @@ Archived entries do not participate in current rankings.
 | LizardByte/Sunshine | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/LizardByte/Sunshine/AGENTS.md) | [Source](https://github.com/LizardByte/Sunshine/blob/f54f9dfc57848971e85cda7fb4b7723594926422/AGENTS.md) | 2026-09-16 |
 | LMCache/LMCache | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/LMCache/LMCache/AGENTS.md) | [Source](https://github.com/LMCache/LMCache/blob/699618bd950a12be57b45a51185ab2e7e76b88fa/AGENTS.md) | 2026-10-10 |
 | LMCache/LMCache | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/LMCache/LMCache/CLAUDE.md) | [Source](https://github.com/LMCache/LMCache/blob/699618bd950a12be57b45a51185ab2e7e76b88fa/CLAUDE.md) | 2026-10-10 |
+| LNPANDY/NX2Apple | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/LNPANDY/NX2Apple/AGENTS.md) | [Source](https://github.com/LNPANDY/NX2Apple/blob/2b1cfb7c66abf00f81fcb4370e6ee35a3505c2d1/AGENTS.md) | 2026-11-08 |
+| LNPANDY/NX2Apple | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/LNPANDY/NX2Apple/CLAUDE.md) | [Source](https://github.com/LNPANDY/NX2Apple/blob/2b1cfb7c66abf00f81fcb4370e6ee35a3505c2d1/CLAUDE.md) | 2026-11-08 |
 | lobehub/lobehub | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/lobehub/lobehub/AGENTS.md) | [Source](https://github.com/lobehub/lobehub/blob/b9d4eb4f3bc81efa900b394bce7c743e4464cb5d/AGENTS.md) | 2026-11-07 |
 | lobehub/lobehub | `CLAUDE.md` | `deleted` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/lobehub/lobehub/CLAUDE.md) | [Source](https://github.com/lobehub/lobehub/blob/38e99772870583fb0a773aa002077c56811dadd3/CLAUDE.md) | 2026-09-24 |
 | lobehub/lobehub | `GEMINI.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/lobehub/lobehub/GEMINI.md) | [Source](https://github.com/lobehub/lobehub/blob/b9d4eb4f3bc81efa900b394bce7c743e4464cb5d/GEMINI.md) | 2026-11-07 |
@@ -2892,6 +2931,8 @@ Archived entries do not participate in current rankings.
 | longbridge/gpui-kit | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/longbridge/gpui-kit/CLAUDE.md) | [Source](https://github.com/longbridge/gpui-kit/blob/6fdd3e7e038993309124835d6339bcfb0b464739/CLAUDE.md) | 2026-11-03 |
 | looplj/axonhub | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/looplj/axonhub/AGENTS.md) | [Source](https://github.com/looplj/axonhub/blob/fd4158ef8e1a559ae7d597d7e421ae52f9ad5976/AGENTS.md) | 2026-09-04 |
 | looplj/axonhub | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/looplj/axonhub/CLAUDE.md) | [Source](https://github.com/looplj/axonhub/blob/fd4158ef8e1a559ae7d597d7e421ae52f9ad5976/CLAUDE.md) | 2026-09-04 |
+| loopx-project/loopx | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/loopx-project/loopx/AGENTS.md) | [Source](https://github.com/loopx-project/loopx/blob/fe36f31fdedd9e5ad804e73be251c473b0e60007/AGENTS.md) | 2026-11-08 |
+| loopx-project/loopx | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/loopx-project/loopx/CLAUDE.md) | [Source](https://github.com/loopx-project/loopx/blob/fe36f31fdedd9e5ad804e73be251c473b0e60007/CLAUDE.md) | 2026-11-08 |
 | lorien/awesome-web-scraping | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/lorien/awesome-web-scraping/AGENTS.md) | [Source](https://github.com/lorien/awesome-web-scraping/blob/55ded08b597d9a4d8ec296e56988b1b9726164da/AGENTS.md) | 2026-10-27 |
 | loro-dev/loro | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/loro-dev/loro/AGENTS.md) | [Source](https://github.com/loro-dev/loro/blob/45708d059d8620fb53066c9f86cefa1601e0e1c6/AGENTS.md) | 2026-09-30 |
 | loro-dev/loro | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/loro-dev/loro/CLAUDE.md) | [Source](https://github.com/loro-dev/loro/blob/45708d059d8620fb53066c9f86cefa1601e0e1c6/CLAUDE.md) | 2026-09-30 |
@@ -2904,7 +2945,6 @@ Archived entries do not participate in current rankings.
 | lxc/incus | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/lxc/incus/AGENTS.md) | [Source](https://github.com/lxc/incus/blob/e14ee84ece23ea2fd861f456ce86e0dac0de235a/AGENTS.md) | 2026-09-29 |
 | lynx-family/lynx | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/lynx-family/lynx/AGENTS.md) | [Source](https://github.com/lynx-family/lynx/blob/94d42e34a3eebdfd4ea17fce4a2a7097da6d8efa/AGENTS.md) | 2026-10-29 |
 | lz4/lz4 | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/lz4/lz4/AGENTS.md) | [Source](https://github.com/lz4/lz4/blob/79abc99fc4f0e044eec17e76a949e1f24f08912d/AGENTS.md) | 2026-10-26 |
-| MaaAssistantArknights/MaaAssistantArknights | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/MaaAssistantArknights/MaaAssistantArknights/AGENTS.md) | [Source](https://github.com/MaaAssistantArknights/MaaAssistantArknights/blob/a673d11384e49af83bf22983f6a5186b6ba3654e/AGENTS.md) | 2026-11-04 |
 | MaaXYZ/MaaFramework | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/MaaXYZ/MaaFramework/AGENTS.md) | [Source](https://github.com/MaaXYZ/MaaFramework/blob/d8298517762d9c673dd0474864e01e619bb17eb0/AGENTS.md) | 2026-11-07 |
 | macro-inc/macro | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/macro-inc/macro/AGENTS.md) | [Source](https://github.com/macro-inc/macro/blob/07357694c4c5a810c3d75ac7319f28743622fe7f/AGENTS.md) | 2026-10-26 |
 | macro-inc/macro | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/macro-inc/macro/CLAUDE.md) | [Source](https://github.com/macro-inc/macro/blob/07357694c4c5a810c3d75ac7319f28743622fe7f/CLAUDE.md) | 2026-10-26 |
@@ -2920,8 +2960,6 @@ Archived entries do not participate in current rankings.
 | major/MySQLTuner-perl | `.agents/AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/major/MySQLTuner-perl/.agents/AGENTS.md) | [Source](https://github.com/major/MySQLTuner-perl/blob/47d0e73fa535aae499697f8b3970f516d433e0e6/.agents/AGENTS.md) | 2026-07-30 |
 | major/MySQLTuner-perl | `GEMINI.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/major/MySQLTuner-perl/GEMINI.md) | [Source](https://github.com/major/MySQLTuner-perl/blob/47d0e73fa535aae499697f8b3970f516d433e0e6/GEMINI.md) | 2026-07-30 |
 | MakazhanAlpamys/Soup | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/MakazhanAlpamys/Soup/AGENTS.md) | [Source](https://github.com/MakazhanAlpamys/Soup/blob/1d1b9defb7e0bc2c3aea882502a5a43587de96ac/AGENTS.md) | 2026-11-06 |
-| makecindy/cindy | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/makecindy/cindy/AGENTS.md) | [Source](https://github.com/makecindy/cindy/blob/ae233ac34574e2274aa4870777b97d46c4832d33/AGENTS.md) | 2026-11-04 |
-| makecindy/cindy | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/makecindy/cindy/CLAUDE.md) | [Source](https://github.com/makecindy/cindy/blob/ae233ac34574e2274aa4870777b97d46c4832d33/CLAUDE.md) | 2026-11-04 |
 | makeplane/plane | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/makeplane/plane/AGENTS.md) | [Source](https://github.com/makeplane/plane/blob/22c783c83856b0a0a078361c9f43eabbf37ae0fe/AGENTS.md) | 2026-08-31 |
 | MalpenZibo/ashell | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/MalpenZibo/ashell/AGENTS.md) | [Source](https://github.com/MalpenZibo/ashell/blob/cbdb0d4a181f08b7ff728012f212577a8774f5c6/AGENTS.md) | 2026-10-22 |
 | MalpenZibo/ashell | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/MalpenZibo/ashell/CLAUDE.md) | [Source](https://github.com/MalpenZibo/ashell/blob/cbdb0d4a181f08b7ff728012f212577a8774f5c6/CLAUDE.md) | 2026-10-22 |
@@ -2939,8 +2977,6 @@ Archived entries do not participate in current rankings.
 | Marve10s/Better-Fullstack | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Marve10s/Better-Fullstack/AGENTS.md) | [Source](https://github.com/Marve10s/Better-Fullstack/blob/b12b90541c42175e5d168434efa00c7650082076/AGENTS.md) | 2026-11-03 |
 | Marve10s/Better-Fullstack | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Marve10s/Better-Fullstack/CLAUDE.md) | [Source](https://github.com/Marve10s/Better-Fullstack/blob/b12b90541c42175e5d168434efa00c7650082076/CLAUDE.md) | 2026-11-03 |
 | mas-bandwidth/yojimbo | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/mas-bandwidth/yojimbo/CLAUDE.md) | [Source](https://github.com/mas-bandwidth/yojimbo/blob/3be987b2c10dd5624d4b7437ba3c42fdd6b2a4bf/CLAUDE.md) | 2026-08-26 |
-| mastra-ai/mastra | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/mastra-ai/mastra/AGENTS.md) | [Source](https://github.com/mastra-ai/mastra/blob/1a2ff7ff01230ad398e136d395f20d437ff37560/AGENTS.md) | 2026-10-29 |
-| mastra-ai/mastra | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/mastra-ai/mastra/CLAUDE.md) | [Source](https://github.com/mastra-ai/mastra/blob/1a2ff7ff01230ad398e136d395f20d437ff37560/CLAUDE.md) | 2026-10-29 |
 | MaterializeInc/materialize | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/MaterializeInc/materialize/AGENTS.md) | [Source](https://github.com/MaterializeInc/materialize/blob/4f62eec9ad43817f219d6e9ecae2255b2c6e7ff7/AGENTS.md) | 2026-11-03 |
 | MaterializeInc/materialize | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/MaterializeInc/materialize/CLAUDE.md) | [Source](https://github.com/MaterializeInc/materialize/blob/4f62eec9ad43817f219d6e9ecae2255b2c6e7ff7/CLAUDE.md) | 2026-11-03 |
 | matomo-org/matomo | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/matomo-org/matomo/AGENTS.md) | [Source](https://github.com/matomo-org/matomo/blob/781186d8170c0f2bb10372f14da0cf4b512923f8/AGENTS.md) | 2026-10-31 |
@@ -2968,8 +3004,6 @@ Archived entries do not participate in current rankings.
 | mckinsey/vizro | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/mckinsey/vizro/CLAUDE.md) | [Source](https://github.com/mckinsey/vizro/blob/4b3f31ef44c284c33770b612b51fae907cba8176/CLAUDE.md) | 2026-10-19 |
 | mcmonkeyprojects/SwarmUI | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/mcmonkeyprojects/SwarmUI/AGENTS.md) | [Source](https://github.com/mcmonkeyprojects/SwarmUI/blob/73a7a55fb91273ffeb283365a23ef8a84b8bb076/AGENTS.md) | 2026-08-29 |
 | MCSManager/MCSManager | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/MCSManager/MCSManager/AGENTS.md) | [Source](https://github.com/MCSManager/MCSManager/blob/d7f40bdfa6a06059bee8f68efd2f87dba8f4a2f0/AGENTS.md) | 2026-10-24 |
-| mealie-recipes/mealie | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/mealie-recipes/mealie/AGENTS.md) | [Source](https://github.com/mealie-recipes/mealie/blob/f3520423ea387e39b6ae072a902d24e1f4ad91c4/AGENTS.md) | 2026-09-02 |
-| mealie-recipes/mealie | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/mealie-recipes/mealie/CLAUDE.md) | [Source](https://github.com/mealie-recipes/mealie/blob/f3520423ea387e39b6ae072a902d24e1f4ad91c4/CLAUDE.md) | 2026-09-02 |
 | medic/cht-core | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/medic/cht-core/AGENTS.md) | [Source](https://github.com/medic/cht-core/blob/8067cda462cec5ed052b250ba06d0b788b649387/AGENTS.md) | 2026-10-30 |
 | medic/cht-core | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/medic/cht-core/CLAUDE.md) | [Source](https://github.com/medic/cht-core/blob/8067cda462cec5ed052b250ba06d0b788b649387/CLAUDE.md) | 2026-10-30 |
 | medusajs/medusa | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/medusajs/medusa/AGENTS.md) | [Source](https://github.com/medusajs/medusa/blob/6ce37cb42fd7ed9f173fb50471c93a2785576097/AGENTS.md) | 2026-10-29 |
@@ -3007,7 +3041,6 @@ Archived entries do not participate in current rankings.
 | metasequoiaime/msime | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/metasequoiaime/msime/AGENTS.md) | [Source](https://github.com/metasequoiaime/msime/blob/5c1cc745732f5809fce5fe5f380e82e662eade25/AGENTS.md) | 2026-10-11 |
 | metasequoiaime/msime | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/metasequoiaime/msime/CLAUDE.md) | [Source](https://github.com/metasequoiaime/msime/blob/5c1cc745732f5809fce5fe5f380e82e662eade25/CLAUDE.md) | 2026-10-11 |
 | MetrolistGroup/Metrolist | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/MetrolistGroup/Metrolist/AGENTS.md) | [Source](https://github.com/MetrolistGroup/Metrolist/blob/8b81f1decec3f80e5d28147db7e5e9b9696124b3/AGENTS.md) | 2026-09-07 |
-| mg-chao/snow-apps | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/mg-chao/snow-apps/AGENTS.md) | [Source](https://github.com/mg-chao/snow-apps/blob/9d7874f9eede02a8fbb32aeea5940f8946ae7674/AGENTS.md) | 2026-10-26 |
 | MHSanaei/3x-ui | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/MHSanaei/3x-ui/CLAUDE.md) | [Source](https://github.com/MHSanaei/3x-ui/blob/2d8d304850f718b462a1b473dc5b7ceedc8cbef4/CLAUDE.md) | 2026-09-15 |
 | MIC-DKFZ/nnUNet | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/MIC-DKFZ/nnUNet/CLAUDE.md) | [Source](https://github.com/MIC-DKFZ/nnUNet/blob/ed5802be6492940c8f8d6c796c6100cac5bf06ea/CLAUDE.md) | 2026-11-04 |
 | microsoft/agent-governance-toolkit | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/microsoft/agent-governance-toolkit/AGENTS.md) | [Source](https://github.com/microsoft/agent-governance-toolkit/blob/2a23e34b90ed0d33c3f31e2a67fb74838d56f093/AGENTS.md) | 2026-07-28 |
@@ -3022,14 +3055,17 @@ Archived entries do not participate in current rankings.
 | microsoft/terminal | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/microsoft/terminal/AGENTS.md) | [Source](https://github.com/microsoft/terminal/blob/98c8c795ebc2560af55e72beba3fa5fd31ceef64/AGENTS.md) | 2026-10-25 |
 | microsoft/terminal | `CLAUDE.md` | `deleted` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/microsoft/terminal/CLAUDE.md) | [Source](https://github.com/microsoft/terminal/blob/7d06b26f73ef4bcb78b56647c395251eeee4c2bc/CLAUDE.md) | 2026-10-12 |
 | microsoft/testfx | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/microsoft/testfx/AGENTS.md) | [Source](https://github.com/microsoft/testfx/blob/714ef0fd2f6132e51f0cb1761dea11a91bb46378/AGENTS.md) | 2026-10-13 |
+| microsoft/TokenEconomizer | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/microsoft/TokenEconomizer/CLAUDE.md) | [Source](https://github.com/microsoft/TokenEconomizer/blob/cb42207e3e0937f191bf1ca4897a54b07a23a92c/CLAUDE.md) | 2026-11-08 |
 | microsoft/TypeScript | `AGENTS.md` | `deleted` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/microsoft/TypeScript/AGENTS.md) | [Source](https://github.com/microsoft/TypeScript/blob/b465fdbfe175304d9b977da137b2c178ae1091d3/AGENTS.md) | 2026-08-20 |
 | microsoft/TypeScript | `CLAUDE.md` | `deleted` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/microsoft/TypeScript/CLAUDE.md) | [Source](https://github.com/microsoft/TypeScript/blob/b465fdbfe175304d9b977da137b2c178ae1091d3/CLAUDE.md) | 2026-08-20 |
 | microsoft/typespec | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/microsoft/typespec/AGENTS.md) | [Source](https://github.com/microsoft/typespec/blob/f2fc27a2805175863ad335ea25860453030843bd/AGENTS.md) | 2026-08-10 |
 | microsoft/vcpkg | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/microsoft/vcpkg/AGENTS.md) | [Source](https://github.com/microsoft/vcpkg/blob/dd6ff8e6b0128654815bc4daa0e46fde459f63e9/AGENTS.md) | 2026-10-03 |
 | microsoft/vcpkg | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/microsoft/vcpkg/CLAUDE.md) | [Source](https://github.com/microsoft/vcpkg/blob/dd6ff8e6b0128654815bc4daa0e46fde459f63e9/CLAUDE.md) | 2026-10-03 |
 | microsoft/Web-Dev-For-Beginners | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/microsoft/Web-Dev-For-Beginners/AGENTS.md) | [Source](https://github.com/microsoft/Web-Dev-For-Beginners/blob/5f220217d35499881cfff61a5b4c2dab033ab228/AGENTS.md) | 2026-07-24 |
+| microsoft/winget-pkgs | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/microsoft/winget-pkgs/AGENTS.md) | [Source](https://github.com/microsoft/winget-pkgs/blob/829eda9f435740c0e519ca38c278691a32717521/AGENTS.md) | 2026-11-08 |
 | middleapi/orpc | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/middleapi/orpc/CLAUDE.md) | [Source](https://github.com/middleapi/orpc/blob/7760fc68be1ae39d006572e7cd0a1af4582cc8f8/CLAUDE.md) | 2026-10-19 |
 | mikefarah/yq | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/mikefarah/yq/AGENTS.md) | [Source](https://github.com/mikefarah/yq/blob/2ba1b902aa60c32d0a71ca68d8a1669f925ba010/AGENTS.md) | 2026-08-19 |
+| milind-soni/OpenMausBot | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/milind-soni/OpenMausBot/AGENTS.md) | [Source](https://github.com/milind-soni/OpenMausBot/blob/d7ce39ea08e23bf39d6ec0496f9fef39edcd77ad/AGENTS.md) | 2026-11-08 |
 | millionco/react-doctor | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/millionco/react-doctor/AGENTS.md) | [Source](https://github.com/millionco/react-doctor/blob/c50e3bdbe344b9bbc24606667c2ee0d41fd58bfe/AGENTS.md) | 2026-08-13 |
 | millionco/react-doctor | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/millionco/react-doctor/CLAUDE.md) | [Source](https://github.com/millionco/react-doctor/blob/c50e3bdbe344b9bbc24606667c2ee0d41fd58bfe/CLAUDE.md) | 2026-08-13 |
 | milvus-io/milvus | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/milvus-io/milvus/AGENTS.md) | [Source](https://github.com/milvus-io/milvus/blob/7e32962ac27ad5c6dafe4db0b915fefb5f0bee1b/AGENTS.md) | 2026-10-30 |
@@ -3050,6 +3086,8 @@ Archived entries do not participate in current rankings.
 | ml-explore/mlx | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/ml-explore/mlx/CLAUDE.md) | [Source](https://github.com/ml-explore/mlx/blob/b3848e206e1b6ceb4c75a7c924128e86ec0674b6/CLAUDE.md) | 2026-09-29 |
 | ml-explore/mlx-lm | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/ml-explore/mlx-lm/AGENTS.md) | [Source](https://github.com/ml-explore/mlx-lm/blob/fa6cb55e7e3b21861263df0fc5d235552670dda7/AGENTS.md) | 2026-09-01 |
 | ml-explore/mlx-lm | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/ml-explore/mlx-lm/CLAUDE.md) | [Source](https://github.com/ml-explore/mlx-lm/blob/fa6cb55e7e3b21861263df0fc5d235552670dda7/CLAUDE.md) | 2026-09-01 |
+| mlflow/mlflow | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/mlflow/mlflow/AGENTS.md) | [Source](https://github.com/mlflow/mlflow/blob/bf172bb86adb77f20a01649af85832420ac8e085/AGENTS.md) | 2026-11-08 |
+| mlflow/mlflow | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/mlflow/mlflow/CLAUDE.md) | [Source](https://github.com/mlflow/mlflow/blob/bf172bb86adb77f20a01649af85832420ac8e085/CLAUDE.md) | 2026-11-08 |
 | mnfst/llm-gateway | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/mnfst/llm-gateway/AGENTS.md) | [Source](https://github.com/mnfst/llm-gateway/blob/7264e2c1d28604a8751da5751e410adf2d2fb4f7/AGENTS.md) | 2026-10-29 |
 | mnfst/llm-gateway | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/mnfst/llm-gateway/CLAUDE.md) | [Source](https://github.com/mnfst/llm-gateway/blob/7264e2c1d28604a8751da5751e410adf2d2fb4f7/CLAUDE.md) | 2026-10-29 |
 | mobile-dev-inc/Maestro | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/mobile-dev-inc/Maestro/AGENTS.md) | [Source](https://github.com/mobile-dev-inc/Maestro/blob/812b5245a41679b15b7a37171611e0a15142121a/AGENTS.md) | 2026-07-28 |
@@ -3123,19 +3161,20 @@ Archived entries do not participate in current rankings.
 | nanocoai/nanoclaw | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/nanocoai/nanoclaw/AGENTS.md) | [Source](https://github.com/nanocoai/nanoclaw/blob/d61af17b541f52632c6194692a166184839a926f/AGENTS.md) | 2026-10-16 |
 | nanocoai/nanoclaw | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/nanocoai/nanoclaw/CLAUDE.md) | [Source](https://github.com/nanocoai/nanoclaw/blob/d61af17b541f52632c6194692a166184839a926f/CLAUDE.md) | 2026-10-16 |
 | napi-rs/napi-rs | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/napi-rs/napi-rs/CLAUDE.md) | [Source](https://github.com/napi-rs/napi-rs/blob/b5ecfa3d6a9fcf8e66c59e05dd4027b832b44d61/CLAUDE.md) | 2026-07-21 |
-| nats-io/nats-server | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/nats-io/nats-server/AGENTS.md) | [Source](https://github.com/nats-io/nats-server/blob/00328f2bdbbdf20e61a9d763ef3eff8402087f86/AGENTS.md) | 2026-11-06 |
 | nautechsystems/nautilus_trader | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/nautechsystems/nautilus_trader/AGENTS.md) | [Source](https://github.com/nautechsystems/nautilus_trader/blob/61c20df17677d6ec27f2bcbc7ea9a0a8f65e05b9/AGENTS.md) | 2026-11-01 |
 | nautechsystems/nautilus_trader | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/nautechsystems/nautilus_trader/CLAUDE.md) | [Source](https://github.com/nautechsystems/nautilus_trader/blob/61c20df17677d6ec27f2bcbc7ea9a0a8f65e05b9/CLAUDE.md) | 2026-11-01 |
 | nearai/ironclaw | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/nearai/ironclaw/AGENTS.md) | [Source](https://github.com/nearai/ironclaw/blob/2b52d1f7a5e8e28b7136229033b9c4dabea1d1ef/AGENTS.md) | 2026-09-01 |
 | nearai/ironclaw | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/nearai/ironclaw/CLAUDE.md) | [Source](https://github.com/nearai/ironclaw/blob/2b52d1f7a5e8e28b7136229033b9c4dabea1d1ef/CLAUDE.md) | 2026-09-01 |
 | neoclide/coc.nvim | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/neoclide/coc.nvim/AGENTS.md) | [Source](https://github.com/neoclide/coc.nvim/blob/98a7f0519ced830cacfc85195c8689588fdd59fd/AGENTS.md) | 2026-09-05 |
-| neovim/neovim | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/neovim/neovim/AGENTS.md) | [Source](https://github.com/neovim/neovim/blob/a82037d1d11ba35fb59e2a459f823e3bc81b67f4/AGENTS.md) | 2026-11-01 |
 | neovim/nvim-lspconfig | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/neovim/nvim-lspconfig/AGENTS.md) | [Source](https://github.com/neovim/nvim-lspconfig/blob/7d120778543b876b5a1e216e4ae9f1cb0b88a01b/AGENTS.md) | 2026-10-30 |
 | nesquena/hermes-webui | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/nesquena/hermes-webui/AGENTS.md) | [Source](https://github.com/nesquena/hermes-webui/blob/7c7cedfca5bec55dc423f5eb70eb52470f0dc7b9/AGENTS.md) | 2026-10-20 |
 | netbirdio/netbird | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/netbirdio/netbird/AGENTS.md) | [Source](https://github.com/netbirdio/netbird/blob/b839159538ae65e59717b3d3a931113de64c3b47/AGENTS.md) | 2026-11-03 |
 | netbirdio/netbird | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/netbirdio/netbird/CLAUDE.md) | [Source](https://github.com/netbirdio/netbird/blob/b839159538ae65e59717b3d3a931113de64c3b47/CLAUDE.md) | 2026-11-03 |
 | netbox-community/netbox | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/netbox-community/netbox/AGENTS.md) | [Source](https://github.com/netbox-community/netbox/blob/e160359e6e3375489a0d99eb2765c179572876ea/AGENTS.md) | 2026-08-06 |
 | netbox-community/netbox | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/netbox-community/netbox/CLAUDE.md) | [Source](https://github.com/netbox-community/netbox/blob/e160359e6e3375489a0d99eb2765c179572876ea/CLAUDE.md) | 2026-08-06 |
+| netdata/netdata | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/netdata/netdata/AGENTS.md) | [Source](https://github.com/netdata/netdata/blob/b67c094f5c59e0cc3ae0aafb522a60d3369bc3c9/AGENTS.md) | 2026-11-08 |
+| netdata/netdata | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/netdata/netdata/CLAUDE.md) | [Source](https://github.com/netdata/netdata/blob/b67c094f5c59e0cc3ae0aafb522a60d3369bc3c9/CLAUDE.md) | 2026-11-08 |
+| netdata/netdata | `GEMINI.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/netdata/netdata/GEMINI.md) | [Source](https://github.com/netdata/netdata/blob/b67c094f5c59e0cc3ae0aafb522a60d3369bc3c9/GEMINI.md) | 2026-11-08 |
 | netease-youdao/LobsterAI | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/netease-youdao/LobsterAI/AGENTS.md) | [Source](https://github.com/netease-youdao/LobsterAI/blob/cb9cc85d2a14cc047b1a58ae3f84049e601484ec/AGENTS.md) | 2026-09-17 |
 | netease-youdao/LobsterAI | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/netease-youdao/LobsterAI/CLAUDE.md) | [Source](https://github.com/netease-youdao/LobsterAI/blob/cb9cc85d2a14cc047b1a58ae3f84049e601484ec/CLAUDE.md) | 2026-09-17 |
 | NethermindEth/nethermind | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/NethermindEth/nethermind/AGENTS.md) | [Source](https://github.com/NethermindEth/nethermind/blob/77744d71856b6e76374301981a0c9678a5adb4c7/AGENTS.md) | 2026-10-05 |
@@ -3157,6 +3196,7 @@ Archived entries do not participate in current rankings.
 | nginx/kubernetes-ingress | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/nginx/kubernetes-ingress/CLAUDE.md) | [Source](https://github.com/nginx/kubernetes-ingress/blob/70208d4bcd650177fbb7d08fb1b1b353236c3b31/CLAUDE.md) | 2026-10-05 |
 | ngrok/webernetes | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/ngrok/webernetes/AGENTS.md) | [Source](https://github.com/ngrok/webernetes/blob/1af5deb63e5cbb17b8692b74c58b37ba87f469df/AGENTS.md) | 2026-07-17 |
 | ngrok/webernetes | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/ngrok/webernetes/CLAUDE.md) | [Source](https://github.com/ngrok/webernetes/blob/1af5deb63e5cbb17b8692b74c58b37ba87f469df/CLAUDE.md) | 2026-07-17 |
+| nguyenphutrong/quotio | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/nguyenphutrong/quotio/AGENTS.md) | [Source](https://github.com/nguyenphutrong/quotio/blob/67a8aedede36088c14104a376146193e510dbf1d/AGENTS.md) | 2026-11-08 |
 | nhost/nhost | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/nhost/nhost/CLAUDE.md) | [Source](https://github.com/nhost/nhost/blob/0101f454562900ecf6edc68c826576d403fe27b9/CLAUDE.md) | 2026-09-30 |
 | nianzhibai/91 | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/nianzhibai/91/AGENTS.md) | [Source](https://github.com/nianzhibai/91/blob/b6b40cf0346145fb7b7e26ad610ebc37cd34e277/AGENTS.md) | 2026-08-29 |
 | nibzard/awesome-agentic-patterns | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/nibzard/awesome-agentic-patterns/CLAUDE.md) | [Source](https://github.com/nibzard/awesome-agentic-patterns/blob/a3b328f557291e480ad87686dbacd848cd58bf3c/CLAUDE.md) | 2026-09-27 |
@@ -3176,8 +3216,6 @@ Archived entries do not participate in current rankings.
 | novuhq/novu | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/novuhq/novu/AGENTS.md) | [Source](https://github.com/novuhq/novu/blob/2125add02b795c74991d1f4a3f0a38d4f6d9615a/AGENTS.md) | 2026-11-04 |
 | nrwl/nx | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/nrwl/nx/AGENTS.md) | [Source](https://github.com/nrwl/nx/blob/b23c118c58642131612889a0c307cb01d26c46fe/AGENTS.md) | 2026-10-06 |
 | nrwl/nx | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/nrwl/nx/CLAUDE.md) | [Source](https://github.com/nrwl/nx/blob/b23c118c58642131612889a0c307cb01d26c46fe/CLAUDE.md) | 2026-10-06 |
-| ntop/ntopng | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/ntop/ntopng/AGENTS.md) | [Source](https://github.com/ntop/ntopng/blob/d7b76da8bd0b1599db8cefb8da8634e0eaceeef8/AGENTS.md) | 2026-11-05 |
-| ntop/ntopng | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/ntop/ntopng/CLAUDE.md) | [Source](https://github.com/ntop/ntopng/blob/d7b76da8bd0b1599db8cefb8da8634e0eaceeef8/CLAUDE.md) | 2026-11-05 |
 | nullclaw/nullclaw | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/nullclaw/nullclaw/AGENTS.md) | [Source](https://github.com/nullclaw/nullclaw/blob/7286391f0a8f761218468e959b95caf78bf086bf/AGENTS.md) | 2026-10-04 |
 | nullclaw/nullclaw | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/nullclaw/nullclaw/CLAUDE.md) | [Source](https://github.com/nullclaw/nullclaw/blob/7286391f0a8f761218468e959b95caf78bf086bf/CLAUDE.md) | 2026-10-04 |
 | nuxt/nuxt | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/nuxt/nuxt/AGENTS.md) | [Source](https://github.com/nuxt/nuxt/blob/0cba6da7a5553ae39f54b7a324c6cb572c473d66/AGENTS.md) | 2026-10-11 |
@@ -3202,6 +3240,7 @@ Archived entries do not participate in current rankings.
 | NVIDIA/TensorRT-LLM | `.codex/AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/NVIDIA/TensorRT-LLM/.codex/AGENTS.md) | [Source](https://github.com/NVIDIA/TensorRT-LLM/blob/426d357522a72c7d6720a8acb98c7a410ab9e787/.codex/AGENTS.md) | 2026-10-16 |
 | NVIDIA/TensorRT-LLM | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/NVIDIA/TensorRT-LLM/AGENTS.md) | [Source](https://github.com/NVIDIA/TensorRT-LLM/blob/426d357522a72c7d6720a8acb98c7a410ab9e787/AGENTS.md) | 2026-10-16 |
 | NVIDIA/TensorRT-LLM | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/NVIDIA/TensorRT-LLM/CLAUDE.md) | [Source](https://github.com/NVIDIA/TensorRT-LLM/blob/426d357522a72c7d6720a8acb98c7a410ab9e787/CLAUDE.md) | 2026-10-16 |
+| NVIDIA/warp | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/NVIDIA/warp/AGENTS.md) | [Source](https://github.com/NVIDIA/warp/blob/b9e69963845fe3816b9f19589be4970204e4d016/AGENTS.md) | 2026-11-08 |
 | NVIDIA/warp | `CLAUDE.md` | `deleted` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/NVIDIA/warp/CLAUDE.md) | [Source](https://github.com/NVIDIA/warp/blob/394bda3c8ad4e9499de66ef824ae503010825547/CLAUDE.md) | 2026-08-01 |
 | nyblnet/bento | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/nyblnet/bento/AGENTS.md) | [Source](https://github.com/nyblnet/bento/blob/394b8733a459f000629e0a454c608a7d1ae011d2/AGENTS.md) | 2026-09-13 |
 | nyblnet/bento | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/nyblnet/bento/CLAUDE.md) | [Source](https://github.com/nyblnet/bento/blob/394b8733a459f000629e0a454c608a7d1ae011d2/CLAUDE.md) | 2026-09-13 |
@@ -3218,10 +3257,13 @@ Archived entries do not participate in current rankings.
 | olimorris/codecompanion.nvim | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/olimorris/codecompanion.nvim/CLAUDE.md) | [Source](https://github.com/olimorris/codecompanion.nvim/blob/3e3de8479e6bf5773bfce8bbaada297925cae174/CLAUDE.md) | 2026-09-21 |
 | omacom/omarchy | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/omacom/omarchy/AGENTS.md) | [Source](https://github.com/omacom/omarchy/blob/969aab5829beed2d1c95a1578094b1e697deb927/AGENTS.md) | 2026-10-25 |
 | omacom/omarchy | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/omacom/omarchy/CLAUDE.md) | [Source](https://github.com/omacom/omarchy/blob/969aab5829beed2d1c95a1578094b1e697deb927/CLAUDE.md) | 2026-10-25 |
+| omdsh-dev/DSH-better-sidebar | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/omdsh-dev/DSH-better-sidebar/AGENTS.md) | [Source](https://github.com/omdsh-dev/DSH-better-sidebar/blob/bd6363021dd4af8ca9df239e0c59df35b873d6b4/AGENTS.md) | 2026-11-08 |
 | omnigent-ai/omnigent | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/omnigent-ai/omnigent/AGENTS.md) | [Source](https://github.com/omnigent-ai/omnigent/blob/01f4645bbcbc755315f6df9ae5de0ca864a849ec/AGENTS.md) | 2026-11-04 |
 | omnigent-ai/omnigent | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/omnigent-ai/omnigent/CLAUDE.md) | [Source](https://github.com/omnigent-ai/omnigent/blob/01f4645bbcbc755315f6df9ae5de0ca864a849ec/CLAUDE.md) | 2026-11-04 |
 | OneDragon-Anything/ZenlessZoneZero-OneDragon | `.claude/CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/OneDragon-Anything/ZenlessZoneZero-OneDragon/.claude/CLAUDE.md) | [Source](https://github.com/OneDragon-Anything/ZenlessZoneZero-OneDragon/blob/635a6406f6da788ad365bf6a6e02f4e1730f4b95/.claude/CLAUDE.md) | 2026-10-31 |
 | OneDragon-Anything/ZenlessZoneZero-OneDragon | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/OneDragon-Anything/ZenlessZoneZero-OneDragon/AGENTS.md) | [Source](https://github.com/OneDragon-Anything/ZenlessZoneZero-OneDragon/blob/635a6406f6da788ad365bf6a6e02f4e1730f4b95/AGENTS.md) | 2026-10-31 |
+| OneUptime/oneuptime | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/OneUptime/oneuptime/AGENTS.md) | [Source](https://github.com/OneUptime/oneuptime/blob/3b323f654d885d1daa906c4c69ce7673486da34b/AGENTS.md) | 2026-11-08 |
+| OneUptime/oneuptime | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/OneUptime/oneuptime/CLAUDE.md) | [Source](https://github.com/OneUptime/oneuptime/blob/3b323f654d885d1daa906c4c69ce7673486da34b/CLAUDE.md) | 2026-11-08 |
 | online-ml/river | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/online-ml/river/AGENTS.md) | [Source](https://github.com/online-ml/river/blob/2aa51b3ee42a468240de29cc8b1cac78aa48aef6/AGENTS.md) | 2026-09-03 |
 | online-ml/river | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/online-ml/river/CLAUDE.md) | [Source](https://github.com/online-ml/river/blob/2aa51b3ee42a468240de29cc8b1cac78aa48aef6/CLAUDE.md) | 2026-09-03 |
 | onnx/onnx | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/onnx/onnx/AGENTS.md) | [Source](https://github.com/onnx/onnx/blob/36c99fd483cbc6ead3cf8bb9e5609a8a8b4c6b26/AGENTS.md) | 2026-09-21 |
@@ -3240,7 +3282,6 @@ Archived entries do not participate in current rankings.
 | open-circle/valibot | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/open-circle/valibot/AGENTS.md) | [Source](https://github.com/open-circle/valibot/blob/8df7a5f2e498b3994851e6b1366dda0f71d184f0/AGENTS.md) | 2026-08-17 |
 | open-circle/valibot | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/open-circle/valibot/CLAUDE.md) | [Source](https://github.com/open-circle/valibot/blob/8df7a5f2e498b3994851e6b1366dda0f71d184f0/CLAUDE.md) | 2026-08-17 |
 | open-edge-platform/anomalib | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/open-edge-platform/anomalib/AGENTS.md) | [Source](https://github.com/open-edge-platform/anomalib/blob/0e21c0a2d2a535de0531de9c30b92250cc20df64/AGENTS.md) | 2026-11-06 |
-| open-gsd/gsd-core | `GEMINI.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/open-gsd/gsd-core/GEMINI.md) | [Source](https://github.com/open-gsd/gsd-core/blob/f2a1feedd16d5f01e49820bb6a5c4160c76943a6/GEMINI.md) | 2026-10-26 |
 | open-metadata/OpenMetadata | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/open-metadata/OpenMetadata/AGENTS.md) | [Source](https://github.com/open-metadata/OpenMetadata/blob/74b0529989735b7c8b8fa9a22c21ed7d36b89d91/AGENTS.md) | 2026-11-06 |
 | open-metadata/OpenMetadata | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/open-metadata/OpenMetadata/CLAUDE.md) | [Source](https://github.com/open-metadata/OpenMetadata/blob/74b0529989735b7c8b8fa9a22c21ed7d36b89d91/CLAUDE.md) | 2026-11-06 |
 | open-multi-agent/open-multi-agent | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/open-multi-agent/open-multi-agent/AGENTS.md) | [Source](https://github.com/open-multi-agent/open-multi-agent/blob/566a59e7ad18858d554e9eb92086eae52ab4556b/AGENTS.md) | 2026-08-10 |
@@ -3284,6 +3325,7 @@ Archived entries do not participate in current rankings.
 | openfga/openfga | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/openfga/openfga/AGENTS.md) | [Source](https://github.com/openfga/openfga/blob/ff8394da6ca3a14583668d5dd7f02aeacb5da47b/AGENTS.md) | 2026-11-03 |
 | openfga/openfga | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/openfga/openfga/CLAUDE.md) | [Source](https://github.com/openfga/openfga/blob/ff8394da6ca3a14583668d5dd7f02aeacb5da47b/CLAUDE.md) | 2026-11-03 |
 | opengeos/GeoLibre | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/opengeos/GeoLibre/CLAUDE.md) | [Source](https://github.com/opengeos/GeoLibre/blob/db849458a693248052500ad823fcb85543056ae7/CLAUDE.md) | 2026-08-27 |
+| OpenHands/OpenHands | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/OpenHands/OpenHands/AGENTS.md) | [Source](https://github.com/OpenHands/OpenHands/blob/f68062f9bc0dd929b6fb6a395cd0d03ff18d3851/AGENTS.md) | 2026-11-08 |
 | openinterpreter/openinterpreter | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/openinterpreter/openinterpreter/AGENTS.md) | [Source](https://github.com/openinterpreter/openinterpreter/blob/52a31019714294add53cafbc5268e1467b471263/AGENTS.md) | 2026-07-18 |
 | openJiuwen-ai/jiuwenswarm | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/openJiuwen-ai/jiuwenswarm/AGENTS.md) | [Source](https://github.com/openJiuwen-ai/jiuwenswarm/blob/ebb82632725d1e7ca576dde0ac486475db427e7f/AGENTS.md) | 2026-11-03 |
 | OpenListTeam/OpenList | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/OpenListTeam/OpenList/AGENTS.md) | [Source](https://github.com/OpenListTeam/OpenList/blob/70ed5eedb8edeaee67260a5b83efa22a33749257/AGENTS.md) | 2026-10-22 |
@@ -3316,6 +3358,8 @@ Archived entries do not participate in current rankings.
 | OrcaSlicer/OrcaSlicer | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/OrcaSlicer/OrcaSlicer/AGENTS.md) | [Source](https://github.com/OrcaSlicer/OrcaSlicer/blob/cb80a0db84003d6f44e6f0f84d544f2068b44273/AGENTS.md) | 2026-11-06 |
 | OrcaSlicer/OrcaSlicer | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/OrcaSlicer/OrcaSlicer/CLAUDE.md) | [Source](https://github.com/OrcaSlicer/OrcaSlicer/blob/cb80a0db84003d6f44e6f0f84d544f2068b44273/CLAUDE.md) | 2026-11-06 |
 | OrchardCMS/OrchardCore | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/OrchardCMS/OrchardCore/AGENTS.md) | [Source](https://github.com/OrchardCMS/OrchardCore/blob/cea383f6e2c9e8e88f60ecfd3f023dfc25c24771/AGENTS.md) | 2026-07-26 |
+| OrchestratorInc/agent-orchestrator | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/OrchestratorInc/agent-orchestrator/AGENTS.md) | [Source](https://github.com/OrchestratorInc/agent-orchestrator/blob/1c3022d6dac0226126aa86f7d3610bc51bfefc3e/AGENTS.md) | 2026-11-08 |
+| OrchestratorInc/agent-orchestrator | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/OrchestratorInc/agent-orchestrator/CLAUDE.md) | [Source](https://github.com/OrchestratorInc/agent-orchestrator/blob/1c3022d6dac0226126aa86f7d3610bc51bfefc3e/CLAUDE.md) | 2026-11-08 |
 | org2AI/ORG2 | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/org2AI/ORG2/AGENTS.md) | [Source](https://github.com/org2AI/ORG2/blob/528ba0327c46d6ed27c6fa1c1bfa618f21bdfef6/AGENTS.md) | 2026-08-29 |
 | org2AI/ORG2 | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/org2AI/ORG2/CLAUDE.md) | [Source](https://github.com/org2AI/ORG2/blob/528ba0327c46d6ed27c6fa1c1bfa618f21bdfef6/CLAUDE.md) | 2026-08-29 |
 | organicmaps/organicmaps | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/organicmaps/organicmaps/AGENTS.md) | [Source](https://github.com/organicmaps/organicmaps/blob/02b4ca05ed4999294e1482beae4e1f4d34b49a27/AGENTS.md) | 2026-10-09 |
@@ -3323,7 +3367,6 @@ Archived entries do not participate in current rankings.
 | osaurus-ai/osaurus | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/osaurus-ai/osaurus/AGENTS.md) | [Source](https://github.com/osaurus-ai/osaurus/blob/cb31510b2553966a93c52fbb8249a1912826d8ba/AGENTS.md) | 2026-10-04 |
 | OSGeo/gdal | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/OSGeo/gdal/AGENTS.md) | [Source](https://github.com/OSGeo/gdal/blob/886b21de94e746f896a40ba09cb4d209575bbec2/AGENTS.md) | 2026-09-07 |
 | oshi/oshi | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/oshi/oshi/AGENTS.md) | [Source](https://github.com/oshi/oshi/blob/15347904d44bf4495f556aa1319072f16598bf09/AGENTS.md) | 2026-08-23 |
-| osmandapp/OsmAnd | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/osmandapp/OsmAnd/AGENTS.md) | [Source](https://github.com/osmandapp/OsmAnd/blob/e4864bf36b5d8fa25fd2529932936add701ccbe1/AGENTS.md) | 2026-11-02 |
 | Osmantic/ODS | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Osmantic/ODS/CLAUDE.md) | [Source](https://github.com/Osmantic/ODS/blob/86c350365b6276244bc5b2956b1fc0a5f5dec437/CLAUDE.md) | 2026-10-24 |
 | OthmanAdi/planning-with-files | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/OthmanAdi/planning-with-files/AGENTS.md) | [Source](https://github.com/OthmanAdi/planning-with-files/blob/7056ed2f2b86a8a9e18840f625ac66a48fa07693/AGENTS.md) | 2026-10-10 |
 | OtterMind/Chat2DB | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/OtterMind/Chat2DB/AGENTS.md) | [Source](https://github.com/OtterMind/Chat2DB/blob/14729e027ad5c0a148b462de53a75638688b7cda/AGENTS.md) | 2026-08-19 |
@@ -3340,8 +3383,6 @@ Archived entries do not participate in current rankings.
 | papers-we-love/papers-we-love | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/papers-we-love/papers-we-love/AGENTS.md) | [Source](https://github.com/papers-we-love/papers-we-love/blob/0b33c953aae0c90e6d15c4ed41b01e76358f3c28/AGENTS.md) | 2026-11-06 |
 | ParadevAI/Paradev | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/ParadevAI/Paradev/AGENTS.md) | [Source](https://github.com/ParadevAI/Paradev/blob/2c586e1c6c8d4a9f78c5dd1f38fa1c11837bf773/AGENTS.md) | 2026-10-27 |
 | ParadevAI/Paradev | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/ParadevAI/Paradev/CLAUDE.md) | [Source](https://github.com/ParadevAI/Paradev/blob/2c586e1c6c8d4a9f78c5dd1f38fa1c11837bf773/CLAUDE.md) | 2026-10-27 |
-| paradigmxyz/reth | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/paradigmxyz/reth/AGENTS.md) | [Source](https://github.com/paradigmxyz/reth/blob/bbb3e3ba3a4dc35f55c77d7a0c2337238da99eb8/AGENTS.md) | 2026-11-03 |
-| paradigmxyz/reth | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/paradigmxyz/reth/CLAUDE.md) | [Source](https://github.com/paradigmxyz/reth/blob/bbb3e3ba3a4dc35f55c77d7a0c2337238da99eb8/CLAUDE.md) | 2026-11-03 |
 | pascalorg/editor | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/pascalorg/editor/AGENTS.md) | [Source](https://github.com/pascalorg/editor/blob/029bfda735c51dee5ff97b16353e2f4fddcc44b8/AGENTS.md) | 2026-09-09 |
 | pascalorg/editor | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/pascalorg/editor/CLAUDE.md) | [Source](https://github.com/pascalorg/editor/blob/029bfda735c51dee5ff97b16353e2f4fddcc44b8/CLAUDE.md) | 2026-09-09 |
 | pascalorg/editor | `GEMINI.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/pascalorg/editor/GEMINI.md) | [Source](https://github.com/pascalorg/editor/blob/029bfda735c51dee5ff97b16353e2f4fddcc44b8/GEMINI.md) | 2026-09-09 |
@@ -3357,7 +3398,8 @@ Archived entries do not participate in current rankings.
 | pdfme/pdfme | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/pdfme/pdfme/CLAUDE.md) | [Source](https://github.com/pdfme/pdfme/blob/60d73ae0a0b707c241c14e3c70bcec9670c56113/CLAUDE.md) | 2026-11-03 |
 | pdm-project/pdm | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/pdm-project/pdm/AGENTS.md) | [Source](https://github.com/pdm-project/pdm/blob/9e625f5508ed1569a7faf785d012867830905c9f/AGENTS.md) | 2026-10-31 |
 | pdm-project/pdm | `CLAUDE.md` | `deleted` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/pdm-project/pdm/CLAUDE.md) | [Source](https://github.com/pdm-project/pdm/blob/924c6d185f5eabf864258b0eee685f8e164dfd62/CLAUDE.md) | 2026-09-11 |
-| peass-ng/PEASS-ng | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/peass-ng/PEASS-ng/AGENTS.md) | [Source](https://github.com/peass-ng/PEASS-ng/blob/6c7340b30f7a146b04d7549a9e6576ebe2e85d0d/AGENTS.md) | 2026-11-05 |
+| peach-mitao/peach | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/peach-mitao/peach/AGENTS.md) | [Source](https://github.com/peach-mitao/peach/blob/84480c5b324038d9857f7cd0a4b156e86b18a075/AGENTS.md) | 2026-11-08 |
+| peach-mitao/peach | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/peach-mitao/peach/CLAUDE.md) | [Source](https://github.com/peach-mitao/peach/blob/84480c5b324038d9857f7cd0a4b156e86b18a075/CLAUDE.md) | 2026-11-08 |
 | PeerDB-io/peerdb | `.claude/CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/PeerDB-io/peerdb/.claude/CLAUDE.md) | [Source](https://github.com/PeerDB-io/peerdb/blob/e37f7f05e7b794052541c49e38d9a936afc4b1d8/.claude/CLAUDE.md) | 2026-08-07 |
 | peetzweg/opendisplay | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/peetzweg/opendisplay/AGENTS.md) | [Source](https://github.com/peetzweg/opendisplay/blob/b9eec1f232fb5ea571c87e8392379a84f47b237f/AGENTS.md) | 2026-10-02 |
 | penpot/penpot | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/penpot/penpot/AGENTS.md) | [Source](https://github.com/penpot/penpot/blob/e4c1b154e33293707de94d0f9f2ad81c742dd177/AGENTS.md) | 2026-10-27 |
@@ -3396,20 +3438,17 @@ Archived entries do not participate in current rankings.
 | podman-container-tools/podman | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/podman-container-tools/podman/AGENTS.md) | [Source](https://github.com/podman-container-tools/podman/blob/c3b297331ee4e79582d44c8b8a28f2a030f39cdc/AGENTS.md) | 2026-11-05 |
 | podman-desktop/podman-desktop | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/podman-desktop/podman-desktop/AGENTS.md) | [Source](https://github.com/podman-desktop/podman-desktop/blob/fd28a97bc87404b7f86ad8b35125d12577a70418/AGENTS.md) | 2026-10-19 |
 | podman-desktop/podman-desktop | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/podman-desktop/podman-desktop/CLAUDE.md) | [Source](https://github.com/podman-desktop/podman-desktop/blob/fd28a97bc87404b7f86ad8b35125d12577a70418/CLAUDE.md) | 2026-10-19 |
-| polarsource/polar | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/polarsource/polar/AGENTS.md) | [Source](https://github.com/polarsource/polar/blob/6237cc8b50f875da8b414e3378ab415ed34b9be3/AGENTS.md) | 2026-11-03 |
-| polarsource/polar | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/polarsource/polar/CLAUDE.md) | [Source](https://github.com/polarsource/polar/blob/6237cc8b50f875da8b414e3378ab415ed34b9be3/CLAUDE.md) | 2026-11-03 |
 | pollen-robotics/microduck | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/pollen-robotics/microduck/AGENTS.md) | [Source](https://github.com/pollen-robotics/microduck/blob/66bd9f4835bbe5d1d2b526ca571e678ffe5e5a43/AGENTS.md) | 2026-10-29 |
 | pollen-robotics/microduck | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/pollen-robotics/microduck/CLAUDE.md) | [Source](https://github.com/pollen-robotics/microduck/blob/66bd9f4835bbe5d1d2b526ca571e678ffe5e5a43/CLAUDE.md) | 2026-10-29 |
 | pollinations/pollinations | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/pollinations/pollinations/AGENTS.md) | [Source](https://github.com/pollinations/pollinations/blob/7f1750dc0cfe43d2770173a9f8a452a17f154e32/AGENTS.md) | 2026-11-02 |
 | pollinations/pollinations | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/pollinations/pollinations/CLAUDE.md) | [Source](https://github.com/pollinations/pollinations/blob/7f1750dc0cfe43d2770173a9f8a452a17f154e32/CLAUDE.md) | 2026-11-02 |
 | polterguy/magic | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/polterguy/magic/AGENTS.md) | [Source](https://github.com/polterguy/magic/blob/099daaa3bf7fc51cbc586c592fd6c6a914f11931/AGENTS.md) | 2026-11-01 |
 | pomerium/pomerium | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/pomerium/pomerium/AGENTS.md) | [Source](https://github.com/pomerium/pomerium/blob/b0a98b1da5f2f9062546f6fb9e85a58da6cc3aa8/AGENTS.md) | 2026-09-09 |
-| PostHog/posthog | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/PostHog/posthog/AGENTS.md) | [Source](https://github.com/PostHog/posthog/blob/688ea3ec12b25f414c85db839f2f8479059bd150/AGENTS.md) | 2026-11-06 |
-| PostHog/posthog | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/PostHog/posthog/CLAUDE.md) | [Source](https://github.com/PostHog/posthog/blob/688ea3ec12b25f414c85db839f2f8479059bd150/CLAUDE.md) | 2026-11-06 |
 | PostHog/posthog-foss | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/PostHog/posthog-foss/AGENTS.md) | [Source](https://github.com/PostHog/posthog-foss/blob/429c44cf90c985ccba70f5713945edef9722e505/AGENTS.md) | 2026-10-27 |
 | PostHog/posthog-foss | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/PostHog/posthog-foss/CLAUDE.md) | [Source](https://github.com/PostHog/posthog-foss/blob/429c44cf90c985ccba70f5713945edef9722e505/CLAUDE.md) | 2026-10-27 |
 | PostHog/posthog.com | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/PostHog/posthog.com/AGENTS.md) | [Source](https://github.com/PostHog/posthog.com/blob/dd607949383b773ddefdc0ffe993704517c99333/AGENTS.md) | 2026-10-01 |
 | PostHog/posthog.com | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/PostHog/posthog.com/CLAUDE.md) | [Source](https://github.com/PostHog/posthog.com/blob/dd607949383b773ddefdc0ffe993704517c99333/CLAUDE.md) | 2026-10-01 |
+| powerfullz/override-rules | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/powerfullz/override-rules/AGENTS.md) | [Source](https://github.com/powerfullz/override-rules/blob/a6dfd9063ff36588f600891046169951020124ae/AGENTS.md) | 2026-11-08 |
 | PrefectHQ/fastmcp | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/PrefectHQ/fastmcp/AGENTS.md) | [Source](https://github.com/PrefectHQ/fastmcp/blob/588297eb53c00d8a60291b05d4315fe753355c10/AGENTS.md) | 2026-11-02 |
 | PrefectHQ/fastmcp | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/PrefectHQ/fastmcp/CLAUDE.md) | [Source](https://github.com/PrefectHQ/fastmcp/blob/588297eb53c00d8a60291b05d4315fe753355c10/CLAUDE.md) | 2026-11-02 |
 | prefix-dev/pixi | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/prefix-dev/pixi/AGENTS.md) | [Source](https://github.com/prefix-dev/pixi/blob/6e052468184df63fd4548ef65936babb06ff173f/AGENTS.md) | 2026-11-03 |
@@ -3466,8 +3505,6 @@ Archived entries do not participate in current rankings.
 | python/cpython | `.claude/CLAUDE.md` | `deleted` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/python/cpython/.claude/CLAUDE.md) | [Source](https://github.com/python/cpython/blob/01192a80a6e32730d7c6f4fd3bcb1893bce29426/.claude/CLAUDE.md) | 2026-09-17 |
 | python/cpython | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/python/cpython/AGENTS.md) | [Source](https://github.com/python/cpython/blob/b84e0b7ce05f71de1dd017c899ba3a3d81fbdc0a/AGENTS.md) | 2026-10-31 |
 | python/typeshed | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/python/typeshed/AGENTS.md) | [Source](https://github.com/python/typeshed/blob/d097b16922b98d06980c4be8050b44132da76ba1/AGENTS.md) | 2026-08-30 |
-| pytorch/executorch | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/pytorch/executorch/AGENTS.md) | [Source](https://github.com/pytorch/executorch/blob/d3c81d6de7534c22a46b6421acb35c231fbac7a4/AGENTS.md) | 2026-10-27 |
-| pytorch/executorch | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/pytorch/executorch/CLAUDE.md) | [Source](https://github.com/pytorch/executorch/blob/d3c81d6de7534c22a46b6421acb35c231fbac7a4/CLAUDE.md) | 2026-10-27 |
 | pytorch/pytorch | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/pytorch/pytorch/AGENTS.md) | [Source](https://github.com/pytorch/pytorch/blob/765b7ef3fd6ac018b2cf3c35d8a66a3594636f50/AGENTS.md) | 2026-11-04 |
 | pytorch/pytorch | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/pytorch/pytorch/CLAUDE.md) | [Source](https://github.com/pytorch/pytorch/blob/765b7ef3fd6ac018b2cf3c35d8a66a3594636f50/CLAUDE.md) | 2026-11-04 |
 | pytorch/torchtitan | `.claude/CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/pytorch/torchtitan/.claude/CLAUDE.md) | [Source](https://github.com/pytorch/torchtitan/blob/06f1546deb83d255fdd19bf98faf06db936cd690/.claude/CLAUDE.md) | 2026-11-05 |
@@ -3492,6 +3529,8 @@ Archived entries do not participate in current rankings.
 | quii/learn-go-with-tests | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/quii/learn-go-with-tests/CLAUDE.md) | [Source](https://github.com/quii/learn-go-with-tests/blob/592e9f747e9e851af40eb0a5cb0ac4fe86ef18a6/CLAUDE.md) | 2026-10-26 |
 | QwenLM/qwen-code | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/QwenLM/qwen-code/AGENTS.md) | [Source](https://github.com/QwenLM/qwen-code/blob/a6ed0518df69eee2fbb19858e194c1d955b37665/AGENTS.md) | 2026-10-28 |
 | QwenLM/qwen-code | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/QwenLM/qwen-code/CLAUDE.md) | [Source](https://github.com/QwenLM/qwen-code/blob/a6ed0518df69eee2fbb19858e194c1d955b37665/CLAUDE.md) | 2026-10-28 |
+| QwikDev/qwik | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/QwikDev/qwik/AGENTS.md) | [Source](https://github.com/QwikDev/qwik/blob/75f5d3dd48f0b80263af274924966a4fdf1769b2/AGENTS.md) | 2026-11-08 |
+| QwikDev/qwik | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/QwikDev/qwik/CLAUDE.md) | [Source](https://github.com/QwikDev/qwik/blob/75f5d3dd48f0b80263af274924966a4fdf1769b2/CLAUDE.md) | 2026-11-08 |
 | rabbitmq/rabbitmq-server | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/rabbitmq/rabbitmq-server/AGENTS.md) | [Source](https://github.com/rabbitmq/rabbitmq-server/blob/44e8df714a9ed7e117d12494af7faf34f2485a2c/AGENTS.md) | 2026-09-03 |
 | rabbitmq/rabbitmq-server | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/rabbitmq/rabbitmq-server/CLAUDE.md) | [Source](https://github.com/rabbitmq/rabbitmq-server/blob/44e8df714a9ed7e117d12494af7faf34f2485a2c/CLAUDE.md) | 2026-09-03 |
 | rabbitmq/rabbitmq-server | `GEMINI.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/rabbitmq/rabbitmq-server/GEMINI.md) | [Source](https://github.com/rabbitmq/rabbitmq-server/blob/44e8df714a9ed7e117d12494af7faf34f2485a2c/GEMINI.md) | 2026-09-03 |
@@ -3529,7 +3568,6 @@ Archived entries do not participate in current rankings.
 | refined-github/refined-github | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/refined-github/refined-github/CLAUDE.md) | [Source](https://github.com/refined-github/refined-github/blob/171e72c28f8cd7f5dff4f50027555d7380a0dfc8/CLAUDE.md) | 2026-11-01 |
 | remeda/remeda | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/remeda/remeda/AGENTS.md) | [Source](https://github.com/remeda/remeda/blob/3dd11cc8d04e985310a214968c52e8729af8f18d/AGENTS.md) | 2026-10-25 |
 | remeda/remeda | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/remeda/remeda/CLAUDE.md) | [Source](https://github.com/remeda/remeda/blob/3dd11cc8d04e985310a214968c52e8729af8f18d/CLAUDE.md) | 2026-10-25 |
-| remotion-dev/remotion | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/remotion-dev/remotion/AGENTS.md) | [Source](https://github.com/remotion-dev/remotion/blob/e16b4f5e4e4b5a827154450b1efa297fbdc8cf96/AGENTS.md) | 2026-11-05 |
 | remotion-dev/remotion | `CLAUDE.md` | `deleted` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/remotion-dev/remotion/CLAUDE.md) | [Source](https://github.com/remotion-dev/remotion/blob/87cd2240a92fe00244f9f8b71ddbba60e39fd83e/CLAUDE.md) | 2026-09-16 |
 | remsky/Kokoro-FastAPI | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/remsky/Kokoro-FastAPI/AGENTS.md) | [Source](https://github.com/remsky/Kokoro-FastAPI/blob/90c081bc388fea0ff0d946922b20f60c14bdd119/AGENTS.md) | 2026-08-14 |
 | renovatebot/renovate | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/renovatebot/renovate/AGENTS.md) | [Source](https://github.com/renovatebot/renovate/blob/0f667f98eea2a2c9d2a187a65cab6c680f40c9e9/AGENTS.md) | 2026-10-10 |
@@ -3547,8 +3585,7 @@ Archived entries do not participate in current rankings.
 | RevenueCat/react-native-purchases | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/RevenueCat/react-native-purchases/CLAUDE.md) | [Source](https://github.com/RevenueCat/react-native-purchases/blob/8106ae93269fe9069476e5734588b96c6c1f3a5e/CLAUDE.md) | 2026-11-02 |
 | revive-lint/revive | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/revive-lint/revive/AGENTS.md) | [Source](https://github.com/revive-lint/revive/blob/c9b151e99d490741129aade2c17a9ba9722ae390/AGENTS.md) | 2026-10-07 |
 | reyamira/models | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/reyamira/models/CLAUDE.md) | [Source](https://github.com/reyamira/models/blob/738aecee3095448762a3047620717b6f38c14cf0/CLAUDE.md) | 2026-08-30 |
-| RfidResearchGroup/proxmark3 | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/RfidResearchGroup/proxmark3/AGENTS.md) | [Source](https://github.com/RfidResearchGroup/proxmark3/blob/199c3f107c619c02b744352eca2c2cd4b42cc718/AGENTS.md) | 2026-09-16 |
-| RfidResearchGroup/proxmark3 | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/RfidResearchGroup/proxmark3/CLAUDE.md) | [Source](https://github.com/RfidResearchGroup/proxmark3/blob/199c3f107c619c02b744352eca2c2cd4b42cc718/CLAUDE.md) | 2026-09-16 |
+| RfidResearchGroup/proxmark3 | `CLAUDE.md` | `deleted` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/RfidResearchGroup/proxmark3/CLAUDE.md) | [Source](https://github.com/RfidResearchGroup/proxmark3/blob/199c3f107c619c02b744352eca2c2cd4b42cc718/CLAUDE.md) | 2026-09-16 |
 | Rich-Harris/degit | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Rich-Harris/degit/AGENTS.md) | [Source](https://github.com/Rich-Harris/degit/blob/101228a9a5f4e6c2a8c6c86877d2c4abacd9ee6c/AGENTS.md) | 2026-08-02 |
 | rikkahub/rikkahub | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/rikkahub/rikkahub/AGENTS.md) | [Source](https://github.com/rikkahub/rikkahub/blob/fe5a28f9a25fb6267065881d7738dd909ad9e51e/AGENTS.md) | 2026-11-07 |
 | rikkahub/rikkahub | `CLAUDE.md` | `deleted` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/rikkahub/rikkahub/CLAUDE.md) | [Source](https://github.com/rikkahub/rikkahub/blob/c3d7dc63f08545b18bb2662a10275cdf323572b9/CLAUDE.md) | 2026-07-25 |
@@ -3583,6 +3620,7 @@ Archived entries do not participate in current rankings.
 | rolldown/rolldown | `CLAUDE.md` | `deleted` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/rolldown/rolldown/CLAUDE.md) | [Source](https://github.com/rolldown/rolldown/blob/78699253af662446129199ae4d5ac0dca29dc5bd/CLAUDE.md) | 2026-09-24 |
 | rollup/rollup | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/rollup/rollup/AGENTS.md) | [Source](https://github.com/rollup/rollup/blob/1c91c24ad788dc08c339b61e6483171edfc52ab8/AGENTS.md) | 2026-07-18 |
 | rook/rook | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/rook/rook/AGENTS.md) | [Source](https://github.com/rook/rook/blob/c4c96199071ea5be51067917d76b1dbb98ca1988/AGENTS.md) | 2026-08-10 |
+| root-project/root | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/root-project/root/AGENTS.md) | [Source](https://github.com/root-project/root/blob/8d21bba198849df0bd5307e1f043966d550853d2/AGENTS.md) | 2026-11-08 |
 | rorkai/App-Store-Connect-CLI | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/rorkai/App-Store-Connect-CLI/AGENTS.md) | [Source](https://github.com/rorkai/App-Store-Connect-CLI/blob/21091332d7b11f933565a38513741eee8888d6ed/AGENTS.md) | 2026-09-26 |
 | rorkai/App-Store-Connect-CLI | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/rorkai/App-Store-Connect-CLI/CLAUDE.md) | [Source](https://github.com/rorkai/App-Store-Connect-CLI/blob/21091332d7b11f933565a38513741eee8888d6ed/CLAUDE.md) | 2026-09-26 |
 | rorygallagher2024/glasshouse | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/rorygallagher2024/glasshouse/AGENTS.md) | [Source](https://github.com/rorygallagher2024/glasshouse/blob/0bbf3039d64b47166a5a8fe998d8880de93f7d25/AGENTS.md) | 2026-10-30 |
@@ -3634,8 +3672,6 @@ Archived entries do not participate in current rankings.
 | SBoudrias/Inquirer.js | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/SBoudrias/Inquirer.js/AGENTS.md) | [Source](https://github.com/SBoudrias/Inquirer.js/blob/bb3f6a525b0f02402f9395d9a6da88d33809e94a/AGENTS.md) | 2026-07-30 |
 | SBoudrias/Inquirer.js | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/SBoudrias/Inquirer.js/CLAUDE.md) | [Source](https://github.com/SBoudrias/Inquirer.js/blob/bb3f6a525b0f02402f9395d9a6da88d33809e94a/CLAUDE.md) | 2026-07-30 |
 | scala/scala3 | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/scala/scala3/AGENTS.md) | [Source](https://github.com/scala/scala3/blob/0c941e8fa86d9efb3cb0e26d907de184e5316ba3/AGENTS.md) | 2026-10-30 |
-| scalar/scalar | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/scalar/scalar/AGENTS.md) | [Source](https://github.com/scalar/scalar/blob/1fa4255b2ad83c956fe5dc8838aa7b3c4e4fd3b9/AGENTS.md) | 2026-11-05 |
-| scalar/scalar | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/scalar/scalar/CLAUDE.md) | [Source](https://github.com/scalar/scalar/blob/1fa4255b2ad83c956fe5dc8838aa7b3c4e4fd3b9/CLAUDE.md) | 2026-11-05 |
 | scikit-learn/scikit-learn | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/scikit-learn/scikit-learn/AGENTS.md) | [Source](https://github.com/scikit-learn/scikit-learn/blob/14e0baec6d3db2b197c6f966e4580ee17c90ed64/AGENTS.md) | 2026-10-07 |
 | scrapy/scrapy | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/scrapy/scrapy/AGENTS.md) | [Source](https://github.com/scrapy/scrapy/blob/a0e3b34479d272129b1710f6aabe0652ddb9939c/AGENTS.md) | 2026-11-05 |
 | screenpipe/screenpipe | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/screenpipe/screenpipe/AGENTS.md) | [Source](https://github.com/screenpipe/screenpipe/blob/08dd8a571402adf8cae003c6fd98c343651faafa/AGENTS.md) | 2026-09-27 |
@@ -3647,7 +3683,6 @@ Archived entries do not participate in current rankings.
 | se2p/pynguin | `GEMINI.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/se2p/pynguin/GEMINI.md) | [Source](https://github.com/se2p/pynguin/blob/4affc069b16730a0b6a0012ebac68670234c9d56/GEMINI.md) | 2026-07-24 |
 | secdev/scapy | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/secdev/scapy/AGENTS.md) | [Source](https://github.com/secdev/scapy/blob/7daa15d160d6f0fbea7b1bb27cb8d0f38f6f7a02/AGENTS.md) | 2026-09-30 |
 | securego/gosec | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/securego/gosec/CLAUDE.md) | [Source](https://github.com/securego/gosec/blob/d98945a5b2856e4586445089f564085c3b453e8f/CLAUDE.md) | 2026-09-07 |
-| seedds/nxnative | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/seedds/nxnative/AGENTS.md) | [Source](https://github.com/seedds/nxnative/blob/1ae435d5dbe378a022ec336692a26787557a6cea/AGENTS.md) | 2026-11-02 |
 | SeleniumHQ/selenium | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/SeleniumHQ/selenium/AGENTS.md) | [Source](https://github.com/SeleniumHQ/selenium/blob/25b2c492c0c6a8ce4d629d644fa6e9de8b469bef/AGENTS.md) | 2026-09-27 |
 | SeleniumHQ/selenium | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/SeleniumHQ/selenium/CLAUDE.md) | [Source](https://github.com/SeleniumHQ/selenium/blob/25b2c492c0c6a8ce4d629d644fa6e9de8b469bef/CLAUDE.md) | 2026-09-27 |
 | selkies-project/selkies | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/selkies-project/selkies/AGENTS.md) | [Source](https://github.com/selkies-project/selkies/blob/41c7a0237679f2b736cbab291ce7588ee2dca5f9/AGENTS.md) | 2026-10-18 |
@@ -3696,6 +3731,7 @@ Archived entries do not participate in current rankings.
 | Skyvern-AI/skyvern | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Skyvern-AI/skyvern/CLAUDE.md) | [Source](https://github.com/Skyvern-AI/skyvern/blob/d761a5e51272bc0d25bb9fca6728f918031b2251/CLAUDE.md) | 2026-11-07 |
 | slint-ui/slint | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/slint-ui/slint/AGENTS.md) | [Source](https://github.com/slint-ui/slint/blob/11692b7c4c7ab7177b5b41ec07999a625e41554b/AGENTS.md) | 2026-11-06 |
 | slint-ui/slint | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/slint-ui/slint/CLAUDE.md) | [Source](https://github.com/slint-ui/slint/blob/11692b7c4c7ab7177b5b41ec07999a625e41554b/CLAUDE.md) | 2026-11-06 |
+| slopus/happy | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/slopus/happy/AGENTS.md) | [Source](https://github.com/slopus/happy/blob/ca928fd1a96abd7e7f6e6caf7c8e71472affa89f/AGENTS.md) | 2026-11-08 |
 | smartcontractkit/chainlink | `.github/AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/smartcontractkit/chainlink/.github/AGENTS.md) | [Source](https://github.com/smartcontractkit/chainlink/blob/700865fffc04f4939eb3ea66a05828aa21e97e19/.github/AGENTS.md) | 2026-11-05 |
 | smol-machines/smolvm | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/smol-machines/smolvm/AGENTS.md) | [Source](https://github.com/smol-machines/smolvm/blob/a8bc69609c1bda32f7133b5e18aaf3a663b26d7f/AGENTS.md) | 2026-10-17 |
 | snyk/cli | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/snyk/cli/AGENTS.md) | [Source](https://github.com/snyk/cli/blob/771a2f9f1519a2333982e78d0870ef9aaf81ac94/AGENTS.md) | 2026-10-23 |
@@ -3736,15 +3772,10 @@ Archived entries do not participate in current rankings.
 | steipete/CodexBar | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/steipete/CodexBar/AGENTS.md) | [Source](https://github.com/steipete/CodexBar/blob/2f741a4330a9330442397a90210dc53598128883/AGENTS.md) | 2026-11-05 |
 | steipete/CodexBar | `CLAUDE.md` | `deleted` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/steipete/CodexBar/CLAUDE.md) | [Source](https://github.com/steipete/CodexBar/blob/9ac949917d9bb04f92910e666a9a98ec018a9ee4/CLAUDE.md) | 2026-09-13 |
 | stenzek/duckstation | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/stenzek/duckstation/CLAUDE.md) | [Source](https://github.com/stenzek/duckstation/blob/f26d4412474985568375fe2e5ef1f0ec20696852/CLAUDE.md) | 2026-11-07 |
-| Stirling-Tools/Stirling-PDF | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Stirling-Tools/Stirling-PDF/AGENTS.md) | [Source](https://github.com/Stirling-Tools/Stirling-PDF/blob/a7e593728dd9aa81e75318a949789d3c2e9ee754/AGENTS.md) | 2026-10-18 |
-| Stirling-Tools/Stirling-PDF | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Stirling-Tools/Stirling-PDF/CLAUDE.md) | [Source](https://github.com/Stirling-Tools/Stirling-PDF/blob/a7e593728dd9aa81e75318a949789d3c2e9ee754/CLAUDE.md) | 2026-10-18 |
 | stoplightio/prism | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/stoplightio/prism/CLAUDE.md) | [Source](https://github.com/stoplightio/prism/blob/82b4aa5be0efebba23961115e1475bbd6a6fda1d/CLAUDE.md) | 2026-08-05 |
-| storybookjs/storybook | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/storybookjs/storybook/AGENTS.md) | [Source](https://github.com/storybookjs/storybook/blob/e2442d7e5a120c326e875675c4794e4d7efe280e/AGENTS.md) | 2026-10-20 |
-| storybookjs/storybook | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/storybookjs/storybook/CLAUDE.md) | [Source](https://github.com/storybookjs/storybook/blob/e2442d7e5a120c326e875675c4794e4d7efe280e/CLAUDE.md) | 2026-10-20 |
+| storybookjs/storybook | `CLAUDE.md` | `deleted` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/storybookjs/storybook/CLAUDE.md) | [Source](https://github.com/storybookjs/storybook/blob/e2442d7e5a120c326e875675c4794e4d7efe280e/CLAUDE.md) | 2026-10-20 |
 | storytold/cadcraft | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/storytold/cadcraft/AGENTS.md) | [Source](https://github.com/storytold/cadcraft/blob/fc4e98315a8d771b5ab832f0ade0b5e7b106df7f/AGENTS.md) | 2026-10-15 |
 | storytold/cadcraft | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/storytold/cadcraft/CLAUDE.md) | [Source](https://github.com/storytold/cadcraft/blob/fc4e98315a8d771b5ab832f0ade0b5e7b106df7f/CLAUDE.md) | 2026-10-15 |
-| storytold/craft-anything | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/storytold/craft-anything/AGENTS.md) | [Source](https://github.com/storytold/craft-anything/blob/f672d50f0103983ca8149d80a5103f12e91b888c/AGENTS.md) | 2026-11-07 |
-| storytold/craft-anything | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/storytold/craft-anything/CLAUDE.md) | [Source](https://github.com/storytold/craft-anything/blob/f672d50f0103983ca8149d80a5103f12e91b888c/CLAUDE.md) | 2026-11-07 |
 | storytold/craft-launcher | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/storytold/craft-launcher/AGENTS.md) | [Source](https://github.com/storytold/craft-launcher/blob/885538a5aa11c020eb0382de0fd4184580a8f4b5/AGENTS.md) | 2026-11-05 |
 | storytold/craft-launcher | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/storytold/craft-launcher/CLAUDE.md) | [Source](https://github.com/storytold/craft-launcher/blob/885538a5aa11c020eb0382de0fd4184580a8f4b5/CLAUDE.md) | 2026-11-05 |
 | storytold/designcraft | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/storytold/designcraft/AGENTS.md) | [Source](https://github.com/storytold/designcraft/blob/008f519c46ae82c281bea921e297b3f2e37d99f2/AGENTS.md) | 2026-11-01 |
@@ -3755,8 +3786,6 @@ Archived entries do not participate in current rankings.
 | storytold/filmcraft | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/storytold/filmcraft/CLAUDE.md) | [Source](https://github.com/storytold/filmcraft/blob/814287858c425759540fa529b6d72bdc470f4297/CLAUDE.md) | 2026-10-10 |
 | storytold/gridcraft | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/storytold/gridcraft/AGENTS.md) | [Source](https://github.com/storytold/gridcraft/blob/17b9f6ff0125209fe707efc919690632ff49cb0b/AGENTS.md) | 2026-10-25 |
 | storytold/gridcraft | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/storytold/gridcraft/CLAUDE.md) | [Source](https://github.com/storytold/gridcraft/blob/17b9f6ff0125209fe707efc919690632ff49cb0b/CLAUDE.md) | 2026-10-25 |
-| storytold/pdfcraft | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/storytold/pdfcraft/AGENTS.md) | [Source](https://github.com/storytold/pdfcraft/blob/3683150ee0b79b82f7cce86b9311f10c7f39b3b2/AGENTS.md) | 2026-11-04 |
-| storytold/pdfcraft | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/storytold/pdfcraft/CLAUDE.md) | [Source](https://github.com/storytold/pdfcraft/blob/3683150ee0b79b82f7cce86b9311f10c7f39b3b2/CLAUDE.md) | 2026-11-04 |
 | storytold/photocraft | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/storytold/photocraft/AGENTS.md) | [Source](https://github.com/storytold/photocraft/blob/5d9c57e60db966382abda2638d0ccbb7489d8ee7/AGENTS.md) | 2026-11-02 |
 | storytold/vectorcraft | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/storytold/vectorcraft/AGENTS.md) | [Source](https://github.com/storytold/vectorcraft/blob/75dacb4fec73dac539538c91f92d41e09b255d23/AGENTS.md) | 2026-10-24 |
 | storytold/vectorcraft | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/storytold/vectorcraft/CLAUDE.md) | [Source](https://github.com/storytold/vectorcraft/blob/75dacb4fec73dac539538c91f92d41e09b255d23/CLAUDE.md) | 2026-10-24 |
@@ -3764,16 +3793,13 @@ Archived entries do not participate in current rankings.
 | storytold/wordcraft | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/storytold/wordcraft/CLAUDE.md) | [Source](https://github.com/storytold/wordcraft/blob/655b4312d3b3972e5a03a7e1ef18d9fa267c837f/CLAUDE.md) | 2026-11-04 |
 | strands-agents/harness-sdk | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/strands-agents/harness-sdk/AGENTS.md) | [Source](https://github.com/strands-agents/harness-sdk/blob/8925798c0053e71ba98bf6c0ee11830eb5e0916b/AGENTS.md) | 2026-10-01 |
 | strands-agents/harness-sdk | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/strands-agents/harness-sdk/CLAUDE.md) | [Source](https://github.com/strands-agents/harness-sdk/blob/8925798c0053e71ba98bf6c0ee11830eb5e0916b/CLAUDE.md) | 2026-10-01 |
-| strapi/strapi | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/strapi/strapi/AGENTS.md) | [Source](https://github.com/strapi/strapi/blob/79210737ef74dc8138e0957587fa9ec6ac6b5b99/AGENTS.md) | 2026-10-15 |
-| strapi/strapi | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/strapi/strapi/CLAUDE.md) | [Source](https://github.com/strapi/strapi/blob/79210737ef74dc8138e0957587fa9ec6ac6b5b99/CLAUDE.md) | 2026-10-15 |
 | streamlit/streamlit | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/streamlit/streamlit/AGENTS.md) | [Source](https://github.com/streamlit/streamlit/blob/96db1e84d57dd616d58c7358ecba6c8c58f4aee9/AGENTS.md) | 2026-11-07 |
 | streamlit/streamlit | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/streamlit/streamlit/CLAUDE.md) | [Source](https://github.com/streamlit/streamlit/blob/96db1e84d57dd616d58c7358ecba6c8c58f4aee9/CLAUDE.md) | 2026-11-07 |
 | streamyfin/streamyfin | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/streamyfin/streamyfin/CLAUDE.md) | [Source](https://github.com/streamyfin/streamyfin/blob/1ce92256e5eeed37e7f2764c853d2b34178f5d84/CLAUDE.md) | 2026-10-04 |
-| strimzi/strimzi-kafka-operator | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/strimzi/strimzi-kafka-operator/AGENTS.md) | [Source](https://github.com/strimzi/strimzi-kafka-operator/blob/477b4bed54fd264930e7a4f66b52a4ffee20d6e3/AGENTS.md) | 2026-09-22 |
-| strimzi/strimzi-kafka-operator | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/strimzi/strimzi-kafka-operator/CLAUDE.md) | [Source](https://github.com/strimzi/strimzi-kafka-operator/blob/477b4bed54fd264930e7a4f66b52a4ffee20d6e3/CLAUDE.md) | 2026-09-22 |
 | styled-components/styled-components | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/styled-components/styled-components/AGENTS.md) | [Source](https://github.com/styled-components/styled-components/blob/5f2a27ad31d4b17315a099c7f4ac8300c15f2cc2/AGENTS.md) | 2026-08-08 |
 | styled-components/styled-components | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/styled-components/styled-components/CLAUDE.md) | [Source](https://github.com/styled-components/styled-components/blob/5f2a27ad31d4b17315a099c7f4ac8300c15f2cc2/CLAUDE.md) | 2026-08-08 |
 | suitenumerique/docs | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/suitenumerique/docs/AGENTS.md) | [Source](https://github.com/suitenumerique/docs/blob/909490ae6518b4cd8c486bf98afbdfdd73f755be/AGENTS.md) | 2026-11-03 |
+| sumatrapdfreader/sumatrapdf | `agents.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/sumatrapdfreader/sumatrapdf/agents.md) | [Source](https://github.com/sumatrapdfreader/sumatrapdf/blob/e1591d58987332f1c3a5d343997c78e584aba6fd/agents.md) | 2026-11-08 |
 | sumatrapdfreader/sumatrapdf | `claude.md` | `deleted` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/sumatrapdfreader/sumatrapdf/claude.md) | [Source](https://github.com/sumatrapdfreader/sumatrapdf/blob/e6073b2617dd56c4452e225ca1fd78495f38775c/claude.md) | 2026-08-18 |
 | supabase-community/postgres-language-server | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/supabase-community/postgres-language-server/AGENTS.md) | [Source](https://github.com/supabase-community/postgres-language-server/blob/b73f7d515aee93fb70c31d5f2207a52c2686c647/AGENTS.md) | 2026-11-04 |
 | supabase-community/postgres-language-server | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/supabase-community/postgres-language-server/CLAUDE.md) | [Source](https://github.com/supabase-community/postgres-language-server/blob/b73f7d515aee93fb70c31d5f2207a52c2686c647/CLAUDE.md) | 2026-11-04 |
@@ -3803,8 +3829,6 @@ Archived entries do not participate in current rankings.
 | sympozium-ai/sympozium | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/sympozium-ai/sympozium/AGENTS.md) | [Source](https://github.com/sympozium-ai/sympozium/blob/48e35db99dbd53d8aab51515895e079c8a4180c2/AGENTS.md) | 2026-09-19 |
 | sympozium-ai/sympozium | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/sympozium-ai/sympozium/CLAUDE.md) | [Source](https://github.com/sympozium-ai/sympozium/blob/48e35db99dbd53d8aab51515895e079c8a4180c2/CLAUDE.md) | 2026-09-19 |
 | sysown/proxysql | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/sysown/proxysql/CLAUDE.md) | [Source](https://github.com/sysown/proxysql/blob/f02fbf1bb9e0f218a57a5f57df75071218b0f6c0/CLAUDE.md) | 2026-10-23 |
-| systemd/systemd | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/systemd/systemd/AGENTS.md) | [Source](https://github.com/systemd/systemd/blob/c673d9985dedccafc1a67d17d50ad42318d4c254/AGENTS.md) | 2026-10-10 |
-| systemd/systemd | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/systemd/systemd/CLAUDE.md) | [Source](https://github.com/systemd/systemd/blob/c673d9985dedccafc1a67d17d50ad42318d4c254/CLAUDE.md) | 2026-10-10 |
 | T-Auto/dsh-ops | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/T-Auto/dsh-ops/AGENTS.md) | [Source](https://github.com/T-Auto/dsh-ops/blob/ec7244c8e1f65bcde37168c16b3e0476629d3036/AGENTS.md) | 2026-11-01 |
 | TableProApp/TablePro | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/TableProApp/TablePro/AGENTS.md) | [Source](https://github.com/TableProApp/TablePro/blob/ca87a1a7f8d51aade9d88a2a94daa60785f910b6/AGENTS.md) | 2026-11-03 |
 | TableProApp/TablePro | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/TableProApp/TablePro/CLAUDE.md) | [Source](https://github.com/TableProApp/TablePro/blob/ca87a1a7f8d51aade9d88a2a94daa60785f910b6/CLAUDE.md) | 2026-11-03 |
@@ -3850,13 +3874,14 @@ Archived entries do not participate in current rankings.
 | tencentmusic/supersonic | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/tencentmusic/supersonic/CLAUDE.md) | [Source](https://github.com/tencentmusic/supersonic/blob/af08d869c4609bf8d48d64e78c61427fe93f7489/CLAUDE.md) | 2026-08-12 |
 | teng-lin/notebooklm-py | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/teng-lin/notebooklm-py/AGENTS.md) | [Source](https://github.com/teng-lin/notebooklm-py/blob/2ba6c313111d310f5545bd744532600e6910d1ed/AGENTS.md) | 2026-08-03 |
 | teng-lin/notebooklm-py | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/teng-lin/notebooklm-py/CLAUDE.md) | [Source](https://github.com/teng-lin/notebooklm-py/blob/2ba6c313111d310f5545bd744532600e6910d1ed/CLAUDE.md) | 2026-08-03 |
-| tester-army/e2e | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/tester-army/e2e/AGENTS.md) | [Source](https://github.com/tester-army/e2e/blob/893afaa4655b1380d08bbb83d5cfdc7356f26f43/AGENTS.md) | 2026-11-07 |
 | tetherto/qvac | `.github/AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/tetherto/qvac/.github/AGENTS.md) | [Source](https://github.com/tetherto/qvac/blob/f787b004ede6d8616bff5a3002bc4d7297296e91/.github/AGENTS.md) | 2026-10-13 |
 | tetherto/qvac | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/tetherto/qvac/AGENTS.md) | [Source](https://github.com/tetherto/qvac/blob/f787b004ede6d8616bff5a3002bc4d7297296e91/AGENTS.md) | 2026-10-13 |
 | tetherto/qvac | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/tetherto/qvac/CLAUDE.md) | [Source](https://github.com/tetherto/qvac/blob/f787b004ede6d8616bff5a3002bc4d7297296e91/CLAUDE.md) | 2026-10-13 |
 | the-open-agent/openagent | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/the-open-agent/openagent/CLAUDE.md) | [Source](https://github.com/the-open-agent/openagent/blob/fb2f8a6b83a85f6f070d884c0b00e4a9919d83cb/CLAUDE.md) | 2026-09-29 |
+| The-PR-Agent/pr-agent | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/The-PR-Agent/pr-agent/AGENTS.md) | [Source](https://github.com/The-PR-Agent/pr-agent/blob/0133d8dd741cad168a23d35a73b4bc5a73bf8cf8/AGENTS.md) | 2026-11-08 |
 | The-PR-Agent/pr-agent | `CLAUDE.md` | `deleted` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/The-PR-Agent/pr-agent/CLAUDE.md) | [Source](https://github.com/The-PR-Agent/pr-agent/blob/1f11725b4d96afbaad8ed956afd074ecf4642426/CLAUDE.md) | 2026-09-23 |
 | The-Vibe-Company/quivr | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/The-Vibe-Company/quivr/AGENTS.md) | [Source](https://github.com/The-Vibe-Company/quivr/blob/2ef53e1b3e370e94b64d22b5e7cbd0500a5515ce/AGENTS.md) | 2026-10-08 |
+| thedevdojo/wave | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/thedevdojo/wave/CLAUDE.md) | [Source](https://github.com/thedevdojo/wave/blob/2b579e7117b77969993b071829e3b5cc3f24a599/CLAUDE.md) | 2026-11-08 |
 | theonedev/onedev | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/theonedev/onedev/AGENTS.md) | [Source](https://github.com/theonedev/onedev/blob/2d624a90eab53259bb21367445123db5496b57c9/AGENTS.md) | 2026-09-30 |
 | TheOrcDev/videorc | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/TheOrcDev/videorc/AGENTS.md) | [Source](https://github.com/TheOrcDev/videorc/blob/ac271eba71a9aa1fa9b5e1686b1fa9e5bdba47d0/AGENTS.md) | 2026-10-28 |
 | ThinkInAIXYZ/deepchat | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/ThinkInAIXYZ/deepchat/AGENTS.md) | [Source](https://github.com/ThinkInAIXYZ/deepchat/blob/31a6b05ab77986b3f8086d9e16c565c3251639e0/AGENTS.md) | 2026-09-16 |
@@ -3875,6 +3900,7 @@ Archived entries do not participate in current rankings.
 | tinacms/tinacms | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/tinacms/tinacms/AGENTS.md) | [Source](https://github.com/tinacms/tinacms/blob/de5c7d72b67f589f1f5c4bccc5f5677e70cd7e2d/AGENTS.md) | 2026-08-24 |
 | tinacms/tinacms | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/tinacms/tinacms/CLAUDE.md) | [Source](https://github.com/tinacms/tinacms/blob/de5c7d72b67f589f1f5c4bccc5f5677e70cd7e2d/CLAUDE.md) | 2026-08-24 |
 | tingaicompass/AI-Compass | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/tingaicompass/AI-Compass/AGENTS.md) | [Source](https://github.com/tingaicompass/AI-Compass/blob/5a77bcb201bd6d09e2d3a136f1a6d90eb1d36518/AGENTS.md) | 2026-07-29 |
+| tinygo-org/tinygo | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/tinygo-org/tinygo/AGENTS.md) | [Source](https://github.com/tinygo-org/tinygo/blob/7895d7d33b0a86b9b903dfe33643a7d5b8ac2723/AGENTS.md) | 2026-11-08 |
 | tinygrad/tinygrad | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/tinygrad/tinygrad/AGENTS.md) | [Source](https://github.com/tinygrad/tinygrad/blob/18972ba28568659bd54b68c06c0e49874e72feb5/AGENTS.md) | 2026-10-30 |
 | tinyhumansai/openhuman | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/tinyhumansai/openhuman/AGENTS.md) | [Source](https://github.com/tinyhumansai/openhuman/blob/0852b119c3fe83cad8fe4c52612378b8e8661a61/AGENTS.md) | 2026-10-24 |
 | tinyhumansai/openhuman | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/tinyhumansai/openhuman/CLAUDE.md) | [Source](https://github.com/tinyhumansai/openhuman/blob/0852b119c3fe83cad8fe4c52612378b8e8661a61/CLAUDE.md) | 2026-10-24 |
@@ -3924,6 +3950,7 @@ Archived entries do not participate in current rankings.
 | trezor/trezor-suite | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/trezor/trezor-suite/CLAUDE.md) | [Source](https://github.com/trezor/trezor-suite/blob/9e78bcc06b97f872d285e99ea0417a76fbebe464/CLAUDE.md) | 2026-10-29 |
 | triggerdotdev/trigger.dev | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/triggerdotdev/trigger.dev/AGENTS.md) | [Source](https://github.com/triggerdotdev/trigger.dev/blob/dbf6dfa296faa606925597328801717c423be7ad/AGENTS.md) | 2026-10-29 |
 | triggerdotdev/trigger.dev | `CLAUDE.md` | `deleted` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/triggerdotdev/trigger.dev/CLAUDE.md) | [Source](https://github.com/triggerdotdev/trigger.dev/blob/8f15fa5af2f95a998587e409f9b8ae1da2aeed8e/CLAUDE.md) | 2026-09-28 |
+| TriliumNext/Trilium | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/TriliumNext/Trilium/CLAUDE.md) | [Source](https://github.com/TriliumNext/Trilium/blob/a4496bc827f0e319066a82c22fc331c01ba73ed2/CLAUDE.md) | 2026-11-08 |
 | trinodb/trino | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/trinodb/trino/AGENTS.md) | [Source](https://github.com/trinodb/trino/blob/d94b9c319ef0bc0bec1b967df3ac07d96c1206c6/AGENTS.md) | 2026-10-21 |
 | trinodb/trino | `CLAUDE.md` | `deleted` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/trinodb/trino/CLAUDE.md) | [Source](https://github.com/trinodb/trino/blob/2924461903f87410bc22d7eaf8736691286e0e2e/CLAUDE.md) | 2026-10-05 |
 | triton-lang/triton | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/triton-lang/triton/AGENTS.md) | [Source](https://github.com/triton-lang/triton/blob/cbac1296d79137d0fc95a110ab3565190acd5425/AGENTS.md) | 2026-10-21 |
@@ -3953,6 +3980,8 @@ Archived entries do not participate in current rankings.
 | tw93/Pake | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/tw93/Pake/CLAUDE.md) | [Source](https://github.com/tw93/Pake/blob/efded07ff3cecc567fbb700b2917d1b8afe999d0/CLAUDE.md) | 2026-08-22 |
 | tw93/Waza | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/tw93/Waza/AGENTS.md) | [Source](https://github.com/tw93/Waza/blob/90a5d371a968416b5e02a5e47995d60d2045be85/AGENTS.md) | 2026-09-05 |
 | tw93/Waza | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/tw93/Waza/CLAUDE.md) | [Source](https://github.com/tw93/Waza/blob/90a5d371a968416b5e02a5e47995d60d2045be85/CLAUDE.md) | 2026-09-05 |
+| twentyhq/twenty | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/twentyhq/twenty/AGENTS.md) | [Source](https://github.com/twentyhq/twenty/blob/90aa1b6168c0279779e02efaaeef384e98c0bfb6/AGENTS.md) | 2026-11-08 |
+| twentyhq/twenty | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/twentyhq/twenty/CLAUDE.md) | [Source](https://github.com/twentyhq/twenty/blob/90aa1b6168c0279779e02efaaeef384e98c0bfb6/CLAUDE.md) | 2026-11-08 |
 | Twigpine/openclaude | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Twigpine/openclaude/AGENTS.md) | [Source](https://github.com/Twigpine/openclaude/blob/17cd64c54e6edac434f92ed1062e4e7dd81df6c6/AGENTS.md) | 2026-10-24 |
 | udecode/plate | `.agents/AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/udecode/plate/.agents/AGENTS.md) | [Source](https://github.com/udecode/plate/blob/97dabdb9f3b4f8068d8d63e7e3da712f6192a295/.agents/AGENTS.md) | 2026-10-09 |
 | udecode/plate | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/udecode/plate/AGENTS.md) | [Source](https://github.com/udecode/plate/blob/97dabdb9f3b4f8068d8d63e7e3da712f6192a295/AGENTS.md) | 2026-10-09 |
@@ -3983,8 +4012,6 @@ Archived entries do not participate in current rankings.
 | utmapp/UTM | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/utmapp/UTM/CLAUDE.md) | [Source](https://github.com/utmapp/UTM/blob/188ea1ba999630572a9a9882044af59fceeb94eb/CLAUDE.md) | 2026-08-01 |
 | uutils/coreutils | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/uutils/coreutils/AGENTS.md) | [Source](https://github.com/uutils/coreutils/blob/5fe69d24ad573461471923f6a89ea0ae50e85d0f/AGENTS.md) | 2026-11-06 |
 | vaadin/web-components | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/vaadin/web-components/CLAUDE.md) | [Source](https://github.com/vaadin/web-components/blob/bebf5e348944b759eb031a7814e8487aa0bef411/CLAUDE.md) | 2026-10-16 |
-| valentderah/totk-pc-recomp | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/valentderah/totk-pc-recomp/AGENTS.md) | [Source](https://github.com/valentderah/totk-pc-recomp/blob/101132a6c8d9654c88838c57b934b4b79636ea90/AGENTS.md) | 2026-11-05 |
-| valentderah/totk-pc-recomp | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/valentderah/totk-pc-recomp/CLAUDE.md) | [Source](https://github.com/valentderah/totk-pc-recomp/blob/101132a6c8d9654c88838c57b934b4b79636ea90/CLAUDE.md) | 2026-11-05 |
 | valhalla/valhalla | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/valhalla/valhalla/AGENTS.md) | [Source](https://github.com/valhalla/valhalla/blob/dfd20a9ebd4a655d59bdc26b45308ea7df1743c5/AGENTS.md) | 2026-10-28 |
 | valhalla/valhalla | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/valhalla/valhalla/CLAUDE.md) | [Source](https://github.com/valhalla/valhalla/blob/dfd20a9ebd4a655d59bdc26b45308ea7df1743c5/CLAUDE.md) | 2026-10-28 |
 | valhalla/valhalla | `GEMINI.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/valhalla/valhalla/GEMINI.md) | [Source](https://github.com/valhalla/valhalla/blob/dfd20a9ebd4a655d59bdc26b45308ea7df1743c5/GEMINI.md) | 2026-10-28 |
@@ -4025,6 +4052,7 @@ Archived entries do not participate in current rankings.
 | vitest-dev/vitest | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/vitest-dev/vitest/AGENTS.md) | [Source](https://github.com/vitest-dev/vitest/blob/973dc84beb2f7ce92e15f7f41e166cb4fa3c4fc0/AGENTS.md) | 2026-10-20 |
 | vitest-dev/vitest | `CLAUDE.md` | `deleted` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/vitest-dev/vitest/CLAUDE.md) | [Source](https://github.com/vitest-dev/vitest/blob/34e4c008e63b6c33634cc2d6f89c521802f59286/CLAUDE.md) | 2026-08-12 |
 | vladmandic/sdnext | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/vladmandic/sdnext/AGENTS.md) | [Source](https://github.com/vladmandic/sdnext/blob/f64b67223d90a5bdf9a847e1be7cd8608ab4746c/AGENTS.md) | 2026-10-29 |
+| vlang/v | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/vlang/v/AGENTS.md) | [Source](https://github.com/vlang/v/blob/277f1e3303d253ba0708dc892574490535e00a9e/AGENTS.md) | 2026-11-08 |
 | vllm-project/semantic-router | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/vllm-project/semantic-router/AGENTS.md) | [Source](https://github.com/vllm-project/semantic-router/blob/5d2caa5b052e6c33234f3e92ff37c0ceb442edf6/AGENTS.md) | 2026-11-07 |
 | vllm-project/semantic-router | `CLAUDE.md` | `deleted` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/vllm-project/semantic-router/CLAUDE.md) | [Source](https://github.com/vllm-project/semantic-router/blob/a2023f755d055dc47cdb8caa93bfd994670c0a10/CLAUDE.md) | 2026-07-21 |
 | vllm-project/vllm | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/vllm-project/vllm/AGENTS.md) | [Source](https://github.com/vllm-project/vllm/blob/fa1cf1d436a0364a230c56f8e2c53a3d5043d231/AGENTS.md) | 2026-10-29 |
@@ -4137,6 +4165,8 @@ Archived entries do not participate in current rankings.
 | xifan2333/fcitx5-vinput | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/xifan2333/fcitx5-vinput/CLAUDE.md) | [Source](https://github.com/xifan2333/fcitx5-vinput/blob/061f58c05b2bf9b4955c96dd3b3153e30a9e7f44/CLAUDE.md) | 2026-11-06 |
 | xiufengsun/TokenTracker | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/xiufengsun/TokenTracker/AGENTS.md) | [Source](https://github.com/xiufengsun/TokenTracker/blob/83a77cbd0d5ca1374b17e6cb072382b3c6a644ea/AGENTS.md) | 2026-10-12 |
 | xiufengsun/TokenTracker | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/xiufengsun/TokenTracker/CLAUDE.md) | [Source](https://github.com/xiufengsun/TokenTracker/blob/83a77cbd0d5ca1374b17e6cb072382b3c6a644ea/CLAUDE.md) | 2026-10-12 |
+| xorbitsai/inference | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/xorbitsai/inference/AGENTS.md) | [Source](https://github.com/xorbitsai/inference/blob/40b4209a9406c69aec30e4a545bcb80886614793/AGENTS.md) | 2026-11-08 |
+| xorbitsai/inference | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/xorbitsai/inference/CLAUDE.md) | [Source](https://github.com/xorbitsai/inference/blob/40b4209a9406c69aec30e4a545bcb80886614793/CLAUDE.md) | 2026-11-08 |
 | xtekky/gpt4free | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/xtekky/gpt4free/AGENTS.md) | [Source](https://github.com/xtekky/gpt4free/blob/0e4963b4feed7c7b62b1ef63db374456e180440f/AGENTS.md) | 2026-11-01 |
 | y3owk1n/neru | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/y3owk1n/neru/AGENTS.md) | [Source](https://github.com/y3owk1n/neru/blob/c105740652c75a5b438bae8589b839287306f520/AGENTS.md) | 2026-08-07 |
 | y3owk1n/neru | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/y3owk1n/neru/CLAUDE.md) | [Source](https://github.com/y3owk1n/neru/blob/c105740652c75a5b438bae8589b839287306f520/CLAUDE.md) | 2026-08-07 |
@@ -4146,7 +4176,12 @@ Archived entries do not participate in current rankings.
 | yangshun/tech-interview-handbook | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/yangshun/tech-interview-handbook/AGENTS.md) | [Source](https://github.com/yangshun/tech-interview-handbook/blob/e1d28e8886c0b6ff3e50da991ce0e895134ddc59/AGENTS.md) | 2026-09-06 |
 | yc-software/qm | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/yc-software/qm/AGENTS.md) | [Source](https://github.com/yc-software/qm/blob/8ac53f7a523337266f5628406d30a23b71c2a2ff/AGENTS.md) | 2026-09-19 |
 | yc-software/qm | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/yc-software/qm/CLAUDE.md) | [Source](https://github.com/yc-software/qm/blob/8ac53f7a523337266f5628406d30a23b71c2a2ff/CLAUDE.md) | 2026-09-19 |
+| Yeachan-Heo/oh-my-claudecode | `.github/CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Yeachan-Heo/oh-my-claudecode/.github/CLAUDE.md) | [Source](https://github.com/Yeachan-Heo/oh-my-claudecode/blob/4a70308d9a1312367a18ed007ec76f780143fd01/.github/CLAUDE.md) | 2026-11-08 |
+| Yeachan-Heo/oh-my-claudecode | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Yeachan-Heo/oh-my-claudecode/AGENTS.md) | [Source](https://github.com/Yeachan-Heo/oh-my-claudecode/blob/4a70308d9a1312367a18ed007ec76f780143fd01/AGENTS.md) | 2026-11-08 |
+| Yeachan-Heo/oh-my-claudecode | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Yeachan-Heo/oh-my-claudecode/CLAUDE.md) | [Source](https://github.com/Yeachan-Heo/oh-my-claudecode/blob/4a70308d9a1312367a18ed007ec76f780143fd01/CLAUDE.md) | 2026-11-08 |
 | Yeraze/meshmonitor | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Yeraze/meshmonitor/CLAUDE.md) | [Source](https://github.com/Yeraze/meshmonitor/blob/6a72cb63af19d19bb8fe43fbbfcbfe41d83f4286/CLAUDE.md) | 2026-08-09 |
+| yetone/magpie | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/yetone/magpie/AGENTS.md) | [Source](https://github.com/yetone/magpie/blob/8fa3c60f80a14e50862e578a5d496536833667c3/AGENTS.md) | 2026-11-08 |
+| yetone/magpie | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/yetone/magpie/CLAUDE.md) | [Source](https://github.com/yetone/magpie/blob/8fa3c60f80a14e50862e578a5d496536833667c3/CLAUDE.md) | 2026-11-08 |
 | yikart/AiToEarn | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/yikart/AiToEarn/AGENTS.md) | [Source](https://github.com/yikart/AiToEarn/blob/4b4e8b3655cdfc72256f8de268decac18c6c8f24/AGENTS.md) | 2026-11-04 |
 | YishenTu/claudian | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/YishenTu/claudian/AGENTS.md) | [Source](https://github.com/YishenTu/claudian/blob/36df2f7ca0486f0a48654f470eac7e3e6e2f7677/AGENTS.md) | 2026-08-01 |
 | YishenTu/claudian | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/YishenTu/claudian/CLAUDE.md) | [Source](https://github.com/YishenTu/claudian/blob/36df2f7ca0486f0a48654f470eac7e3e6e2f7677/CLAUDE.md) | 2026-08-01 |
@@ -4161,9 +4196,6 @@ Archived entries do not participate in current rankings.
 | zauberzeug/nicegui | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/zauberzeug/nicegui/AGENTS.md) | [Source](https://github.com/zauberzeug/nicegui/blob/523fdd7725b5829437725e8fc1211582b031de7d/AGENTS.md) | 2026-10-20 |
 | zauberzeug/nicegui | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/zauberzeug/nicegui/CLAUDE.md) | [Source](https://github.com/zauberzeug/nicegui/blob/523fdd7725b5829437725e8fc1211582b031de7d/CLAUDE.md) | 2026-10-20 |
 | zavora-ai/adk-rust | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/zavora-ai/adk-rust/AGENTS.md) | [Source](https://github.com/zavora-ai/adk-rust/blob/b45874c0fd812a5b549e8697e64967796f92be90/AGENTS.md) | 2026-07-29 |
-| zed-industries/zed | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/zed-industries/zed/AGENTS.md) | [Source](https://github.com/zed-industries/zed/blob/915290734ab42d6a8c11d0f2deb4f566748450eb/AGENTS.md) | 2026-10-30 |
-| zed-industries/zed | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/zed-industries/zed/CLAUDE.md) | [Source](https://github.com/zed-industries/zed/blob/915290734ab42d6a8c11d0f2deb4f566748450eb/CLAUDE.md) | 2026-10-30 |
-| zed-industries/zed | `GEMINI.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/zed-industries/zed/GEMINI.md) | [Source](https://github.com/zed-industries/zed/blob/915290734ab42d6a8c11d0f2deb4f566748450eb/GEMINI.md) | 2026-10-30 |
 | zeek/zeek | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/zeek/zeek/AGENTS.md) | [Source](https://github.com/zeek/zeek/blob/4a56a48f9d32e2be3aca0a93ed1247292cfee4d5/AGENTS.md) | 2026-11-03 |
 | zephyrproject-rtos/zephyr | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/zephyrproject-rtos/zephyr/AGENTS.md) | [Source](https://github.com/zephyrproject-rtos/zephyr/blob/89987752c4afbb926eb7d6fe0682fdb5e3967ef1/AGENTS.md) | 2026-09-22 |
 | zephyrproject-rtos/zephyr | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/zephyrproject-rtos/zephyr/CLAUDE.md) | [Source](https://github.com/zephyrproject-rtos/zephyr/blob/89987752c4afbb926eb7d6fe0682fdb5e3967ef1/CLAUDE.md) | 2026-09-22 |
@@ -4177,6 +4209,7 @@ Archived entries do not participate in current rankings.
 | zhu1090093659/dsh-web | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/zhu1090093659/dsh-web/AGENTS.md) | [Source](https://github.com/zhu1090093659/dsh-web/blob/412ae97281773a2a6a2d618aab8476719126224d/AGENTS.md) | 2026-10-29 |
 | ZhuLinsen/daily_stock_analysis | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/ZhuLinsen/daily_stock_analysis/AGENTS.md) | [Source](https://github.com/ZhuLinsen/daily_stock_analysis/blob/089d9d26d68f8b839ea5a74a3784e4402925f8b7/AGENTS.md) | 2026-09-13 |
 | ZhuLinsen/daily_stock_analysis | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/ZhuLinsen/daily_stock_analysis/CLAUDE.md) | [Source](https://github.com/ZhuLinsen/daily_stock_analysis/blob/089d9d26d68f8b839ea5a74a3784e4402925f8b7/CLAUDE.md) | 2026-09-13 |
+| zortos293/Lichii | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/zortos293/Lichii/AGENTS.md) | [Source](https://github.com/zortos293/Lichii/blob/aae0b063f7d0b75a86b3e0931fae3d9d76257853/AGENTS.md) | 2026-11-08 |
 | ZSeven-W/openpencil | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/ZSeven-W/openpencil/AGENTS.md) | [Source](https://github.com/ZSeven-W/openpencil/blob/4fbe3a42899f9711b0ecce8ce2c5122f0179e01b/AGENTS.md) | 2026-09-21 |
 | ZSeven-W/openpencil | `CLAUDE.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/ZSeven-W/openpencil/CLAUDE.md) | [Source](https://github.com/ZSeven-W/openpencil/blob/4fbe3a42899f9711b0ecce8ce2c5122f0179e01b/CLAUDE.md) | 2026-09-21 |
 | zsviczian/obsidian-excalidraw-plugin | `AGENTS.md` | `inactive` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/zsviczian/obsidian-excalidraw-plugin/AGENTS.md) | [Source](https://github.com/zsviczian/obsidian-excalidraw-plugin/blob/7f1644859567caad4c817739ff77f0d032915746/AGENTS.md) | 2026-09-26 |

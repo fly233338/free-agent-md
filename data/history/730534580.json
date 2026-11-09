@@ -2,18 +2,6 @@
   "full_name": "infiniflow/ragflow",
   "points": [
     {
-      "checked_at": "2026-10-09T10:40:00Z",
-      "commit_sha": "2b8a0fe1957077adc690ef5c8404438d4d9b6acf",
-      "pushed_at": "2026-10-09T10:33:24Z",
-      "stars": 91897
-    },
-    {
-      "checked_at": "2026-10-10T09:56:02Z",
-      "commit_sha": "b03d2c11afbe58324ca2525a5a588643141e0e54",
-      "pushed_at": "2026-10-10T09:54:42Z",
-      "stars": 91944
-    },
-    {
       "checked_at": "2026-10-15T08:23:07Z",
       "commit_sha": "1d151d10f88a59bdf76667d95a22f33a5262a1ec",
       "pushed_at": "2026-10-15T08:16:38Z",
@@ -30,6 +18,12 @@
       "commit_sha": "f1a2fa5dacbbb97eb8379348bd05f0b00909ec36",
       "pushed_at": "2026-11-02T11:17:20Z",
       "stars": 93348
+    },
+    {
+      "checked_at": "2026-11-09T11:42:06Z",
+      "commit_sha": "775b0280f3247833a849f8e97fd7497e46a535a8",
+      "pushed_at": "2026-11-09T11:37:39Z",
+      "stars": 93836
     }
   ],
   "repo_id": 730534580

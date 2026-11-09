@@ -1,9 +1,9 @@
 # JuliusBrussee/caveman instruction files
 
-Upstream: [JuliusBrussee/caveman](https://github.com/JuliusBrussee/caveman) · License: `Apache-2.0` · Commit: `1e91f1306d602d4ca23618701b1185575ae1869b`
+Upstream: [JuliusBrussee/caveman](https://github.com/JuliusBrussee/caveman) · License: `Apache-2.0` · Commit: `3dc497a7f858c774d6e15b25e8c6120ef3a0eda8`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/JuliusBrussee/caveman/AGENTS.md) | [Source](https://github.com/JuliusBrussee/caveman/blob/1e91f1306d602d4ca23618701b1185575ae1869b/AGENTS.md) | `283e73644f729f00199089f93da78009ad7af61a65a6671c555914217e6b4785` | 806 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/JuliusBrussee/caveman/CLAUDE.md) | [Source](https://github.com/JuliusBrussee/caveman/blob/1e91f1306d602d4ca23618701b1185575ae1869b/CLAUDE.md) | `c03bab3a6b08ccc89970e481f2426367b05c95b1014998dabbd916b7f0cc611b` | 49,947 B |
-| `GEMINI.md` | `GEMINI.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/JuliusBrussee/caveman/GEMINI.md) | [Source](https://github.com/JuliusBrussee/caveman/blob/1e91f1306d602d4ca23618701b1185575ae1869b/GEMINI.md) | `e611f50fb4f68fe20c87632b30a476bf5ee1513b63fa23cd1de2cc57bff4de4f` | 188 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/JuliusBrussee/caveman/AGENTS.md) | [Source](https://github.com/JuliusBrussee/caveman/blob/3dc497a7f858c774d6e15b25e8c6120ef3a0eda8/AGENTS.md) | `283e73644f729f00199089f93da78009ad7af61a65a6671c555914217e6b4785` | 806 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/JuliusBrussee/caveman/CLAUDE.md) | [Source](https://github.com/JuliusBrussee/caveman/blob/3dc497a7f858c774d6e15b25e8c6120ef3a0eda8/CLAUDE.md) | `c03bab3a6b08ccc89970e481f2426367b05c95b1014998dabbd916b7f0cc611b` | 49,947 B |
+| `GEMINI.md` | `GEMINI.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/JuliusBrussee/caveman/GEMINI.md) | [Source](https://github.com/JuliusBrussee/caveman/blob/3dc497a7f858c774d6e15b25e8c6120ef3a0eda8/GEMINI.md) | `e611f50fb4f68fe20c87632b30a476bf5ee1513b63fa23cd1de2cc57bff4de4f` | 188 B |

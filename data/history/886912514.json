@@ -2,18 +2,6 @@
   "full_name": "ag2ai/ag2",
   "points": [
     {
-      "checked_at": "2026-10-09T10:40:00Z",
-      "commit_sha": "72752e653d13664af2aff3ad13a5017bbaf0b33b",
-      "pushed_at": "2026-10-08T18:57:11Z",
-      "stars": 4985
-    },
-    {
-      "checked_at": "2026-10-10T09:56:02Z",
-      "commit_sha": "72752e653d13664af2aff3ad13a5017bbaf0b33b",
-      "pushed_at": "2026-10-08T18:57:11Z",
-      "stars": 4988
-    },
-    {
       "checked_at": "2026-10-11T10:05:50Z",
       "commit_sha": "2b8636381b2235e7d77d181a35fbd241d15fe3f1",
       "pushed_at": "2026-10-11T09:28:17Z",

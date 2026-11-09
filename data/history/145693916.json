@@ -2,12 +2,6 @@
   "full_name": "kornia/kornia",
   "points": [
     {
-      "checked_at": "2026-10-09T10:40:00Z",
-      "commit_sha": "7d82407549646df19519099323fe1dbca78b27cb",
-      "pushed_at": "2026-10-09T10:38:46Z",
-      "stars": 11409
-    },
-    {
       "checked_at": "2026-10-13T10:42:33Z",
       "commit_sha": "dea669d9c15652085ef6ffa5df9949d958233184",
       "pushed_at": "2026-10-13T10:42:04Z",

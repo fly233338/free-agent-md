@@ -2,12 +2,6 @@
   "full_name": "Stirling-Tools/Stirling-PDF",
   "points": [
     {
-      "checked_at": "2026-10-10T09:56:02Z",
-      "commit_sha": "7d09d4d7401af1b62819836a641c712edd0261f2",
-      "pushed_at": "2026-10-10T09:47:12Z",
-      "stars": 93919
-    },
-    {
       "checked_at": "2026-10-13T10:42:33Z",
       "commit_sha": "fa8c22d9f87a74767d5834ae407d3eb53581b908",
       "pushed_at": "2026-10-13T10:42:12Z",
@@ -18,6 +12,12 @@
       "commit_sha": "a7e593728dd9aa81e75318a949789d3c2e9ee754",
       "pushed_at": "2026-10-18T08:02:22Z",
       "stars": 94409
+    },
+    {
+      "checked_at": "2026-11-09T11:42:06Z",
+      "commit_sha": "9894f2e3cef3791dde15cf689d14d07738d504c6",
+      "pushed_at": "2026-11-09T11:41:37Z",
+      "stars": 96106
     }
   ],
   "repo_id": 594155488

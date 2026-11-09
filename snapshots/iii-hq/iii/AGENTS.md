@@ -1,0 +1,216 @@
+# AGENTS.md
+
+You are working in the iii monorepo — a backend unification engine with three primitives: **Function**, **Trigger**, **Worker**. The engine is Rust. SDKs exist for TypeScript, Python, and Rust. All communicate over WebSocket.
+
+## Commands
+
+```bash
+# Setup
+pnpm install                     # JS/TS dependencies
+cargo build --release            # Rust workspace
+
+# Build
+pnpm build                       # all JS/TS packages (Turborepo)
+cargo build --release             # engine + Rust SDK
+
+# Test
+pnpm test                        # all JS/TS tests
+cargo test                       # all Rust tests
+cargo test -p iii                 # engine only
+cargo test -p iii-sdk             # Rust SDK only
+cd sdk/packages/python/iii && uv sync --extra dev && uv run pytest  # Python SDK
+
+# Lint & Format
+pnpm fmt                         # format JS/TS (Biome)
+pnpm fmt:check                   # check without changes
+pnpm lint                        # lint JS/TS
+cargo fmt --all                   # format Rust
+cargo clippy --workspace          # lint Rust
+
+# Run
+cargo run --release               # start engine (reads engine/config.yaml)
+pnpm dev:docs                     # docs dev server (Mintlify)
+pnpm dev:website                  # website dev server
+
+# Cloud
+iii cloud deploy --config <path>  # deploy to iii Cloud
+iii cloud list                    # list deployments
+iii cloud update <deployment-id>  # update a deployment
+iii cloud delete <deployment-id>  # delete a deployment
+```
+
+## Project Map
+
+```
+engine/                          Rust engine — runtime, modules, protocol, CLI
+sdk/packages/node/iii/           TypeScript SDK (npm: iii-sdk)
+sdk/packages/node/iii-browser/   Browser SDK (npm: iii-browser-sdk)
+sdk/packages/python/iii/         Python SDK (PyPI: iii-sdk)
+sdk/packages/rust/iii/           Rust SDK (crates.io: iii-sdk)
+skills/                          8 agent skills (auto-discovered by SkillKit)
+docs/                            Documentation site (Mintlify/MDX)
+website/                         iii.dev website
+website/presentations/           Tech-spec presentations site (iii.dev/tech-specs/) — SOP in its README
+tech-specs/                      Markdown-only specs; frontmatter in each README.md lists it on the site
+scripts/                         Build and CI scripts
+```
+
+**Workspaces:** `Cargo.toml` (Rust), `pnpm-workspace.yaml` (JS/TS), `turbo.json` (build orchestration).
+
+## Docs (Mintlify/MDX)
+
+- **`--` renders as an em dash.** Mintlify's smart typography turns a double
+  hyphen into `—` in rendered text. Any command with a `--flag` (`--up`,
+  `--template`, `--api-key`) shown outside a Markdown code span — for example in
+  a JSX `<span>` — must be wrapped in a JSX string expression so it renders
+  verbatim: `<span>{'iii compose --up'}</span>`. Inside plain Markdown backticks
+  it is already safe.
+- Vale bans em dashes (`Terminology.EmDash`) and phrases like "out of the box"
+  (`Terminology.SlopMagic`) in prose. Rewrite with commas, parentheses, periods,
+  or colons, and name the explicit default.
+- After editing a `docs/next/*.mdx`, regenerate its skill artifact with
+  `iii-skill-render --write docs/next/<page>.mdx`. Versioned copies under
+  `docs/<version>/` are out of skill-render scope, so bring changes forward to
+  them (and their `.skill.md`) by hand.
+
+## Boundaries
+
+### Always
+
+- Use `pnpm` (never `npm`) for JS/TS packages
+- Use `cargo fmt --all` before committing Rust changes
+- Use `pnpm fmt` before committing JS/TS changes
+- Use leading slashes for HTTP `api_path` values: `/orders`, `/users/:id`
+- Use `expression` (not `cron`) for cron trigger config fields
+- Use `::` separator for function IDs: `orders::validate`, `reports::daily-summary`
+- Use `workspace:*` for internal pnpm package references
+- Include `## When to Use` and `## Boundaries` sections in every SKILL.md
+- Match SKILL.md `name` field to its directory name exactly
+
+### Ask First
+
+- Changes to public SDK APIs (npm/PyPI/crates.io surface)
+- Changes to engine config schema (`engine/config.yaml`)
+- Changes to CI/CD workflows (`.github/`)
+- Adding new engine modules
+- Modifying the WebSocket protocol between SDK and engine
+
+### Never
+
+- Commit secrets, API keys, or credentials
+- Use `npm` instead of `pnpm`
+- Push directly to `main`
+- Change engine and CLI licensing (ELv2) or SDK licensing (Apache-2.0)
+- Remove "When to Use" / "Boundaries" from SKILL.md files (SkillKit validates these)
+- Use `cron` as a config key — the engine uses `expression`
+- Omit leading slashes on `api_path` — the engine standard is `/path`
+
+## Code Style
+
+`registerTrigger` / `register_trigger` and `registerTriggerType` are deprecated since 0.25 (they
+still work, and remain the way to bind the http, cron, queue, state, stream, pubsub, and database
+workers); observe functions and engine events with `iii.observe(source, target)`.
+
+**Rust (engine + SDK):**
+```rust
+// Function IDs use :: separator
+iii.register_function(
+    "orders::validate",
+    RegisterFunction::new(validate_order).description("Validate an incoming order"),
+);
+
+// HTTP triggers use leading slash
+iii.register_trigger(
+    IIITrigger::Http(HttpTriggerConfig::new("/orders/validate").method(HttpMethod::Post))
+        .for_function("orders::validate"),
+);
+
+// Cron triggers use `expression` field (7-field: sec min hour dom month dow year)
+iii.register_trigger(
+    IIITrigger::Cron(CronTriggerConfig::new("0 0 9 * * * *"))
+        .for_function("reports::daily-summary"),
+);
+
+// Observe a function: filters use explicit operators; the target is a registered function
+iii.observe(
+    Source::function("orders::create").filters(json!({ "input.total": { "$gte": 500 } })),
+    "alerts::big-order",
+);
+```
+
+**TypeScript (SDK):**
+```typescript
+// HTTP trigger with leading slash
+iii.registerTrigger({
+  type: 'http',
+  function_id: 'orders::validate',
+  config: { api_path: '/orders/validate', http_method: 'POST' },
+});
+
+// HTTP trigger with middleware chain
+iii.registerTrigger({
+  type: 'http',
+  function_id: 'orders::validate',
+  config: {
+    api_path: '/orders/validate',
+    http_method: 'POST',
+    middleware_function_ids: ['middleware::auth', 'middleware::rate-limit'],
+  },
+});
+
+// Cron trigger with `expression` (not `cron`)
+iii.registerTrigger({
+  type: 'cron',
+  function_id: 'reports::daily-summary',
+  config: { expression: '0 0 9 * * * *' },
+});
+
+// Trigger with metadata (optional, stored with the trigger)
+iii.registerTrigger({
+  type: 'cron',
+  function_id: 'reports::daily-summary',
+  config: { expression: '0 0 9 * * * *' },
+  metadata: { owner: 'billing-team', priority: 'high' },
+});
+
+// Observe a function (or an engine event such as engine::on-functions-changed)
+iii.observe(
+  { function_id: 'orders::create', filters: { 'input.total': { $gte: 500 } } },
+  'alerts::big-order',
+  { metadata: { owner: 'billing-team' } },
+);
+```
+
+**Python (SDK):**
+```python
+# Same patterns — leading slash, expression field
+iii.register_trigger({
+    "type": "http",
+    "function_id": "orders::validate",
+    "config": {"api_path": "/orders/validate", "http_method": "POST"},
+})
+
+# Observe a function
+iii.observe(
+    {"function_id": "orders::create", "filters": {"input.total": {"$gte": 500}}},
+    "alerts::big-order",
+)
+```
+
+## Skills
+
+The `skills/` directory contains 8 agent skills auto-discovered by `npx skills add iii-hq/iii` and `npx skillkit install iii-hq/iii`: 7 iii-prefixed knowledge skills (catalog in `skills/SKILLS.md`) and the `presentation` tool skill. Code examples live in each `SKILL.md`, in TypeScript, Python, Rust, and Go where the concept is language-specific.
+
+## Blog (agent knowledge base)
+
+Published at https://iii.dev/blog/ — architecture posts and worked examples for coding agents. Each post is available as markdown:
+
+- Index: https://iii.dev/blog/index.md
+- Posts: https://iii.dev/blog/<slug>.md (every slug listed in the index)
+
+Source lives in `website/src/content/blog/`. Also indexed in https://iii.dev/llms.txt and https://iii.dev/AGENTS.md.
+
+## Licensing
+
+- `engine/` (engine and CLI): Elastic License v2 (ELv2)
+- Everything else: Apache-2.0

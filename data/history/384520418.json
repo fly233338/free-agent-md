@@ -2,12 +2,6 @@
   "full_name": "MaaAssistantArknights/MaaAssistantArknights",
   "points": [
     {
-      "checked_at": "2026-10-10T09:56:02Z",
-      "commit_sha": "f6d7e08d61a4657c24cd4b6f30d42e17f36238a0",
-      "pushed_at": "2026-10-10T09:49:36Z",
-      "stars": 23645
-    },
-    {
       "checked_at": "2026-10-11T10:05:50Z",
       "commit_sha": "9dfe576095f3d36c73ccccdcfe41881bfc802146",
       "pushed_at": "2026-10-11T10:04:52Z",
@@ -18,6 +12,12 @@
       "commit_sha": "a673d11384e49af83bf22983f6a5186b6ba3654e",
       "pushed_at": "2026-11-04T10:59:08Z",
       "stars": 24293
+    },
+    {
+      "checked_at": "2026-11-09T11:42:06Z",
+      "commit_sha": "5fd2b068bb4c94987ee446f6d89107eecdd9cf68",
+      "pushed_at": "2026-11-09T11:38:39Z",
+      "stars": 24449
     }
   ],
   "repo_id": 384520418

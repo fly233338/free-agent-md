@@ -2,12 +2,6 @@
   "full_name": "kestra-io/kestra",
   "points": [
     {
-      "checked_at": "2026-10-09T10:40:00Z",
-      "commit_sha": "f4c1e281bb2288e50dec5a5a2c9860b6be19576e",
-      "pushed_at": "2026-10-09T10:39:21Z",
-      "stars": 29439
-    },
-    {
       "checked_at": "2026-10-15T08:23:07Z",
       "commit_sha": "8843892ad202eb97186154e95fd181259d4daf29",
       "pushed_at": "2026-10-15T08:23:05Z",
@@ -54,6 +48,12 @@
       "commit_sha": "79f6b357106da073c1213ff42c10538dd5771d3c",
       "pushed_at": "2026-11-06T10:57:31Z",
       "stars": 30158
+    },
+    {
+      "checked_at": "2026-11-09T11:42:06Z",
+      "commit_sha": "2e4c531d9b293eca54984fd6f67687e144e16fee",
+      "pushed_at": "2026-11-09T11:39:28Z",
+      "stars": 30175
     }
   ],
   "repo_id": 204164353

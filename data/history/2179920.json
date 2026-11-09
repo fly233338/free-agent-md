@@ -2,12 +2,6 @@
   "full_name": "woocommerce/woocommerce",
   "points": [
     {
-      "checked_at": "2026-10-09T10:40:00Z",
-      "commit_sha": "772b1285c44e019c0995592598bf4a52968bd7b1",
-      "pushed_at": "2026-10-09T10:39:40Z",
-      "stars": 10543
-    },
-    {
       "checked_at": "2026-10-20T08:38:15Z",
       "commit_sha": "017d68272f63135f471771cf57617c56c0ba405f",
       "pushed_at": "2026-10-20T08:34:37Z",

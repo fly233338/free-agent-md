@@ -2,18 +2,6 @@
   "full_name": "mlflow/mlflow",
   "points": [
     {
-      "checked_at": "2026-10-09T10:40:00Z",
-      "commit_sha": "65c3ebb15a6af3d814e2616feaeb8fb210115190",
-      "pushed_at": "2026-10-09T10:36:32Z",
-      "stars": 28321
-    },
-    {
-      "checked_at": "2026-10-10T09:56:02Z",
-      "commit_sha": "a866c902af1735767fd282d3f4bdba97808cc6a0",
-      "pushed_at": "2026-10-10T09:52:02Z",
-      "stars": 28333
-    },
-    {
       "checked_at": "2026-10-25T08:30:15Z",
       "commit_sha": "d0763bfac70318e68a38aeeed5aafbb5d9ed7efb",
       "pushed_at": "2026-10-25T08:25:18Z",
