@@ -45,7 +45,7 @@ handled via FFmpeg, with optional distributed runners.
 ### Prerequisites
 
 - Node.js >= 22.x
-- pnpm >= 10.9 (do **not** use npm or yarn for install)
+- pnpm >= 12 (do **not** use npm or yarn for install)
 - PostgreSQL >= 14 with `pg_trgm` and `unaccent` extensions
 - Redis >= 6.x
 - FFmpeg >= 4.3
@@ -146,6 +146,12 @@ router.get('/:id',
 )
 ```
 
+Secondary processes (`--role=secondary`) serve every route. A route that needs a state only the primary
+process has (its file system, data kept in its memory, live sessions, the tracker...) must start with the
+`primaryOnly` middleware, before any side effect: a secondary answers `421` and nginx replays the request on
+the primary. Requests whose body nginx streams (`proxy_request_buffering off` locations) cannot be replayed:
+route them to `backend` in the `$peertube_pool` map of `support/nginx/peertube`.
+
 ### Commit messages
 
 No formal commit-message template.
@@ -244,12 +250,15 @@ npm run build:tests
 npm run test
 
 # Run a specific CI suite
-npm run ci -- api-1       # check-params, notifications, search
-npm run ci -- api-2       # live, server plugins, users
-npm run ci -- api-3       # videos, stats
-npm run ci -- api-4       # moderation, redundancy, object-storage,
-                          # activitypub
-npm run ci -- api-5       # transcoding, runners
+npm run ci -- api-check-params-search       # check-params, search
+npm run ci -- api-videos-1 | api-videos-2   # videos, split in 2 shards balanced by duration
+npm run ci -- api-server                    # server
+npm run ci -- api-live-scalability          # live, horizontal-scalability
+npm run ci -- api-users-stats               # users, stats
+npm run ci -- api-moderation-notifications  # moderation, notifications
+npm run ci -- api-federation                # activitypub, redundancy
+npm run ci -- api-object-storage            # object-storage
+npm run ci -- api-transcoding-1 | api-transcoding-2  # transcoding + runners, split in 2 shards
 npm run ci -- client      # feeds, client, misc-endpoints, plugins
 npm run ci -- cli-plugin  # CLI and plugin tests
 npm run ci -- lint        # OXlint + OpenAPI validation + client lint
@@ -266,7 +275,10 @@ npm run mocha -- --timeout 30000 --exit --bail \
 Some tests require these containers:
 
 ```bash
-docker run -p 9444:9000 chocobozzz/s3-ninja
+docker run -p 9444:8000 -e S3BACKEND=mem -e REMOTE_MANAGEMENT_DISABLE=1 \
+  -e SCALITY_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE \
+  -e SCALITY_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY \
+  ghcr.io/scality/cloudserver:9.3.20
 docker run -p 10389:10389 chocobozzz/docker-test-openldap
 docker run -p 8082:8080 \
   -e KC_BOOTSTRAP_ADMIN_USERNAME=admin \
@@ -278,7 +290,7 @@ docker run -p 8082:8080 \
 
 GitHub Actions (`.github/workflows/test.yml`), Ubuntu 22.04, Node.js
 22.x. Matrix strategy runs suites in parallel: `types-package`,
-`client`, `api-1`–`api-5`, `cli-plugin`, `lint`, `transcription`,
+`client`, the `api-*` suites listed above, `cli-plugin`, `lint`, `transcription`,
 `external-plugins`.
 
 Services provisioned per job: PostgreSQL 10, Redis, LDAP, S3 Ninja,
@@ -381,13 +393,15 @@ Configured in `server/core/lib/runners/` and managed through the
 ### OpenTelemetry
 
 Tracing and metrics are instrumented via `@opentelemetry/*` packages.
-Export to Jaeger (tracing) or Prometheus (metrics) is configurable in
+Export to an OTLP endpoint like Jaeger (tracing) or Prometheus (metrics) is configurable in
 `config/default.yaml` under the `open_telemetry` key.
 
 ## Further Reading
 
 - [support/doc/development/server.md](support/doc/development/server.md)
   — Server code conventions and new-feature walkthrough
+- [Horizontal scalability](https://docs.joinpeertube.org/maintain/horizontal-scalability)
+  — Running several processes (`--role=secondary`) for one instance
 - [support/doc/development/tests.md](support/doc/development/tests.md)
   — Test setup and execution guide
 - [support/doc/plugins/guide.md](support/doc/plugins/guide.md)

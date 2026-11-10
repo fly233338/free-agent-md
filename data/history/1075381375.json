@@ -2,12 +2,6 @@
   "full_name": "getpaseo/paseo",
   "points": [
     {
-      "checked_at": "2026-10-11T10:05:50Z",
-      "commit_sha": "b412374f0c520fbc0470d15d2652b47eea3efef8",
-      "pushed_at": "2026-10-11T09:52:52Z",
-      "stars": 20457
-    },
-    {
       "checked_at": "2026-10-16T08:15:49Z",
       "commit_sha": "5acfbb3777d7fbac634f4ed83aefed56fb49cb8f",
       "pushed_at": "2026-10-16T08:12:47Z",
@@ -24,6 +18,12 @@
       "commit_sha": "4407283a134502bf4a7704bfa823fcfed7f702b0",
       "pushed_at": "2026-11-04T10:53:42Z",
       "stars": 23015
+    },
+    {
+      "checked_at": "2026-11-10T11:19:11Z",
+      "commit_sha": "79b9e7447b097c5ee06635d49534a16a4473abe5",
+      "pushed_at": "2026-11-10T11:14:23Z",
+      "stars": 23697
     }
   ],
   "repo_id": 1075381375

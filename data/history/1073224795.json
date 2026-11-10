@@ -2,12 +2,6 @@
   "full_name": "obra/superpowers",
   "points": [
     {
-      "checked_at": "2026-10-11T10:05:50Z",
-      "commit_sha": "bb92a77741419a4ab5f06e711a283343f1ada0c3",
-      "pushed_at": "2026-10-10T03:03:30Z",
-      "stars": 297374
-    },
-    {
       "checked_at": "2026-10-12T10:58:37Z",
       "commit_sha": "bb92a77741419a4ab5f06e711a283343f1ada0c3",
       "pushed_at": "2026-10-10T03:03:30Z",
@@ -174,6 +168,12 @@
       "commit_sha": "22f0b463e7a5e579904dd6211a520321035526f7",
       "pushed_at": "2026-11-03T23:24:58Z",
       "stars": 314816
+    },
+    {
+      "checked_at": "2026-11-10T11:19:11Z",
+      "commit_sha": "22f0b463e7a5e579904dd6211a520321035526f7",
+      "pushed_at": "2026-11-03T23:24:58Z",
+      "stars": 315390
     }
   ],
   "repo_id": 1073224795

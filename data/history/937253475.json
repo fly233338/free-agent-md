@@ -2,12 +2,6 @@
   "full_name": "anthropics/claude-code",
   "points": [
     {
-      "checked_at": "2026-10-11T10:05:50Z",
-      "commit_sha": "2301018b1f61073c501a8e7a4813ef48c239163b",
-      "pushed_at": "2026-10-10T22:23:41Z",
-      "stars": 150120
-    },
-    {
       "checked_at": "2026-10-12T10:58:37Z",
       "commit_sha": "3deb873687379f0c199a69fdaccc65f0865f7a29",
       "pushed_at": "2026-10-11T19:07:17Z",
@@ -174,6 +168,12 @@
       "commit_sha": "0ed94698aa0aeee471465fc9c867c2e8434c4d68",
       "pushed_at": "2026-11-06T17:04:01Z",
       "stars": 155067
+    },
+    {
+      "checked_at": "2026-11-10T11:19:11Z",
+      "commit_sha": "ce6cb8ee39759afb5d8bf2e3fd26582f575e9095",
+      "pushed_at": "2026-11-10T08:39:26Z",
+      "stars": 155154
     }
   ],
   "repo_id": 937253475

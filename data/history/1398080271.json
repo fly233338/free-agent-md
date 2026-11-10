@@ -2,16 +2,16 @@
   "full_name": "storytold/photocraft",
   "points": [
     {
-      "checked_at": "2026-10-11T10:05:50Z",
-      "commit_sha": "b7b3117aea8dc858ecd3ab9527af1bde206c7a7d",
-      "pushed_at": "2026-10-11T10:01:07Z",
-      "stars": 44142
-    },
-    {
       "checked_at": "2026-11-02T11:18:59Z",
       "commit_sha": "5d9c57e60db966382abda2638d0ccbb7489d8ee7",
       "pushed_at": "2026-11-02T11:15:05Z",
       "stars": 76034
+    },
+    {
+      "checked_at": "2026-11-10T11:19:11Z",
+      "commit_sha": "71a5c585855cc99f40bca3414ea2fa88c481ada1",
+      "pushed_at": "2026-11-10T11:18:20Z",
+      "stars": 78372
     }
   ],
   "repo_id": 1398080271
