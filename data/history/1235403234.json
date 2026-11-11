@@ -1,11 +1,17 @@
 {
-  "full_name": "nexu-io/html-anything",
+  "full_name": "nexu-io/openmotion",
   "points": [
     {
       "checked_at": "2026-11-10T11:19:11Z",
       "commit_sha": "e0a5e4a66e78a79f4ca8b2ecf1d8d1618878d0c2",
       "pushed_at": "2026-11-10T11:18:52Z",
       "stars": 9489
+    },
+    {
+      "checked_at": "2026-11-11T11:05:45Z",
+      "commit_sha": "27ffdefedee849f0933fc334dcc549a9f40ea373",
+      "pushed_at": "2026-11-11T11:05:16Z",
+      "stars": 9501
     }
   ],
   "repo_id": 1235403234

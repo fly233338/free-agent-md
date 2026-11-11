@@ -2,12 +2,6 @@
   "full_name": "leanprover/lean4",
   "points": [
     {
-      "checked_at": "2026-10-12T10:58:37Z",
-      "commit_sha": "f7f7bf42084fa1242378bf3c73395dc2ea416049",
-      "pushed_at": "2026-10-12T10:55:46Z",
-      "stars": 9502
-    },
-    {
       "checked_at": "2026-11-04T11:01:57Z",
       "commit_sha": "817bd56683471b156d1e9b4877ff7afa89d94c19",
       "pushed_at": "2026-11-04T10:58:03Z",

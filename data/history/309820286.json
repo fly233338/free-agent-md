@@ -2,12 +2,6 @@
   "full_name": "fleetdm/fleet",
   "points": [
     {
-      "checked_at": "2026-10-12T10:58:37Z",
-      "commit_sha": "129be4a97b9bfb839880bc41a480995cdd5aed9e",
-      "pushed_at": "2026-10-12T10:55:41Z",
-      "stars": 6981
-    },
-    {
       "checked_at": "2026-11-10T11:19:11Z",
       "commit_sha": "5a6e2eab08e649551b875325cb49ad27b48d7200",
       "pushed_at": "2026-11-10T11:14:28Z",

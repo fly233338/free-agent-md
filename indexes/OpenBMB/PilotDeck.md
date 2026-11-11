@@ -1,7 +1,7 @@
 # OpenBMB/PilotDeck instruction files
 
-Upstream: [OpenBMB/PilotDeck](https://github.com/OpenBMB/PilotDeck) · License: `AGPL-3.0` · Commit: `809a692e4385e2e83260ddd15666870d4b6960e4`
+Upstream: [OpenBMB/PilotDeck](https://github.com/OpenBMB/PilotDeck) · License: `AGPL-3.0` · Commit: `4764771ab47ef8d51b0fd959166f9c9a779509f6`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/OpenBMB/PilotDeck/AGENTS.md) | [Source](https://github.com/OpenBMB/PilotDeck/blob/809a692e4385e2e83260ddd15666870d4b6960e4/AGENTS.md) | `784f6555414cf496bd6355493bd4b2b983c80d2c32cde375773e3dc7cd84dc94` | 1,273 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/OpenBMB/PilotDeck/AGENTS.md) | [Source](https://github.com/OpenBMB/PilotDeck/blob/4764771ab47ef8d51b0fd959166f9c9a779509f6/AGENTS.md) | `784f6555414cf496bd6355493bd4b2b983c80d2c32cde375773e3dc7cd84dc94` | 1,273 B |

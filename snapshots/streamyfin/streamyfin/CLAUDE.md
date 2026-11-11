@@ -33,6 +33,7 @@ Read the relevant one before writing code in that area.
 | --- | --- |
 | [docs/conventions/constants.md](docs/conventions/constants.md) | Adding a threshold, interval, ratio, storage key, or any value used twice |
 | [docs/conventions/contributing-flow.md](docs/conventions/contributing-flow.md) | Opening, describing, or reviewing a PR |
+| [docs/conventions/performance.md](docs/conventions/performance.md) | Claiming a change is faster, or writing a Reassure scenario |
 | [docs/conventions/testing.md](docs/conventions/testing.md) | Writing or changing any test, and before claiming a fix works |
 | [docs/conventions/tv.md](docs/conventions/tv.md) | Touching anything that renders on Apple TV or Android TV |
 
@@ -50,25 +51,45 @@ Navigation:
 - `introsheet-rendering-location` | IntroSheet in IntroSheetProvider affects native bottom tabs via nav state hooks
 - `intro-modal-trigger-location` | Trigger in Home.tsx, not tabs _layout.tsx
 - `expo-router-top-tabs-runtime-peers` | js-top-tabs requires react-native-tab-view (+ pager-view) at runtime; no import shows it, removing them crashes on launch
+- `shared-route-from-outside-tabs-lands-in-first-group` | a shared route pushed from outside the tabs opens in the alphabetically first tab group; keep `(home)` first
+- `foreign-link-lands-on-library-route` | the library route is /[libraryId], so an unknown one-word link opens it with that word as the id; the music notification's trackplayer://notification.click did, and app/+native-intent.ts drops it
 
 UI and headers:
-- `macos-header-buttons-fix` | macOS Catalyst: use RNGH Pressable, not RN TouchableOpacity
+- `macos-header-buttons-fix` | macOS Catalyst: use RNGH LegacyPressable, not RN TouchableOpacity or the new RNGH Pressable
 - `header-button-locations` | Defined in _layout.tsx, HeaderBackButton, Chromecast, RoundButton, etc.
 - `stack-screen-header-configuration` | Sub-pages need explicit Stack.Screen with headerTransparent + back button
 - `switch-pointerevents-ignored` | Switch ignores its own pointerEvents (Android); wrap in a View pointerEvents="none"
+- `nativewind-classname-arrives-as-style` | a className passed to one of our own components reaches it as `style`; forward that, reading `className` drops it silently
+- `bottom-sheet-dismiss-before-present` | dismiss() on a BottomSheetModal that is not on screen leaves it unable to present, silently; follow `open` with useSheetOpenState
+- `swiftui-host-dead-while-keyboard-is-up` | an @expo/ui Host honors the keyboard safe area, so a small one draws but takes no taps while a keyboard is up; set ignoreSafeArea='keyboard'
 
 State and data:
 - `use-network-aware-query-client-limitations` | Object.create breaks private fields; only for invalidateQueries
 - `mark-as-played-flow` | PlayedStatus -> useMarkAsPlayed -> playbackManager with optimistic updates
+- `shared-value-js-write-lands-later` | a shared value set from JS is applied later on the UI thread, the next JS read still gets the old one; keep JS-only state in a ref
+- `jellyfin-unknown-parent-answers-400` | GET /Items with a parentId the server no longer has is a 400 "Error processing request.", not a 404; a renamed library has a new id, and the cache restores the old one for a day. Not reported nor retried, one WARN line in the local log
+- `unobserved-query-reports-its-first-failure` | a query whose key changed under it has no observer left, so React Query cancels its retries and its first failure goes to Sentry; one failing request and an instant event in the breadcrumbs is that
+- `polling-query-rewrites-persisted-cache` | a persisted query with `refetchInterval` re-serializes the whole persisted cache every tick, even when its data never changes (`withoutRedundantSaves` only skips the ticks of queries that are not persisted); enable it only while a consumer is focused, with `gcTime: 0`
 
 Native modules:
+- `exoplayer-loadcontrol-time-not-bytes` | prioritize=true is the stuck-buffer fix; the 256MB heap needs a 96MiB byte target (min 5s/max 30s) + 3s back buffer: the forward buffer holds min(bitrate × 30s, 96MiB) but never less than bitrate × 5s, plus bitrate × 3s behind (75MB forward at 20Mbps, ~150MB in all at 150Mbps), where the old setup filled bitrate × 20s and OOM'd a ~100Mbps DV remux (loader → error_code_io_unspecified, or an unrelated thread kills the process); constants duplicated in ExoPlayerView.kt AND ExoPlayerEngine.kt, keep in lockstep
+- `exo-chrome-rebuilds-player-per-load` | the chrome's ExoPlayerEngine releases and rebuilds the player on every accepted load; preparing a new source on the instance that just hit STATE_ENDED stalled the next-episode swap for minutes; ExoPlayerView.kt deliberately keeps one instance (onTracksReady is once-per-view)
 - `expo-view-props-fail-silently` | `try? prop.set()` drops failed prop conversions with NO error; use a JSON string prop
 - `mpv-tvos-player-exit-freeze` | mpv_terminate_destroy deadlocks main thread; use DispatchQueue.global()
 - `mpv-avfoundation-composite-osd-ordering` | MUST follow vo=avfoundation, before hwdec options
 - `thread-safe-state-for-stop-flags` | Stop flags need synchronous setter (stateQueue.sync not async)
 - `native-swiftui-view-sizing` | Need explicit frame + intrinsicContentSize override in ExpoView
 - `engine-agnostic-native-chrome` | The Android TV chrome consumes PlayerEngine; engine rides config.engine, resolvers split engine vs renderer
+- `amlogic-dts-decoder-silent` | Amlogic's platform DTS decoder emits silence on DTS-HD without erroring; on bitstream-capable output DTS decode is steered to FFmpeg via dtsExcludingMediaCodecSelector (twin files)
+- `mpv-view-first-progress-tick-is-zero` | the MPV renderer emits its position cache once the duration is known; load() seeds it from startPosition, and JS player reports read resolveSessionPositionTicks, never progress.get()
 - `sentry-native-options-fail-silently` | sentry-cocoa ignores an option key it does not know, with no error; check the spelling in Options+Dictionary.swift
+- `avaudiosession-calls-block-on-the-audio-server` | every AVAudioSession setter AND getter is a synchronous XPC call that can take seconds; never on main, session changes go through PlayerAudioSession
+- `foreground-service-start-must-be-answered` | every startForegroundService() needs startForeground() first in onStartCommand, unconditionally; a refused call still answers it, a skipped one kills the process
+- `keychain-accessibility-set-at-creation` | before SDK 58 a SecureStore item kept the accessibility it was created with, `setItem` over it changed only the data; a default item throws on read when iOS launches the app on a locked phone
+- `track-player-queue-is-not-the-app-queue` | the native music queue only holds the tracks loaded so far, so a state queue index does not address it; on iOS `add` past the end rejects with the same message as `skip`
+- `drax-drop-needs-patch-in-release` | drax 1.1.0 on Gesture Handler 3 springs a dropped row back in release builds only; `patches/react-native-drax@1.1.0.patch` fixes it, keep it until a release passes its spec
+- `android-js-timers-pause-in-background` | Delayed timers don't fire while the Android app is paused (incl. under the Cast expanded controls); zero-delay ones and fetch still do
+- `native-player-presented-after-dismiss` | iOS keeps the player session until the cross-dissolve ends, so present() right after onDismiss is refused; a new player waits for the closing one, and a swap whose player closed is dropped unless its stream ended and another item was asked for
 
 TV platform:
 - `tv-modals-must-use-navigation-pattern` | Use atom+router.push(), never overlay/absolute modals
@@ -76,11 +97,16 @@ TV platform:
 - `tv-horizontal-padding-standard` | TV_HORIZONTAL_PADDING=60, not old TV_SCALE_PADDING=20
 - `streamystats-components-location` | components/home/Streamystats*.tv.tsx, watchlists/[watchlistId].tsx
 - `platform-specific-file-suffix-does-not-work` | .tv.* only resolves under EXPO_TV=1; require the TV file explicitly behind Platform.isTV
+- `tvfocusguideview-ignores-display-style` | TVFocusGuideView sets its own display last, so `display: "none"` in its style is ignored; hide it with `enabled={false}`
+- `android-tv-modal-close-loses-focus` | a dismissed TV modal route leaves Android TV with nothing focused; the page must hand the focus back with requestTVFocus(). BlurView only tints there
+- `amlogic-fra-fires-before-real-framerate` | the vendor HDMI frame-rate adaptation switches on the codec's 30fps default, before MKV's real rate is known, and never corrects; app-side preferredDisplayModeId matching (matchRefreshRate setting) is the fix
 
 Build and tooling:
 - `eas-archive-drops-gitignored-tracked-files` | EAS uploads skip anything matching .gitignore even if tracked; re-include required assets, keep asset require() at module scope
 - `bun-test-discovery-leaks-fds` | bare `bun test` leaves ~14k fds open; child processes spawned from tests get dead stdio, so do the work in-process
 - `require-hooks-leak-across-jest-specs` | a require hook (tsx/cjs) registered from a spec stays on the Jest worker's Node loader and breaks later specs; map it to a stub
+- `expo-image-prebuilt-glide-logs` | Expo's prebuilt expo-image AAR ships with Glide logs on, every image URL (trickplay ApiKey included) reaches logcat; built from source instead
+- `repack-shrunk-resources-missing-attrs` | AGP 9's R8 resource shrinking leaves XML naming attributes it removed; apktool cannot relink them, so the Android repack declares them and builds again
 
 ## Project overview
 
@@ -113,6 +139,8 @@ bun run lint                 # Biome with fixes
 bun run format               # Biome formatter
 bun run test:unit            # Jest, the whole suite
 bun run test:coverage        # Jest plus a coverage report in coverage/
+bun run perf                 # Reassure performance scenarios (*.perf-test.tsx)
+bun run perf:baseline        # Reassure baseline to compare `bun run perf` against
 bun run test                 # The full gate: typecheck, unit, lint, format, i18n, doctor
 
 # iOS specific
@@ -122,10 +150,10 @@ bun run ios:install-metal-toolchain   # Fixes "missing Metal Toolchain" build er
 ## Stack
 
 - **Runtime and package manager**: Bun
-- **Framework**: Expo SDK 57, React 19, `react-native-tvos`
+- **Framework**: Expo SDK 58, React 19, `react-native-tvos`
 - **Language**: TypeScript, strict mode
 - **State**: Jotai for global state, React Query for server state
-- **API**: Jellyfin SDK (`@jellyfin/sdk`)
+- **API**: Jellyfin SDK 1.0 (`@jellyfin/sdk`)
 - **Navigation**: Expo Router, file based
 - **Lint and format**: Biome
 - **Tests**: Jest with the `jest-expo` preset, React Native Testing Library
@@ -148,10 +176,13 @@ bun run ios:install-metal-toolchain   # Fixes "missing Metal Toolchain" build er
 | `plugins/` | Expo config plugins |
 | `patches/` | Patch package overrides |
 | `augmentations/` | Type augmentations |
-| `test-utils/` | Shared test doubles: Jellyfin API, MMKV, custom headers, React Native |
+| `test-utils/` | Shared test doubles: Jellyfin API, MMKV, the file system, custom headers, React Native, Reanimated, @expo/ui, drax |
+| `tests/native/` | Standalone native checks (subtitle geometry, app container paths), each run by its script in `scripts/ios/`, and subtitle playback fixtures |
 | `translations/` | i18n catalogues, `en.json` is the only source |
 | `scripts/` | Repo tooling run through bun |
+| `biome-plugins/` | Custom Biome (Grit) lint rules, wired up in `biome.json` |
 | `docs/` | Conventions and deep dives |
+| `e2e/` | Manual end to end fixtures that need Docker, never run in CI (a local Jellyfin for SyncPlay) |
 
 ## Key patterns
 
@@ -159,18 +190,39 @@ bun run ios:install-metal-toolchain   # Fixes "missing Metal Toolchain" build er
 - Global state is Jotai atoms in `utils/atoms/`.
 - `settingsAtom` in `utils/atoms/settings.ts` holds app settings. A new setting must also
   be toggleable in the settings UI, mobile or TV depending on its scope, or it is dead.
-- `apiAtom` and `userAtom` in `providers/JellyfinProvider.tsx` hold auth state.
+- `apiAtom` and `userAtom` in `utils/atoms/api.ts` hold auth state. The provider
+  re-exports them, but code the provider imports, `utils/atoms/` among it, reads
+  them from `@/utils/atoms/api`: going through the provider is a require cycle.
 - Server state goes through React Query.
 
 **Jellyfin API**
 - Authenticated calls use `apiAtom`, the current user comes from `userAtom`.
-- Prefer the SDK helpers from `@jellyfin/sdk/lib/utils/api` over hand rolled requests.
+- Use SDK operations from `@jellyfin/sdk/lib/utils/api` for core Jellyfin requests:
+  `getLibraryApi` for items/latest/resume, `getShowApi` for seasons/episodes,
+  `getUserDataApi` for watched/favorite state, `getSessionApi` for playback reports,
+  and `getAuthenticationApi` for sign-in and Quick Connect.
+- Direct HTTP is reserved for endpoints outside the SDK: Streamyfin and
+  intro-skipper plugins, Web's static configuration, configurable custom sections,
+  and external services (Seerr, StreamyStats, Marlin, OpenSubtitles, Wikidata).
+  The SDK itself uses Axios; keep its custom-header transport and error handling.
+  Plugin requests use the explicitly named `pluginGet` / `pluginPost` /
+  `pluginPut` / `pluginDelete` extensions, not generic `Api.get` / `post` /
+  `put` / `delete`.
+- Native images, players and downloads need URLs rather than response bodies.
+  Use SDK URL helpers where available, retaining server-supplied streaming URLs
+  and protocol-specific playback parameters.
 
 **Navigation**
 - File based routing under `app/`.
-- Tab groups: `(home)`, `(search)`, `(favorites)`, `(libraries)`, `(watchlists)`,
-  `(custom-links)`, `(settings)`. Routes shared by several tabs live in the combined
-  group `(home,libraries,search,favorites,watchlists)`.
+- Tab groups: `(home)`, `(search)`, `(libraries)`, `(more)`, `(tv-favorites)`,
+  `(tv-watchlists)`, `(tv-settings)`. The phone bar shows Home, Search, Library and
+  More, a menu for what it has no room for: favorites, watchlists, custom links,
+  sessions and settings. Downloads stay a button in Home's header. The TV bar has room
+  for every section, so favorites, watchlists and settings stay tabs there, in the
+  `(tv-*)` groups, and More is hidden (`utils/tvTabs.ts`). Routes shared by several
+  tabs live in the combined group
+  `(home,libraries,search,more,tv-favorites,tv-watchlists)`. No tab group may sort
+  before `(home)`, see `shared-route-from-outside-tabs-lands-in-first-group`.
 - **IMPORTANT**: use `useAppRouter` from `@/hooks/useAppRouter`, never `useRouter` or the
   static `router` from `expo-router`. The wrapper preserves offline mode across
   navigation.
@@ -203,19 +255,21 @@ PersistQueryClientProvider
             PlaySettingsProvider
               LogProvider
                 WebSocketProvider
-                  DownloadProvider
-                    NativePlayerProvider
-                      MusicPlayerProvider
-                        GlobalModalProvider
-                          BottomSheetModalProvider
-                            IntroSheetProvider
-                              ThemeProvider
+                  SyncPlayProvider          group playback, needs the socket
+                    DownloadProvider
+                      NativePlayerProvider
+                        MusicPlayerProvider
+                          GlobalModalProvider
+                            BottomSheetModalProvider
+                              IntroSheetProvider
+                                ThemeProvider
 ```
 
 `JotaiProvider` and `ActionSheetProvider` wrap the tree higher up, at the root layout.
 
 **Native modules** in `modules/`: `mpv-player` (the native player, iOS and Android),
 `exoplayer-player`, `background-downloader`, `glass-poster`, `hero-carousel`,
+`notification-settings-link` (the iOS Settings link to the Notifications screen),
 `system-volume`, `top-shelf-cache`, `tv-recommendations`, `tv-search`, `tv-user-profile`,
 `wifi-ssid`.
 
@@ -223,14 +277,14 @@ PersistQueryClientProvider
 
 ```typescript
 import { useSettings } from "@/utils/atoms/settings";
-import { apiAtom } from "@/providers/JellyfinProvider";
+import { apiAtom } from "@/utils/atoms/api";
 ```
 
 ## Coding standards
 
 - TypeScript everywhere. The only exceptions are the config files whose loaders cannot
-  parse TypeScript: `babel.config.js`, `metro.config.js`, `react-native.config.js`,
-  `tailwind.config.js`.
+  parse TypeScript: `babel.config.js`, `fingerprint.config.js`, `jest.perf.config.js`, `metro.config.js`,
+  `react-native.config.js`, `tailwind.config.js`.
 - Functional components with hooks.
 - Biome formatting: two space indent, semicolons, LF endings.
 - Reuse the existing atoms, hooks and utilities before adding new ones.

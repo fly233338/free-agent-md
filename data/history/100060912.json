@@ -2,12 +2,6 @@
   "full_name": "microsoft/terminal",
   "points": [
     {
-      "checked_at": "2026-10-12T10:58:37Z",
-      "commit_sha": "7d06b26f73ef4bcb78b56647c395251eeee4c2bc",
-      "pushed_at": "2026-10-09T21:11:18Z",
-      "stars": 105144
-    },
-    {
       "checked_at": "2026-10-13T10:42:33Z",
       "commit_sha": "e90f9a534cae047fccddacc1ee813a82929662d5",
       "pushed_at": "2026-10-12T20:12:58Z",

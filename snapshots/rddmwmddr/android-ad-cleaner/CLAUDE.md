@@ -1,47 +1,96 @@
 # CLAUDE.md
 
-本仓库的操作规范写在 [AGENTS.md](AGENTS.md)。开工前读完它。
+本仓库的维护规范就是本文件：开工前读完，判断标准在 [CODING_STANDARDS.md](CODING_STANDARDS.md)。[AGENTS.md](AGENTS.md) 是交付给用户侧执行 agent 的手机操作手册，不是维护规范（[ADR-0028](docs/adr/0028-agent-audience-boundary.md)）；改引擎行为时，它的 §1 就是这条改动的边界，先读一遍。
 
-本文件只写会改变 agent 行为的指令。逐次处理记录、上报归类与每次发版的验证见 [CHANGELOG.md](CHANGELOG.md)，不在这里复述。
+本文件只写会改变 agent 行为的指令。逐次变更记录见 [CHANGELOG.md](CHANGELOG.md)，用户看的更新说明与发版流程见 [docs/agents/release.md](docs/agents/release.md)，上报归类见 [docs/09](docs/09-社区问题处理.md)。
 
 ## 开发
 
-- 回归：`python -m unittest discover -s tests`；本机用仓库根的 `.venv/bin/python`（系统 python 缺 adbutils，会报一串 ModuleNotFoundError）。只装 `requirements.txt` 就够，不需要 pywebview / pillow。并行会话在各自的 worktree 里干活时，那个目录没有 `.venv`，用主副本 `.venv/bin/python` 的绝对路径；Read/Edit 也一律用该 worktree 的绝对路径。
-- CI：`.github/workflows/test.yml` 在 PR 和 main 推送时自动跑同一套；`build-windows.yml` 只在 `v*` 标签或手动触发时打包，不守 PR。
-- 静态检查：`uvx ruff@0.17.3 check --select F,E9 tool tests gui`，本地与 CI 同一个版本（CI 就钉 0.17.3，`.venv` 里没有 ruff）。不查 `recipes/`——机型脚本靠注入作用域执行，静态分析看到的全是未定义名；也不开格式与行长规则。
-- CHANGELOG 的新行加在 `## 未发布` 一节；rebase 到已经发过版的 main 之后，确认它没有落进已发版的小节。
-- 审查标准：见 [CODING_STANDARDS.md](CODING_STANDARDS.md)，只放判断项；机械规则交给 CI。
-- 社区问题的归类与真机缺口见 [docs/09](docs/09-社区问题处理.md)：那里只记 GitHub 上看不到的判据与缺口，逐条回复与 issue 编号留在 issue 里。
-- 找「开关所属的行」先看 [tool/row.py](tool/row.py)：`line` 结构定界、`own` 多开关容器收窄、`title_of` 平铺列表按竖直距离分带；`fast.py` 与 `chan_fast.py` 消费它，不要另写一份。
-- 找「等页面认得出」先看 [tool/wait.py](tool/wait.py)：`settle` / `setting` / `wait_page` / `off` 都消费 `until()`，不要另写轮询循环。
-- 造不连手机的 `Phone` 用 [tests/fixtures.py](tests/fixtures.py) 的 `phone_stub()`（`fake_phone()` 就是它加一条时间轴），装配只此一处。纯重构要给对拍证据时，同一文件还有 `all_pages()` 取 `tests/` 里的页面样本、`Clock` 假时钟、`Timeline` + `Device` 按时间轴换页。
-- adb 固定 platform-tools 37.0.1（`gui/app.py` 的 `ADB_PINNED`）；升级时改那张表，校验值按 Google `repository2-3.xml` 的 SHA-1 核对。
+- 找「某条维护规则有没有守卫」先看 [docs/agents/rules.toml](docs/agents/rules.toml)：规则正文留在文档里，注册表每条给 `id` / `source` / `check` / `status` / `why` / `expires_if`（可选 `since`），正文对应行的行尾挂 `<!-- rule:<id> -->` 锚点。新增或删除规则时两处一起改，`tests/test_rules_registry.py` 守双向一致，没挂锚点的新条目由 `tests/test_rules_guards.py` 按文档冻结上限挡；规则的理由只写在注册表的 `why` 里，正文不复述理由——判断与反例仍留在正文。 <!-- rule:doc.rules.registry-indexes-prose -->
+- 回归：`python -m unittest discover -s tests`；本机用仓库根的 `.venv/bin/python`（系统 python 缺 adbutils，会报一串 ModuleNotFoundError）。只装 `requirements.txt` 就够，不需要 pywebview / pillow。并行会话在各自的 worktree 里干活时，那个目录没有 `.venv`，用主副本 `.venv/bin/python` 的绝对路径；Read/Edit 也一律用该 worktree 的绝对路径。只跑一个文件时加 `PYTHONPATH=tests`：`PYTHONPATH=tests python -m unittest tests.test_row`（`tests/` 里的用例按顶层模块 import `fixtures`）。 <!-- rule:dev.tests.regression-command -->
+- 用例只在 `tests/` 下定义：`recipes/`、`gui/` 里的脚本不进收集，别处写 `def test_` 也不会被 `discover -s tests` 跑到。`tests/test_test_collection.py` 扫全仓 `.py`（跳过隐藏目录与 `node_modules` / `build`），`tests/` 之外命中即汇总成一条失败，逐文件列出命中数。 <!-- rule:dev.tests.cases-live-under-tests -->
+- 本机 `.venv` 是 3.13（仓库根的 `.python-version` 钉着这一版），与 CI 的 Linux job 同一版，上面那条回归命令就是本机口径，不必再用别的解释器跑一遍；重建时照 `.python-version` 走，别升到更新的版本。3.12 只剩 Windows job 与发版打包在跑，而那两边会 skip 掉 POSIX-only 的一批用例（包括 CLI 逐字节对拍），macOS 打包不跑回归，别假设两版逐字相同。 <!-- rule:dev.tests.interpreter-version -->
+- 改动面与审查对比用分支基点的固定 SHA：取法、worktree 路径与重取时机见 [docs/agents/code-review.md](docs/agents/code-review.md) 的「基线钉 SHA」。
+- 主副本的当前分支随时被别的会话切走（`main` 只是其中一种状态），所以切分支、丢弃改动（`git checkout --`、`restore`、`reset`、`stash`）都在 `git worktree add` 出来的目录里做；主副本只做合并与只读操作。 <!-- rule:dev.workspace.worktree-only -->
+- 推送前再 `git fetch origin main` 并 rebase：并行会话会在开工到推送之间推进 main，基于旧 SHA 推送会让 PR 直接 `CONFLICTING`，CI 也不触发。 <!-- rule:dev.git.rebase-before-push -->
+- CI：`.github/workflows/test.yml` 在 PR 和 main 推送时自动跑同一套，回归 job 在 Linux 与 Windows 各一个、两版解释器各跑一次；两边 skip 的用例不一样（Windows 侧 skip 掉 POSIX-only 那批，含 CLI 逐字节对拍），判断覆盖时看 `-v` 输出里的 skipped 行，别假设两边跑的是同一批。`build-windows.yml` 只在 `v*` 标签或手动触发时打包，不守 PR。 <!-- rule:dev.ci.two-interpreters -->
+- 提交必须带 DCO signoff：`git commit -s`，签署邮箱与作者邮箱一致。CI 的 `dco` job 用 `tool/check_dco.py` 查 PR 上 `base..head` 里的非 merge 提交（merge 提交是网页 / API 合并的已知例外），本地跑同一条命令可复现；它只让问题可见，要拦在合并前须分支保护 + required status checks。 <!-- rule:dev.git.dco-signoff -->
+- 提交信息主题用 Conventional Commits：`type(scope): subject`，`type` 只取 `feat`、`fix`、`docs`、`refactor`、`test`、`chore`、`ci`、`perf`、`build`、`style`、`revert` 之一（单一来源是 `tool/check_conventional.py` 的 `TYPES`），`scope` 只允许 `[a-z0-9_-]`，破坏性改动在冒号前加 `!`。CI 的 `conventional` job 在 PR 上查 `base..head` 里的非 merge 提交，本地跑 `python3 tool/check_conventional.py origin/main..HEAD` 可复现；同 `dco` 一样只让问题可见，不阻断合并。 <!-- rule:dev.git.conventional-commits -->
+- 票号也进 CI：`ticket-checks.yml` 的 `ticket-ref` 核分支名以 `-<票号>` 结尾、PR 正文有 `Refs #N` / `Closes #N` 且是同一张，`comment-tickets` 核新增行里的票号在 PR 引用的范围内（`docs/adr/` 与含「沿用」的行豁免）；同 `dco` / `conventional`，只让问题可见，要拦在合并前须分支保护 + required status checks。两条规则本身见 [docs/agents/issue-tracker.md](docs/agents/issue-tracker.md) 与 [CODING_STANDARDS.md](CODING_STANDARDS.md)。
+- 依赖安全靠两个 workflow：PR 上 `dependency-review` 只比对本次引入 / 变更的依赖（`fail-on-severity: high`；`fail-on-scopes: runtime` 让 devDependency 变化不阻塞），存量由 `dependency-audit` 每周一跑 `pip-audit -r requirements.txt --strict`；npm 唯一依赖是 devDependency、Gradle 存量都不在承诺内。许可证只做精确豁免（`dependency-review.yml` 的 `allow-dependencies-licenses` 里列着双许可的 `libadb-android`），不要关掉整个 license check。两个 job 都只让问题可见，要拦在合并前须分支保护 + required status checks。Dependabot 不开，依赖升级一律人工做并重新验证真机行为。 <!-- rule:dev.deps.dependency-review -->
+- 静态检查：`uvx ruff@0.17.3 check tool tests gui android/app/src/main/python android/smoke.py`，规则集（`F` / `E9` / `B`）只在仓库根 `pyproject.toml` 定义、加规则改那里，目标清单只写在命令里，CI 的 `lint` job 与这份文档跑同一条；本地与 CI 同一个版本（CI 就钉 0.17.3，`.venv` 里没有 ruff）。不查 `recipes/`——机型脚本靠注入作用域执行，静态分析看到的全是未定义名；也不开格式与行长规则。<!-- rule:dev.ruff.pinned-and-scoped -->
+- `ruff` 的 `B`（bugbear）类已启用：闭包捕获循环变量（`B023`）、`zip` 缺 `strict=`（`B905`）会红。`B023` 确认「当轮创建、当轮消费」后写 `# noqa: B023` 加一句理由，真延后调用的改代码；`B905` 论证长度必然相等才写 `strict=True`，论证不成立写 `strict=False` 并注释。<!-- rule:dev.ruff.bugbear-rules -->
+- 类型检查：`mypy` 只扫 `tool/`，范围与宽松档参数都在仓库根 `pyproject.toml` 的 `[tool.mypy]` 里，命令不带参数（本地先 `.venv/bin/pip install mypy==1.18.2`，再 `.venv/bin/mypy`）；`gui/` 有自己的平台分支与假对象、`recipes/` 靠注入作用域执行，都不进范围。CI 的 `types` job 与本地同一条、只在 Linux 跑（mypy 按平台裁剪分支，换个平台结论不等价），版本不进 `requirements.txt`（同 `coverage`）。宽松档就是 `check_untyped_defs` 加关掉 `var-annotated`；其余存量错误改代码，不用 `type: ignore`、不加别的压制。**不做全量注解**。 <!-- rule:dev.types.narrow-scope-in-config -->
+- 严格档只给六个纯逻辑模块：`polarity` / `channel_policy` / `host` / `events` / `recipe_meta` / `reader`，名单与逐项 flag 都在 `pyproject.toml` 的 `[[tool.mypy.overrides]]` 里；写 `strict = true` 会被 mypy 当全局设置，只能逐项列。判据是不碰设备、不碰手机界面、不依赖假对象，注解才追得到调用方；新增这类模块按同一判据补完注解再进名单，两处一起改。其余引擎目录保持宽松档，`gui/` 与 `recipes/` 仍不进范围。 <!-- rule:dev.types.strict-on-pure-modules -->
+- 标准流转 UTF-8 只走 [tool/stdio.py](tool/stdio.py) 的 `use_utf8_console()`：Windows 控制台与管道默认不是 UTF-8，打印中文与 ✓ / ✗ 会 `UnicodeEncodeError`；转不动时静默跳过（手机版 `aac_android/inproc.py` 的 `_Router` 就没有 `reconfigure()`），各入口别再自己写一份 try/except。`tests/test_rules_guards.py` 的 `StdioGuards` 扫全仓文本，除 `tool/stdio.py` 外任何文件自行重配置标准流即红——正文里不要照抄那行写法，守卫会连文档一起抓。 <!-- rule:dev.stdio.single-exit -->
+- 覆盖率：先 `.venv/bin/pip install coverage==7.17.2`（不进 `requirements.txt`，那是产品依赖），再 `.venv/bin/python -m coverage run -m unittest discover -s tests` → `.venv/bin/python -m coverage report --show-missing`；判据在仓库根 `.coveragerc`（`branch=True`、`source=tool,gui`，omit 的只有工具脚本与三行的常量模块）。CI 的 `coverage` job 把 Linux 与 Windows 两份数据合并成一份报告写进 job summary，同仓分支的 PR 上再挂一个 `coverage <百分比>%` 的 check，**不设任何阈值**；单平台数字一定低估，本地一份数据不能当跨平台结论。 <!-- rule:dev.coverage.two-platform-merge -->
+- 找「前端行为测试」先看 [tests/js/](tests/js/)：用例用 `node --test` + jsdom 加载真实的 `gui/web/index.html` 与官网根目录的 `index.html`（下载页；手机版界面是 Compose，不在 jsdom 里测，判断在 `aac_android/view.py`，用 Python 测；[ADR-0017](docs/adr/0017-frontend-test-harness.md)）。由 [tests/test_web_client.py](tests/test_web_client.py) 在 `unittest` 里代跑，回归仍是上面那一条命令；单跑先 `npm ci`，再 `npm test`（参数以根 `package.json` 的 `test` 脚本为准；Node 22 不认目录参数，`--test-force-exit` 防漏写 `window.close()` 时挂住）。jsdom 覆盖不到的真渲染 / 真定时器再退到真浏览器：`python -m http.server` 起静态服务，页面加载后桩 `window.pywebview.api` 并 dispatch `pywebviewready`，之后直接调 `showRun()` 这类顶层函数。 <!-- rule:dev.tests.frontend-harness -->
+- CHANGELOG 一条一行、≤ 80 字，落在 `## 未发布` 的 `### 新增` / `### 修复` / `### 内部` 之一，结尾挂一个编号（有 PR 挂 PR 号，只有 issue 的挂 issue 号；内部重构再加 ADR 号）。内部条目允许点一个符号名，但不展开机制；测试数、基线 SHA、对拍组数一律不写——那些在 PR 描述与 ADR 里。`## 未发布` 期间不写验证行，发版时才补。rebase 后先 `git rebase --continue` 把提交落完、再跑回归与对拍，并确认 `## 未发布` 没有被已发版的小节吸收（main 刚发过版时要重新开出来）。 <!-- rule:doc.changelog.one-line-entry -->
+- 审查标准：见 [CODING_STANDARDS.md](CODING_STANDARDS.md)，只放判断项；机械规则交给 CI。 <!-- rule:doc.standards.judgement-only -->
+- 社区问题的归类与真机缺口见 [docs/09](docs/09-社区问题处理.md)：那里只记 GitHub 上看不到的判据与真机缺口——票号可以作出处，逐条回复、标签流转与「哪张票什么时候关的」留在 issue 里。 <!-- rule:doc.community.local-knowledge-only -->
+- 找「命令怎么分派、退出码怎么定」先看 [tool/run.py](tool/run.py) 的 `dispatch()` 与 `COMMANDS`：一条命令一个 `cmd_*(serial, rest) -> int`，`sys.exit` 只在 `__main__` 一处；退出码语义见 [ADR-0005](docs/adr/0005-run-command-handlers.md)。`tool/adapt.py` 的三条子命令同形状：取 `run.fail()` 与返回码，改它们时别把 `sys.exit` 加回 helper。 <!-- rule:dev.commands.single-dispatch -->
+- 找「开关所属的行」先看 [tool/row.py](tool/row.py)：`line` 定界、`own` 收窄多开关容器、`title_of` 给行标题、`title_hit` 给标题文字的落点（`off()` 回退用）、`dedupe` 同一水平带、`control` 开关本体（卡片整体 checkable 时取内层 Switch）。`fast.py` 的 `switches()` 消费 `dedupe` / `control`，`chan_fast.py` 共用 `SAME_LINE` 与 `own`；`disabled_at` 判开关是不是灰的，`off()` 与 `chan_fast` 共用它，不要另写一份。设置入口（齿轮）的判据是 `icon_hit`，机型脚本从 `fast` 取这一份。 <!-- rule:dev.row.single-definition -->
+- 找「某个品牌某个分组的入口怎么进」先看 [tool/entries.py](tool/entries.py)：品牌家族 `FAMILY` 只在那里定义（`run.py` 的广告包、参考脚本与版本比较都从它取，别再建第二份），`ENTRIES` 是品牌 × 分组的三档入口，`reach()` 按直达 → 搜索回退、都不通返回 `None`，`markdown()` 生成 [docs/清单/入口速查.md](docs/清单/入口速查.md)。直达档两种走法：`am start -n 页面`，或公开 Intent（`Direct.action` → `am start -f 0x10008000 -a 动作 -p 包名`，落点仍按包名 / 页面核对）。条目必须有出处（机型脚本里用过，或某份品牌清单里写着），`tests/test_entries.py` 守着这几条。 <!-- rule:dev.entries.source-and-family -->
+- 找「这个开关该开还是该关」先看 [tool/polarity.py](tool/polarity.py)：`NEG_PREFIX` / `AD_WORDS` / `TRACK_WORDS` 与 `want_state()` 只在那里定义，`tool/fast.py` 只是显式 re-export；加一个否定词会同时改变引擎与词库（[ADR-0008](docs/adr/0008-switch-plan.md) 的增补段）。 <!-- rule:dev.polarity.word-lists -->
+- 找「某个开关叫什么、哪一页要留着什么」先看 [tool/vocab.py](tool/vocab.py)：从机型脚本现算每个 `(家族, 分组)` 的词条与同页保留项，生成 [docs/清单/词库.md](docs/清单/词库.md)；只认 `p.off()` / `close_named()` 的字面量与模块级常量。方向取自 `polarity.want_state()`，不按调用名猜。同页保留项只在那一页成立，不产出跨页禁词表（[ADR-0008](docs/adr/0008-switch-plan.md)）。写完脚本跑 `python3 tool/vocab.py gaps <目录名>` 查漏。 <!-- rule:doc.vocab.generated-from-recipes -->
+- 找「按文字导航该用哪个方法」先看 [docs/04-给新机型写脚本.md](docs/04-给新机型写脚本.md) 的「该用哪个导航方法」：`start` / `entry` / `enter` / `setting` / `go` / `tap` / `tab` 失败时是 `raise` 还是返回 `False`，选错会点错地方；`setting` 失败只返回 `False`，这一段没兜底时必须 `raise`，否则本段空跑还按成功记（#776）。`Phone.focus()` 是当前前台窗口（多数是 `包名/页面名`，锁屏与通知栏抢焦点时是裸窗口名），不是焦点控件。 <!-- rule:dev.navigation.raise-vs-false -->
+- 找「适配新机型从哪一步开始」先看 [tool/adapt.py](tool/adapt.py)：`survey` 只读试入口（只试 `entries.ENTRIES` 的直达、不走 `Phone.start`），`explore` / `gen` / `check` 是后三段；`-s 序列号 adapt <子命令>` 的转发只认 `ADAPT_SERIAL_SUBS`（`survey` / `explore` / `check`）；`gen`（不用带 `-s`）与未知子命令按这种形态调时，`dispatch()` 直接 `fail()`，不再静默打印帮助。 <!-- rule:dev.adapt.serial-subcommands -->
+- 改「各品牌在哪儿连点 7 下」先看 [docs/手机版教程/brand-taps.json](docs/手机版教程/brand-taps.json)：这四行是单一来源，跑 `python tool/gen_brand_taps.py` 渲染进 `android-tutorial.html`、`docs/手机版教程/README.md`、`docs/00-打开开发者模式.md` 的 `brand-taps` 标记区，漏跑由 `tests/test_doc_consistency.py` 抓；标记区外的正文（如页面里「小米连点的是「OS 版本」」）仍是手写，改这里不改那里。 <!-- rule:doc.tutorial.brand-taps-single-source -->
+- 改「官网两页的外观」先看仓库根的 [site.css](site.css)：调色板、深色档、顶栏与页脚只在那里，`python tool/gen_site_css.py` 把它渲染进 `index.html` 与 `android-tutorial.html` 的 `site-css` 标记区，页面不引外链（单文件副本取不到，[ADR-0025](docs/adr/0025-site-shared-css.md)）。两页在共享样式上的差异值只在 `:root.reading` 一条里（页面专属样式仍各自持有），漏跑由 `tests/test_doc_consistency.py` 的 `SiteCssTests` 抓。 <!-- rule:doc.site.shared-stylesheet -->
+- 找「这一页该拨哪些开关」先看 [tool/fast.py](tool/fast.py) 的 `plan_switches()` 与 `SwitchPlan`：目标选择、屏带过滤、`checked` / `kept` / `disabled` 只在那里定义；灰态由调用方注入的 `disabled=` 谓词给出（`off()` 会复读一页确认），`off()` 只做点击 → 回读 → 重试 → 报告（确认框挡着先点掉，判据是 `_confirm_target`；补点两轮仍不动时回退到点行标题，[ADR-0024](docs/adr/0024-off-title-fallback.md)）。回读的结论由 `readback()` 给出（结局词表见 [CONTEXT.md](CONTEXT.md) 的「回读」），补点该点哪一行由 `pick_retry_rows()` 给出；两个函数都不读屏、不点击，`page_same` 与 `disabled` 由调用方注入。 <!-- rule:dev.switches.plan-and-readback -->
+- 找「点名的开关没出现时怎么报」先看 [tool/recipe_kit.py](tool/recipe_kit.py) 的 `require_switches()`：文案、`contains`（关键词匹配）、`optional` 名单只在那里定义，报错里带的现场由 [tool/fast.py](tool/fast.py) 的 `Phone.page_evidence()` 给出（与入口失败的「停在 / 标题 / 开关 / 结构」同形，末尾列当次读到的标题）。机型脚本别另写一份 `require(all(...))`。同一处的 `page()` 判「到了但页面不对」（包名 / Activity / 标题），三段失败同样先调 `Phone.note_miss()` 留现场、再抛原来那句错，别在脚本里另抄一份落点判据。 <!-- rule:dev.switches.missing-target-evidence -->
+- 找「启动后算不算还在目标 App」先看 [tool/fast.py](tool/fast.py) 的 `_launch()` / `check_foreground()`：`unknown_focus()` 判「读不出 ≠ 离开」，连续 `FOREIGN_STREAK` 帧外占才停段，启动等待按 `LAUNCH_WAIT` 计、顺延不超过 `LAUNCH_HARD_STOP`；只有确认落在目标 App 时才读页面文字、关弹窗（[ADR-0022](docs/adr/0022-launch-foreground.md)）。 <!-- rule:dev.launch.foreground-ownership -->
+- 找「等页面认得出」先看 [tool/wait.py](tool/wait.py)：`settle` / `setting` / `ChannelPage.refresh` / `off` / `confirm` 都消费 `until()`，不要另写轮询循环；「等机主解锁」的文案、轮询间隔、站稳时间与默认预算只在 `wait_unlocked()` 里，两处调用点（`run.py` 起脚本之前、`Phone`）只传锁屏判据与亮屏命令。 <!-- rule:dev.wait.single-loop -->
+- 找「怎么走到渠道页、认出哪一行的开关」先看 [tool/chan_fast.py](tool/chan_fast.py) 的 `ChannelPage.open()`：直达 / 转应用通知页 / 内联行 / 同名放弃四类只在那里定义（[ADR-0007](docs/adr/0007-channel-page.md)）；`channel_switch` / `inline_switch` / `wait_page` / `via_app_page` 是一行前向壳，不要往里加逻辑。 <!-- rule:dev.channels.page-entry -->
+- 找「引擎报给客户端的状态」先看 [tool/events.py](tool/events.py)：六个 kind 与事件行格式只在那里定义（[ADR-0004](docs/adr/0004-engine-state-events.md)），引擎侧 `emit()`、`gui/app.py` 的 `_log()` 都走它；`failed_steps` 是唯一带载荷的 kind，客户端用 `parse_data()` 取整份字典，其余仍用 `parse()` 取 kind，不要按中文文案判断状态。 <!-- rule:dev.events.vocabulary -->
+- 找「这句话该说电脑还是说本 App」先看 [tool/host.py](tool/host.py)：`ON_PHONE` / `CLICKER` / `CLICK` 只在那里定义（手机版由 `boot()` 设 `AAC_HOST=phone`），客户端诊断行的 `TAP_REFUSED` 在 `gui/app.py`。分叉的只有措辞，判定与控制流不分叉（[ADR-0019](docs/adr/0019-phone-second-execution-host.md) 的增补段），唯一的控制流例外是手机版不写插电常亮（`chan_fast.keep_awake()`、`run.py` 的 `recipe` 与 `finish`），别让它变成按宿主分叉的判定。`tool/troubleshooting.py` 是显式转发、`tool/adb_link.py` 直接取；传给引擎的宿主标记只认 `ENGINE_HOST`、不继承用户 shell 的 `AAC_HOST`。读屏失败分三种结局，判据在 `adb_link`：`LIB_GONE` 认「命令服务断开」这一族（走 `link_lost`），`read_failed()` 认「读屏请求超时」（只报这一步没完成，后面的照常跑），`screen_gone()` 认「后台屏没了」（整段收场，与 `Phone` 构造共用同一份判定，结尾按场景分「未点击」与「这一步没有完成」）。 <!-- rule:dev.host.wording -->
+- 找「渠道怎么判营销 / 服务 / 受保护」先看 [tool/channel_policy.py](tool/channel_policy.py) 的 `classify()`：七组判定只在那里定义（[ADR-0006](docs/adr/0006-channel-classification.md)）；`chan_fast` 的扫描分支与 `gui/app.py` 的 `chan_scan()` 都消费它，不要另写词表。前台服务的证据来自渠道行（Android 14 起字段改名，两个都认，见 `FG_SERVICE_MARKS`；`parse()` 用 `foreground` out 参数带回），不在通知记录段。 <!-- rule:dev.channels.classification -->
+- 找「怎么点 App 底部标签」先看 [tool/fast.py](tool/fast.py) 的 `Phone.tab()`：底部带 `top > 0.85H` 与三层匹配只在那里定义（[ADR-0012](docs/adr/0012-bottom-tab-in-engine.md)）；它不重试、不确认落点、找不到不回退，需要文字确认的普通导航仍用 `Phone.go()`。 <!-- rule:dev.navigation.bottom-tab -->
+- 改「一行输出怎么进界面」先看两处：`gui/app.py` 的 `_log()` 决定它进 `Job.lines` 还是只当事件；[gui/web/index.html](gui/web/index.html) 的 `summarize()` 在认不出模式时直接显示 `results[].tail` 末行——`tail` 是第二个落点，机器行不能进。手机版同样的判断在 `android/app/src/main/python/aac_android/view.py`，改口径时两边都要看。 <!-- rule:dev.ui.result-line-routing -->
+- 找「没勾的项为什么出现在结果里」先看 `gui/app.py` 的 `plan_tasks()`：勾了的排 `Task`，没勾的排一条 `skip_reason` 非空的，由 `not_run_result()` 记成 `rc=0` + `skipped` 的结果行（[ADR-0023](docs/adr/0023-not-run-steps-in-results.md)）；原因分三档——没勾、这台机本来就没有或之前已做、通知没扫成，取自 `Api._offered()`（`last_status` + `last_chans`）。真因故障跳过的行仍是 `rc≠0`，别把它并进这一档。 <!-- rule:dev.ui.not-run-rows -->
+- 找「哪一步还能重试、重试重跑什么」先看 `gui/app.py` 的 `retryable()` / `retry_plan()`：可重试 = `rc≠0` 且没 `stopped`，广告开关步只取结果行里的 `failed_steps` 段名（[ADR-0026](docs/adr/0026-retry-failed-steps.md)）。合并按 `Task.kind` 就地覆盖，两个宿主读同一个 `poll()` 的 `retry` 计数，别在前端或 `view.py` 再算一份；段名来自引擎的 `failed_steps` 事件（[ADR-0004](docs/adr/0004-engine-state-events.md) 增补段）。 <!-- rule:dev.ui.retry-plan -->
+- 找「手机版界面」先看 `android/app/src/main/java/com/ahuamiao/adcleaner/ui/AppModel.kt`：页面流程只有 `Screen` 一个状态，每次切换都经过它的方法（[ADR-0018](docs/adr/0018-android-compose-ui.md)）；带判断的逻辑放 `aac_android/view.py`，别写进 Kotlin。手机版不再加载 `gui/web/`。 <!-- rule:dev.android.screen-state -->
+- 找「手机版替换层」先看 [android/app/src/main/python/aac_android/](android/app/src/main/python/aac_android/)：`adb.py` / `bridge.py` / `inproc.py` / `u2.py` 是替换层落地的四个文件（[ADR-0019](docs/adr/0019-phone-second-execution-host.md)）。引擎、`tool/`、`recipes/` 与桌面版同一份；新增读屏能力要先加进 `u2.py` 与 `tool/reader.py` 两边。 <!-- rule:dev.android.replacement-layer -->
+- 找「试跑一下安卓」先看 [android/smoke.py](android/smoke.py)：一条命令走完 CI 出 debug 包 → 装开发机 → 启动 → 报告，`--screens` 追加 demo 逐屏存活判定；构建留在 CI，本机只要 `adb` 与 `gh`，产物按 commit 落临时目录不入库。用法与首次配对见 [android/README.md](android/README.md)。 <!-- rule:dev.android.smoke-entry -->
+- 造不连手机的 `Phone` 用 [tests/fixtures.py](tests/fixtures.py) 的 `phone_stub()`（`fake_phone()` 就是它加一条时间轴），装配只此一处。客户端用例要假 `Runner`（命令返回什么、spawn 交什么）同样用它：`FakeRunner` / `FakeProc`，`Api(runner=…)` 注入，不要 patch `api._run` 与 `app.subprocess`。纯重构要给对拍证据时，同一文件还有 `all_pages()` / `Clock` / `Timeline` + `Device`。 <!-- rule:dev.tests.fixtures-single-assembly -->
+- 无设备用例不许真等：`chan_fast` 的 scan 分支会读型号，用例要 patch 掉 `phone_model`，否则对着不存在的序列号等 adb 超时；机型脚本一律用 `fixtures.load_recipe()` 装载（它把脚本的 `time` 三个读数一起换成假钟），自己 `exec` 一份脚本就会真 sleep。躲不开真实进程的环节（跨进程锁、真起播放器）用 `Clock` 注入或把等待压到毫秒级。[tests/test_recipe_loader.py](tests/test_recipe_loader.py) 守着装载这一条。 <!-- rule:dev.tests.no-real-wait -->
+- 改「认渠道页」这类读屏逻辑要做改前改后对拍时，驱动器是 [tests/compare_chan_pages.py](tests/compare_chan_pages.py)：认页 / 进页 / 编排三层 × 两种屏尺寸，同一份探针分别跑冻结基线与当前 `tool/`；对拍要满足哪几条才算证据见 [CODING_STANDARDS.md](CODING_STANDARDS.md) 的「对拍要能证伪」。
+- 找「读屏 adapter」先看 [tool/reader.py](tool/reader.py)：`Phone.reader` 是统一接口，`Phone.d` 是它的历史别名（机型脚本与测试用），新增读屏能力先加进 `Reader`。 <!-- rule:dev.reader.unified-adapter -->
+- 手机上「有」的读屏异常名，电脑上未必有：`aac_android/u2.py` 的 `install()` 把模块里定义的类动态注册成 `uiautomator2.exceptions`，电脑上装的是真库 + `adbutils`。在 `tool/`、`gui/` 里新增 `u2.exceptions.X` 或 `adbutils.X` 之前先确认桌面那份也有，`tests/test_runtime_symbols.py` 守着这一条。 <!-- rule:dev.android.runtime-symbols -->
+- adb 固定 platform-tools 37.0.1（`gui/app.py` 的 `ADB_PINNED`）；升级时改那张表，校验值按 Google `repository2-3.xml` 的 SHA-1 核对。 <!-- rule:dev.adb.pinned-platform-tools -->
+- 鸿蒙 HDC 不入库：`gui/hdc_fetch.py` 按平台从 OpenHarmony `7.0-Release` 下载三个 tarball，按钉死的 SHA-256 校验并解出 `hdc` 与 `libusb_shared`；升级时改那里的表，构建与缓存顺序别另写一份。 <!-- rule:dev.hdc.build-time-download -->
+- 客户端数据路径看 `gui/app.py` 的 `ClientData`，备份目录看 [tool/backups.py](tool/backups.py) 的 `Backups`（root 由调用方给），工具模块用 `_tool()` 惰性取。 <!-- rule:dev.client.data-paths -->
+- 找「Windows 启动失败是缺 WebView2、被 MOTW 拦还是托管的 dll 被判成远程来源」先看 [gui/winpreflight.py](gui/winpreflight.py)：注册表三态、两个关键 dll 的 `Zone.Identifier` 判定与 `load_rejected()` 认的那两个原文子串只在那里定义（[ADR-0003](docs/adr/0003-desktop-client-import-and-dependencies.md)）；`gui/app.py` 的 `startup_advice()` 只按结论选文案，顺序是缺运行时 → MOTW → 原文拒载 → 未确认 → 兜底；`startup_failed()` 先经 `win_clipboard()` 把整段写进剪贴板再弹窗，写不进去才退回「按 Ctrl+C」（#811）。随包的 `<exe>.config` 由 [gui/dotnet_config.py](gui/dotnet_config.py) 写，`windows.spec` 收集完产物后调用。 <!-- rule:dev.windows.startup-verdicts -->
+- 找「免安装版启动时该不该提示旧版还在」先看 [gui/winpreflight.py](gui/winpreflight.py) 的 `old_install_present()`：旧产品名「安卓去广告」、四处卸载键（HKCU / HKLM 各含 32 位视图）与当前 exe 目录的比较只在那里定义；`gui/app.py` 的 `Api.old_install_notice()` 只把结论变成一条提示，用户点「知道了」后 `settings.json` 的 `old_install_noticed` 记下这一版、下次不再出现；不写注册表，也不自动卸载（#872）。 <!-- rule:dev.windows.old-install-notice -->
 
 ## 错误日志上报
 
-- 用户说明见 [docs/12](docs/12-错误日志上报.md)。服务器、数据库、部署与运维信息只记在本机 `CLAUDE.local.md` 和 `.private/`，不进仓库。
+- 用户说明见 [docs/12](docs/12-错误日志上报.md)。服务器、数据库、部署与运维信息只记在本机 `CLAUDE.local.md` 和 `.private/`，不进仓库。 <!-- rule:doc.reports.private-infra-stays-local -->
 
 ## 发版
 
-- 新版本提示读官网的 `android-ad-cleaner-latest.json`，发版后要更新它（步骤记在本机 `CLAUDE.local.md`）。
-- 官网另有一份放在机主的服务器上，发版后同步，方法记在本机 `CLAUDE.local.md`。
-- 网盘：`gui/upload_baidu.sh [版本]` 从公开的 GitHub Release 下载安装包并核对 SHA256，经本机已登录的 BaiduPCS-Go 上传，生成分享链接写进 index.html 后提交推送。网盘账号凭证不进仓库和对话。
-- 发完版按 [docs/agents/release-followup.md](docs/agents/release-followup.md) 把 `waiting-for-verify` 的 issue 逐条发给报告者复测。新版不送到报告者手上，这些 issue 永远关不掉。
+- 完整流程与 Release 正文的写法见 [docs/agents/release.md](docs/agents/release.md)：正文是用户看的唯一权威，repo 里不留副本，`README.md` 的首段从它复制。 <!-- rule:doc.release.note-is-the-only-authority -->
+- 新版本提示读官网的 `android-ad-cleaner-latest.json`，发版后要更新它（步骤记在本机 `CLAUDE.local.md`）。 <!-- rule:doc.release.latest-json-after-release -->
+- 官网另有一份放在机主的服务器上，发版后同步，方法记在本机 `CLAUDE.local.md`。 <!-- rule:doc.release.site-mirror-sync -->
+- 国内下载走 Gitee：`python3 gui/upload_gitee.py <版本>` 从公开的 GitHub Release 下载安装包并核对 SHA256，推代码和标签，建发行版传附件，再匿名下载回来核对。令牌在本机 `~/.config/gitee/token`，不进仓库和对话。百度网盘暂停使用；Gitee 不可用时把 `index.html` 的 `REL.gitee` 留空，改跑 `gui/upload_baidu.sh [版本]`，`#dl-lead` 的改法与必须原样保留的后半句见 [docs/agents/release.md](docs/agents/release.md) 第 8 步。 <!-- rule:doc.release.gitee-upload -->
+- 发完版按 [docs/agents/release-followup.md](docs/agents/release-followup.md) 的清单催复测：新版不送到报告者手上，`waiting-for-verify` 的 issue 不催就永远关不掉。
 
 ## Agent skills
 
 ### Issue tracker
 
-GitHub Issues（`gh` CLI）。见 `docs/agents/issue-tracker.md`。
+GitHub Issues（`gh` CLI）：开工第一条命令是 `python3 tool/claim.py <票号>`，退出码 2 表示别人已持有，停下上报、不要在另一张 worktree 上重做；合入后 `--release`，放弃改派用 `--abandon`。「开工前先有票」的判据与仲裁规则见 [docs/agents/issue-tracker.md](docs/agents/issue-tracker.md) 的「票的生命周期」；标签语义见 [docs/agents/triage-labels.md](docs/agents/triage-labels.md)。 <!-- rule:doc.issue.claim-command -->
+
+认领时一并摘掉 `ready-for-agent` / `ready-for-human` / `needs-triage`：这三张的意思是「在待办池里等人挑」，留着别的会话会再挑一次。`stale` 也一起摘，但 `--abandon` 不把它加回来。 <!-- rule:doc.issue.claim-removes-ready -->
 
 ### Triage labels
 
-默认五个角色标签，标签名即角色名，另加本仓库的 `waiting-for-verify`（已修、等真机复测）。见 `docs/agents/triage-labels.md`。
+标签名即角色名；另加 `waiting-for-verify`（已修、等真机复测）与 `in-progress`（已认领、正在改）两个状态标签，以及修饰符 `stale`（`needs-info` 票停摆，不是角色、也不构成关票依据）。见 `docs/agents/triage-labels.md`。
 
-### Release followup
+### Code review
 
-发版后要催哪些复测、报告者确认前不关闭哪些 issue，见 `docs/agents/release-followup.md`。每次发版都要过一遍这张清单。
+派审查的方法与规则见 `docs/agents/code-review.md`：基线钉 SHA、审查期间不改工作区、默认三轴。
 
 ### Domain docs
 
-single-context：根目录 `CONTEXT.md` + `docs/adr/`。见 `docs/agents/domain.md`。`CONTEXT.md` 只放术语表（脚本 / 执行 / 等待 / 通知 / issue 状态五组定义）；模块边界的决定写进 `docs/adr/`（现有 `0001` 手机连接 module），架构描述仍不写，等主流程整体重构。
+single-context：根目录 `CONTEXT.md` + `docs/adr/`。见 `docs/agents/domain.md`。`CONTEXT.md` 只放术语表（命令 / 脚本 / 清单与词库 / 执行 / 连接 / 事件 / 等待 / 通知 / Issue 状态 / 规则 / 文档十一组定义）；模块边界的决定写进 `docs/adr/`（现有 `0001` 手机连接、`0002` Phone 状态、`0003` 客户端 import 与依赖、`0004` 引擎状态事件、`0005` 命令与退出码、`0006` 渠道判定、`0007` 渠道到达、`0008` 拨动计划、`0009` 引擎载荷通道、`0010` 执行状态、`0011` Api 拆分、`0012` 底部标签、`0013` 设置入口、`0014` 手机 shell 通道、`0015` 配对码识别、`0016` 设置搜索直达、`0017` 前端测试基座、`0018` 手机版界面、`0019` 手机版执行宿主、`0020` 不做读写拆分、`0021` 回读结局、`0022` 启动前台归属、`0023` 没执行的项进结果、`0024` 落点回退、`0025` 官网共享样式、`0026` 结果页重试、`0027` 守护模式、`0028` 两个 agent 受众、`0029` 前导注入、`0030` 应用内更新、`0031` 鸿蒙桌面接入、`0032` 参考脚本同池选型、`0033` Phone 按阶段拆模块）。**整体形状看 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**：三个宿主、四条跨边界契约、模块清单；机制与取舍仍在 ADR 里，总览不复述。
