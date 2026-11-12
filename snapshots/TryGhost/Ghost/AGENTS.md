@@ -20,6 +20,13 @@ Start with:
   the catalogs in `pnpm-workspace.yaml`; workspace dependencies use
   `workspace:` versions.
 - Run `pnpm bootstrap` before other commands in a fresh checkout or worktree.
+- Run Ghost in the background with `pnpm dev:up`, `pnpm dev:status` and
+  `pnpm dev:down`, and give the user the URL they print as a markdown link.
+  Don't background `pnpm dev`: killing its pid leaves Ghost and the dev
+  servers running. Before you finish, stop a stack you started only to check
+  your own work with `pnpm dev:down`; leave running one the user asked for.
+  Subagents always stop theirs, which otherwise run until the parent session
+  exits.
 - Use `pnpm check` as the default full validation command. Browser E2E tests
   run separately; follow the testing guide.
 - Read the nearest `AGENTS.md` and README before changing a package
@@ -42,6 +49,9 @@ migration, private feature flag, Shade component, or internal package.
   use `admin-x-framework` for APIs, and use Shade for UI. Admin and Core deploy
   independently, so feature-detect backend support and test the older-backend
   case.
+  - Shade docs: in this repo, `https://shade.ghost.org/docs/<page>.md` is the
+    source `apps/shade/src/docs/<page>.mdx`, and `docs/components/<path>.md`
+    is `apps/shade/src/components/<path>.mdx`. Read those files directly.
 - **Embedded Admin CSS:** do not import `@tryghost/shade/styles.css` from an
   embedded app. Admin owns the single Tailwind and Shade CSS lane.
 - **Translations:** follow the
@@ -58,8 +68,12 @@ migration, private feature flag, Shade component, or internal package.
   use TypeScript; keep CommonJS only
   at existing `require()` boundaries. Boot owns service initialization; do not
   initialize on the first request.
+  Before writing a record's relations or link tables outside `Model.edit`,
+  read [row locking](docs/codebase/database.md#row-locking).
+- **Repository tooling:** read the [tooling ownership guide](tools/README.md)
+  and the owning folder README before adding or relocating scripts.
 - **ESLint:** use the shared factories and dependency rules in the
-  [ESLint configuration README](configs/eslint/README.md). A hand-written config
+  [ESLint configuration README](tools/configs/eslint/README.md). A hand-written config
   must declare every plugin it imports locally.
 - **Analytics:** start with `pnpm dev:analytics` and follow the nearby Tinybird
   READMEs under `ghost/core/server/data/tinybird/`.

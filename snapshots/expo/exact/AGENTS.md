@@ -109,7 +109,9 @@ section binds (`rules/RULES.md`, "Agents").
   (`build.mjs --test --ios`; `build.mjs --tvos --no-install`, which builds and signs
   the Apple TV bundle and asks for no simulator; `build.mjs --watchos --no-install`,
   which builds and signs Caltrain's watch bundle with the pinned nightly and
-  `rust-src`, and asks for no simulator), the
+  `rust-src`, and asks for no simulator), the SVG and motion parity smokes' Linux legs
+  (`smoke.mjs svg --hosts linux`, `smoke.mjs motion --hosts linux`: the paint walk's
+  pixels against Chrome's; their macOS and iOS legs are run by hand), the
   Contract semantics (`semantics/README.md`: the Lean proofs, the extracted VM's, and
   `contract-difftest` running the runner and the web JS target against the Lean
   semantics; each skipped when its inputs are those of a run that passed,

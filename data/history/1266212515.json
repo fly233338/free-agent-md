@@ -2,12 +2,6 @@
   "full_name": "omnigent-ai/omnigent",
   "points": [
     {
-      "checked_at": "2026-10-13T10:42:33Z",
-      "commit_sha": "ad90ef3f40581b91d0464d7c43339302d7f055e1",
-      "pushed_at": "2026-10-13T10:42:00Z",
-      "stars": 10777
-    },
-    {
       "checked_at": "2026-10-16T08:15:49Z",
       "commit_sha": "b6119bb8470624d22cc142691871dba155e75063",
       "pushed_at": "2026-10-16T08:12:11Z",
@@ -36,6 +30,12 @@
       "commit_sha": "95a157304fc0d265058f0892588278452390c47e",
       "pushed_at": "2026-11-10T11:17:49Z",
       "stars": 11314
+    },
+    {
+      "checked_at": "2026-11-12T11:24:34Z",
+      "commit_sha": "510b107540cca3e67be765d51009b8bdc8597027",
+      "pushed_at": "2026-11-12T11:23:19Z",
+      "stars": 11351
     }
   ],
   "repo_id": 1266212515

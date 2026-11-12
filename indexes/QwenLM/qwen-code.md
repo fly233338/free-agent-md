@@ -1,8 +1,8 @@
 # QwenLM/qwen-code instruction files
 
-Upstream: [QwenLM/qwen-code](https://github.com/QwenLM/qwen-code) · License: `Apache-2.0` · Commit: `25208eb50e630bd115fc70ff9a4ea0c9fa421f76`
+Upstream: [QwenLM/qwen-code](https://github.com/QwenLM/qwen-code) · License: `Apache-2.0` · Commit: `fd45c5a0f14e7344176f5c021eb30d04cf3a93d4`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/QwenLM/qwen-code/AGENTS.md) | [Source](https://github.com/QwenLM/qwen-code/blob/25208eb50e630bd115fc70ff9a4ea0c9fa421f76/AGENTS.md) | `e69084e39585a8bcdca546c72cd7635980b20936670fe8897101737e71a9c7e7` | 18,361 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/QwenLM/qwen-code/CLAUDE.md) | [Source](https://github.com/QwenLM/qwen-code/blob/25208eb50e630bd115fc70ff9a4ea0c9fa421f76/CLAUDE.md) | `59c5fa907dab9acac5963e06caa272ab245b165f1c1769d6dce77782f41441f7` | 350 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/QwenLM/qwen-code/AGENTS.md) | [Source](https://github.com/QwenLM/qwen-code/blob/fd45c5a0f14e7344176f5c021eb30d04cf3a93d4/AGENTS.md) | `bdc2defac04e8113d38a5a1128ab613d6333fab140475607dca97e56a761850e` | 18,373 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/QwenLM/qwen-code/CLAUDE.md) | [Source](https://github.com/QwenLM/qwen-code/blob/fd45c5a0f14e7344176f5c021eb30d04cf3a93d4/CLAUDE.md) | `de497f293f9cac2dd37a9b3c090f36707cff975fca27fca92f394b1cb3f366aa` | 323 B |

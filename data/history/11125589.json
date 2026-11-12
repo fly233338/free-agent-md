@@ -2,12 +2,6 @@
   "full_name": "keycloak/keycloak",
   "points": [
     {
-      "checked_at": "2026-10-13T10:42:33Z",
-      "commit_sha": "3fcada60360de78aff21be210c6098699f3bd663",
-      "pushed_at": "2026-10-13T10:36:52Z",
-      "stars": 37328
-    },
-    {
       "checked_at": "2026-11-05T11:03:12Z",
       "commit_sha": "3a0333036ddc82c33646580402387f14257f6a62",
       "pushed_at": "2026-11-05T10:57:57Z",

@@ -2,12 +2,6 @@
   "full_name": "ggml-org/llama.cpp",
   "points": [
     {
-      "checked_at": "2026-10-13T10:42:33Z",
-      "commit_sha": "296538adea19ff397100bf8e7d71f302d2d2bb35",
-      "pushed_at": "2026-10-13T10:39:10Z",
-      "stars": 131002
-    },
-    {
       "checked_at": "2026-10-15T08:23:07Z",
       "commit_sha": "e36df604703dec1b6ce82f214698725475a57035",
       "pushed_at": "2026-10-15T08:22:33Z",
@@ -174,6 +168,12 @@
       "commit_sha": "7f24aacde32af15559747050b7073e7dc34fe02e",
       "pushed_at": "2026-11-11T11:02:56Z",
       "stars": 134057
+    },
+    {
+      "checked_at": "2026-11-12T11:24:34Z",
+      "commit_sha": "a1a68eb797fb1c336547696d7e11e33ec7b65cde",
+      "pushed_at": "2026-11-12T11:20:53Z",
+      "stars": 134225
     }
   ],
   "repo_id": 612354784

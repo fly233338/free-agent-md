@@ -7,8 +7,8 @@
 ruleset; `.github/` changes also need Dax). Branch from `dev`, open a PR to
 `dev`, and merge it yourself once it compiles (don't wait on CI); merge any open PR without
 asking. After merging, update the installed copy. See
-`~/code/control/AGENTS.md`. `production` holds what was released and moves
-only by a fast-forward from `dev` when Kit releases; never commit to it.
+`~/code/control/AGENTS.md`. Publish releases from `dev`. Fast-forward
+`production` only to deploy the site; never commit to it.
 There is no `main`.
 
 Any change to what the window draws regenerates the goldens in the same PR:
@@ -389,6 +389,10 @@ substitute for source inspection or a second roadmap.
 - `linux/tray`: the optional tray icon, a `rune::Tray` (StatusNotifierItem
   with a dbusmenu built by `desktop/tray_menu`). It registers whenever a tray host
   (`org.kde.StatusNotifierWatcher`) appears; without one Hex runs unchanged.
+  Beside the IconPixmap it serves Hex's symbolic theme icon when hicolor has it,
+  so Plasma 6, GNOME's AppIndicator extension, and Waybar draw the mark in the
+  panel's text color, and asks a running Plasma session to reload icons after
+  writing it.
 - `desktop/tray_menu`: the tray menu Linux and Windows share (recording state, Show
   Hex, Paste last dictation, the downloaded-model picker, the update item,
   Enable / Disable Hex, Quit Hex) and the model entries the macOS menu bar
@@ -1385,7 +1389,11 @@ CoreAudio formats, AppleScript details, or event serialization.
   PNGs into `~/.local/share/icons/hicolor` at startup and names that icon in
   the managed entries it or the installer wrote (#652). The PNGs carry an
   `X-Hex-Managed=true` text chunk: Hex replaces and the installer removes only
-  marked regular files, never a user's own icon or a symlink. Launch at login is
+  marked regular files, never a user's own icon or a symlink. The tray's
+  `anomaly.hex-symbolic.svg` is a runtime asset, so Hex always writes it to
+  `hicolor/scalable/apps` with the same mark, packaged installs included, and
+  carries KDE's `current-color-scheme` stylesheet so hosts that recolor theme
+  icons draw it in the panel's text color. Launch at login is
   `~/.config/autostart/anomaly.hex.desktop`; where the Background portal exists
   (`linux/background`, #812) Hex asks it at startup to run in the background
   and Launch at login goes through it (the portal writes or removes that file,
@@ -1509,8 +1517,8 @@ The workflow uses npm trusted publishing without requesting a Sigstore
 provenance bundle.
 Use the configured Changesets release command (`cd sdk && bun run release`), not
 direct `npm publish`, after the bootstrap release. Pending changesets on `dev`
-keep a version pull request open into `dev`; the workflow publishes only when
-`production` is fast-forwarded to an unpublished SDK version.
+keep a version pull request open into `dev`; dispatch the SDK workflow on
+`dev` to publish an unpublished SDK version.
 
 ```sh
 ./scripts/setup.sh
@@ -1641,8 +1649,8 @@ and the dev Worker `hex-dev-site` (dev.anoma.ly/hex), both reading the frozen
 2.3.1 history from `hex-production-files`; the installers and appcast ship with
 the site build and the dev notes come from the `dev-notes` branch.
 `cf deploy --prebuilt --mode <mode>` picks one, and
-only CI deploys: a push to `dev` touching `site/` deploys dev, a stable
-Release deploys production. No subdomains. The site's download links come
+only CI deploys: Deploy (`deploy.yml`) runs on site changes or a dispatch
+from `dev` or `production`, and deploys the site for that branch. No subdomains. The site's download links come
 from the service's stable manifest when it builds. After publishing a version,
 bump the explicit GitHub mirror/version link in `README.md`; the Release
 workflow updates the Homebrew cask. `bun run --cwd site check:downloads` fails until every download link
@@ -1723,9 +1731,9 @@ run only in Release's check and stable channels and by hand
 
 Every platform is built, signed, and published by one run of
 `.github/workflows/release.yml` ("Release"; see `docs/releasing.md`).
-Run it with `workflow_dispatch` (`ref`, `channel`: `check` builds and
+Dispatch it from `dev` with the `channel` input: `check` builds and
 verifies without publishing, `dev` publishes the dev channel, `stable` the
-public release; dispatched from `production` only). Tags never start a
+public release. Tags never start a
 release: like OpenCode, the stable run tags `v<VERSION>` (the crate version)
 on the released commit only after every platform published, then creates the
 GitHub release with the built-in `GITHUB_TOKEN`, so a failed run leaves no
@@ -1759,10 +1767,9 @@ teammates (`docs/test-builds.md`). `HEX_TEST_BUILD=1` builds never update
 themselves, and neither do local builds (`HEX_LOCAL_BUILD=1`, the owner's own
 build from a checkout: footer "Local build · updates off", version label with its
 commit, no channel row). Every push to `dev` (except docs/site-only changes) publishes a dev-channel
-build (the service lets a run from `dev` publish only the `dev` channel, and
-only signed platforms are published). Stable runs only from `production`.
+build for signed platforms. Stable requires a manual dispatch on `dev`.
 Like OpenCode, every run uses the one `release` environment, with no
-required reviewer; its deployment policy admits `dev` and `production`. Rerunning
+required reviewer; its deployment policy admits only the `dev` branch. Rerunning
 after an interruption is safe: the service stores files by hash and accepts
 the same version again.
 
