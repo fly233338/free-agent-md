@@ -18,9 +18,11 @@ docs, prompts, comments, and headings.
 
 - `packages/eve` — the framework and `eve` CLI (the main package)
 - `packages/eve-catalog` — internal, unpublished library
+- `packages/eve-code` — `@eve/code`, internal source of the `eve/extensions/code` extension shipped in `eve`
 - `apps/fixtures` — shared agent fixtures used by e2e, TUI smoke tests, and local dev
 - `apps/frameworks`, `apps/templates`, `apps/docs` — framework integrations, templates, docs site
 - `docs` — published documentation content
+- `examples` — self-contained example agents built against the workspace `eve`
 - `e2e/` — fixture-owned `eve eval` end-to-end tests
 - `research` — issue-backed implementation plans for proposed changes
 
@@ -32,13 +34,20 @@ commit is missing the trailer, amend it with `git commit --amend -s --no-edit`
 before pushing.
 
 PR descriptions are reviewer-oriented explanations of the problem or decision
-behind the change, the solution, meaningful behavior changes, and validation—not
-file lists or commit logs. Keep the Summary short and lead with that
-justification before implementation details. Link a prior issue or discussion
-when one exists, call out important scope boundaries or preserved behavior, and
-report only checks actually run. Never create an issue solely to accompany a PR.
+behind the change, the solution, and meaningful behavior changes—not file lists
+or commit logs. Keep the Summary short and lead with that justification before
+implementation details. Link a prior issue or discussion when one exists, and
+call out important scope boundaries or preserved behavior. Never include a
+Validation, Test plan, or Checklist section. Never create an issue solely to
+accompany a PR.
 Use the [`gh-pr-description`](./.agents/skills/gh-pr-description/SKILL.md)
 skill when drafting or updating one.
+
+When the user explicitly asks to shepherd, land, or merge a PR, or to get one
+green, use the [`pr-shepherd`](./.agents/skills/pr-shepherd/SKILL.md) skill
+to run a fresh-context review, address and resolve comments, get CI green,
+and merge. Do not start it on your own after an implementation or when only
+asked to open a PR.
 
 ## Commands
 
@@ -55,8 +64,10 @@ pnpm docs:check         # docs frontmatter and nav validation
 
 pnpm test               # unit + integration
 pnpm test:unit          # unit tests (<3s)
-pnpm test:integration   # integration tests (<10s)
-pnpm test:scenario      # scenario tests (2–5 min; requires pnpm build first)
+pnpm test:integration   # integration tests (several minutes; leave the full run to CI)
+pnpm test:scenario      # scenario tests (2–5 min; Turbo builds prerequisites)
+pnpm test:framework-fixtures # apps/frameworks smoke builds (Turbo builds prerequisites)
+pnpm test:webchat       # web chat template in headless Chromium (needs playwright-core's chromium-headless-shell)
 pnpm test:e2e           # fixture-owned eve eval suites (CI only)
 pnpm test:tui           # TUI smoke scripts (not e2e)
 ```
@@ -69,6 +80,13 @@ narrowest relevant test when a change needs behavioral validation. Copy edits,
 typo fixes, small code reorganizations, and similar non-behavioral changes can
 proceed without local integration or scenario runs. CI is always the official
 line of defense, and every required check must pass before merge.
+
+Do not run a whole integration or scenario tier, or a whole multi-channel
+suite such as the channel conformance suite, locally unless the task
+expressly needs it (for example, the user asks, or you are chasing a failure
+only the full run reproduces). Scope local runs to the files and test names
+your change touches with a path and `-t` filter, and leave the full suites to
+CI.
 
 ## Agent-ready product principles
 
@@ -119,13 +137,20 @@ line of defense, and every required check must pass before merge.
    public APIs. Wrap them in eve-owned surfaces so internals can change freely.
    Add runtime `dependencies` only as a last resort: prefer vendoring code or
    generated artifacts into the repository and listing the source package under
-   `devDependencies`. The `eve` package should aim to keep `nitro` as its only
-   runtime dependency. This keeps eve installs as small as possible and avoids
-   exposure to hijacked nested dependencies that are not pinned directly in the
-   main lockfile.
+   `devDependencies`. The `eve` package should aim to keep `nitro`, `rolldown`,
+   and `undici` as its only runtime dependencies. This keeps eve installs as
+   small as possible and avoids exposure to hijacked nested dependencies that
+   are not pinned directly in the main lockfile. eve hands its own `rolldown`
+   to Nitro through `deps.paths` and never lets Nitro resolve or install a
+   package on demand.
 
-6. **Pre-1.0: prefer breaking changes.** Favor correctness and simplicity over
-   backwards compatibility. No legacy fallback logic.
+6. **Stable APIs follow semantic versioning.** Break a stable public API only
+   in a major release. Prefer additive changes; when a stable API needs an
+   incompatible replacement, ship the replacement beside it, mark the old API
+   `@deprecated`, and remove it in the next major release. The
+   [stability policy](./docs/reference/typescript-api.md#stability-policy)
+   defines which surfaces carry this promise; experimental and internal APIs
+   do not.
 
 7. **Derive names from file paths.** Connection names, tool names, and similar
    identifiers come from the filesystem path (e.g.
@@ -143,6 +168,12 @@ line of defense, and every required check must pass before merge.
     why, an invariant, a surprising edge case. Public API docs (principle 1) are
     the exception.
 
+11. **Configure Nitro from data.** eve's Nitro host is built from one typed host
+    spec, one ordered plugin list, and one route table. Follow the foundation
+    invariants in
+    [`packages/eve/src/internal/nitro/AGENTS.md`](./packages/eve/src/internal/nitro/AGENTS.md)
+    when touching `internal/nitro/`.
+
 Machine-checkable invariants are enforced by `pnpm guard:invariants`, which
 runs in the CI lint job. If the guard fails, fix the violation rather than
 editing the baseline — baselines may only shrink.
@@ -158,6 +189,9 @@ exhaustive task inventories. Use a compact diagram when it makes a lifecycle
 or ownership relationship materially clearer.
 
 ## Testing
+
+Use the [`test-audit`](./.agents/skills/test-audit/SKILL.md) skill when
+writing, reviewing, or pruning tests.
 
 Tests belong in one of four tiers. Pick the tightest tier that can express the
 assertion:
@@ -184,7 +218,7 @@ pnpm --filter eve exec vitest run --config vitest.unit.config.ts <path-or-patter
 ```
 
 Add `-t "<name>"` to filter by test name. If you touched anything under
-`#compiled/*`, run `pnpm --filter eve build:compiled` first — the tier configs
+`#compiled/*`, run `pnpm build:compiled` first — the tier configs
 do not rebuild it.
 
 Do not commit fixture trees under `packages/eve/test/fixtures/` — scenario app
@@ -202,6 +236,13 @@ Pick the fixture that exercises the surface you changed; if none does, add a
 new eval under the matching fixture's `evals/` directory. E2E evals must be
 deterministic and self-contained. Keep e2e free of external service startup
 and injected env requirements (beyond model-provider credentials).
+
+Write model-facing eval prompts as benign, process-oriented narratives. Use
+neutral named actors such as Alice and Bob, and describe the ordinary workflow
+that produces the state under test. Avoid terse, adversarial, or probe-like
+wording when a natural scenario can test the same behavior. Such wording can
+trigger provider refusals and cause live-model flake. Do not weaken the
+behavior or security boundary under test.
 
 Do not set `VERCEL_TEAM_ID` at build: sandbox template keys must derive
 identically at build and runtime, and Vercel has no team variable at runtime.
@@ -229,13 +270,42 @@ live under `packages/eve/test/tui-client` and run with `pnpm test:tui`. See
 ## Changesets
 
 Every PR that touches the published `eve` package must include a
-changeset (`pnpm changeset`). Because eve is pre-1.0, use `patch` in most
-cases, including bug fixes and new features. Use `minor` only when the change
-breaks a public API. Write the body for someone reading release notes — what
-changed and what they'll see differently, in 1–2 sentences.
+changeset (`pnpm changeset`). Choose the bump by semantic versioning: `patch`
+for bug fixes and changes that add no public API, `minor` for new features and
+other backward-compatible public API additions, and `major` only when the
+change breaks a stable public API. Changes to experimental APIs never need
+`major`. Start the changeset body with one sentence for someone
+reading release notes; put migration details and contributor thanks in later
+paragraphs. For PRs with changesets, use `feat:`, `perf:`, `fix:`,
+`docs(feature):`, `docs(bugfix):`, or an internal type (`chore:`, `refactor:`,
+`test:`, `ci:`, `build:`, or `internal:`) in the PR title. An optional scope is
+allowed for all types except `docs`, where the scope selects the feature or bug
+fix section. CI checks the PR title because GitHub uses it as the squash-merge
+subject. Keep the prefix in the squash commit; its subject determines the
+release section. A `major` changeset always appears under Breaking Changes,
+and other internal changes are omitted from the release notes. Run `pnpm guard:invariants` to validate changeset summaries. See
+[Changeset summaries](./CONTRIBUTING.md#changeset-summaries).
 
 Docs-only, internal-tooling, and fixture changes do not need a changeset. When
 in doubt, add one.
+
+## Crediting contributors
+
+External contributors propose changes through issues, prompts, and plans, and
+maintainers implement them (see [CONTRIBUTING.md](./CONTRIBUTING.md)). When a
+change builds on someone else's work, such as an issue, reproduction, prompt,
+implementation plan, or a closed outside pull request, credit them by GitHub
+handle:
+
+- Thank them in the changeset body, for example: "Thanks @octocat for the
+  original implementation in #1234." or "Thanks @octocat for reporting this in
+  #1234." If the change needs no changeset, put the thanks in the PR
+  description.
+- When they wrote code or an implementation plan that the change follows, add
+  a `Co-authored-by: Name <email>` trailer to the commit and keep it in the
+  squash-merge message. Use their GitHub noreply address
+  (`<id>+<login>@users.noreply.github.com`) when they have no public email.
+- Link their issue or pull request from the PR description.
 
 ## Security
 

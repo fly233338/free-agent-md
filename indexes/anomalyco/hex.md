@@ -1,7 +1,7 @@
 # anomalyco/hex instruction files
 
-Upstream: [anomalyco/hex](https://github.com/anomalyco/hex) · License: `MIT` · Commit: `e117dbe0cd5ede6228cc2d2734a7cb2fe8fbab3a`
+Upstream: [anomalyco/hex](https://github.com/anomalyco/hex) · License: `MIT` · Commit: `f3eac75df1517072efeb34a4cf304489f867de1e`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/anomalyco/hex/AGENTS.md) | [Source](https://github.com/anomalyco/hex/blob/e117dbe0cd5ede6228cc2d2734a7cb2fe8fbab3a/AGENTS.md) | `affccd080d7fdd77b31f9e7f04c67b17ec75f4548e3a05c28851ffb3b858f9e9` | 126,662 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/anomalyco/hex/AGENTS.md) | [Source](https://github.com/anomalyco/hex/blob/f3eac75df1517072efeb34a4cf304489f867de1e/AGENTS.md) | `c164c7c1eb911356bd8214d5fde2a8e80631fd6832e6691a31184d9e8480d50a` | 127,220 B |

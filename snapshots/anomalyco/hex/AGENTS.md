@@ -41,7 +41,8 @@ A feature with its own pane joins the sidebar as a normal item while
 on and is hidden while off; a behaviour-only feature is just its toggle. Today:
 Meetings (beta), Voice Filter (Dev; locked on while its macOS driver is
 installed, and a stable build with the driver keeps its pane for Uninstall
-alone), Playground (Dev), Live text, Live chapters, Vocabulary biasing, Switch
+alone), Playground (Dev), Live text, Live chapters, Vocabulary biasing,
+Screen vocabulary (macOS), Switch
 model with keyboard language (#216), Mouse shortcuts (#209, macOS), Also
 pause the browser (#301, macOS), Share dictation shortcut (#176, Windows),
 Unload model when idle (#442), Terminal paste (Windows), and Terminal paste
@@ -238,7 +239,8 @@ substitute for source inspection or a second roadmap.
 - `paste`: clipboard insertion, continuation joins, and generation-safe
   clipboard restoration.
 - `accessibility`: bounded focused-window and selected-text capture through
-  Accessibility without touching the clipboard.
+  Accessibility without touching the clipboard, including the bounded visible
+  window text Labs › Screen vocabulary reads (macOS).
 - `recognition`: the macOS listener coordinator for hotkey and programmatic
   dictation controls, workers, and observations. It does not own the
   authoritative microphone timeline.
@@ -298,6 +300,12 @@ substitute for source inspection or a second roadmap.
 - `app_paths`: the Application Support owner (`hex` on every OS) for runtime
   logs and shared state. The logs folder and its files are owner-only on
   Unix (0700/0600, tightened when an older Hex left them open).
+  `desktop/log_trim` keeps `live.ndjson` and `process.log` under 10 MB each:
+  at launch and hourly, under a lock file, it drops a log's oldest lines in
+  place to its newest 5 MB (never a rename, since every Hex process appends to
+  the same files), and once clears both logs from before they kept personal
+  text out. `EventReader` starts over when a log's first bytes change, so a
+  trim under an open reader never leaves it reading moved records.
 - `desktop/onboarding`, `desktop/permission_guide`: required permission health, the native
   floating System Settings guide, selected dictation-model installation, the
   release startup gate, and opt-in command-model setup.
@@ -754,7 +762,7 @@ CoreAudio formats, AppleScript details, or event serialization.
   always finish. Hex takes the key only while a toggled recording runs, and
   then keeps it (repeats and release included) from the app in front; idle,
   and always in Hold mode, it stays with every app. macOS suppresses it in
-  the session tap only while the listener arms it (`set_takes_cancel`),
+  the session tap only while the listener arms it (`set_cancel`),
   Windows' hook only while its capture records, and X11 grabs it only for
   the recording. A shortcuts portal holds a key for as long as Hex runs, so
   on Wayland Hex binds nothing for it and Settings says to bind

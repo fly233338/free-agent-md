@@ -13,7 +13,7 @@ Repository-maintainer workflows live under `.agents/skills/`:
 - `$watch-asc-pr`: recheck PR comments, checks, head changes, and merge readiness.
 - `$triage-asc-issue`: reproduce, classify, label, and scope an issue.
 - `$review-wall-of-apps-prs`: validate, approve, and merge Wall of Apps submissions safely.
-- `$release-asc-cli`: publish and verify an end-to-end CLI repository release.
+- `$release-asc-cli`: publish and verify an end-to-end CLI repository release, including the release film and the announcement thread.
 - `$sync-asc-skills`: check the external ASC workflow skills for CLI-surface drift.
 
 Use these skills for their matching workflows instead of expanding this always-loaded file with task-specific procedures.
@@ -60,17 +60,17 @@ Validate attributes against the exact create or update request schema. Validate 
 - Work on a branch and use an isolated worktree when the main checkout is dirty or other work is in progress.
 - Do not push directly to `main`, bypass hooks, use `--no-verify`, or skip checks to force a result.
 - Use TDD for behavior changes: reproduce or establish RED, implement the smallest coherent change, then reach GREEN.
-- **IMPORTANT:** Before ending every implementation session, run `/review`. In a non-interactive environment, use the stable local Codex CLI command `codex exec --ignore-user-config review --disable apps --disable plugins --disable remote_plugin -c 'model_provider="openai"' -c 'model="gpt-5.6-sol"' -c 'review_model="gpt-5.6-sol"' --uncommitted` as a pre-commit review of working-tree changes.
+- Use one final full-branch `/review` on the final committed PR head, as described below. Do not require a separate pre-commit or `--uncommitted` review.
 - Run reviews from the local worktree with the exact provider, model, config-isolation, and connector-disable flags shown. Immediately before each review, confirm `codex login status` shows ChatGPT authentication and both `CODEX_API_KEY` and `OPENAI_API_KEY` are unset or empty. Stop on API-key authentication or overrides unless explicitly authorized; these can incur separate usage charges.
-- Before calling a PR ready, refresh its authoritative base with `git fetch origin +refs/heads/<base-branch>:refs/remotes/origin/<base-branch>` and run `codex exec --ignore-user-config review --disable apps --disable plugins --disable remote_plugin -c 'model_provider="openai"' -c 'model="gpt-5.6-sol"' -c 'review_model="gpt-5.6-sol"' --base origin/<base-branch>` on the final committed head so the complete branch or PR diff is reviewed against the current base. If the applicable review mechanism is unavailable, report the review gate as blocked and do not call the PR ready. Fix and verify every valid finding, and explicitly verify and disposition any false positive or non-actionable finding. After any change, rerun the applicable review command and repeat until it reports no actionable findings.
-- PR readiness requires a clear final full-branch `/review` and the GitHub gates below. Any subsequent diff change invalidates the review. An investigation may finish with findings or blocked gates without implying PR readiness.
+- At the start of the final PR review, refresh its base with `git fetch origin +refs/heads/<base-branch>:refs/remotes/origin/<base-branch>` and run `codex exec --ignore-user-config review --disable apps --disable plugins --disable remote_plugin -c 'model_provider="openai"' -c 'model="gpt-5.6-sol"' -c 'review_model="gpt-5.6-sol"' --base origin/<base-branch>` on the final committed head. Record the reviewed head and base commits. If the applicable review mechanism is unavailable, report the review gate as blocked and do not call the PR ready. Fix and verify every valid finding, and explicitly verify and disposition any false positive or non-actionable finding. After any change to the PR diff, rerun the applicable review command and repeat until it reports no actionable findings. A later advance of the base branch alone does not invalidate a clear review or require another review.
+- PR readiness requires a clear final full-branch `/review` and the GitHub gates below. A subsequent change to the PR diff invalidates the review; an unrelated base-branch advance does not. Revisit affected review conclusions when new evidence identifies a concrete integration issue. An investigation may finish with findings or blocked gates without implying PR readiness.
 - Keep one logical change per commit.
 - Preserve additive PR history. Do not squash, rebase, force-push, or otherwise rewrite commits unless the user explicitly requests that strategy.
 - Re-run the focused failing test after each fix before broad validation.
 - Delegate substantive independent reads or focused validation with distinct ownership; verify conclusions centrally. Handle small or dependent work locally. Serialize edits, commits, pushes, review communication, approvals, merges, releases, and cleanup; agents must not concurrently edit shared branches or files.
-- Treat repository-wide commands that compile, lint, or test broad package sets—including `make build`, `make lint`, `make test`, `go test ./...`, race tests over `./...`, and `golangci-lint run ./...`—as host-intensive gates. Coordinate them through one agent and run only one host-intensive gate at a time on the same host. Before starting one, check whether another task is already running a host-intensive gate; if so, wait instead of competing for the same CPUs. Never terminate another task's process without explicit authorization.
-- Within a worktree, wait for each focused test to finish before starting a broad gate. Record the checked commit, relevant working-tree state, command, and environment. Reuse passing checks while their inputs remain unchanged, including during status-only follow-ups. Rerun affected checks when source, test inputs, commands, environment, toolchain, or requested verification changes; unrelated temporary files do not invalidate results. Complete every required gate for the final change, and preserve the separate full-branch review requirement after any diff change.
-- Run host-intensive gates concurrently only when explicitly required. Assign each gate a CPU budget and keep the sum of concurrent gate budgets within the host's logical CPU count; tool flags are limits within a gate, not values to add together. Avoid multiplying Go package and in-binary concurrency: for a budget of `B`, use `GOMAXPROCS=1 go test -p=B -parallel=1 ./...` for package fan-out or `GOMAXPROCS=B go test -p=1 -parallel=B ./...` for one package at a time. Use `golangci-lint run --concurrency=B ./...` for a linter gate.
+- Treat repository-wide commands that compile, lint, or test broad package sets—including `make build`, `make lint`, `make test`, `go test ./...`, race tests over `./...`, and `golangci-lint run ./...`—as host-intensive gates. Give each gate a CPU budget and keep the sum of running gate budgets within the host's logical CPU count, for example three gates with a budget of 3 on a 10-CPU host. When several agents share a host, run gates concurrently only through a slot mechanism the coordinating agent provides, such as a counting lock that reserves a slot atomically and releases it on exit, and wait for a free slot instead of competing for the same CPUs; without one, run one gate at a time. Run a change's final gates together in one slot instead of queuing for each. Never terminate another task's process without explicit authorization.
+- Within a worktree, wait for each focused test to finish before starting a broad gate. Record the checked commit, relevant working-tree state, command, and environment. Reuse passing checks while their inputs remain unchanged, including during status-only follow-ups. Rerun affected checks when source, test inputs, commands, environment, toolchain, or requested verification changes; unrelated temporary files do not invalidate results. Complete every required gate for the final change, and rerun the final full-branch review after any change to the PR diff.
+- Tool flags are limits within a gate's budget, not values to add together. Avoid multiplying Go package and in-binary concurrency: for a budget of `B`, use `GOMAXPROCS=1 go test -p=B -parallel=1 ./...` for package fan-out or `GOMAXPROCS=B go test -p=1 -parallel=B ./...` for one package at a time. Use `golangci-lint run --concurrency=B ./...` for a linter gate.
 
 User-facing commands and flags are stable until deprecated or removed. Do not delete stable behavior directly. Deprecations require warning text, transition tests, migration guidance, and a release-note entry.
 
@@ -84,11 +84,43 @@ User-facing commands and flags are stable until deprecated or removed. Do not de
 - Use `internal/cli/cmdtest` for CLI-level coverage and `httptest` for HTTP payload coverage.
 - Remove shared wrappers or helpers made obsolete by a refactor.
 
+## Tests
+
+Write a test only when it fails if behavior a user or caller depends on breaks, and no existing test already fails for that break. Name that regression before writing the test.
+
+Write:
+
+- A regression test that fails before every bug fix and passes after it.
+- CLI contract tests: flag validation with its stderr text, exit codes, JSON output fields, and request wiring (method, path, query, body) through `httptest`.
+- Error, partial-failure, and cancellation paths.
+- Security invariants: rootfs anchoring, secret redaction, keychain and `HOME` isolation, credential handling.
+- Concurrency ordering and bounds, run under `-race`.
+
+Do not write tests that:
+
+- Restate the implementation: constants, defaults copied from code, fields the test just set, or a stub returning its input.
+- Exercise the standard library or a dependency, such as a JSON round-trip of a plain struct.
+- Only check for no panic, non-nil, `err == nil`, or `strings.Contains` on one word.
+- Copy another test per endpoint, command, or flag with only names or IDs changed. Add a row to the existing table instead of a sibling test.
+- Drive the same code path with the same or weaker assertions as an existing test.
+- Cover an unexported helper that its callers' tests already cover.
+- Lock incidental text: whitespace, help prose, or the order of unordered output.
+- Target code no production path runs, or always skip.
+
+Also:
+
+- Do not use `time.Sleep` or real timeouts. Inject intervals, clocks, and retry delays.
+- Keep test code proportionate to the change. A small fix gets one small test.
+- Justify every new test in the PR body by naming the regression it catches.
+- Before removing a test, show which remaining test still fails for the same break.
+
 ## Build and validation
 
 Every manual test command must use `ASC_BYPASS_KEYCHAIN=1` to prevent host keychain prompts and profile bleed-through. The `make test` target enforces the same environment internally.
 
-Before opening or merging a substantive behavior PR, run `make build`, `make format`, `make check-docs`, `make lint`, and `ASC_BYPASS_KEYCHAIN=1 make test`. If command help changed, run `make generate-command-docs` and commit `docs/COMMANDS.md` before those checks. For a narrowly scoped documentation or skill change, run `make check-docs`, which includes the repository and skill validators, instead of the full Go suite unless the changed surface or repository policy requires more. For a Wall-only PR, run `make check-wall-of-apps` on the exact head.
+Before opening or merging a substantive behavior PR, require recorded passing results for `make build`, `make format`, `make check-docs`, `make lint`, and `ASC_BYPASS_KEYCHAIN=1 make test`. Format before committing; let successful commit-hook checks satisfy matching validation and run only missing or invalidated checks afterwards. Reuse results only while their relevant inputs and environment remain unchanged. The hook's affected short tests do not replace the required full test suite. If command help changed, run `make generate-command-docs` and commit `docs/COMMANDS.md` before completing validation.
+
+For changes limited to `AGENTS.md` and skill Markdown or `agents/openai.yaml` under `.agents/skills`, require `make check-repo-docs` and `make check-agent-skills`; matching commit-hook results satisfy both. For other narrowly scoped documentation changes, run `make check-docs` instead of the full Go suite unless the changed surface requires more. For a Wall-only PR, require a passing `make check-wall-of-apps` on the exact head; reuse the hook's result when applicable.
 
 Require GitHub-required checks before merge. Report relevant advisory failures, but do not wait for non-required jobs.
 
@@ -98,7 +130,7 @@ Do not weaken CI: formatting, documentation, lint, and tests must run on PR and 
 
 - Inspect thread-aware GitHub review state before declaring a PR clean; flat comments do not prove every thread is resolved.
 - A PR is ready only when the latest head was reviewed, required checks pass, required reviews are satisfied, actionable threads are resolved, and GitHub reports it mergeable.
-- If `main` advances, recheck the exact PR head, merge-base diff, duplicate or overlap risk, review threads, required checks, and mergeability against current `main` without changing the branch. Do not update, rebase, or merge `main` into a clean PR merely to refresh its base. Update a branch only when GitHub already reports an actual merge conflict, or when an explicitly authorized merge attempt made with every readiness gate passing is refused under strict up-to-date branch protection. Never bypass branch protection with an admin merge.
+- Before merging, confirm the exact PR head, required checks, required reviews, actionable review threads, and GitHub mergeability. A newer `main` alone does not require another local review, test run, or branch update. Update a branch only to resolve an actual merge conflict or a demonstrated integration defect; do not update, rebase, or merge `main` into a clean PR merely to refresh its base. Keep GitHub-required checks enabled and passing. Never bypass branch protection with an admin merge.
 - For loop or babysit requests, follow `$watch-asc-pr` until ready or materially blocked, preserving the authorized actions. Use its checkpoint and heartbeat procedure when only waiting remains.
 - When merge is explicitly authorized, preserve the PR commits with a regular merge commit, for example `gh pr merge <number> --merge --match-head-commit <sha>`. Do not squash unless the user explicitly requests squash for that PR.
 - For read-only triage, recommend exactly one type (`bug`, `enhancement`, `question`), one priority (`p0`-`p3`), and one difficulty (`easy`, `medium`, `hard`). When issue creation or label changes are authorized, apply exactly one label from each bucket and remove conflicting labels.
