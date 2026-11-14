@@ -2,12 +2,6 @@
   "full_name": "strapi/strapi",
   "points": [
     {
-      "checked_at": "2026-10-15T08:23:07Z",
-      "commit_sha": "79210737ef74dc8138e0957587fa9ec6ac6b5b99",
-      "pushed_at": "2026-10-15T08:21:33Z",
-      "stars": 73313
-    },
-    {
       "checked_at": "2026-11-09T11:42:06Z",
       "commit_sha": "be6c7f88dce521460d49dc42e3a02ba4f4a335c3",
       "pushed_at": "2026-11-09T11:37:03Z",

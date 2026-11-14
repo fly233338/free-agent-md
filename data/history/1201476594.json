@@ -2,12 +2,6 @@
   "full_name": "career-ops-hq/career-ops",
   "points": [
     {
-      "checked_at": "2026-10-15T08:23:07Z",
-      "commit_sha": "0ece0576b6687a2909f0840f9473ca7ae797d692",
-      "pushed_at": "2026-10-15T08:19:25Z",
-      "stars": 74732
-    },
-    {
       "checked_at": "2026-10-16T08:15:49Z",
       "commit_sha": "e48462565fd8941b63326a9115b63419c7a6c116",
       "pushed_at": "2026-10-16T08:14:57Z",
@@ -66,6 +60,12 @@
       "commit_sha": "106999a36aa29a08421a17bdbc71bad322a19e2e",
       "pushed_at": "2026-11-12T11:10:58Z",
       "stars": 82095
+    },
+    {
+      "checked_at": "2026-11-14T10:34:51Z",
+      "commit_sha": "b81ee027cddb8893676f2b54a1fc3c0d182bd404",
+      "pushed_at": "2026-11-14T10:33:10Z",
+      "stars": 82458
     }
   ],
   "repo_id": 1201476594

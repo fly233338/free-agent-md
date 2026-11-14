@@ -2,12 +2,6 @@
   "full_name": "langfuse/langfuse",
   "points": [
     {
-      "checked_at": "2026-10-15T08:23:07Z",
-      "commit_sha": "180e54f62e510fcfb1263d60af4e24650bd0bf11",
-      "pushed_at": "2026-10-15T08:19:57Z",
-      "stars": 35850
-    },
-    {
       "checked_at": "2026-10-16T08:15:49Z",
       "commit_sha": "784c3a784a66431d35dc6f9cf82132fc7eaf377f",
       "pushed_at": "2026-10-16T08:14:38Z",

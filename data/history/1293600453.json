@@ -2,12 +2,6 @@
   "full_name": "TencentCloud/Octop",
   "points": [
     {
-      "checked_at": "2026-10-15T08:23:07Z",
-      "commit_sha": "f79015b078c4d5d4c309a1bf6f3cd39ac06cc18f",
-      "pushed_at": "2026-10-15T08:16:04Z",
-      "stars": 9424
-    },
-    {
       "checked_at": "2026-11-11T11:05:45Z",
       "commit_sha": "cd17e8d3551a22e6757f11e030879420243c089f",
       "pushed_at": "2026-11-11T10:55:48Z",

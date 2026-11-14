@@ -2,12 +2,6 @@
   "full_name": "halo-dev/halo",
   "points": [
     {
-      "checked_at": "2026-10-15T08:23:07Z",
-      "commit_sha": "6aa408a724ab156c2eac7d6ef04a6a577bbfc304",
-      "pushed_at": "2026-10-15T08:20:42Z",
-      "stars": 39942
-    },
-    {
       "checked_at": "2026-11-11T11:05:45Z",
       "commit_sha": "c47762117e36006e5a3f2067c5bf0f52e5e998a9",
       "pushed_at": "2026-11-11T11:03:58Z",

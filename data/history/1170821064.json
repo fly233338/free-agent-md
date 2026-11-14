@@ -2,12 +2,6 @@
   "full_name": "paperclipai/paperclip",
   "points": [
     {
-      "checked_at": "2026-10-15T08:23:07Z",
-      "commit_sha": "fd057f6ac4e9148bb4055883ae1d0e7f49242692",
-      "pushed_at": "2026-10-15T08:19:52Z",
-      "stars": 102336
-    },
-    {
       "checked_at": "2026-10-16T08:15:49Z",
       "commit_sha": "f1d4bc161711d071e417961d30afaadfd3bad8f1",
       "pushed_at": "2026-10-16T08:05:51Z",
@@ -180,6 +174,12 @@
       "commit_sha": "ff971149c2c6e1a4a1f73231a0830c859a832c0b",
       "pushed_at": "2026-11-13T11:07:24Z",
       "stars": 113511
+    },
+    {
+      "checked_at": "2026-11-14T10:34:51Z",
+      "commit_sha": "aaec67b89161e42571bd12f7c3e3b26ac92be3ce",
+      "pushed_at": "2026-11-14T10:28:42Z",
+      "stars": 113790
     }
   ],
   "repo_id": 1170821064

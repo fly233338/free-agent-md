@@ -2,12 +2,6 @@
   "full_name": "external-secrets/external-secrets",
   "points": [
     {
-      "checked_at": "2026-10-15T08:23:07Z",
-      "commit_sha": "2204545633fcd374af671a0f2414165d1a439e85",
-      "pushed_at": "2026-10-15T08:22:06Z",
-      "stars": 6902
-    },
-    {
       "checked_at": "2026-11-10T11:19:11Z",
       "commit_sha": "54d622f42d4b1b03900d49f8bda05f077d83f2fe",
       "pushed_at": "2026-11-10T11:18:28Z",

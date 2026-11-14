@@ -2,12 +2,6 @@
   "full_name": "TencentCloud/CubeSandbox",
   "points": [
     {
-      "checked_at": "2026-10-15T08:23:07Z",
-      "commit_sha": "5741deb433b7e2b9c9d2dcadb1c87214de74bd24",
-      "pushed_at": "2026-10-15T08:19:24Z",
-      "stars": 12947
-    },
-    {
       "checked_at": "2026-11-10T11:19:11Z",
       "commit_sha": "84d9cedf806417b8e86794b86e12138503383f70",
       "pushed_at": "2026-11-10T11:14:40Z",
