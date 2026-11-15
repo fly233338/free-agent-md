@@ -1,0 +1,140 @@
+# CLAUDE.md – Repository-Leitfaden für das Modell
+
+Dieses Repository enthält Plugins für deutsche Kanzleien. Wenn du in diesem Repository arbeitest oder hieraus Skills lädst, halte dich an die folgenden Regeln.
+
+## Sprache
+
+- **Alle Ausgaben auf Deutsch.** Englische Begriffe nur, wenn etabliert (z. B. "Letter of Intent", "Term Sheet", "Due Diligence", "Discovery") – aber stets erklärt.
+- Du-Form gegenüber Mandanten nur, wenn ausdrücklich vom Mandat vorgegeben; sonst Sie-Form.
+- Behördensprache nüchtern, klar, prägnant.
+
+## Methodik
+
+- Gutachten und interne rechtliche Prüfungen erläutern zweifelhafte Voraussetzungen im Gutachtenstil. Mandantenbriefe nennen Ergebnis, verständliche Begründung und Handlungsempfehlung; sie müssen nicht die gesamte interne Subsumtion wiedergeben.
+- **Urteilsstil** für Schriftsätze, Beschlüsse, knappe Vermerke.
+- Anspruchsgrundlagenprüfung in der Reihenfolge: Vertrag – c.i.c. – GoA – dinglich – Delikt – Bereicherung.
+- Auslegung nach den vier klassischen Methoden (grammatikalisch, systematisch, historisch, teleologisch) zzgl. verfassungs- und unionsrechtskonformer Auslegung.
+- Siehe [`references/methodik-buergerliches-recht.md`](./references/methodik-buergerliches-recht.md).
+
+## Quellen und Zitierweise
+
+- **Verbindlich:** [`references/zitierweise.md`](./references/zitierweise.md).
+- Tragende rechtliche Aussagen anhand überprüfter Quellen absichern. Gerichtliche Schriftsätze und Gutachten enthalten die erforderlichen Nachweise an der passenden Stelle. Mandantenbriefe erläutern die Entscheidung verständlich; zusätzliche Recherchebelege und Abrufvermerke können im getrennten internen Vermerk stehen. Keine Fundstellen oder technischen Quellenprotokolle nur zur Verlängerung des Empfängertextes einfügen.
+- Rechtsprechung: Gericht, Entscheidungsform, Datum, Aktenzeichen, Fundstelle, Randnummer.
+- Kommentare: Bearbeiter, "in:" Kommentar, Auflage, Jahr (ggf. Stand), Norm, Randnummer.
+- Aufsätze: Autor, Zeitschrift, Jahrgang, Anfangsseite (konkrete Seite).
+- Reihenfolge: Rspr. vor Lit., neueste zuerst.
+- Keine Kommentar-, Handbuch- oder Aufsatzfundstellen aus Modellwissen zitieren. Literatur nur nutzen, wenn der Nutzer die Quelle bereitstellt oder ein lizenzierter Live-Zugriff sie verifiziert.
+- **Leitentscheidungs-Anker:** [`references/leitentscheidungen-anker.md`](./references/leitentscheidungen-anker.md) ist die kuratierte Themen-Anker-Liste je Rechtsgebiet. Sie ersetzt nicht die Live-Verifikation, aber sie liefert sichere Sucheinstiege ohne Modellwissens-Halluzination.
+
+## Gliederung, Schriftbild und Nummerierung (verbindlich für alle Vorlagen und Verträge)
+
+Diese Regel gilt **dauerhaft und für jedes Werkzeug**, das in diesem Repository arbeitet. Sie ist nicht verhandelbar.
+
+- **Grundschrift für Enddokumente:** Schriftsätze, Klagen, Klageerwiderungen, Repliken, Dupliken, Anträge, Memos, Vermerke, Verträge, Beschlüsse, Urteilsentwürfe, Verfügungen, Mandantenbriefe und vergleichbare Arbeitsprodukte werden, soweit technisch möglich, in **Times New Roman, Schriftgröße 11 pt** ausgegeben. Überschriften dürfen fett und abgestuft sein, bleiben aber in derselben Schriftfamilie.
+- **Exporthinweis bei Markdown oder Chat-Ausgabe:** Wenn das System kein echtes DOCX/PDF formatiert, den Formatwunsch in einem getrennten Exporthinweis nennen: Times New Roman, 11 pt, dezimale Gliederung. Technische Hinweise gehören nicht in den versandfertigen Brief, Vertrag oder Schriftsatz. Keine tatsächlich nicht erzeugte Formatierung oder Datei behaupten.
+- **Abweichungen nur mit Grund:** Amtliche Formulare, gerichtliche Hausformate, Mandantentemplates oder Tabellenlayouts dürfen abweichen, wenn der Skill die Abweichung benennt und erklärt.
+- **Ausschließlich dezimale Gliederung:** `1`, dann `1.1`, dann `1.1.1`, dann `1.1.1.1` und so weiter, beliebig tief.
+- **Niemals** römische Ziffern (`I`, `II`), Großbuchstaben (`A`, `B`, `C`), Kleinbuchstaben (`a`, `b`) oder gemischte Verlags-Gliederungen (`A. I. 1. a) aa)`). Genau diese Schemata sind verboten, weil man sich darin nicht zurechtfindet.
+- **Leerzeile zwischen Gliederungspunkt und seinem Inhalt sowie zwischen Gliederungsebenen.** Überschrift bzw. Nummer und der folgende Text/Unterpunkt werden durch eine Leerzeile getrennt, sonst ist es nicht lesbar.
+- **Einrückung sparsam.** Nur leicht einrücken, gerade so viel, dass die Hierarchie sichtbar bleibt und es gut aussieht – nie so tief, dass das Dokument zerfleddert wirkt.
+- **Hohe Priorität.** Bei Konflikt mit einer abweichenden Gliederung in einer Altvorlage gilt diese Regel; die Altvorlage ist anzupassen.
+
+Gilt für alle Vorlagen, Verträge, Vertragsmuster, Memos, Schriftsätze und sonstigen formatierten Dokumente in diesem Repository.
+
+## Verbindlicher Hinweis für Testakten
+
+Für jede Testakte gilt der unveränderte zweisprachige Hinweis aus [`AGENTS.md`](./AGENTS.md) und [`testakten/QUALITAETSSTANDARD.md`](./testakten/QUALITAETSSTANDARD.md). Gesamt-PDF und Einzel-PDFs enthalten weder eine Hinweisseite noch diesen Warntext. Stattdessen steht der vollständige Hinweis auf der Repository-Startseite, im Download-Index und in den zentralen, aktenbezogenen und Plugin-READMEs unmittelbar vor jeder PDF-/ZIP-Downloadgruppe für Testakten. Ein allgemeiner Hinweis an anderer Stelle genügt nicht. Beide ZIP-Varianten und Sammelpakete mit Testakten enthalten auf der Wurzelebene eine UTF-8-kodierte `README.txt`, die mit dem zweisprachigen Hinweis beginnt. Die zentralen Builder, README-Generatoren und Validatoren setzen Wortlaut und Position reproduzierbar durch und dürfen nicht umgangen werden.
+
+## Verboten
+
+- Aus einem Präzedenzfall ohne Rechtsgrundlage eine allgemeine Bindung anderer Gerichte ableiten. Rechtskraft und besondere gesetzliche Bindungswirkungen sind davon zu unterscheiden, insbesondere Paragraf 322 ZPO und Paragraf 31 BVerfGG; die Bindung im konkreten Verfahren gesondert prüfen.
+- Prozessuale Instrumente als allgemeine vorprozessuale Offenlegungsrechte darstellen. Paragrafen 142, 144 und 421 bis 432 ZPO betreffen Beweiserhebung im gerichtlichen Verfahren. Vorprozessual kommen das selbständige Beweisverfahren nach Paragrafen 485 ff. ZPO sowie einschlägige Auskunfts- oder Einsichtsansprüche in Betracht, etwa nach Paragraf 810 BGB, Paragraf 242 BGB oder Artikel 15 DSGVO unter ihren jeweiligen Voraussetzungen. Eine Stufenklage nach Paragraf 254 ZPO ist selbst ein gerichtliches Verfahren.
+- Halluzinierte Aktenzeichen oder Fundstellen. Bei Unsicherheit: kennzeichnen und Verifizierung in amtliche oder frei zugängliche Quellen; lizenzierte Datenbanken nur bei vorhandenem Zugang empfehlen.
+- Verletzung der anwaltlichen Verschwiegenheit (Paragraf 43a Absatz 2 BRAO, Paragraf 203 StGB). Dienstleisterzugang nach Paragraf 43e BRAO und Datenschutzrolle getrennt prüfen. Bei Auftragsverarbeitung ist eine Vereinbarung nach Artikel 28 DSGVO erforderlich; sie allein legitimiert weder Geheimniszugang noch Drittlandtransfer. Andere Rollen nicht durch die Überschrift AVV ersetzen.
+
+## Standardstruktur für Memos
+
+1. Sachverhalt (knapp)
+2. Frage(n)
+3. Kurzantwort (1 Satz)
+4. Rechtliche Bewertung (Gutachtenstil)
+5. Gesamtergebnis
+6. Risiken / offene Punkte
+7. Quellenverzeichnis (gem. references/zitierweise.md)
+
+## Standardstruktur für Mandantenkommunikation
+
+- Anrede + Bezug ("In dem Mandat … / In Sachen …")
+- Sachstand
+- Empfehlung
+- Nächste Schritte / Frist
+- Kostenhinweis (RVG/Honorarvereinbarung)
+- Unterschrift mit Berufsbezeichnung
+
+## Ausformulierungspflicht für Verträge, Vorlagen und juristische Dokumente (verbindlich)
+
+Diese Regel gilt **ausnahmslos und für alle Zeiten** für jedes Dokument, das ein Skill, ein Plugin oder ein anderes Werkzeug in diesem Repository als Endprodukt erzeugt — Verträge, Vertragsmuster, Klausel-Sets, Schriftsätze, Bescheide, Beschlüsse, Verfügungen, Memos, Mandantenbriefe, Vollmachten, Anschreiben, Vermerke, Stellungnahmen, NDA-Texte, AGB-Entwürfe, Vereinbarungen, Anträge, Erwiderungen und alle vergleichbaren Endprodukte — unabhängig davon, welches Werkzeug es erzeugt.
+
+- **Vollständig ausformuliert.** Endprodukte werden in vollständigen, grammatikalisch sauberen Sätzen geliefert. Stichworte, Halbsätze, Aufzählungs-Skelette, leere Klauselrümpfe oder reine Informationssammlungen sind als Endprodukt **verboten**. Eine Klausel besteht aus mindestens einem vollständigen Satz, der die Rechtsfolge konkret und subsumtionstauglich anordnet.
+- **Crisp und prägnant.** „Vollständig" heißt nicht „aufgebläht". Jeder Satz trägt; rhetorische Füllstücke sind zu vermeiden. Klarheit, juristische Präzision und Lesbarkeit für den Mandanten und das Gericht haben absoluten Vorrang vor Wortzahl.
+- **Keine Skelett-Verträge.** Die für den konkreten Vertrag erforderlichen Vereinbarungen vollständig ausformulieren, insbesondere Leistungsgegenstand, Pflichten, vereinbarte Gegenleistung und erforderliche Rechtsfolgen. Präambel, Definitionen und weitere Klauseln nur aufnehmen, soweit sie für diesen Vertrag nötig oder beauftragt sind. Eine kurze Änderungsvereinbarung muss nicht den gesamten Ausgangsvertrag wiederholen; unverändert fortgeltende Regelungen eindeutig bezeichnen. Eine bloße Gliederung ersetzt keine Endfassung.
+- **Platzhalter sauber markieren.** Wo Mandantsangaben fehlen, werden klar lesbare Platzhalter gesetzt (`[Name der Mandantin]`, `[Betrag in EUR]`, `[Datum TT.MM.JJJJ]`) — nicht aber Sinnsätze weggelassen. Der umgebende Text bleibt vollständig.
+- **Frage-Antwort-Phase ist Vorbereitung, nicht Endprodukt.** Die Rückfrage-Phase eines Skills dient der Erhebung fehlender Tatsachen. Sobald genug Tatsachen vorliegen, wird das Endprodukt in **ganzer Sprache** geliefert — nicht in Stichworten, die der Mandant selbst zu Sätzen ausbauen müsste.
+- **Strenge Regelung bei neuen Plugins und Skills.** Jedes neu erzeugte Plugin oder Skill, das ein Endprodukt erstellt, muss diese Ausformulierungspflicht im eigenen Ausgabeformat-Block (Innenstruktur Nummer 5) ausdrücklich umsetzen. Das Skill-Werkzeug muss bei jeder Erzeugung darauf prüfen, ob das Ergebnis ausformuliert ist; bei Skelett-Charakter ist das Endprodukt zu verwerfen und in vollständiger Sprache neu zu produzieren.
+- **Englisch wenn gewünscht.** Bei zweisprachigen oder englischsprachigen Vorlagen gilt sinngemäß dasselbe: writing needs to be clear, crisp and complete. Keine half-sentences, keine bullet-point-only-Klauseln, keine information-dump-Ausgaben.
+- **Diese Regelung ist von hoher Priorität.** Bei Konflikt mit einer abweichenden Stilkonvention in einer Altvorlage gilt diese Regel; die Altvorlage ist beim nächsten Anfassen anzupassen.
+
+## Skill-Konvention
+
+- Jeder Skill liegt unter `<plugin>/skills/<skill-name>/SKILL.md`.
+- Frontmatter (YAML) enthält genau `name` und `description`. Keine weiteren Felder (insbesondere kein `triggers`, `when_to_use`, `language`, `rechtsgebiet`, `license`, `argument-hint`, `user-invocable`, `allowed_tools`, `tools`, `model`, `adapted_from`, `version`, `related_skills`).
+- `description` höchstens 1024 Zeichen, keine Zahlen-Kommas in `description` oder `plugin.json`-Description (z. B. statt `1,5` schreibe `1.5` oder `eineinhalb`). Skill-`name` ≤ 64 ASCII-Zeichen.
+- Innenstruktur:
+  1. Zweck und Anwendungsfall
+  2. Eingaben
+  3. Ablauf / Checkliste
+  4. Quellenpflicht (Verweis auf references/zitierweise.md)
+  5. Ausgabeformat — bei Skills, die Verträge, Vorlagen, Schriftsätze, Memos oder vergleichbare Endprodukte erzeugen, muss dieser Block ausdrücklich auf die **Ausformulierungspflicht** und den **Formatstandard** verweisen: Das Endprodukt wird in vollständigen, ausformulierten Sätzen geliefert; Skelette, Halbsätze und reine Aufzählungs-Auswurfe sind als Endprodukt verboten. Formatierte Dokumente verwenden, soweit technisch möglich, Times New Roman 11 pt und ausschließlich dezimale Gliederung.
+  6. Beispiele
+- Skills sollen kanzleitauglich sein, also reproduzierbar und auditierbar.
+
+## Bei Unsicherheit
+
+- Frage nach (Skill, Mandat, Gegenstand, Frist).
+- Nenne offene rechtliche Fragen explizit.
+- Empfehle Verifizierung in amtliche oder frei zugängliche Quellen; lizenzierte Datenbanken nur bei vorhandenem Zugang.
+
+## Git- und PR-Verhalten
+
+- Pull Requests in diesem Repo werden **nicht als Draft** erstellt, sondern direkt als „ready" und nach Push **sofort auf `main` gemerged** — es sei denn, der Nutzer fordert ausdrücklich einen Draft oder eine Review-Pause.
+- Im Repository ist nur **Squash-Merge** aktiv. Bei PRs wird deshalb `merge_method: squash` verwendet; andere Merge-Arten sind nicht zulässig.
+- Signierte Einzelcommits bleiben in der PR-Historie nachvollziehbar; der Squash-Commit übernimmt den geprüften Inhalt. Bestehende History und Tags bleiben unangetastet.
+- Force-Push auf `main` oder gemeinsame Branches ist verboten.
+- Vor jedem Push wird `git fetch origin` ausgeführt.
+- Prüfkommentare oder externe Reviews sind hilfreich, blockieren den Merge aber nur, wenn Branch-Schutz, Nutzeranweisung oder ein konkreter Fehler das verlangen.
+- Der Workflow je PR ist exakt:
+  1. PR erzeugen (`mcp__github__create_pull_request`). Standard ist `draft: false`. **`draft: true` nur dann**, wenn der Nutzer ausdrücklich einen Draft gefordert hat. Eine reine Review-Pause-Anweisung des Nutzers ändert den Draft-Status **nicht** — der PR bleibt `ready`.
+  2. Wenn ein Prüfkommentar gewünscht ist, wird er direkt nach dem PR erstellt. Bei einem echten Draft-PR erfolgt das erst nach Umstellung auf `ready`.
+  3. **Sofort** per Squash mergen (`mcp__github__merge_pull_request`, `merge_method: squash`) — außer bei ausdrücklich gewünschtem Draft, Review-Pause, rotem Pflichtcheck oder Nutzerfreigabe-Vorbehalt.
+
+  Etwaige spätere Findings werden in einem Folge-PR adressiert. Ziel ist eine durchgehende Audit-Spur, ohne den Release-Fluss unnötig zu blockieren.
+
+## Konversationsstil – konzis starten, schnell zum Dokument
+
+Ziel jedes Skills ist die **Produktion eines Dokuments oder Arbeitsergebnisses**, nicht ein langer Chat-Vortrag. Halte dich daran:
+
+- Erste Antwort: knapp. Vorhandene Unterlagen zuerst lesen. Nur Angaben erfragen, die für den konkreten Auftrag fehlen; zusammengehörige Fragen bündeln. Keine erneute Mandatsaufnahme, wenn Auftrag, Rolle und Sachverhalt bereits feststehen.
+- **Keine vorgelagerten Theorie-Vorträge.** Keine ausführliche Norm-Wiederholung, kein Lehrbuch-Intro, keine Selbsterklärung, was der Skill jetzt gleich tun wird. Tu es direkt.
+- Zum beauftragten Ergebnis weiterarbeiten. Sobald die nötigen Angaben vorliegen, den gewünschten Entwurf oder die Beratung ausarbeiten. Noch offene entscheidende Angaben nicht durch erfundene Tatsachen ersetzen. Bereits bearbeitbare Teile dürfen vorläufig geliefert werden; kenntlich machen, welche Frage vor der Endfassung noch beantwortet werden muss.
+- Antworten führen zum nächsten Arbeitsschritt. Neue Angaben mit den vorhandenen Belegen abgleichen und nur die betroffenen Rechnungen, Anträge oder Vertragsbestimmungen ändern. Ergibt sich daraus eine weitere entscheidende Lücke, gezielt nachfragen. Es gibt keine starre Höchstzahl von Rückfragerunden; bereits beantwortete Fragen, wiederholte Aufnahmen und Rückfragen ohne Einfluss auf das Ergebnis unterbleiben.
+- Verfahrensstand und Auftrag bestimmen die Fortsetzung. Fehlende Auskunft kann zunächst ein Auskunftsschreiben erfordern; nach ihrem Eingang kann daraus eine Berechnung und anschließend ein Zahlungsantrag werden. Ein streitiger Nachweis kann eine Beweisfrage oder eine bedingte Argumentation erfordern. Nicht ungefragt in ein Gerichtsverfahren wechseln, wenn nur ein Gutachten oder eine Vertragsprüfung beauftragt ist. Ein Gutachten ist fertig, wenn es die gestellte Frage begründet beantwortet; eine Dokumentenbestellung ist nicht mit einer bloßen Analyse erledigt.
+- Interne Prüfung und Empfängertext trennen. Belegabgleich, Quellenprüfung und Berechnungen dienen der Bearbeitung. In Briefe, Schriftsätze und Verträge gehören nur die für ihren Empfänger erforderlichen Inhalte. Technische Arbeitsanweisungen, Dateizugriffsgrenzen und Prüfvermerke stehen gegebenenfalls in einer gesonderten Notiz an den Auftraggeber, nicht im versandfähigen Dokument. Fachübliche Überschriften verwenden und keine internen Prüffeldnamen als Pflichtgliederung ausgeben.
+- Endfassung statt Arbeitsabbruch. Vor Abschluss kontrollieren, ob das verlangte Ergebnis tatsächlich vorliegt, neue Angaben eingearbeitet und offene entscheidende Punkte erkennbar sind. Bei einem Hindernis den erreichten Stand und den konkret benötigten nächsten Beitrag nennen; nach dessen Eingang dort fortsetzen. Eine Freigabe ist nur für die beauftragte externe Handlung erforderlich, nicht für jeden internen Bearbeitungsschritt. Versand, Einreichung, Anerkenntnis oder Verzicht nie eigenmächtig veranlassen.
+- **Ausnahmen – hier darf und soll ausführlich gearbeitet werden:**
+  - Echte Subsumtion / Gutachtenstil-Prüfung einer Anspruchsgrundlage.
+  - Vergleichstabellen, Gegenüberstellungen, Zitatketten, Chronologien.
+  - Risikoanalysen, Mehr-Szenarien-Bewertungen, Beweislastverteilungen.
+  - Schriftsatz-, Bescheid- oder Memo-Texte selbst (die dürfen so lang sein wie nötig).
+- **Allgemein-Skills sind Einstieg, nicht Vorlesung.** Sie führen das Mandat an, stellen maximal die unverzichtbaren Mandatsfragen, verweisen auf die spezialisierten Skills im selben Plugin und liefern bei klarer Faktenlage sofort den ersten Dokumentenentwurf.
+- **Erklären, wenn der Nutzer es verlangt.** Wenn der Nutzer ausdrücklich nach Hintergrund, Begründung oder Methodik fragt, dann ausführlich und im Gutachtenstil – sonst nicht.

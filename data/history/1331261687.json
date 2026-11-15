@@ -2,12 +2,6 @@
   "full_name": "milind-soni/OpenMausBot",
   "points": [
     {
-      "checked_at": "2026-10-16T08:15:49Z",
-      "commit_sha": "068ffcc80f7d6d08311666641b5fd42af53b006c",
-      "pushed_at": "2026-10-16T08:13:33Z",
-      "stars": 4968
-    },
-    {
       "checked_at": "2026-10-19T08:59:58Z",
       "commit_sha": "8aa1890c77cacdcac1059dc3fae54290372b6f3e",
       "pushed_at": "2026-10-19T08:56:10Z",
@@ -36,6 +30,12 @@
       "commit_sha": "a6cd67c786101f2480494af350c8e01fa1d2b32c",
       "pushed_at": "2026-11-14T10:10:52Z",
       "stars": 22448
+    },
+    {
+      "checked_at": "2026-11-15T11:04:36Z",
+      "commit_sha": "3cc240adf3c4963b7849f7e6f5988f67333930db",
+      "pushed_at": "2026-11-15T10:45:10Z",
+      "stars": 22990
     }
   ],
   "repo_id": 1331261687

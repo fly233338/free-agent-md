@@ -4,6 +4,19 @@ Experiential builds immutable task evidence from agent traces, composes and fits
 runs those routers on loopback, and executes bounded SFT from persisted datasets. All importable
 code lives under `exp/`; benchmark data arrives as a dependency (see rule 6).
 
+## Product and repository boundaries
+
+Make open-source Experiential excellent for individual users. Keep enterprise operations,
+organization management, billing, and deployment orchestration in other repos. Enterprise
+builders can build that layer themselves, but this boundary must never compromise our
+gateway's performance, security, or maintainability.
+
+Public code, documentation, commit messages, PR descriptions, and comments must describe the
+standalone open-source behavior. Keep private repository links, internal deployment details,
+customer information, and private operational or experiment evidence in private repos or local
+records. Limit disclosure cleanup to sensitive cases; preserve legitimate public interfaces
+and ordinary technical terminology. Keep shared interfaces small, performant, and reliable.
+
 ## Toolchain
 
 Managed with `uv`; lint/format with `ruff`; type-check with `ty`.
@@ -30,7 +43,7 @@ uv run pytest -q
   may not import optimize or cli; optimize may not import cli. Optimize owns application
   orchestration and may depend inward on common, runtime, and simulation. The AST gate rejects
   every current forbidden edge directly and proves that the package graph is acyclic.
-- The root CLI command set is exact: `build`, `capture`, `config`, `eval`, `login`, `optimize`, and `run`.
+- The root CLI command set is exact: `build`, `capture`, `code`, `config`, `eval`, `login`, `optimize`, and `run`.
   An invocation without a subcommand opens the default gateway home screen.
   `exp/cli/app_test.py` and the release tests
   enforce the current command and distribution shape.
@@ -38,7 +51,7 @@ uv run pytest -q
 ## CLI package ownership
 
 - `exp/cli/app.py` owns root command composition only. Command implementations live in the
-  `build/`, `capture/`, `config/`, `evaluation/`, `judge/`, `optimize/`, and `gateway/` packages. Gateway serving and the
+  `build/`, `capture/`, `code/`, `config/`, `evaluation/`, `judge/`, `optimize/`, and `gateway/` packages. Gateway serving and the
   default home screen live under `gateway/`.
 - `exp/cli/providers/` owns provider discovery, model selection, and catalog setup shared by
   commands. Command-specific orchestration stays with its command package. In particular,
@@ -90,7 +103,9 @@ uv run pytest -q
   authenticated multi-alias gateway on loopback, running first-time setup when no gateway exists,
   while `exp --project PROJECT --root ROOT --port
   PORT [--ghost]` retains the single-project compatibility server. Both expose OpenAI Chat
-  Completions, Responses, and Models routes. Public request and
+  Completions, Responses, and Models routes, the Anthropic Messages route, and the Google Gemini
+  API (`/v1beta/models/{model}:generateContent`; decoding in `exp/runtime/google_protocol`,
+  encoding in the native data plane, `docs/reference/gateway-google-protocol.md`). Public request and
   response types come
   from the official OpenAI SDK. Chat retries use the standard `Idempotency-Key`; Responses
   continuations use `previous_response_id`. Experiential never joins unrelated Chat callers by transcript
@@ -140,7 +155,8 @@ uv run pytest -q
   orchestration lives in `automatic/`, manual judge calibration in `judging/`, offline policy work
   in `fit/`, and evaluation preparation in `evaluation/`. The durable judgment ledger remains at
   `judgment_budget.py`.
-- The root CLI is locked to `build`, `capture`, `config`, `eval`, `login`, `optimize`, and `run`. Capture runs
+- The root CLI is locked to `build`, `capture`, `code`, `config`, `eval`, `login`, `optimize`, and `run`. `code`
+  passes every argument to the pinned exp-code release and owns no options of its own. Capture runs
   in the foreground with no management subcommands. The optimize group is locked
   to `router` and `model`; the config group is locked to `budget`, `gateway`, `judge`, `providers`,
   and `telemetry`. Widening any of those three sets, whether with a command, an alias, or a flag, is a
@@ -234,7 +250,7 @@ uv run pytest -q
    its existing identity digest remains frozen for router artifact compatibility.
 
 5. **The top level is a closed allowlist.** The tracked top-level directories are exactly: `exp/`,
-   `docs/`, `assets/`, `.claude/`, `.github/`. That list is closed.
+   `agent/`, `docs/`, `assets/`, `.claude/`, `.github/`, `.gitlab/`. That list is closed.
 
    `.agents/` is the one sanctioned scratchpad: a local, gitignored working directory for agent
    sessions (notes, probe scripts, run outputs). It is never tracked, never part of a PR, and
@@ -255,9 +271,10 @@ uv run pytest -q
      and their rendered figures under `docs/research/figures/`), `docs/reference/` (how-to
      references verified against main), and `docs/cookbook/` (end-to-end walks through the whole
      pipeline on one benchmark, each step one real CLI command plus the artifact it creates),
-     plus two root pages: `docs/usage.md` (the terse map of the CLI surface: one line of purpose
-     and one artifact per command) and `docs/release-scope.md` (the supported and explicitly
-     excluded claims of the current release, checked by `exp/tests/release_test.py`). Nothing else: raw
+     plus three root pages: `docs/usage.md` (the terse map of the CLI surface: one line of purpose
+     and one artifact per command), `docs/release-scope.md` (the supported and explicitly
+     excluded claims of the current release, checked by `exp/tests/release_test.py`), and
+     `docs/gitlab-ci.md` (the CI pipeline conventions). Nothing else: raw
      result JSONs, vector sources, design notes, and drafts stay out of the repo. `docs/README.md`
      indexes every doc and records its purpose. Update or remove superseded material only after
      checking references and retaining durable evidence.
@@ -273,7 +290,14 @@ uv run pytest -q
      `exp/runtime/models/providers/`.
    - `.claude/` — checked-in agent skills (e.g. `/ready-for-merge`); local files
      (`settings.local.json`, locks) stay gitignored.
-   - `.github/` — CI workflows.
+   - `agent/`: exp-code, the open-source coding and cowork agent, as one TypeScript npm package
+     (`exp-code`) built on an exact-pinned Pi coding agent. It is the only non-Python code outside
+     `exp/`; its tests, lockfile (`package-lock.json`), and bundle script live inside it, and
+     `exp code` launches its pinned release.
+   - `.github/`: the gate, gateway-latency, python-package, and agent workflows.
+   - `.gitlab/`: GitLab CI. `.gitlab/ci/` holds one file per pipeline area, included by the
+     root `.gitlab-ci.yml`; its `osv-scanner.toml` is the shared advisory policy for both CI
+     systems. `docs/gitlab-ci.md` describes the conventions.
 
    Scratch work has no home in this repo. One-off scripts, experiment runners, scratchpads, and
    drafts go outside the checkout (`/tmp`, a personal directory, or the Notion experiments area
@@ -328,10 +352,11 @@ uv run pytest -q
 13. **Run `/ready-for-merge` before every PR merge.** No PR is merged until the
     `ready-for-merge` skill (`.claude/skills/ready-for-merge/SKILL.md`) has been run and passes:
     `/code-review --fix` at an effort level scaled to the PR's breadth (see the skill), every
-    review comment (Cursor, Greptile, humans) resolved, and a full AGENTS.md compliance audit
-    of the diff. When opening or updating a PR, fetch Greptile review comments in the same
+    review comment (Cursor, Codex, humans) resolved, and a full AGENTS.md compliance audit
+    of the diff. When opening or updating a PR, fetch Cursor and Codex review comments in the same
     turn and address them immediately: fix valid findings, reply on the thread, and resolve
-    it. Do not wait for `/ready-for-merge` to start that loop.
+    it. Request `@codex review` after each push and verify both reviewers completed on the
+    final commit. Do not wait for `/ready-for-merge` to start that loop.
 
 14. **No silent legacy, shims, or backwards compatibility.** Any legacy path, shim,
     compatibility constant, migration branch, deprecated alias, versioned fallback, or other
@@ -352,6 +377,38 @@ uv run pytest -q
     The palette above is the contract. Rendering scripts for one-off visuals do not belong in the
     repository (rule 5).
 
+16. **Follow prior art; one mechanism per concern.** Before building anything, find how the
+    codebase already does it and do it that way, even when the existing mechanism is less
+    convenient than a fresh one. An existing mechanism carries cases a new one will miss. A second
+    mechanism for a concern listed below is not added beside the first: either extend the owner,
+    or migrate every existing call site to the new one in the same change series. Parallel work
+    sessions are the usual source of drift, so check this map before writing code:
+
+    | Concern | Owner | Use |
+    | --- | --- | --- |
+    | Progress of a long-running command | `exp/cli/shared/progress.py` | `progress_display` for one phase, `progress_phases` for several; services report through `exp/common/progress.py` `report` |
+    | Spend consent and cost warnings | `exp/cli/shared/consent.py` | `require_spend_consent` |
+    | Command results and saved detail | `exp/optimize/evaluation/export.py`, `exp/cli/build/summary.py` | A short summary on the terminal; the full output saved atomically beside the saved run under the project's runtime directory (`export_report`, `save_details`), then a `Report: <path>` line |
+    | Usage errors | `exp/cli/shared/options.py` | `usage_error` |
+    | Interactive choices | `exp/cli/shared/picker.py` | `choose_one` |
+    | Terminal styling | `exp/cli/shared/theme.py` | `EXP_THEME` |
+    | Saved-result identity | `exp/common/core/artifacts.py` | `stable_id` over content; never over paths or source files |
+    | Local identifiers in paths | `exp/common/project/paths.py` | `validate_local_id` |
+    | Atomic file writes | `exp/common/core/files.py` | `write_text_atomic` |
+    | Launching exp-code | `exp/cli/code/launcher.py` | `launch`; the agent itself lives in `agent/` |
+    | Model choice | `exp/common/models/catalog_roles.py` | Catalog roles, not new flags |
+    | Provider calls and retries | `exp/runtime/models/registry.py`, `exp/runtime/models/providers/transport.py` | `RuntimeModelCatalog`, `RetryPolicy` |
+    | Producer revision | `exp/common/release_revision.py` | `installed_release_revision` |
+    | Gateway execution bindings | `exp/runtime/gateway/native/src/execution_binding.rs`, `exp/runtime/gateway/native/src/bridge.rs` | Hosts explicitly supply callback targets and resource handles; bound bridges retain them through requests, callbacks and detached cleanup. Individual execution uses the direct process bridge. Hosted identity and allocation policy belong to the host |
+    | Gateway active-request capacity | `exp/runtime/gateway/native/src/permit_queue.rs`, `exp/runtime/gateway/native/src/dispatch_capacity.rs` | `PermitQueue.acquire_scoped` grants global and supplied capacity together; shared `DispatchPermit` ownership retains both through terminal accounting |
+    | Gateway accounting recovery rotation | `exp/runtime/gateway/native_accounting_recovery.py` | `RecoveryRotation` rotates stable work identities within one control plane; admission never runs recovery I/O |
+    | Tag-rules routing | `exp/runtime/gateway/tag_router.py` | `TagRulesRouterPolicy` and `tag_rules_policy_id` for the policy, `TagRulesSelector` for selection; `routing.project_selector` binds an activation to its selector |
+    | Candidate capability fit | `exp/common/models/capability_fit.py` | `capabilities_support`, shared by learned and tag-rules routing |
+    | Fleet-wide lane admission | `exp/runtime/gateway/fleet_lanes.py` | `FleetLaneGate` (host-injected through `NativeControlPlane(fleet_lane_gate=)`) decides `GatewayRungDispatchPolicy.fleet` after the worker's own rung admission; `FleetLeases` releases each lease once |
+
+    Keep this table current. A change that introduces an owner for a new concern adds its row in
+    the same commit.
+
 ## One package
 
 This repo publishes **one flagship distribution**: `experiential`, whose importable python code
@@ -368,6 +425,12 @@ Rules of the road:
   workflow publishes prebuilt abi3 wheels). The crate ships no importable python beyond the
   compiled `exp_gateway_native` module; python code still belongs under `exp/`. No further path
   sources or distributions may be added.
+- **Exact pins only**: every requirement in `[project.dependencies]` and the extras is an `==`
+  pin, except `openai`, which callers' own code imports and which stays the certified
+  `>=3.0,<4` range, and the `dev` extra's unversioned `experiential[sft]` self-reference. A
+  version moves only by a reviewed edit, and `[tool.uv] exclude-newer` keeps every resolved
+  release at least 7 days old. Only packages this project publishes are exempt; an urgent
+  security fix gets a dated `exclude-newer-package` cutoff with a removal date, never `false`.
 - **Keep dependency ownership explicit**: published shared building blocks are normal PyPI
   requirements. Provider-neutral catalog metadata and immutable snapshots live under
   `exp/common/models/`; explicit runtime clients use the shared HTTP transport. A release resolves
@@ -375,9 +438,18 @@ Rules of the road:
 - **Gate scoping**: the root gate is `uv run ruff check .`, `uv run ty check`, `uv run pytest -q`,
   all over the single `testpaths = ["exp"]`. Tests are inline `*_test.py` beside the module they
   cover. There is exactly one ruff config and one ty config, at the root.
-- **Publishing**: `.github/workflows/python-package.yml` builds and publishes the flagship
-  `experiential` distribution and the `exp-gateway-native` abi3 wheel matrix; the publish job
-  runs only for a GitHub release and uses the `pypi` trusted-publisher environment.
+- **Publishing**: `.github/workflows/python-package.yml` builds the flagship
+  `experiential` distribution and the `exp-gateway-native` abi3 wheel matrix. PRs and main
+  pushes build and smoke-test without publishing. Publication requires a protected release
+  tag (`v<version>`) reachable from main, or an explicit latest-release replay on protected
+  main, and uses PyPI trusted publishing from the `pypi` environment. Only the isolated
+  publish jobs have `id-token: write`. Publish the native distribution before the flagship.
+  `docs/gitlab-ci.md` documents GitHub operation and the retained GitLab configuration.
+- **The exp-code npm carve-out**: `agent/` is the npm package `exp-code`, released separately
+  under `exp-code-v<version>` tags. Its dependencies, Pi included, are exact pins with a committed
+  npm lockfile. `exp/cli/code/launcher.py` pins the release `exp code` runs, and
+  `launcher_test.py` keeps that pin equal to `agent/package.json`, so a release bumps both in one
+  change. `.github/workflows/agent.yml` installs, typechecks, tests, and bundles it.
 
 ## Docs
 

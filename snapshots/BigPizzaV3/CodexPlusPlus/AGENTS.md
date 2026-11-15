@@ -60,7 +60,13 @@
 
 ## 测试约定
 
-- 沿用现有 `#[test]` + tempfile 风格（见 `crates/codex-plus-core/tests/relay_config.rs`）
+- 沿用现有 `#[test]` + tempfile 风格（见 `crates/codex-plus-core/tests/all/relay_config.rs`）
+- core / data 的集成测试合并为一个测试程序 `tests/all/`（每个文件是 `main.rs` 里的一个 `mod`），
+  新测试文件放进 `tests/all/` 并在 `main.rs` 登记，不要再在 `tests/` 下直接加文件（每个都会多链接一次整个 core）。
+  只跑某个文件：`cargo test -p codex-plus-core --test all relay_config::`
+- 合并后各文件的用例在同一进程并行：改进程级状态（设置路径覆盖、诊断日志路径、环境变量）的用例
+  必须先拿 `common::global_state_lock()`；需要独占进程的（改 `CODEX_PLUS_STATE_DIR`、常驻 helper 单例）
+  才单独留在 `tests/` 下
 - 断言读 config.toml 文本，如 `assert!(config.contains("model_catalog_json"))`
 - 改行为要同步改/加对应测试
 
@@ -88,7 +94,31 @@
 
 不要在只跑完测试就交付；构建启动属于交付的一部分。
 
+## Claude Desktop 完整功能模式（claude-local，与 ClaudeMom 共用）
+
+完整功能模式的核心不在本仓库：在 [ClaudeMom](https://github.com/BigPizzaV3/ClaudeMom) 仓库的
+`crates/claude-local`（本地兼容服务 Node 脚本、证书、真实 profile 切换、启动 / 停止、会话同步、Desktop 探测），
+`codex-plus-core` 以 git 依赖按 `rev` 钉住引用它。ClaudeMom 是只做这件事的独立程序，两边只维护这一份。
+
+- Codex++ 这边只有宿主实现 `crates/codex-plus-core/src/claude_local_backend.rs`：设置（`claudeDesktopLocal`）、
+  经网关的上游（`claude-desktop-local` 绑定）、常驻 helper 听写、3p 模式。对外函数名不变，管理器不用关心拆分。
+- 改完整功能模式的行为（代理脚本、证书、profile、启动流程）去 ClaudeMom 仓库改、测、推，再把这里的 `rev` 升上去。
+  本地联调可在根 `Cargo.toml` 临时加
+  `[patch."https://github.com/BigPizzaV3/ClaudeMom"] claude-local = { path = "../ClaudeMom/crates/claude-local" }`，**不要提交**。
+- 补丁 Desktop（汉化副本，`claude_localization.rs` + `assets/claude-localization/`）仍在本仓库，Desktop 探测调 claude-local。
+
 ## 提交与合入
 
 - 默认直接提交并合入 `main`。
 - 仅在用户明确要求时创建 PR。
+- 提交信息、PR 描述里不加 `Co-Authored-By: Claude …` 等 AI 署名；本地 `.git/hooks/commit-msg` 也会自动删掉这一行。
+
+## 发版
+
+- 先在 `CHANGELOG.md` 顶部写好 `## X.Y.Z - YYYY-MM-DD` 一节（这一节原样成为 Release 说明），
+  再跑 `node scripts/release.mjs X.Y.Z`（可先加 `--dry-run` 预览）：改 6 处版本号 → 提交 `release: vX.Y.Z` → 打 tag → 原子推送。
+- 推 `v*` tag 触发 `release-assets.yml`：校验版本号 → 建草稿 Release → 构建 Windows / macOS / Linux(.deb) → 上传 `SHA256SUMS.txt`、`latest.json` → Windows、macOS 齐了自动发布，只有最新版本才标 Latest。
+  Linux 不卡发布：它失败只少 .deb 这一个附件，事后补跑。
+- 不要再手动 `gh release create` / 在网页上点发布；网页发布不会触发构建。补跑某个平台用
+  `gh workflow run "Release assets" -f tag=vX.Y.Z -f platform=macos -f publish=true`（`platform` 可选 all / windows / macos / linux）。
+- 版本号文件清单在 `scripts/release-meta.mjs` 的 `VERSION_FILES`，新增带版本号的文件要登记进去。

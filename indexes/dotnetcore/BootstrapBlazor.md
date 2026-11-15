@@ -1,7 +1,7 @@
 # dotnetcore/BootstrapBlazor instruction files
 
-Upstream: [dotnetcore/BootstrapBlazor](https://github.com/dotnetcore/BootstrapBlazor) · License: `Apache-2.0` · Commit: `9291ace145dc771b7f65b7e7ed79abf17b574b56`
+Upstream: [dotnetcore/BootstrapBlazor](https://github.com/dotnetcore/BootstrapBlazor) · License: `Apache-2.0` · Commit: `c17fb7707404b3226427be50e5036bd26227db23`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/dotnetcore/BootstrapBlazor/AGENTS.md) | [Source](https://github.com/dotnetcore/BootstrapBlazor/blob/9291ace145dc771b7f65b7e7ed79abf17b574b56/AGENTS.md) | `1dbdc51c34fbf7266755cf7ba2c928be8823dfbad4a448d001d07aebec8fd49e` | 1,001 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/dotnetcore/BootstrapBlazor/AGENTS.md) | [Source](https://github.com/dotnetcore/BootstrapBlazor/blob/c17fb7707404b3226427be50e5036bd26227db23/AGENTS.md) | `e4110f4732f1b8a80536fed9948c1a69bb3eb43484605461f22634f3dd00ef8c` | 1,147 B |
