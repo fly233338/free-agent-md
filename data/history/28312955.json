@@ -2,12 +2,6 @@
   "full_name": "home-assistant/home-assistant.io",
   "points": [
     {
-      "checked_at": "2026-10-17T07:52:12Z",
-      "commit_sha": "a1467e578d485598000c19bcd498495f091d13db",
-      "pushed_at": "2026-10-17T07:44:33Z",
-      "stars": 9960
-    },
-    {
       "checked_at": "2026-11-15T11:04:36Z",
       "commit_sha": "8d777bfc7ab4b0bb6b16a4eb605f6dd5d4138a2f",
       "pushed_at": "2026-11-15T10:49:49Z",

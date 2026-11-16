@@ -2,12 +2,6 @@
   "full_name": "xiangechen/chili3d",
   "points": [
     {
-      "checked_at": "2026-10-17T07:52:12Z",
-      "commit_sha": "03a6a542e841a7f1952f67aa729e0658a8096c08",
-      "pushed_at": "2026-10-09T14:01:59Z",
-      "stars": 4916
-    },
-    {
       "checked_at": "2026-10-18T08:06:48Z",
       "commit_sha": "03a6a542e841a7f1952f67aa729e0658a8096c08",
       "pushed_at": "2026-10-09T14:01:59Z",
@@ -138,6 +132,12 @@
       "commit_sha": "4600206f9b354421f4de288e853efcde926da080",
       "pushed_at": "2026-11-02T01:42:35Z",
       "stars": 4992
+    },
+    {
+      "checked_at": "2026-11-16T11:33:53Z",
+      "commit_sha": "4600206f9b354421f4de288e853efcde926da080",
+      "pushed_at": "2026-11-02T01:42:35Z",
+      "stars": 4993
     }
   ],
   "repo_id": 584016836

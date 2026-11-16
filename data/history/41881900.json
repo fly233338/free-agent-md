@@ -2,12 +2,6 @@
   "full_name": "microsoft/vscode",
   "points": [
     {
-      "checked_at": "2026-10-17T07:52:12Z",
-      "commit_sha": "1e81fc75bb564738c29771d9b17c72e708a8211c",
-      "pushed_at": "2026-10-17T07:28:56Z",
-      "stars": 193762
-    },
-    {
       "checked_at": "2026-10-18T08:06:48Z",
       "commit_sha": "dc811b77cd1e0753d306b0c6f819a7311bcf49b5",
       "pushed_at": "2026-10-18T08:06:32Z",
@@ -180,6 +174,12 @@
       "commit_sha": "5ef4833c9e8c79ae6ee127ec64f798bcd88d1d1d",
       "pushed_at": "2026-11-15T10:49:51Z",
       "stars": 195408
+    },
+    {
+      "checked_at": "2026-11-16T11:33:53Z",
+      "commit_sha": "b79cd7e11c2708ad3b06d6c6b5b91fb4679a4b85",
+      "pushed_at": "2026-11-16T11:33:23Z",
+      "stars": 195463
     }
   ],
   "repo_id": 41881900

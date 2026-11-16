@@ -2,12 +2,6 @@
   "full_name": "indiff/qttabbar",
   "points": [
     {
-      "checked_at": "2026-10-17T07:52:12Z",
-      "commit_sha": "9b81f7222fc47356659c224855bdd799d044e93c",
-      "pushed_at": "2026-10-12T01:23:48Z",
-      "stars": 4949
-    },
-    {
       "checked_at": "2026-10-18T08:06:48Z",
       "commit_sha": "9b81f7222fc47356659c224855bdd799d044e93c",
       "pushed_at": "2026-10-12T01:23:48Z",
@@ -141,6 +135,12 @@
     },
     {
       "checked_at": "2026-11-15T11:04:36Z",
+      "commit_sha": "9b81f7222fc47356659c224855bdd799d044e93c",
+      "pushed_at": "2026-11-13T06:16:30Z",
+      "stars": 4986
+    },
+    {
+      "checked_at": "2026-11-16T11:33:53Z",
       "commit_sha": "9b81f7222fc47356659c224855bdd799d044e93c",
       "pushed_at": "2026-11-13T06:16:30Z",
       "stars": 4986

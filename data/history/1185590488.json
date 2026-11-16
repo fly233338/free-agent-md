@@ -2,12 +2,6 @@
   "full_name": "rohitg00/ai-engineering-from-scratch",
   "points": [
     {
-      "checked_at": "2026-10-17T07:52:12Z",
-      "commit_sha": "43b78aeb4b7aa06fcee8cd46da973344b124afba",
-      "pushed_at": "2026-10-17T07:44:21Z",
-      "stars": 70430
-    },
-    {
       "checked_at": "2026-10-21T08:39:21Z",
       "commit_sha": "45fa4084de6ba2f88fa96a41e69efa2166f868b3",
       "pushed_at": "2026-10-21T08:38:59Z",
@@ -18,6 +12,12 @@
       "commit_sha": "f3d6ad002e96d2fe434ce8d0d68187994c03e3c7",
       "pushed_at": "2026-11-11T11:02:43Z",
       "stars": 78418
+    },
+    {
+      "checked_at": "2026-11-16T11:33:53Z",
+      "commit_sha": "151fe3f22bca88c665ccaaab3a55e10ed22f804c",
+      "pushed_at": "2026-11-16T11:26:15Z",
+      "stars": 79103
     }
   ],
   "repo_id": 1185590488

@@ -1,0 +1,979 @@
+# CLAUDE.md
+
+Guidance for Claude Code working in this repository. This file carries what is
+**not discoverable by reading the code**: product context, invariants, runtime
+constraints, and conventions. Structure, commands, and config are discoverable —
+read them from the repo.
+
+## Overview
+
+OpenAlgo is a production algorithmic trading platform: Flask backend, React 19
+frontend. It is **several products in one self-hosted instance**, all sharing a
+single broker session and WebSocket feed:
+
+| Surface | Route | Purpose |
+| --- | --- | --- |
+| Unified Broker API | `/api/v1/` | External platforms (TradingView, Amibroker, ChartInk, Excel, Python, MCP) |
+| Python Strategy Host | `/python` | In-browser editor; scripts scheduled on IST times, run as isolated subprocesses with live logs |
+| Flow (No-Code Builder) | `/flow` | Node graph: market data to indicators to conditions to order execution |
+| Strategy Module & RMS | `/strategy` | Multi-leg options strategies with end-to-end risk management, plus a signal-driven mode for per-alert TradingView trading. Two kinds share one engine: `batch` enters and exits every leg together, `signal` moves one leg per alert. Risk rules come from the shared `services/risk/` core. See [`docs/prompt/strategy_rms_documentation.md`](docs/prompt/strategy_rms_documentation.md). |
+| Options & Portfolio Suite | `/tools` | 20 tools. Options analytics (Option Chain, Greeks, OI Tracker, Max Pain, Vol Surface, GEX, Strike Profile (GEX and DEX by strike and expiry), IV Smile, Straddle, Arbitrage, ...) plus portfolio and investment tools (Portfolio Backtester, SIP Backtester, Portfolio Analyzer, Strategy Builder, Sector Rotation (relative rotation map of sectors, stocks and indices against a benchmark, from Historify or the broker)). The registry is `frontend/src/lib/tools.ts`: the home page derives its count from it, so add a tool there and both pages update. |
+| Charting Terminal | `/trading` | Line-based chart trading, powered by the `openalgo-charts` package |
+| Scalping Terminal | `/scalping` | Keyboard-driven options scalping (`blueprints/scalping.py` resolves underlying/expiry/strike; index options only — NRML/MIS, never CNC) |
+
+All surfaces share the Sandbox engine (1 Crore sandbox capital, exchange-aligned
+auto square-off) and support Telegram alerts.
+
+Repository: https://github.com/marketcalls/openalgo
+Documentation: https://docs.openalgo.in
+
+## Documentation Map
+
+All project documentation lives under `docs/` as markdown (the single source of
+truth). **Start from [`docs/INDEX.md`](docs/INDEX.md)** — it maps every area
+(REST API, Python SDK, indicators, strategy module and RMS, user guide, BDD
+specs, PRDs, design, scalping, installation, audits) to its entry file.
+
+Read `docs/INDEX.md` first, then open only the specific doc you need instead of
+scanning the tree. Do **not** copy or restate docs into a second location — edit
+the source file in `docs/` and every reader sees the change.
+
+## Skills
+
+Detailed procedures live in `.claude/skills/` and load on demand:
+
+- **`fd-audit`** — run after any change touching DB, WebSockets/streaming, threads/executors, subprocesses, files, or sockets
+- **`version-bump`** — releasing the platform, or bumping the pinned `openalgo` SDK (two unrelated version numbers)
+- **`broker-integration`** — adding or modifying a broker plugin
+- **`chart-indicator`** — building a custom indicator for the `/trading` chart. These are plain JavaScript descriptors on `openalgo-charts`, unrelated to the Python `openalgo.ta` indicators used from strategies and scanners.
+- **`openscript`**: writing a study or strategy in OpenScript, the language compiled by `openalgo-script` and run from `strategies/openscript/`. A third unrelated thing called an indicator: not the JavaScript chart descriptors above, and not `openalgo.ta`.
+- **`python-strategy`**: building, backtesting and rehearsing a Python strategy for the `/python` host. Writes one self-contained file to `workspace/execution/<name>/`, validates it against the host's interpreter and the installed SDK, and rehearses it as `/python` runs it with every order held back. Stops, targets and trails come from `services/risk`.
+- **`grokbot-setup`** — understanding and running OpenAlgo inside Grok Bot on its own Linux box (start from its `references/openalgo-knowledge.md`): uv install, `.env` and broker credentials, headless start, manual or automated daily broker login (Indian brokers only), weekly upgrade, and the static IP limit for Live orders
+
+## Security and Deployment Model
+
+- **Single user per deployment** — no multi-user, no privilege escalation. One user, one broker session per instance.
+- **Self-hosted on the user's own server** — server access equals full control. No SaaS component.
+- All official install scripts (`install.sh`, `install-docker.sh`, `install-multi.sh`, `docker-run.sh`, `docker-run.bat`, `start.sh`) auto-generate unique `APP_KEY` and `API_KEY_PEPPER` via `secrets.token_hex(32)`.
+- **SEBI static IP mandate** (effective April 1, 2026): transactional API orders require broker-side static IP whitelisting. Delta Exchange (crypto) enforces the same. Stolen broker credentials cannot be used from an attacker's machine — the broker rejects non-registered IPs. Attacks routed *through* the OpenAlgo server (which holds the registered IP) remain viable.
+- External platforms (TradingView, GoCharting, Chartink) send API keys in the JSON body or URL query params — they cannot set custom HTTP headers. This is an accepted architectural trade-off.
+- The stdio MCP server (`mcp/mcpserver.py`) is local-only and not remotely exposed. `blueprints/mcp_http.py` and `blueprints/mcp_oauth.py` are the remote-facing MCP surfaces.
+- Indian broker tokens expire daily at ~3:00 AM IST. Session management is aligned to that schedule.
+
+## Runtime Constraints
+
+### Two production workers: eventlet (default) and gthread (opt-in)
+
+Production (Ubuntu direct and Docker) runs gunicorn with one worker process.
+Which worker class it uses is chosen per install by one `.env` key,
+`OPENALGO_WORKER_CLASS`:
+
+- **eventlet is the default and stays the default.** An install that has not set the key runs `gunicorn --worker-class eventlet -w 1` exactly as before, and an update never rewrites its systemd unit, nginx configuration or dependencies. About 4,75,000 installs run this way, so every change must be behaviour-neutral under eventlet.
+- **gthread is opt-in.** `OPENALGO_WORKER_CLASS = 'gthread'` plus `install/switch-worker.sh` (Ubuntu) or a container restart (Docker) starts gunicorn through the repo launcher `install/openalgo-gunicorn.sh` with a fixed pool of 64 threads. It is the only new setting; the thread count is not configurable. Switched systemd units reference the launcher path forever, so never move or rename it. The trader-facing guide is [`docs/gthread/README.md`](docs/gthread/README.md).
+- **Single worker (`-w 1`) is mandatory under both.** Flask-SocketIO state is in-process and cannot be shared across workers.
+- **Code must be correct under eventlet, gthread and the dev server.** A race fix (a lock, a compare-and-set claim, a single flight) may apply in every mode, but the quiet path must stay unchanged. Anything a trader could notice (refusing or timing out a request, capping streams, bounding a broker queue wait) is gated on `utils.runtime.gthread_active()`.
+- **Use the shared helpers instead of writing new ones:** `utils/runtime.py` answers which worker is running (never test `"eventlet" in sys.modules`); `utils/real_threading.py`; `utils/thread_safe_cache.py` (`LockedTTLCache`, never a bare `cachetools.TTLCache`, and a test fails on new ones); `utils/lazy.py`; `utils/keyed_locks.py`; `utils/stream_registry.py` (every long-lived response is admitted and released through it); `utils/shutdown.py`; `utils/db_sessions.py`; `utils/broker_backpressure.py`; `utils/smart_order_guard.py`; `extensions.emit_from_any_thread`.
+- **No `asyncio` in request code while eventlet is the default.** Eventlet monkey-patches the stdlib and is incompatible with `asyncio.run()`, `async`/`await`, and `asyncio.get_event_loop()`. Async work runs on a real OS thread with its own loop (`services/websocket_client.py` and `telegram_bot_service.py:_render_plotly_png` are the patterns). `async def` views wait until eventlet is removed.
+- **`threading.local()` maps to green threads under eventlet and to real threads under gthread.** `scoped_session` works in both, but a gthread pool thread outlives its request, so the session teardown layers are what stop state leaking from one request into the next.
+- **gunicorn 26 removes the eventlet worker** (its own deprecation notice in 25.3.0 says so), which is why the pin `gunicorn>=25.0,<26` stays while eventlet is the default.
+
+### Development server differs
+
+`uv run app.py` uses standard threading: neither eventlet nor gunicorn, and it
+ignores `OPENALGO_WORKER_CLASS`. Code must work in all three. `asyncio` works
+fine on the dev server and **breaks under eventlet**. That is the single most
+common way a change passes locally and fails on deploy. SQLite locking is also
+stricter on Windows.
+
+### The gthread suite passes before every commit and pull request
+
+The `gthread-migration` CI job runs every `test/test_gthread_*.py` file under a
+real gunicorn on Linux. Most of those files skip on Windows, so a green
+`uv run pytest` on a Windows checkout says nothing about them. Before committing
+or raising a pull request, run the job's own command on Linux or in WSL (in a
+copy on the Linux filesystem, not under `/mnt/c`):
+
+```bash
+uv sync
+uv pip install "gunicorn>=25.0,<26" "eventlet==0.41.2"
+.venv/bin/python -m pytest test/test_gthread_*.py -o addopts="" --timeout=120 -rs
+```
+
+- **Main stays green.** Check `gh run list --workflow CI --branch main` before
+  starting. A red `gthread-migration` on main is fixed first, in its own pull
+  request, before new work lands on top of it.
+- **A flaky test is fixed, never re-run into green.** Find the race and write a
+  test that reproduces it. The one that broke main after #2217: the control case
+  in `test_gthread_deploy_shutdown.py` lets the arbiter SIGKILL the worker, and
+  the kill landed between the hook creating its marker file and writing to it.
+  The empty file made `split()[0]` raise `IndexError`.
+- **Read a file a killed process writes as possibly cut off.** A marker, pid or
+  log file can exist and still be empty or end mid-line. Count only complete
+  lines (`_first_mark` in that file) and treat an empty file as "not reached".
+- **A thread-leak check names the threads it owns.** The suite shares one
+  interpreter, and importing `blueprints.python_strategy` starts APScheduler,
+  whose default executor is an unnamed pool (`ThreadPoolExecutor-0_0`) that
+  starts a thread whenever a scheduled job fires. Counting every new
+  `ThreadPoolExecutor-` thread made `test_gthread_brokers_a_quote_paths.py`
+  fail at random. Record the pools the code under test builds and check their
+  own threads, or match a `thread_name_prefix` only that code uses.
+- **Compare failures by name, and list them.** The job's `-rs` reports skips
+  only, so no `FAILED` line is printed and a grep for them compares two empty
+  lists, which once let "no new failures" stand for three runs. Add `-rf`
+  (`-rfs`) when you need the names, or read the `____ test_name ____` headers.
+
+### Tests for a race land the competing writer at the write
+
+The audits of the broker-keys work (PR 2337) found four races a test suite of
+150 had missed, because every test changed the state *before* the code's last
+check, where the check rightly refused. A race lives between the last check and
+the write, so stage it there:
+
+- **Patch the function that writes** (`utils.auth_utils.upsert_auth`, a
+  plugin's HTTP client) to run the competing action first and then the
+  original. A test that interleaves anywhere earlier proves only the check.
+- **A competing request runs in a context of its own:**
+  `contextvars.Context().run(lambda: client.get(...))`. The Flask test client
+  runs a request made inside a request on the outer one's app context, so the
+  two share `g` and every `ContextVar`; production requests never do, and the
+  inner request's teardown then undoes the outer one's state.
+- **Assert what reached the transport:** the endpoint and the header, not
+  only that the token and keys agree. A coherent pair sent to the wrong
+  broker's endpoint passed one such test.
+- **Clear module-level caches between tests** (`auth_db.auth_cache` and the
+  like): a token cached by one test answers the next one's read, and the race
+  under test never happens.
+- **Read repository files with `encoding="utf-8"`.** The Windows CI runner
+  decodes in cp1252, and the installers hold UTF-8. Mode-bit checks skip on
+  Windows, which only simulates them.
+
+## Invariants — do not break these
+
+### ZeroMQ bus: SUB binds, PUBs connect
+
+The ZMQ market-data bus (`ZMQ_PORT`, default 5555) is **fan-in**: the proxy's SUB
+(`websocket_proxy/server.py`) is the **single binder**, and **every publisher
+CONNECTs to it** — the broker market-data adapters
+(`base_adapter._connect_to_zmq_bus`, `connection_manager.SharedZmqPublisher.connect`)
+and the cache-invalidation publisher (`database/cache_invalidation.py`).
+
+- **Never make a publisher `bind()`.** ZMQ allows many PUBs to connect to one bound SUB, so publishers across processes share one fixed port with no contention.
+- **`ZMQ_PORT` is fixed by config and never drifts.** No port scan, no `5555 -> 5556` fallback, no runtime mutation of `os.environ["ZMQ_PORT"]`. `install-multi.sh` gives each instance its own `ZMQ_PORT` (`5555 + i-1`) and each stays put.
+- **Why:** under gunicorn, with either worker, the proxy runs *out of process* (a subprocess started by the worker, chosen by `resolve_proxy_mode()` in `websocket_proxy/app_integration.py`, or a separate `python -m websocket_proxy.server` on Docker `start.sh`) while the cache-invalidation publisher runs inside gunicorn. If a publisher binds, the two processes race for the port; the loser silently slides to the next port while the SUB stays put, so **`subscribe` succeeds but no ticks are delivered**. Works on the single-process dev server, broken only under eventlet — historically very hard to spot. Broker-agnostic.
+
+### Multi-session login must not tear down the shared broker feed
+
+OpenAlgo is single-user, but the same user may be logged in from **multiple
+devices at once** (`active_sessions`, cap `MAX_SESSIONS_PER_USER = 5`). All of
+them share **one** server-side broker feed — a single pool keyed
+`{broker}_{user_id}` in `websocket_proxy/broker_factory.py:_POOLED_ADAPTERS`,
+fanned out by the proxy. A second device must stream without interrupting the first.
+
+The hazard: a 2nd-device login resumes the existing broker session
+(`blueprints/auth._try_resume_broker_session`) and re-persists the **same** token
+through `database.auth_db.upsert_auth`. `upsert_auth` is also what tears the feed
+down — it publishes a ZMQ `CACHE_INVALIDATE_ALL` (the out-of-process proxy's
+`_handle_cache_invalidation` disconnects the adapter and pool) and calls
+`cleanup_pools_for_user`. That teardown is **only correct when the token actually
+changed** (real login, ~3 AM rollover, logout/revoke).
+
+- **Gate the teardown on a real token change.** `upsert_auth` compares the new token / feed-token / broker / revoke flag against the stored row using **decrypted plaintext** — Fernet ciphertext is non-deterministic, so never compare encrypted blobs. If nothing material changed, clear the cheap in-process caches and return early, leaving the live feed up. Only a genuine change (or `revoke=True`) runs the ZMQ-publish + `cleanup_pools_for_user` path.
+- **Why:** without the gate, a same-day 2nd-device login kills the 1st device's stream until it refreshes (Shoonya), and on single-active-session Finvasia/Noren brokers the disconnect churn drops the broker token entirely (Flattrade "broker session expired"). See issue #1591. The teardown itself is the #1394/#765/#851 fix — keep it, just keep it gated. Broker-agnostic.
+
+### Broker keys: .env first, one broker at a time, read when called
+
+A trader saves keys for several brokers (`database/broker_keys_db.py`) and
+logs in to one at a time. **The screens are OpenAlgo Desktop's, and stay so**:
+Select Broker (`/broker`, a card per broker with search, Login with, Configure,
+Edit keys, Open Dashboard and the switch confirm), Broker Configuration
+(`/broker/config`, the keys of the broker chosen there, Forget this broker) and
+the summary on Profile's Broker tab. Port a desktop change to these pages
+rather than inventing a web variant; the deliberate differences are the
+server-started login, the fixed error sentences and Open Dashboard joining a
+session from another device (`/auth/broker/resume`). The pages keep no broker
+list: `GET /api/broker/list` serves every VALID_BROKERS broker with the fields,
+hints and sign-in sentence of `utils/broker_setup_guide.py` (desktop's setup
+guide, adjusted where the web signs in differently). They open before any
+broker login (`check_signed_in`), because a new install adds its first broker
+there. `utils/broker_keys.py` owns which keys a broker uses.
+
+- **Stored like the broker tokens.** The auth_db Fernet, so a new encrypted
+  column goes into both rotation lists (`env_check._migrate_fernet_db` and
+  `upgrade/rotate_pepper.py`) or a rotation strands it. Each value is bound to
+  its broker and field inside the authenticated plaintext, so a ciphertext
+  moved to another row or column reads as not saved. A read says whether a
+  secret is set and never a character or the length of it.
+
+- **`.env` comes first.** The broker `.env` names in `REDIRECT_URL` with a
+  `BROKER_API_KEY` always uses the `.env` keys, even if keys are saved for it;
+  saved keys serve every other broker, and all of them when `.env` sets none.
+  About 4,75,000 installs log in from `.env`, and their broker resolves to the
+  values already in the environment, so nothing is written for them. Keep it
+  that way; `.env` is being phased out by migration, not by breaking it.
+- **The keys reach the plugins through the environment, staged per request.**
+  About 140 broker files call `os.getenv("BROKER_API_KEY")`. The process holds
+  the logged-in broker's keys, and every order, funds call and feed reads
+  them. A login's callback and a resume do not write the process: they stage
+  their broker's keys for their own request (`stage_broker_keys`, a
+  `ContextVar` read through an overlay on `os.environ`'s class, so it follows
+  the greenlet under eventlet and the thread under gthread), and the keys
+  become the process's only when the login commits (`publish_broker_keys`, in
+  `handle_auth_success`, after the token is stored). Writing the process at
+  the callback sent the logged-in broker's next funds request out with the
+  other broker's key and its own token. `begin_broker_login` and
+  `end_broker_login` (`utils/auth_utils.py`) take and drop the slot and the
+  staging, and the app teardown drops them again, because a pooled thread or
+  a keep-alive greenlet serves the next request with the same context.
+  Startup and the websocket proxy process publish the logged-in broker's keys
+  (`use_broker_keys`). A broker plugin must read its keys when called, never
+  into a module constant, and must not read them on a thread it starts inside
+  a login: a new thread does not inherit the staged keys. Starting a login
+  writes nothing (`keys_for_login`).
+- **A login commits only if it still may, and the check is part of the write.**
+  `_commit_refusal` in `utils/auth_utils.py` runs before anything is stored,
+  and again as the `fence` of `upsert_auth`, under
+  `database.auth_db.auth_commit_guard()` immediately before the token write.
+  Every sign-out (`_record_revocation`) and every key change on Broker
+  Configuration takes the same guard, so a sign-out or a key change either
+  lands before the check, which refuses the write, or after the commit. A
+  check made before the write and not repeated inside it is not a fence: the
+  re-review proved four writers landing in that gap. The checks: the request
+  still holds the slot, the broker's keys are the ones it started with (a
+  digest, kept in memory), no sign-out since the login started and this
+  browser's own sign-in not ended, the switch rules allow it, and for a resume
+  the process's keys unchanged. Inside the fence the new keys are published
+  first, so a request that reads the new token reads the new keys; a write
+  that then fails puts them back (`restore_published`). In the same commit the
+  old broker's other devices are signed out (`end_broker_session_for_switch`,
+  which revokes no token) and this browser's sign-in is stamped, so a sign-out
+  after the commit ends it, a cookie-less XTS session included. The feed
+  teardown (`defer`) and the notices run after the guard is released: nothing
+  waits on a broker or the network under it. A resume holds the slot alone
+  from its first read to its commit, validates with staged keys, and re-reads
+  the stored session before storing it.
+- **A token read pins its broker's keys, and reads again if they moved.**
+  The token readers in `database/auth_db.py` (`get_auth_token`,
+  `get_auth_token_broker`, `get_session_identity`) go through
+  `_read_coherently`: note the keys' publication generation and the session
+  cache's generation, read the token, pin the keys of its broker
+  (`pin_keys_for`: the published keys when they are that broker's, else
+  `resolve(broker)`), and if either generation moved meanwhile (a switch, a
+  key change with its sign-out, a forget) drop the pin and read again. A
+  token whose keys cannot be pinned is not returned, so the request is
+  refused before it reaches the broker instead of sending one broker's token
+  with another's keys. A login's own staged keys are never replaced. A pin
+  lasts to the end of the request (the auth blueprint's teardown drops it,
+  app-wide); outside a request it lasts until that context's next token
+  read, never a timer. In a request from a browser whose session is logged in
+  to a broker, the token must also be that broker's, and that account's when
+  both are known (`_browser_session_expects`): about ten blueprints (orders,
+  the dashboard, the option tools) pick their broker module from
+  `session["broker"]`, so a token of the broker another device switched to
+  would go to the wrong broker's endpoint. Such a request is refused; the
+  switch signed that browser out anyway. Code that needs the broker of the
+  token it reads uses `get_auth_token_broker` and dispatches through the
+  broker it is handed. `use_broker_keys` drops its caller's pin. Tests reset
+  staging and the published record per test (`test/conftest.py`).
+- **One broker at a time.** While the stored broker token is unrevoked and was
+  signed in to during the current trading day (a device session from today, or
+  a broker login recorded since the rollover, which a password change does not
+  clear), it is the logged-in broker. A login to another broker may start,
+  from any browser including one on the logged-in broker (the switch the
+  trader confirmed on Select Broker), and the old session ends only when that
+  login commits, on every device, as in the desktop; a login that fails or is
+  abandoned leaves it connected with its keys untouched. The switch is refused
+  while the broker logged in now, or last if a logout ended its session
+  (`broker_switch.previous_broker`, from the login attempts), still runs Live
+  automation (`switch_refusal`: Live strategy module runs, Live OpenScript
+  runs, and outside analyzer mode Python strategies and scalping protection),
+  checked when the login starts and again when it commits
+  (`refusal_for_login`). A logout does not stop that automation, so it must
+  not open the switch either. New keys for the logged-in broker, or forgetting it, end its
+  session only with `sign_out=true`, which the page sends after the trader
+  confirms. Whether a session outlives the rollover follows the logged-in
+  broker (`logged_in_broker()`, from the stored session), never the
+  environment, which changes as soon as a login reaches its callback.
+- **Saving keys follows the same rule.** Broker Configuration writes the `.env`
+  broker's keys to `.env` (read from the file at each login) and every other
+  broker's to the database, where they apply at once. The page never shows a
+  character of a secret.
+- **The `.env` broker comes from the file, not from `os.environ`.** After a
+  switch the environment holds the saved broker's keys, so `env_file_values()`
+  reads `.env` itself. Tests point `env_file_path` at their own file (the suite
+  default is a file that does not exist).
+
+### A broker login is started by the server and its answer is checked
+
+The login page POSTs the broker to `/auth/broker/login` (CSRF-checked); the
+server builds the sign-in address (`utils/broker_login.login_url`) and records a
+pending login for that browser. The callback completes a login only for an
+answer that matches one: the browser brings its own marker back in its session,
+or, for a broker in `STATE_BROKERS`, the answer carries the state issued for
+it. Those brokers are matched by the state alone: the marker proves only that
+the browser started some login, so it never completes theirs. Every broker
+that can echo a state is in that set (Zerodha through `redirect_params`,
+Upstox and Paytm through `state`, as OpenAlgo Desktop sends them); a broker
+whose sign-in address can carry one belongs there. The two XTS brokers post
+back across sites without the cookie, so their state rides on the return
+address, as OpenAlgo Desktop does. Dhan's redirect carries only a consent
+token, accepted for the consent this browser asked for; a ready access token
+comes only from OpenAlgo's own form, and either is refused for another account
+than the configured client ID, or when Dhan does not report the account. An
+account is only ever taken from the broker's own answer, never from a label
+posted beside a token: RMoney's from its `/user/profile` reply to the session
+token, CompositEdge's from its answer to the token exchange, and either is
+refused when it is not the market data keys' account. That comparison is
+skipped when the market data login fails (the login then completes, as it did
+before): which XTS brokers and versions should refuse instead is an open
+decision, to be made against real accounts. A strategy run bound to
+a known account reads its token and the current account in one read
+(`get_session_identity`) and refuses when the account is unknown: a known
+binding is never reduced to the broker alone. Pending logins live in the
+`broker_login_states` table as SHA-256 digests (so a restart mid-login is
+harmless and a copy of the table completes nothing); each is used once, by a
+delete only one caller can win, lasts ten minutes, and at most 16 are open. A POST from OpenAlgo's own login form must carry its CSRF token and belong to a started login too, and it uses that login up like any answer (`_claim_login`). Every sign-out (`revoke_all_sessions`, `revoke_pre_broker_sessions`) cancels every started login, and the commit compares when the login started with the last sign-out, so a login started before a logout or password reset never signs anyone back in. Before this, any request token that
+arrived while a trader was signed in completed a login, and an XTS post-back
+logged the admin in with no password at all. A broker whose answer arrives
+without the browser's cookie (a POST from its own site) must be in
+`BROKER_SITE_POST_BROKERS` and `STATE_BROKERS` with the state on its return
+address, or its logins are refused; a broker that redirects back needs nothing,
+the cookie carries the match.
+
+Sessions are signed cookies, so ending one is recorded rather than deleted:
+a logout of a broker-logged-in session, a password change, a reset and a
+switch that ends another broker's session call `revoke_all_sessions`, and every
+sign-in from before that instant is cleared on its next request
+(`end_session_if_signed_out`, and `is_session_valid` for Socket.IO). A logout
+from a sign-in that never reached a broker login calls
+`revoke_pre_broker_sessions` (`session_revocations.pre_broker_revoked_at`):
+every sign-in from before it that has no broker login ends, so a copy of that
+cookie stops working, and the devices on the broker session stay. A sign-in
+that never reached a broker login also ends at the daily rollover.
+
+### Risk rules live in services/risk/ and are never reimplemented
+
+One place decides whether a position has hit its stop, taken its target, earned
+a tighter trailing stop, or whether a set of positions has run past its combined
+limits. The scalping terminal, the `/strategy` engine, Flow and a REST endpoint
+all sit on it.
+
+- **`services/risk/` performs no I/O of any kind.** No database, no broker, no
+  market data, no clock, no logging. Every input arrives as an argument and every
+  decision leaves as a return value. That is what makes it testable without a
+  running platform, identical across consumers, safe to call from a green thread
+  and from a real one, and exposable over HTTP without a service layer.
+- **Consumers translate, they do not decide.**
+  `services/strategy_module/risk_adapter.py` is the pattern: it maps a leg onto
+  `PositionRisk`, calls the core, and writes the decision back. Adding a rule
+  means changing the core, not adding a second evaluator beside it.
+- **`test/risk/vectors.json` is the contract** between the Python core and the
+  TypeScript copy in `frontend/src/hooks/useTrailingSL.ts`. Add a case whenever a
+  rule changes, or the two drift.
+- **Why this is an invariant and not a preference:** the module `/strategy` was
+  ported from had its own evaluator, and four defects lived in it undetected -
+  a leg with no recorded side evaluated as a short so its stop fired on a
+  favourable move; an exit derived from configuration that doubled a short
+  instead of covering it; an aggregate summed from a stale per-leg field; and a
+  peak and trough persisted as zero on most stop paths. Each is pinned by a test
+  marked `PORTED DEFECT`.
+
+Full reference: [`docs/prompt/strategy_rms_documentation.md`](docs/prompt/strategy_rms_documentation.md).
+
+### An order path decides once, under the lock, and never on a global switch
+
+Every place that can send an order for a position somebody already holds is a
+place where two decisions can become two orders. Three rules, each learned from
+a defect that reversed a real position:
+
+- **Claim under the same lock that checks.** `state.claim_leg_exit` does the
+  duplicate check and writes the marker in one hold. The marker is `exit_kind`,
+  written *before* the dispatch, never `exit_order_id`, which is not written
+  until the order comes back: testing the latter let two rules firing on one leg
+  send a covering order each, and left the guard unarmed whenever the audit row
+  failed to write. A refused dispatch **releases** the claim, or that leg is
+  skipped by its stop loss, its target and every square-off for the rest of the
+  session while the broker still holds it.
+- **Match a fill to the order it belongs to, not to the leg.** A signal flip
+  squares one side and opens the other immediately, so one leg id names two
+  positions until the closing order fills. Applying an exit fill by leg alone
+  closed the position that had just been opened, and it then vanished from
+  `open_legs` entirely: no stop, no square-off, still held.
+- **A caller that has already decided the pipe says so.** `place_order_with_auth`
+  reads the platform-wide analyzer toggle before anything else, so an operator
+  switching to analyze mode while a live run held real positions sent every exit
+  to the sandbox, which reports success. `force_live=True` opts out. Anything
+  executing a position it opened must pass it.
+- **A position's orders go to the broker that holds it.** A trader can log out
+  of one broker and in to another, so resolving the broker when an exit is sent
+  sent a short's cover to the new broker, opening a position there and leaving
+  the first one unmanaged. A Live strategy run records its broker, and its
+  account when the login names one (`SmStrategyRun.broker`, `broker_account`);
+  every order, cancel and status read it makes carries that binding
+  (`services/strategy_module/broker_binding.py`), and `order_dispatch` refuses
+  a call whose session is on another broker or account before sending
+  anything. The run stays open and managed until the trader logs back in to
+  its broker, and a login to another broker is refused while it runs
+  (`broker_switch.refusal_for_login`).
+
+The same shape applies wherever a stop is finalised: a stop whose exit orders
+were refused must leave the run **open and managed**, because the position is
+still there. Reporting success and clearing the state is how a position ends up
+with nothing watching it.
+
+### SQLite uses NullPool, never StaticPool
+
+All SQLite engines are created via `database.engine_factory.create_db_engine()`,
+which applies `NullPool` — a fresh connection per operation, closed immediately.
+**Never use `StaticPool`**: a single shared connection has its cursor state
+corrupted by concurrent requests, producing `"bad parameter or other API misuse"`
+and `"cannot commit - SQL statements in progress"`. All platforms.
+
+FD leak prevention rests on five session-cleanup layers: `app.py`
+`teardown_appcontext`; `traffic_logger.py` explicit `logs_session.remove()` in a
+`finally`; `security_middleware.py` for the banned-IP WSGI path; and teardown
+handlers in `blueprints/traffic.py` and `blueprints/security.py`.
+
+### Nothing may block or be blocked across the eventlet boundary
+
+These rules govern the default worker, `gunicorn --worker-class eventlet -w 1`,
+and so every install that has not opted in to gthread. Eventlet monkey-patches
+the stdlib **before the app is imported**, so `threading.Lock`, `RLock`,
+`Event`, `Condition` and `queue.Queue` are all **green**: they belong to the hub
+and can only pass a waiter from one greenlet to another. A plain
+`threading.Thread` is green too, and so is anything built on it, including
+`ThreadPoolExecutor` and APScheduler's workers.
+
+**A handful of threads are genuinely real**, and they are where this goes wrong:
+the asyncio loop in `services/websocket_client.py` (asyncio cannot run on a
+green thread), the Telegram bot thread and its Kaleido renderer, and the broker
+snapshot feed threads in `broker/hdfcsecurities|hdfcsky/api/data.py`. Every
+crossing that has ever bitten this project involved one of those.
+
+Two directions, both fatal, both invisible on the dev server:
+
+**A. A real thread touches a green primitive.** The hub tries to resume a waiter
+belonging to another OS thread and raises `greenlet.error: Cannot switch to a
+different thread` inside `fire_timers`, leaving that thread blocked **forever**.
+Measured: the real thread never acquires the lock, not once, not ever.
+
+**B. A greenlet blocks on a real primitive, or on any wait served by C code.**
+The entire worker stops until it returns, because there is only one.
+
+There is also a quieter third failure, which is the one that hides longest:
+**the waiter is simply never woken**, so it sits out its whole timeout and then
+succeeds or fails on data that was ready all along. A green `Event` set from a
+real thread does this. So does `concurrent.futures.Future.result()`, which is
+what `asyncio.run_coroutine_threadsafe` hands back: measured, an ack that
+arrived in 0.3s still cost the caller its full 10s timeout.
+
+**The rules:**
+
+- **Do not run subscriber callbacks on a real thread.** `websocket_client` marshals them onto a real `Queue` that a green thread drains, because those callbacks reach SocketIO, the event bus, the sandbox engine and the database, all of which are eventlet-managed. Any new callback registered there inherits that safety; do not add one that is called inline.
+- **Use `utils/real_threading` for anything both worlds touch.** It exports `Lock`, `RLock`, `Event`, `Condition`, `Queue`, `Empty`, `Thread`, plus `wait_for(event, timeout)` and `join(thread, timeout)`, which poll and yield instead of blocking. It resolves to the unpatched originals under eventlet and the stdlib otherwise.
+- **Keep a real lock's critical section to in-memory bookkeeping.** A greenlet waiting on one blocks the hub, so copy what you need out of the dict and do the database and network work after the release.
+- **Never wait on a C-served timeout.** `PRAGMA busy_timeout` was the worst case: SQLite waits inside C, so the greenlet holding the write lock could never be scheduled to commit, and the wait could only ever end in "database is locked". A holder needing 0.5s produced a 16s failure. `database/__init__.py` now waits 100ms in SQLite and retries from Python.
+- **Never hand a result across with `run_coroutine_threadsafe`.** Use `WebSocketClient._run_on_loop`: a real `Event` the loop thread sets, polled by the caller. One boolean is the only thing that crosses.
+- **Reach green code from a real thread through `utils.real_threading.run_on_hub` or `submit_to_hub`**, and emit over Socket.IO with `extensions.emit_from_any_thread`. Both run inline when eventlet is not patched, so the same call is correct under gthread and on the dev server.
+- **Logging counts.** `logging.Handler` builds its lock in `__init__`, which happens after monkey-patching, so it is green, and every real thread in this project logs. `utils/logging.py` patches `Handler.createLock` on the class so ours and third-party handlers all get a real lock. The give-away that this has broken is `AttributeError: 'StreamHandler' object has no attribute 'lock'` appearing on unrelated requests, hours before the hard crash.
+
+**What is exempt.** Under gunicorn `app.py` starts the websocket proxy as a
+**child process**, so everything in `websocket_proxy/` and `broker/*/streaming/`
+runs unpatched and its `threading.Lock` is already real. Do not "fix" those.
+
+**Under gthread the hazard changes shape.** Every primitive is real, so A and B
+above cannot happen. What eventlet hid instead is preemption: a check-then-act
+or read-modify-write on shared state with no I/O in between was accidentally
+atomic under eventlet, and under real threads it interleaves. Claim under the
+lock that checks, publish caches as whole generations, and prove a race with a
+barrier-synchronised test that fails on the old code (`test/test_gthread_*.py`).
+
+**It cannot be caught locally.** `uv run app.py` never patches anything, so every
+one of these behaves correctly on the dev server whatever the primitive is made
+of. This is the same trap as `asyncio` above, and it is why
+`test/test_eventlet_cross_thread_locks.py` and
+`test/test_sqlite_lock_cooperative.py` run eventlet **in a subprocess**
+(`monkey_patch()` is global and cannot be undone) and assert on **elapsed time
+and hub liveness**, not just return values, which were always right. Each file's
+first test asserts the defect itself so it cannot pass vacuously. Add to them
+rather than starting a third.
+
+Reported as issues #1402, #1473 and #1569; the symptom users describe is the
+first order working and the next one hanging the app, with the order itself
+having taken milliseconds.
+
+## Architecture
+
+Six isolated databases: `openalgo.db` (main), `logs.db`, `latency.db`,
+`health.db`, `sandbox.db` (fully isolated from live trading),
+`historify.duckdb` (historical market data). Each has its own init function in
+`database/`.
+
+**Market data pipeline**, three layers:
+
+1. **Broker adapters** (`broker/*/streaming/`) connect to the broker's proprietary feed and normalize ticks. Per-broker capacity is `MAX_SYMBOLS_PER_WEBSOCKET` (1000) x `MAX_WEBSOCKET_CONNECTIONS` (3) = 3000 symbols.
+2. **ZeroMQ bus** (port 5555) decouples the feed from delivery — the adapter never blocks on a slow client.
+3. **WebSocket proxy** (`websocket_proxy/server.py`, port 8765) manages client connections, subscriptions, and per-symbol throttling.
+
+**Request pipeline.** WSGI middleware wraps in *reverse* registration order —
+last registered is outermost. `app.py` calls `init_security_middleware(app)`
+before `init_traffic_logging(app)`, so traffic logging wraps outside security:
+
+```
+Request -> TrafficLogger -> SecurityMiddleware (IP ban, 403) -> CSP
+        -> Flask (routing, CSRF, session) -> API key auth (/api/v1/)
+        -> Service layer -> Broker API
+```
+
+Session cleanup runs in `teardown_appcontext` after the response is sent.
+
+**State changes broadcast over SocketIO**, not polling: `order_update`,
+`analyzer_update`, `cache_loaded`. The React frontend subscribes to these for
+live dashboards.
+
+Ports: app 5000, WebSocket proxy 8765, ZeroMQ 5555.
+
+### Custom chart indicators are loaded at runtime, never bundled
+
+User indicators live in `strategies/indicators/*.js` (gitignored, mirroring
+`strategies/scripts/` for Python strategies, and inside the same Docker volume).
+`blueprints/custom_indicators.py` serves them; the chart fetches the index and
+`import()`s each one after the built-in tier
+(`frontend/src/lib/trading/customIndicators.ts`).
+
+- **Never bundle them.** `frontend/dist/` is built by CI from what is committed, so a bundled indicator would need committing first and the next `git pull` would erase it. Runtime loading keeps them outside the build: no Node.js, no rebuild, untouched by upgrades.
+- **They register after the built-ins**, so a custom id that collides with one of the 112 built-ins overrides it.
+- **They are not sandboxed.** An indicator runs on the app origin with the logged-in session and can reach `/api/v1/`. That matches the trust model of the Python strategy host, which already runs arbitrary user code, but it means an indicator from an untrusted source is as dangerous as any script.
+- Use the **`chart-indicator`** skill to write one. It validates against the real library and refuses to install a file that errors.
+
+### /trading is a full-screen terminal
+
+Traders compare /trading with the best charting terminals they use, so its
+finish is held to that bar: borrow their craft (density, crispness, one icon
+weight, quiet states), never their layout, grouping or wording, and **no brand or
+product names anywhere in /trading**: code, comments, class names, tooltips and
+copy describe things generically.
+
+- **No app navbar on /trading.** The terminal takes the whole viewport. Its one
+  toolbar band carries a Dashboard link at the left and the account controls at
+  the right: broker badge, Live or Analyze badge, mode switch, theme toggle and
+  profile menu. Both the navbar and the terminal render the same
+  `components/layout/AccountControls.tsx`; never fork that logic into the
+  terminal, or mode switching and its warning toasts drift apart.
+- **Those four (Dashboard, mode switch, theme toggle, profile menu) are visible
+  at every width**, outside the toolbar's scrolling part. Everything else gives
+  way first: labels collapse to icons with tooltips on narrower screens, and the
+  row must fit at 1366 px. `Trading.test.tsx` pins the four by accessible name.
+- **Every glyph comes from the chart engine**, through the generated
+  `chromeIcons.ts` and `drawingToolMetadata.ts` and the `ChromeIcon` component in
+  `lib/trading/glyphs.tsx`, at the engine's line weight. The toolbar never imports
+  `openalgo-charts/draw` for an icon: that would load the drawing renderer with
+  the toolbar. Where the engine has no glyph, the app icon kept in its place is
+  drawn at the same weight.
+- **The drawing rail follows the engine's reference host rail**
+  (`examples/yfinance/src/rail.js` in openalgo-charts): glyph sizes, group carets
+  and flyouts, held-tool and magnet dots, the pinned controls block, and the fold
+  with its tab at the chart's lower left (`oa-trading-rail-folded` in local
+  storage). Change both together, or the two drift.
+- **Three looks, one source.** Live light, live dark and analyzer (the violet
+  accent) all come from the app's theme tokens through
+  `lib/trading/chartTheme.ts` and the tokens in `index.css`; no component carries
+  a palette of its own. A visual change is checked in all three, and the theme
+  toggle stays disabled in analyzer, as it is in the navbar.
+- **The chart the toolbar drives** is chosen from the layout menu ("Selected
+  chart"), and the focused pane's frame shows the accent. Keep the toolbar's
+  `data-toolbar-pane` attribute: the browser harness reads it.
+
+### Bumping openalgo-charts also updates the chart-indicator skill
+
+The skill documents a specific build. `reference/api.md` carries the full export
+index and `pitfalls.md` carries the built-in ids a custom module can shadow, so
+a version bump that touches neither leaves the skill describing a library that
+is no longer installed. **Upgrading the pin and updating the skill are one
+change, not two.**
+
+```sh
+cd frontend && npm install openalgo-charts@<version> --save-exact
+node .claude/skills/chart-indicator/generate-api-index.mjs   # regenerates the index
+node .claude/skills/chart-indicator/coverage.mjs             # must print COVERAGE COMPLETE
+node scripts/generate-drawing-tools.mjs                       # rail glyphs and names, from the installed draw tier
+node scripts/generate-chrome-icons.mjs                        # toolbar and rail chrome glyphs
+```
+
+The two generators write `src/lib/trading/drawingToolMetadata.ts` and
+`src/lib/trading/chromeIcons.ts`; CI runs both with `--check`, so a bump that
+changes a glyph and skips them fails the build. Never edit either file by hand,
+and never run a formatter over them: `frontend/biome.json` leaves them out, because
+the check compares the generator's exact output and a reformatted file fails it.
+
+A bump that changes what /trading loads also runs the browser harness that lives
+in the openalgo-charts repo: `node scripts/check-openalgo-compat.mjs --frontend
+<worktree>/frontend --browser <chromium|firefox|webkit> --navigation true` (14
+checks). It needs a linked `git worktree` of this repo with `node_modules`
+copied, not linked. On Windows copy it with `robocopy <src> <dst> /E /XJ`: without
+`/XJ` robocopy follows the junctions inside `node_modules` and copies the same
+trees over and over (9 GB instead of 730 MB), which once filled the system drive.
+
+Then read the upstream changelog for the range you skipped and update the prose
+by hand: **Recent changes worth knowing** in `SKILL.md`, the *What arrived
+after* table in `api.md`, and the id-collision list in `pitfalls.md` if the
+registry grew. The generator only owns the export index; nothing generates the
+teaching.
+
+The `chart-indicator-skill` CI job runs both checks, so a stale skill fails the
+build. It exists because both scripts were already in the repo and nothing ran
+them: the index sat on 1.8.1 advertising "337 names" while `/trading` shipped
+2.1.5 with 363, and the eleven studies added in 1.8.3 were absent from the
+reference an indicator author reads.
+
+### Bumping openalgo-script also updates the openscript skill
+
+The same rule as the chart above, for the same reason: `reference/library.md`
+carries all 350 names with their warmups and marks the 95 that are **planned and
+not implemented**, so a bump that leaves it behind has an author reading a page
+about a compiler that is no longer installed. The marking is the part that
+matters most, because reaching for a planned name is refused at the call with
+`OS2020` and nothing warns first.
+
+```sh
+cd frontend && npm install openalgo-script@<version> --save-exact
+node .claude/skills/openscript/generate-reference.mjs    # rewrites the name table
+node .claude/skills/openscript/coverage.mjs              # must print COVERAGE COMPLETE
+node .claude/skills/openscript/check-pitfalls.mjs        # must print PITFALLS VERIFIED
+```
+
+The third is specific to this skill. `reference/pitfalls.md` teaches by naming
+diagnostic codes, and an author trusts a code; the script compiles both halves
+of every entry, so the wrong spelling must still produce the code named and the
+fix offered must still come out clean. It also holds the page and the script to
+the same set of codes, so neither drifts alone.
+
+The `openscript-skill` CI job runs all three. The generator owns the name table
+and nothing generates the teaching: after a bump, read the upstream changelog
+and update the prose in `SKILL.md`, `pitfalls.md` and `strategies.md` by hand,
+particularly wherever they say a name is planned. A version that implements one
+turns three pages stale at once.
+
+Two built-in pages exercise the streaming stack end to end: **`/websocket/test`**
+(market data; `/20`, `/30`, `/50` variants request those depth levels) and
+**`/websocket/order`** (account-level order/trade update stream). Use them to
+verify a broker feed rather than writing a throwaway client.
+
+**React routes do not all have Flask routes**, and that is fine — the `app.py`
+404 handler falls through to `serve_react_app()`, so React Router handles them.
+The reason to still register a route in `blueprints/react_app.py` is that
+unregistered paths hit `Error404Tracker` for *unauthenticated* visitors and
+count toward an IP ban.
+
+### Architecture changes also update the docs diagrams
+
+The architecture and flow diagrams on https://docs.openalgo.in are illustrated
+images in the separate `openalgo-docs` repository, each rendered from an HTML
+source (`diagrams/<slug>.html` -> `.gitbook/assets/diagram-<slug>.png`, tooling in
+`diagrams/_tools/`, rules in that repo's `CLAUDE.md`). **A change that adds a
+feature or changes a component, flow, process, port, database, thread model or
+integration is not done until the affected diagrams are updated in the same
+piece of work.** Find them with `grep -rl "diagram-" --include=*.md` in
+`openalgo-docs` and by reading the sources for the components you touched; edit
+the source, re-render, check the PNG, and fix any prose the change made wrong.
+Most readers are traders who trust the picture, so a stale diagram misleads more
+than a missing one. The Market Data diagram had silently lost the ZeroMQ bus this
+way before the September 2026 refresh.
+
+### Adding a page: the three registrations
+
+A new page is not done until all three are present. Miss the second and the
+page works until someone opens a bookmark while logged out; miss the third and
+nobody finds it.
+
+1. **The route, in `frontend/src/App.tsx`** — a `lazy()` import plus a `<Route>`
+   inside the right layout wrapper. `Layout` is the standard sidebar shell;
+   `FullWidthLayout` is for canvas-style pages like the Flow editor.
+
+2. **The same path, in `blueprints/react_app.py`** — a view that only calls
+   `serve_react_app()`:
+
+   ```python
+   @react_bp.route("/agent", strict_slashes=False)
+   def react_agent():
+       return serve_react_app()
+   ```
+
+   It serves nothing different. It exists so a direct hit or a refresh on that
+   path is a *known* route rather than a 404 counted against the visitor's IP.
+   Register every path the page owns, including its parameterised children.
+
+3. **The nav entry, in `frontend/src/config/navigation.ts`** — usually
+   `profileMenuItems`. Entries are shown unfiltered; the filtering in
+   `useProfileMenuItems.ts` is for **broker capabilities** (Leverage, Holdings),
+   not for whether a feature has been configured yet. A feature that needs
+   setup shows its own setup screen on the page, as Telegram and WhatsApp do.
+
+Add the nav entry in the same change as the route. A menu item pointing at a
+path that does not resolve is worse than no menu item.
+
+## Symbol Format
+
+Standardized across all brokers; broker-specific symbols are mapped via
+`broker/*/mapping/` and stored in `SymToken`.
+
+- **Equity:** base symbol — `INFY`, `SBIN`, `TATAMOTORS`
+- **Futures:** `[Base][Expiry]FUT` — `BANKNIFTY24APR24FUT`, `CRUDEOILM20MAY24FUT`
+- **Options:** `[Base][Expiry][Strike][CE/PE]` — `NIFTY28MAR2420800CE`, `VEDL25APR24292.5CE`
+
+**Exchanges:** `NSE`, `BSE` (equity), `NFO`, `BFO` (F&O), `CDS`, `BCD`
+(currency), `MCX`, `NCDEX` (commodity), `NCO` (NSE commodities, Zerodha only),
+`NSE_INDEX`, `BSE_INDEX` (indices), `GLOBAL_INDEX` (Zerodha only, quote-only —
+US30/JAPAN225/HANGSENG plus `GIFTNIFTY` from NSE IFSC).
+
+**Order constants:** product `CNC` / `NRML` / `MIS`; price type `MARKET` /
+`LIMIT` / `SL` / `SL-M`; action `BUY` / `SELL`.
+
+**`SymToken` schema:** `symbol` (OpenAlgo), `brsymbol` (broker), `exchange`,
+`brexchange`, `token`, `expiry`, `strike`, `lotsize`, `instrumenttype`, `tick_size`.
+
+API keys reach `/api/v1/` in the JSON body (preferred) or the `X-API-KEY` header;
+they are generated at `/apikey` and hashed with pepper before storage.
+
+## Conventions
+
+**Always use uv.** Never global Python, never a hand-managed venv, never activate
+anything: `uv run app.py`, `uv run python script.py`, `uv run pytest test/ -v`,
+`uv add package`, `uv sync`. Python 3.12+.
+
+**Logging.** `logger = get_logger(__name__)` from `utils/logging.py` in every
+module. Error logging is always `logger.exception()` — it captures the traceback
+and routes it to the JSON handler. Never `import traceback` /
+`traceback.print_exc()` / `traceback.format_exc()`; those bypass centralized
+logging. Never `print()`.
+
+**When debugging, read `log/errors.jsonl` first.** One JSON object per line:
+timestamp, logger, module, `file:line`, message, full traceback, and Flask
+request context (method, path, IP) when available. Truncated to the last 1000
+entries at startup.
+
+**FD hygiene.** Every DB engine/session, file, socket, WebSocket, ZMQ socket,
+subprocess pipe, thread, and executor is a file descriptor, and production is a
+single Gunicorn worker that never restarts — a leak accumulates until "too many
+open files". Preventing one at creation is far cheaper than hunting it later:
+
+- SQLite engines via `database.engine_factory.create_db_engine()`
+- Every `scoped_session` registered in the `app.py` teardown, or used as `with db_session() as session:`
+- HTTP via the shared `utils/httpx_client.get_httpx_client()`, always with an explicit timeout
+- WebSocket adapters close before reconnect
+- Subprocesses write to a log file (not `PIPE`) and are `.wait()`-reaped
+- Threads and executors are shared module-level singletons, never per-call
+
+After a change touching any of these, run the **`fd-audit`** skill before calling
+it done.
+
+**Every message a user reads is written for a trader, not a developer.** The
+people running this are traders self-hosting a platform. They cannot act on a
+status code, a protocol name or the internals of a request, and showing them one
+is not neutral: it reads as a fault they caused, and sends them looking through
+their own settings for something that was never wrong.
+
+- **Name the cause and the next action.** "Your OpenAI account has no credits
+  left. Add credits under billing." Not "HTTP 500", not "invalid_offer", not
+  "SDP parse failed". If there is no action, say who is fixing it and that
+  waiting is the whole of it.
+- **Never put a status code, an exception class, a protocol term or an endpoint
+  in front of a user.** `logger.exception()` already keeps the technical detail
+  where it belongs, which is `log/errors.jsonl`.
+- **Do not guess the cause in the message.** A confidently wrong message is
+  worse than a vague one: it sends someone to the wrong place with conviction.
+  Where a symptom has more than one cause, lead with the one the operator can
+  check themselves. A provider that answers an exhausted balance with a bare
+  500 taught this the expensive way.
+- **The audience is the same on every surface.** A spoken error is heard by
+  someone who cannot see a log, so it has to be a sentence, not a code.
+
+**The words this platform uses for its own ideas, and the words it never uses.**
+Two of these have already been fixed once. A word that comes back costs the
+rename again, so they are written down rather than remembered.
+
+- **Sandbox mode** and **analyzer mode**, never "paper trading" or "virtual
+  trading". The database is `sandbox.db`, the blueprint is `blueprints/sandbox.py`,
+  the endpoints are `/api/v1/sandbox/*`, and the strategy module's own column
+  reads `RUN_MODES = ("live", "sandbox")`. Release 2.0.1.0 renamed the display
+  strings to match the schema; the two words above are the result, and a third
+  term invented in a document, a comment or a commit message undoes it. Three
+  words for two ideas is how somebody ships a strategy believing it is safe.
+- **Never "arm", "armed" or "arming" anywhere a trader reads.** Not a label, a
+  button, a toggle, a toast, a tooltip, an empty state or a status badge. It
+  reads as a military or machine term rather than a trading one. Say what a
+  trader would say: an alert is **Active** or **Stopped**, a toggle is **on** or
+  **off**, a destination is **Live** or **Sandbox**. Internal identifiers,
+  storage keys and library state names are not covered, because nobody trading
+  reads those; the moment one reaches a screen it is.
+- **A specification's internal vocabulary is not this platform's vocabulary.**
+  Where OpenAlgo hosts another project, that project's spec may use a word for
+  its own purposes, and it stays in the spec. OpenScript's `stdlib.md` says
+  "paper" for the simulated destination and "arming" for the act of switching a
+  strategy to live; on a screen here those are **Sandbox** and **Live**.
+
+**Database access** goes through the SQLAlchemy ORM, not raw SQL.
+
+**Schema changes need a migration script, not just a startup hook.** Users
+upgrade with `cd upgrade && uv run migrate_all.py`, so every schema change ships
+as a script in `upgrade/` registered in that file's `MIGRATIONS` list. Applying
+the change from `init_db()` alone is *not* enough: seeding functions typically
+only run against an empty table, so an existing installation keeps the old
+schema forever and the change silently never reaches the ~290k live deployments.
+
+- **Idempotent, and safe to re-run.** Check whether the change is already
+  present (`PRAGMA table_info`) and return quietly if so.
+- **Support `--status`** to report what would change without changing it.
+- **Never clobber a value the user may have customised.** Guard the update on
+  the old value, so an admin who has already set their own is left alone.
+- **Backfill from the data, not from a default.** A new column defaulted
+  uniformly is usually wrong for existing rows; derive each row's value from
+  what the row already says.
+- **A revised seed file needs a migration too.** `data/qtyfreeze.csv` and the
+  other seed data load only into an empty table, so a new value reaches new
+  installs and nobody else. Ship a migration that updates the rows, guarded on
+  every value OpenAlgo shipped or the exchange published before, and leave an
+  empty table to the seed: one inserted row stops the seed from running.
+  `upgrade/migrate_qty_freeze_nov_2026.py` is the pattern.
+- **A later revision of the same values replaces the earlier migration.**
+  `migrate_all.py` runs every listed script on every upgrade, in order, so an
+  older revision left in the list rewrites the rows before the newer one runs.
+  NSE's November 2026 freeze limits went back to values the October migration
+  treated as stale and raised. Fold the old script's guard values into the new
+  one, then delete the old script and its entry.
+- **SQLite limits shape the approach.** It cannot alter a `CHECK` constraint or
+  add a `UNIQUE` column in place: rebuild the table (see
+  `migrate_sandbox_trigger_pending.py`) or add a partial unique index instead.
+
+Test it against a *copy of a real database forced back to the old schema*, not
+only a fresh one. A migration that works on an empty database and fails on a
+populated one is the common failure.
+
+**Style.** Python: Ruff (`uv run ruff check . --fix`, `uv run ruff format .`),
+config in `pyproject.toml`; 4 spaces, Google-style docstrings. React/TypeScript:
+Biome (`frontend/biome.json`), functional components with hooks, PascalCase
+component files, TanStack Query for server state.
+
+**Commits.** Conventional Commits: `feat:`, `fix:`, `docs:`, `refactor:`, `chore:`.
+
+**Nothing is published without a changelog entry, and the entry is part of the
+publish rather than a follow-up.** Whatever is going out (a platform release, a
+version bump, a package pushed to a registry) carries its own stanza in
+`docs/CHANGELOG.md` before it leaves, written for somebody deciding whether to
+upgrade rather than for whoever wrote it. The **`version-bump`** skill owns the
+procedure and the exact paths.
+
+A consumer reads the changelog at the one moment it matters to them, and they
+read it once. "Various fixes" answers nothing, and a version with no entry tells
+them to diff two tags, which they will not do: they will simply not upgrade. An
+entry written after the publish is an entry written for nobody, because the
+people who needed it have already decided.
+
+Say what a reader has to act on: what changed, what it breaks, what is now
+refused that used to be accepted, and what is still not modelled. A limitation
+somebody finds inside a report they had already believed cost more than it would
+have cost to write it down.
+
+**No icons or emojis anywhere** — source, comments, log messages, commit
+messages, PR descriptions, changelogs, release notes, or any generated text
+including drafts for Discord or Telegram. Use plain text labels. That covers the
+automated attribution line at the end of a PR description too: keep its text and
+link, drop the emoji in front of it.
+
+### The ChatGPT subscription model list is ours to maintain
+
+The `chatgpt/` provider authenticates with a ChatGPT Plus or Pro plan by OAuth
+device flow instead of an API key, and it reaches **Codex**, not the ChatGPT web
+app. Everything about the agent's provider catalogue is read live from LiteLLM
+precisely so a package bump brings new models with it. This provider is the one
+exception, and it needs a person.
+
+**The symptom, if you do not know this.** LiteLLM's registry lags the backend:
+at 1.106.6 its bundled map carries nineteen `chatgpt/*` entries, newest the
+`gpt-6` and `gpt-6.1` models, while the map it fetches from GitHub at import
+already lists `gpt-6.1-terra` as well. The remote map is usually ahead of the
+bundled one, so check both. A model
+absent from that registry has no `mode`, so LiteLLM routes it through the
+chat-completions bridge instead of `/v1/responses`. The request never reaches
+the API: it lands on a Cloudflare interstitial and returns
+`403 Enable JavaScript and cookies to continue`. That reads like a network
+problem, an account problem or a bot block, and is none of them. Registering the
+entry with `mode: responses` is the entire fix.
+
+**The distinction that makes a candidate testable.** The backend refuses a model
+it does not serve in plain words:
+
+```
+{"detail":"The 'gpt-5.6' model is not supported when using Codex with a ChatGPT account."}
+```
+
+So a clean 400 naming the model means **not available**; a 403 HTML page means
+**not registered**, and is your bug, not OpenAI's. Anything else, read it.
+
+**Adding a model.** `services/agent/chatgpt_models.py` holds the supplement,
+registered into LiteLLM by `catalog._build()` and by `builder.build_model()`.
+Both are needed: a run resolving a stored row never touches the catalogue. It is
+deliberately NOT done in `chatgpt_oauth.ensure_ready()`, which runs inside a
+request and must import no LiteLLM and do no network work -- a hook placed there
+was caught by `test_the_gate_does_no_network_work`. To add a name, verify it
+first against a real
+subscription rather than guessing, because the set is not derivable from a
+pattern -- `gpt-5.6` is refused while `gpt-5.6-sol`, `-luna` and `-terra` all
+work:
+
+```python
+litellm.register_model({"chatgpt/<name>": {"litellm_provider": "chatgpt", "mode": "responses"}})
+litellm.responses(model="chatgpt/<name>", input=[{"role": "user", "content": "ok"}], stream=True)
+```
+
+Then add it to `SUPPLEMENTAL` with its context window.
+
+**Three rules for that file.**
+
+- **Never write cost keys.** A plan turn has no per-token price, and
+  `catalog.estimate_cost` returning None is what makes the usage badge report
+  tokens and no cost. Reporting `$0.00` claims the turn was free when it
+  consumed plan quota; falling back to the API price is worse.
+- **Never overwrite a LiteLLM entry, and test the provider, not the name.**
+  Eight of these models share a bare name with an OpenAI API model, so
+  `"gpt-5.6-sol" in litellm.model_cost` is True because of *OpenAI's* entry. A
+  guard written that way skips every model it exists to add. Match on
+  `litellm_provider == "chatgpt"`.
+- **Fail quietly.** The supplement is a convenience; a LiteLLM whose registry
+  has a different shape should cost these models, not a working agent.
+
+**Availability is per plan, not per provider.** These are the models the backend
+serves; which a given account may use is between the operator and OpenAI. The
+catalogue is advisory, and the model test on the config page is what answers for
+one account. That test **streams**, deliberately: LiteLLM's non-streaming reader
+for this provider raises `Unknown items in responses API response: []` on a
+reply that streams back perfectly (upstream #26179, open; its fix #27562 was
+closed unmerged), and the agent only ever runs `stream=True` anyway.
+
+LiteLLM's entries win automatically once it ships a name, so drop that name from
+`SUPPLEMENTAL` in the bump that brings it. At 1.106.6 the map is empty; keep the
+file anyway, since the remote map is already a model ahead of the bundle.
+
+## Frontend build
+
+`frontend/dist/` is in `.gitignore` so contributors cannot commit half-built
+artifacts — but on `main` it **is tracked**. The `commit-dist` job in
+`.github/workflows/ci.yml` force-adds (`git add -f`) the freshly built dist back
+to `main` after every successful push.
+
+- **Production servers and backend-only contributors need no Node.js.** A plain `git pull` from `main` brings the latest UI. This is the canonical upgrade path.
+- **React developers** run `cd frontend && npm install && npm run build` (or `npm run dev`) locally, since the local `.gitignore` will not track their output. Build only — tests run in CI.
+- **Feature branches** CI has not built may carry stale or missing `dist/`. Build locally or rebase onto recent `main`.
+- **A local build on a branch cut from `main` rewrites tracked files under `frontend/dist/`.** Never stage them (`git add -A -- . ':!frontend/dist'`); `git checkout -- frontend/dist` restores them. A user testing a branch with `uv run app.py` needs that local build, and the commit still carries source only.
+
+Config lives in `.env`; `VALID_BROKERS` gates which broker plugins load, and
+plugins are discovered at startup only. A first start with no `.env` creates it
+from `.sample.env` (`utils/env_check.create_env_from_sample`) with fresh
+`APP_KEY`, `API_KEY_PEPPER` and `FERNET_SALT`, owner-only permissions and no
+broker, so a fresh download runs with `uv run app.py` alone. It never does so
+when `db/openalgo.db` exists: new keys would make every stored secret
+unreadable. A `.env` copied from `.sample.env` unchanged starts too: the
+placeholder keys are replaced on first start (`_generate_keys_on_first_run`,
+`_ensure_fernet_salt`) and the `<broker>` placeholder means no broker in
+`.env`. An existing `.env` keeps its real keys and broker values: startup only
+ever replaces the public placeholders. A new placeholder secret in `.sample.env` belongs in
+`_NEW_ENV_SECRETS`, or a fresh install starts with the public placeholder.

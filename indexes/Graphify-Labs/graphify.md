@@ -1,8 +1,8 @@
 # Graphify-Labs/graphify instruction files
 
-Upstream: [Graphify-Labs/graphify](https://github.com/Graphify-Labs/graphify) · License: `Apache-2.0` · Commit: `d4a5b323ef8501518b82c58a05fe21b35ce24992`
+Upstream: [Graphify-Labs/graphify](https://github.com/Graphify-Labs/graphify) · License: `Apache-2.0` · Commit: `18cd78f4b8c9698db861aa8d7ad1adbf3c836642`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Graphify-Labs/graphify/AGENTS.md) | [Source](https://github.com/Graphify-Labs/graphify/blob/d4a5b323ef8501518b82c58a05fe21b35ce24992/AGENTS.md) | `63b882af6af8e00c082cc865bbd1cb0e772ce199066398610a0abcc71c3a01e3` | 563 B |
-| `GEMINI.md` | `GEMINI.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Graphify-Labs/graphify/GEMINI.md) | [Source](https://github.com/Graphify-Labs/graphify/blob/d4a5b323ef8501518b82c58a05fe21b35ce24992/GEMINI.md) | `d7dae41db9d4a5b215657f66ddc031e29a909ed7d86757ba2784e590dd661a95` | 1,587 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Graphify-Labs/graphify/AGENTS.md) | [Source](https://github.com/Graphify-Labs/graphify/blob/18cd78f4b8c9698db861aa8d7ad1adbf3c836642/AGENTS.md) | `63b882af6af8e00c082cc865bbd1cb0e772ce199066398610a0abcc71c3a01e3` | 563 B |
+| `GEMINI.md` | `GEMINI.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Graphify-Labs/graphify/GEMINI.md) | [Source](https://github.com/Graphify-Labs/graphify/blob/18cd78f4b8c9698db861aa8d7ad1adbf3c836642/GEMINI.md) | `d7dae41db9d4a5b215657f66ddc031e29a909ed7d86757ba2784e590dd661a95` | 1,587 B |

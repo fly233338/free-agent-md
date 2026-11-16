@@ -1,7 +1,7 @@
 # nextlevelbuilder/ui-ux-pro-max-skill instruction files
 
-Upstream: [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) · License: `MIT` · Commit: `d643997c82e94742dd3bee43210b0198e8bbba3d`
+Upstream: [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) · License: `MIT` · Commit: `e59ff376a41f7ca47b7541ad5c116495cbade3ee`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/nextlevelbuilder/ui-ux-pro-max-skill/CLAUDE.md) | [Source](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill/blob/d643997c82e94742dd3bee43210b0198e8bbba3d/CLAUDE.md) | `9936e25f9373fddf35428be0a8b54b7012345882a6ab15766981d3ece7d6ecca` | 6,225 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/nextlevelbuilder/ui-ux-pro-max-skill/CLAUDE.md) | [Source](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill/blob/e59ff376a41f7ca47b7541ad5c116495cbade3ee/CLAUDE.md) | `465ba3fd57208e4e6bb6fdf8d9185ba57fcb76eb1ef957f330a38c666469e879` | 6,442 B |
