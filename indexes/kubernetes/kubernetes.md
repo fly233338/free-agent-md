@@ -1,7 +1,7 @@
 # kubernetes/kubernetes instruction files
 
-Upstream: [kubernetes/kubernetes](https://github.com/kubernetes/kubernetes) · License: `Apache-2.0` · Commit: `954517dcb5c79593a5787a3071b925976a64b285`
+Upstream: [kubernetes/kubernetes](https://github.com/kubernetes/kubernetes) · License: `Apache-2.0` · Commit: `f9951a0479e395b4d13155dbe4f15611993e3ac0`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/kubernetes/kubernetes/AGENTS.md) | [Source](https://github.com/kubernetes/kubernetes/blob/954517dcb5c79593a5787a3071b925976a64b285/AGENTS.md) | `622bc8e8b244a22cdeeddc0a1c4f11cf86631eb9a5a3bdadea575f4af0bc47f7` | 1,885 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/kubernetes/kubernetes/AGENTS.md) | [Source](https://github.com/kubernetes/kubernetes/blob/f9951a0479e395b4d13155dbe4f15611993e3ac0/AGENTS.md) | `622bc8e8b244a22cdeeddc0a1c4f11cf86631eb9a5a3bdadea575f4af0bc47f7` | 1,885 B |

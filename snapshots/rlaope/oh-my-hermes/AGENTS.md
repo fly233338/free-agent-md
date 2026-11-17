@@ -105,16 +105,34 @@ and evidence obvious to a reviewer reading the PR without the chat history.
   isolated local Hermes single-query process (`hermes chat --query-file -`,
   the Hermes transport that reads a prompt from stdin). It requires
   `--confirm-dispatch`, takes prompts only through stdin/files, enforces a
-  depth-one recursion limit and safe-mode file tools, records authenticated
-  `routing_observation/v1` evidence, and never runs automatically. Two front
-  doors reuse it without adding a process authority:
+  depth-one recursion limit (OMH dispatch depth; inside a paired-run arm,
+  Hermes' own one-level `delegate_task` children are allowed when the run's
+  `--arm-toolsets` names `delegation`), runs safe-mode file tools by default, records
+  authenticated `routing_observation/v1` evidence, and never runs
+  automatically. Two front doors reuse it without adding a process authority:
   - `omh coding paired-run dispatch` for confirmed evaluation cells: one
     digest-matching task file per frozen task, task bytes over child stdin,
     detached per-cell worktrees under an atomically unique invocation-owned
     parent, signed evaluation bindings, removal of only the paths that
-    invocation reserved, and no persisted task body. Executors without a
+    invocation reserved, and no persisted task body. Both arms run
+    `--toolsets file,skills`; only the explicit `--arm-toolsets` opt-in may
+    add `terminal` and `delegation`, to both arms identically, signed into
+    each cell and checked at fan-in, with Hermes' command approval left on;
+    with `delegation` both arm homes pin the same child cap and the arm's
+    model for every child, and fan-in refuses a cell whose child sessions ran
+    another model. Executors without a
     receipt-capable adapter are refused without substitution;
-    caller-injected adapters stay the executor-neutral seam.
+    caller-injected adapters stay the executor-neutral seam. It is the one
+    caller that leaves safe mode: each arm runs a declared, receipt-signed
+    arm setup in its own disposable Hermes home (the variant with the OMH
+    plugin, a disposable OMH home and its frozen `exposed_skills`, the
+    baseline with neither; both the run's declared toolsets), served by a
+    harness-owned `hermes gateway run` in its own process group that the
+    invocation warms before timing and stops on exit, never a service
+    manager. A custom provider is declared by base URL (https, or http to a
+    loopback host), API mode and key variable name; its secret arrives only
+    by environment. Fan-in refuses a cell whose signed setup contradicts its
+    arm.
   - `omh coding fanout dispatch --final-review`, after dispatcher-observed
     integration GREEN: the explicit flag, a clean integrated tree, named
     Hermes provider/model settings; four read-only lenses in disposable,
@@ -138,7 +156,11 @@ and evidence obvious to a reviewer reading the PR without the chat history.
   API root for the TypeSafe endpoint, or `OPENROUTER_API_KEY` plus
   `{"openrouter_route": true}` in `<omh_home>/jev/settings.json`, which OMH
   never writes. Stdlib only, HTTPS only, two route identities, no redirects,
-  bounded bodies, no retry after a sent request times out. It
+  bounded bodies, no retry after a sent request times out. The one plain-HTTP
+  case is the same file's `{"local_http_endpoint": true}`, which lets
+  `TYPESAFE_BASE_URL` name `localhost` or a loopback, private, or link-local
+  IP literal (a self-hosted Jev-compatible server); its `typesafe_model` names
+  the model such a non-TypeSafe endpoint serves. It
   persists no key, `state`, question text, or reply; one metadata-only ledger
   row per ask. `src/plugin_bundle/omh/jev_ask_client.py` is one of the two
   in-process network clients in `src/`, and only `tools/jev_ask_tool.py` may
@@ -169,6 +191,25 @@ and evidence obvious to a reviewer reading the PR without the chat history.
   nothing. OMH core, install, update, routing and doctor never import or
   execute them; `eleven.py` is in INVARIANT 1's `PROCESS_SPAWN_ALLOWLIST`, and
   the companion-nonexecution tests cover both Python scripts.
+- **Channel watch collector**: `src/skills/channel_watch_toolkit/scripts/channel_watch.py`
+  ships as inert package data (owner-approved scoped integration, 2026-11-15).
+  OMH core, install, update, routing and doctor never import or execute it;
+  nothing in `src/` imports it, and it is in INVARIANT 2's
+  `NETWORK_CLIENT_BRIDGES` with no importer. The person (or their bot, on their
+  request) copies it into `<profile>/scripts/channel_watch_<watch>.py`, and a
+  Hermes cron job runs it on Hermes' interpreter before the judging step. It is
+  stdlib only and read-only: GETs to Slack `auth.test` and
+  `conversations.history`, or Discord `/users/@me` and
+  `/channels/{id}/messages`, nothing posted, edited or joined. Hermes strips bot
+  tokens from a cron script's environment, so it reads exactly
+  `SLACK_BOT_TOKEN` or `DISCORD_BOT_TOKEN` by key name: from the environment
+  first, else that key from `$HERMES_HOME/.env`. It never prints or stores it
+  (a token with a space or control character is refused without echoing it);
+  without one it exits 2 and sends nothing.
+  Redirects are refused, replies bounded, and `api_base` overrides are accepted
+  only for loopback hosts (tests). Config, cursors, exit codes and the install
+  command are in its `README.md`; `tests/test_channel_watch_toolkit.py` runs it
+  against a fake API on 127.0.0.1.
 - **The OMH TUI** (bare `omh`) is a foreground frontend over Hermes' own
   gateway, not an execution surface: it relays only what the person types,
   answers no request on their behalf, and makes no model call; the one switch
@@ -183,13 +224,19 @@ and evidence obvious to a reviewer reading the PR without the chat history.
   (`src/tui/herdr.py`, in INVARIANT 1's `PROCESS_SPAWN_ALLOWLIST`): a local
   socket, no network call. The gateway child does not get the pane's
   `HERDR_PANE_ID`; herdr's CLI and skill still work there, without a
-  current-pane default. On `/gateway restart`, typed by the person and
-  confirmed in the slot, it runs Hermes' own `hermes gateway restart --yes
-  --detach` on Hermes' interpreter (`src/tui/gateway_restart.py`, in
-  INVARIANT 1's `PROCESS_SPAWN_ALLOWLIST`) and reattaches to the same
-  session; it signals no process itself.
+  current-pane default. On `/gateway restart`, typed by the person or offered
+  once after an update, and confirmed in the slot, it runs Hermes' own `hermes
+  gateway restart --yes --detach` on Hermes' interpreter
+  (`src/tui/gateway_restart.py`, in INVARIANT 1's `PROCESS_SPAWN_ALLOWLIST`)
+  and reattaches to the same session; it signals no process itself. `omh
+  update` asks the same on a terminal, defaulting to no, or takes
+  `--restart-gateway`, and then runs the person's `hermes` with those
+  arguments. When `omh update` moved the generation under a running TUI and
+  the person picks Restart between turns, the TUI exits and the `omh` that
+  launched it starts the installed generation's `omh --resume <id>`.
   Read [`docs/OMH-TUI-BOUNDARY.md`](docs/OMH-TUI-BOUNDARY.md) before touching
   `src/tui/`.
+- **omher** (apps/omher/, the Tauri desktop app for macOS, Windows and Linux) is not part of core omh and nothing in src/ imports it. "omher" names the app only; "OMH" and "oh-my-hermes" name the harness. It shows Hermes bots, one main chat each, and the bot's other sessions read-only; it sends only to a bot's main chat and to folder chats its bridge opened itself, reaches only the person's own loopback gateway through a local bridge, and makes no model or API call itself. Its SESSIONS start only allow-listed local agent CLIs, when the person asks. Every widening is a numbered rule in [docs/OMHER-BOUNDARY.md](docs/OMHER-BOUNDARY.md), pinned by `tests/test_omher_boundary.py`; read it before touching the app.
 - No Hermes core patching.
 - Runtime artifacts are local, deterministic, schema-versioned, and
   metadata-only by default.

@@ -1,8 +1,8 @@
 # rustdesk/rustdesk instruction files
 
-Upstream: [rustdesk/rustdesk](https://github.com/rustdesk/rustdesk) · License: `AGPL-3.0` · Commit: `3e953e886a874956d8351d6c25e340ea82dd2343`
+Upstream: [rustdesk/rustdesk](https://github.com/rustdesk/rustdesk) · License: `AGPL-3.0` · Commit: `54416dcaa127d209f2cfbdc4b08235bae78ccfe6`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/rustdesk/rustdesk/AGENTS.md) | [Source](https://github.com/rustdesk/rustdesk/blob/3e953e886a874956d8351d6c25e340ea82dd2343/AGENTS.md) | `7df8d7246c5f593d0df92eac015e5ac8a282820eb89c715505eec0629c9ca8b4` | 18,233 B |
-| `GEMINI.md` | `GEMINI.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/rustdesk/rustdesk/GEMINI.md) | [Source](https://github.com/rustdesk/rustdesk/blob/3e953e886a874956d8351d6c25e340ea82dd2343/GEMINI.md) | `336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49` | 11 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/rustdesk/rustdesk/AGENTS.md) | [Source](https://github.com/rustdesk/rustdesk/blob/54416dcaa127d209f2cfbdc4b08235bae78ccfe6/AGENTS.md) | `7df8d7246c5f593d0df92eac015e5ac8a282820eb89c715505eec0629c9ca8b4` | 18,233 B |
+| `GEMINI.md` | `GEMINI.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/rustdesk/rustdesk/GEMINI.md) | [Source](https://github.com/rustdesk/rustdesk/blob/54416dcaa127d209f2cfbdc4b08235bae78ccfe6/GEMINI.md) | `336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49` | 11 B |

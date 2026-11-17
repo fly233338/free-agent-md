@@ -1,7 +1,7 @@
 # anomalyco/opencode instruction files
 
-Upstream: [anomalyco/opencode](https://github.com/anomalyco/opencode) · License: `MIT` · Commit: `8bb7fab26e593d3fdb69226f667221e666c4d006`
+Upstream: [anomalyco/opencode](https://github.com/anomalyco/opencode) · License: `MIT` · Commit: `a9a35b4b4ce35573d71207e246e770cfa26ff0e1`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/anomalyco/opencode/AGENTS.md) | [Source](https://github.com/anomalyco/opencode/blob/8bb7fab26e593d3fdb69226f667221e666c4d006/AGENTS.md) | `bc97fe08db9b84a48a61ed2f500e9ad45edcf407cd2b4db46850beb60aa3a445` | 18,549 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/anomalyco/opencode/AGENTS.md) | [Source](https://github.com/anomalyco/opencode/blob/a9a35b4b4ce35573d71207e246e770cfa26ff0e1/AGENTS.md) | `d2640b4f894ee8ff8193fbd00cce803c4dd62dd9850e33a43b6b8c6df960603c` | 18,616 B |

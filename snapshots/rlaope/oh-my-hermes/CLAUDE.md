@@ -24,7 +24,9 @@ held by the invariants in `tests/test_handoff_safety_contract_enforcement.py`:
   when the user named Jev in that turn and a key resolves (TypeSafe, at the
   HTTPS `TYPESAFE_BASE_URL` API root when set, or OpenRouter only
   with the operator setting in `<omh_home>/jev/settings.json`).
-  Stdlib, HTTPS only, redirects refused.
+  Stdlib, HTTPS only, redirects refused; the same file's
+  `local_http_endpoint` opt-in alone allows plain HTTP, and only to a
+  loopback, private, or link-local `TYPESAFE_BASE_URL`.
   `src/plugin_bundle/omh/jev_ask_client.py` is one of the two in-process
   network clients in `src/`, both pinned by INVARIANT 2's
   `NETWORK_CLIENT_BRIDGES`. Third-party Jev plugins are never called.
@@ -51,6 +53,32 @@ held by the invariants in `tests/test_handoff_safety_contract_enforcement.py`:
   list of imports, names and name flows measured from the script. It is not a
   sandbox: an allowed Hermes function called with other arguments, and where
   the grant's url points, are beyond it.
+- omher, the desktop app under `apps/omher/`: not core. ("omher" is the app;
+  "OMH"/"oh-my-hermes" is the harness.) Its Python bridge reaches only the
+  person's own gateway over loopback, sends only to a bot's main chat and the
+  folder chats it opened, and makes no model or API call; nothing in `src/`
+  imports it. `docs/OMHER-BOUNDARY.md` states it and
+  `tests/test_omher_boundary.py` pins it.
+
+### omher (apps/omher/)
+
+omher has its own toolchain (Node + pnpm, Rust, Tauri 2) and its own CI
+(`.github/workflows/omher.yml` for macOS and Windows plus the bridge tests,
+`omher-ci.yml` for Linux), which run only when `apps/omher/**`, the boundary
+doc or its test changes. The dev and test commands are in
+`apps/omher/README.md` (Develop); the release steps are in its Release section
+(version in three files, then an `omher-v<version>` tag; `/releases/latest`
+is the OMH package release, not omher's).
+
+- A change that widens what the app sends, writes, reads or runs adds a
+  numbered rule to `docs/OMHER-BOUNDARY.md` and a test in
+  `tests/test_omher_boundary.py`, and raises that test's rule-count cap in the
+  same commit with a comment naming the rule.
+- Every feature must work on macOS, Windows and Linux: no macOS-only `open`,
+  POSIX-only paths or `/dev/urandom`. Releases are unsigned (ad-hoc on macOS);
+  never treat a certificate as a prerequisite.
+- The OMH gates above do not cover the app, and the app's checks do not cover
+  OMH: a PR touching both runs both.
 
 ## Build & Test
 
@@ -109,6 +137,7 @@ changed source.
 | `src/routing/lexical_shortlist.py` via `standalone_skill_shortlist_json()` in `src/routing/skill_shortlist_sidecar.py` | `src/plugin_bundle/omh/tools/skill_shortlist.json` | `uv run python -m omh.cli docs skill-shortlist` | `docs skill-shortlist --check`; ranking parity in `tests/test_skill_shortlist_sidecar.py` |
 | `ulw_inventory_payload()` in `src/skills/catalog.py` via `src/catalogs/ulw_surfaces.py` | marked ULW region of `README.md` | `uv run python -m omh.cli docs ulw-inventory` | `docs ulw-inventory --check`; `tests/test_ulw_inventory.py` |
 | Same producer | marked ULW region of `site/index.html` | `uv run python -m omh.cli docs ulw-site` | `docs ulw-site --check`; i18n parity in `tests/test_ulw_inventory.py` |
+| `skills/*/SKILL.md` (minus `ulw-*` and `dag-ulw`) via `tools/render_site_skills.py` | `site/docs/skills/index.html` (the public skill guide; Pages re-renders it on every deploy) | `uv run python tools/render_site_skills.py --write` | `tools/render_site_skills.py --check`; `tests/test_site_skills_guide.py` |
 | `SHIPPED_MODEL_RECOMMENDATIONS` in `src/coding/model_recommendations.py` via `src/catalogs/model_chain_table.py` | marked chain-table region of `docs/INSTALLATION.md` (the public chain table; the READMEs link to it) | `uv run python -m omh.cli docs chain-table` | `docs chain-table --check`; round-trip equality in `tests/test_model_chain_table.py` |
 
 - Never hand-edit `agent-skills/**`; regenerate the portable target without

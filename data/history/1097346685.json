@@ -2,12 +2,6 @@
   "full_name": "pbakaus/impeccable",
   "points": [
     {
-      "checked_at": "2026-10-18T08:06:48Z",
-      "commit_sha": "9304afa97f89b30609e4c538584fb3e0cd4df013",
-      "pushed_at": "2026-10-18T07:54:07Z",
-      "stars": 82468
-    },
-    {
       "checked_at": "2026-11-04T11:01:57Z",
       "commit_sha": "695cea5c6d1cbd420fc331375c7ef126a774e5f7",
       "pushed_at": "2026-11-04T10:56:26Z",
@@ -36,6 +30,12 @@
       "commit_sha": "2b86d9c07b97d4bed7de23583e1bd1e58dd2baae",
       "pushed_at": "2026-11-15T10:50:07Z",
       "stars": 110442
+    },
+    {
+      "checked_at": "2026-11-17T11:58:55Z",
+      "commit_sha": "d41d9860b0094dcb68030657da63461212835aaa",
+      "pushed_at": "2026-11-17T11:58:21Z",
+      "stars": 111780
     }
   ],
   "repo_id": 1097346685

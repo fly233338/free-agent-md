@@ -2,12 +2,6 @@
   "full_name": "anonaddy/anonaddy",
   "points": [
     {
-      "checked_at": "2026-10-18T08:06:48Z",
-      "commit_sha": "150983e3331e80bb72b619984dc5e3f5390ddb93",
-      "pushed_at": "2026-10-06T15:18:30Z",
-      "stars": 4905
-    },
-    {
       "checked_at": "2026-10-20T08:38:15Z",
       "commit_sha": "150983e3331e80bb72b619984dc5e3f5390ddb93",
       "pushed_at": "2026-10-06T15:18:30Z",
@@ -96,6 +90,12 @@
       "commit_sha": "0315a78015ae8a0f0f5fbeccf1d53bae7b3d27cc",
       "pushed_at": "2026-10-29T14:54:24Z",
       "stars": 4951
+    },
+    {
+      "checked_at": "2026-11-17T11:58:55Z",
+      "commit_sha": "6a6fcc063ee674daac5f8842d5e756da4fec5fe6",
+      "pushed_at": "2026-11-17T09:01:38Z",
+      "stars": 4956
     }
   ],
   "repo_id": 193104152

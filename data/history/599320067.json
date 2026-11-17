@@ -2,12 +2,6 @@
   "full_name": "langflow-ai/langflow",
   "points": [
     {
-      "checked_at": "2026-10-18T08:06:48Z",
-      "commit_sha": "972d56c47d3830d17060ee85cfaad152df823041",
-      "pushed_at": "2026-10-18T00:39:40Z",
-      "stars": 155784
-    },
-    {
       "checked_at": "2026-10-19T08:59:58Z",
       "commit_sha": "972d56c47d3830d17060ee85cfaad152df823041",
       "pushed_at": "2026-10-19T00:39:17Z",
@@ -180,6 +174,12 @@
       "commit_sha": "260cbf347cc5563cc48c79094c175ca31532ea2b",
       "pushed_at": "2026-11-16T05:27:34Z",
       "stars": 156696
+    },
+    {
+      "checked_at": "2026-11-17T11:58:55Z",
+      "commit_sha": "86fde091f88a8b40507512d36ed78b5917dc165e",
+      "pushed_at": "2026-11-17T06:14:45Z",
+      "stars": 156720
     }
   ],
   "repo_id": 599320067

@@ -2,7 +2,7 @@
 
 Organic Maps (OM) is an open-source, privacy-focused offline maps & GPS app built on OpenStreetMap data.
 OM works on iOS, Android, and desktop (Windows, macOS, Linux using Qt 6).
-The codebase is mostly C++23 with platform-specific code in Swift 5, Objective-C/C++, Java 17 and tools in bash and Python 3.10+
+The codebase is mostly C++23 with platform-specific code in Swift 5, Objective-C/C++, Java 17 and tools in bash and Python 3.11+
 
 ## Architecture overview
 
@@ -10,7 +10,7 @@ Libraries in `libs/` are strictly layered -- no circular or upward dependencies 
 
 1. **Foundation:** `base` (logging, assertions, caches), `coding` (serialization, I/O), `geometry` (points, rects, mercator)
 2. **Platform:** `platform` (file paths, HTTP, location -- OS-abstracted via `*_ios.mm`, `*_android.cpp`, `*_qt.cpp`)
-3. **Data:** `indexer` (map features, classification), `kml`, `transit`, `routing_common`, `editor`
+3. **Data:** `indexer` (map features, classification), `terrain` (`.twm` terrain files, contours), `kml`, `transit`, `routing_common`, `editor`
 4. **Domain:** `search`, `routing`, `storage` (map downloads), `traffic`
 5. **Rendering:** `drape` (OpenGL/Vulkan/Metal abstraction), `drape_frontend` (scene management), `shaders`
 6. **Application:** `map` (Framework class -- aggregates all subsystems)
@@ -149,14 +149,16 @@ Format: `[subsystem] Summary in imperative mood` (max 80 chars). Examples of sub
 
 ## Pull requests
 - Prefer PRs focused and small; split unrelated changes into separate PRs, or at least separate commits with clear messages
-- Mention if LLM tools were used to generate code
-- Description must be brief and include: what changed, link to issue (`Fixes #NNN`), how it was tested
-- Every commit must compile on all platforms and pass tests
+- Mention if LLM tools were used to generate code, include model name and effort level
+- Description must be brief (don't wrap markdown) and include: what changed, link to issue (`Fixes #NNN` or `Related #NNN`), how it was tested
+- Label the PR properly if permissions allow it
+- Every commit must compile on all platforms and pass tests; exceptions are possible for easier code review, if PR will be squashed, or for android using string ids before strings regenerated commit
 - New features require tests in the same PR
 - Test on multiple OS versions, themes (light/dark), orientations where applicable
 - See [docs/PR_GUIDE.md](docs/PR_GUIDE.md) for full guide
 
 ## Main focus
+- Follow the [Android SDK ownership and release policy](android/sdk/README.md#sdk-release-consumer-checks) when changing the SDK or its CI
 - On performance, simplicity, regressions, impact and code quality
 - Tests covering most/all corner cases or changes
 - Less code/cleaner code/less changes
@@ -166,7 +168,15 @@ Format: `[subsystem] Summary in imperative mood` (max 80 chars). Examples of sub
 - Downloaded files are verified on download when a hash is available, and trusted as-is otherwise --
   they come from our servers. On-disk corruption afterwards is out of OM scope: crashing on corrupted
   data is fine, do not harden the code against it. Exception: `Framework::RegisterAllMaps()` must
-  survive broken map files so the app still starts and bookmarks can be exported.
+  survive broken map files and invalid terrain blocks (logged and skipped, terrain asserts in Debug)
+  so the app still starts and bookmarks can be exported.
+- Basic format and constraint checks when reading file headers may reject data with `MYTHROW`.
+  Regular map/terrain tile records and payloads are trusted after download verification: use
+  debug-only `ASSERT` for their invariants, not runtime validation with `MYTHROW` or corruption
+  recovery. Keep required reads and decompression outside `ASSERT` (or use `VERIFY`).
+- Exception: `CHECK` (with the value and bound in the message) is appropriate in the once-per-file
+  header/prologue loading and on the section offsets a record reads from. The repeated per-element
+  decoding (coordinates, indices, counts) keeps `ASSERT`, even for stream-derived values.
 - Fail fast: use `ASSERT` liberally to catch developer mistakes in Debug. Asserts are compiled out of
   Release for performance, so keep them side-effect free (`VERIFY` still evaluates its expression).
   Use `CHECK` when the condition must also hold in Release, and don't add defensive fallbacks for

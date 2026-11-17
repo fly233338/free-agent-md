@@ -2,12 +2,6 @@
   "full_name": "uutils/coreutils",
   "points": [
     {
-      "checked_at": "2026-10-18T08:06:48Z",
-      "commit_sha": "6ba6658c85eeee1f0beefd9bfb9003b2470f5733",
-      "pushed_at": "2026-10-18T08:03:43Z",
-      "stars": 24264
-    },
-    {
       "checked_at": "2026-10-19T08:59:58Z",
       "commit_sha": "bbf2bfff2482f2c8aece14d9bdff4ce488dc142c",
       "pushed_at": "2026-10-19T08:58:08Z",

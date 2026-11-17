@@ -8,8 +8,9 @@ TypeScript 7.
 There is no separate spec. The code is the contract, pinned in three places:
 
 - The emitted `packages/e2e/dist/index.d.ts` (and `dist/engine/index.d.ts`,
-  `dist/runner.d.ts`, `dist/oauth/*.d.ts`)
-  is the public API. `packages/e2e/tests/types/sdk-types.ts` holds compile-time
+  `dist/runner.d.ts`, `dist/oauth/*.d.ts`), and `@e2e-dev/core`'s
+  `packages/core/dist/core/*.d.ts` and `dist/engine/index.d.ts`,
+  are the public API. `packages/e2e/tests/types/sdk-types.ts` holds compile-time
   assertions (`@ts-expect-error` lines) for the parts that are easy to loosen
   by accident; it runs under the package `typecheck`, never under vitest.
 - Wire formats live in `packages/e2e/schema/*.schema.json` (report-1,
@@ -34,8 +35,33 @@ descriptions and commit bodies; `git log` and `gh pr view` are the archive.
 `packages/` holds what publishes to npm; `apps/` holds the private apps and
 suites that consume the built packages the way a user would.
 
+- `packages/core` — the published `@e2e-dev/core` package, which `e2e` is built
+  on and depends on at its exact version (a changesets `fixed` group keeps
+  the two versions equal): the engine contract (`@e2e-dev/core/engine`, and
+  `src/engine/protocol/`), locators (`src/locator/`), the agent
+  (`src/agent/`, the `act` executor socket plus the judgment methods),
+  the replay cache (`src/cache/`), secrets, and the session half of a
+  worker: `run/engine-sessions.ts` (engine init and dispose, each attempt's
+  session from launch to close, which the runner's `TargetExecutor`
+  extends), `run/standalone.ts` (the worker an `@e2e-dev/core` host, a runner
+  host, or MCP keeps alive, with a `WorkerPolicy` per kind), and
+  `run/standalone-attempt.ts` (one attempt: reservation, launch, fixtures,
+  deadline, close). `src/core/` is its own surface: `launch` opens a
+  `core` attempt (nothing published to `globalThis`, no process secret
+  registry, no trace, no session deadline), `SessionState` the
+  `session-state-1` export, and `createAgent` (`@e2e-dev/core/agent`) the agent
+  with a per-`cacheKey` replay cache settled at session close. It imports
+  nothing of `e2e`:
+  `tests/unit/package-imports.test.ts` in `packages/e2e` fails on a
+  dependency `@e2e-dev/core`'s manifest does not declare. `e2e` reaches its
+  modules as `@e2e-dev/core/lib/<path>` (`./lib/*` in its exports), which is
+  not public API; `@e2e-dev/core`'s behavior is tested by `packages/e2e`'s
+  suites, through those paths and through the runner.
 - `packages/e2e` — the published `e2e` package: SDK surface, runner, CLI,
-  `e2e/engine` contract. Core knows the contract and never an engine's
+  and `e2e/engine` and `e2e/agent`, which re-export `@e2e-dev/core`'s. A
+  config's reporters and test filters resolve in `config/resolve-run.ts`
+  over `@e2e-dev/core`'s `resolveProjectConfig`, and their types live in
+  `src/run-types.ts`. Core knows the contract and never an engine's
   internals: no engine package is imported from `src/` (grep for
   `from '@e2e-dev/` and `import('@e2e-dev/`; the presets below are the only
   hits). Engine words still appear as platform labels, capability names, and in
@@ -48,18 +74,15 @@ suites that consume the built packages the way a user would.
   example, and run command; interactive choices derive from this list. These
   presets never import engine implementations.
   - `src/run/` runner core (scheduler, units, workers, retries, sessions;
-    `standalone.ts` is the worker a host or MCP's one-shot attempt keeps
-    alive, `standalone-attempt.ts` one attempt on it: reservation, launch,
-    fixtures, deadline, close, `host-trace.ts` its `trace.md`, and
+    `standalone-kinds.ts` the hosted and one-shot kinds of `@e2e-dev/core`'s
+    standalone worker, `host-trace.ts` a hosted attempt's `trace.md`, and
     `select-target.ts` the target a session names, shared with MCP;
     `open-session.ts` exposes `openHost` on `e2e/runner` for another test
     runner: worker-lifetime provisioning, app processes, and engine init,
     then `host.openSession({ name })` for each test's fixtures, deadline,
     steps, artifacts, and trace at close. Only one hosted attempt may be
     opening, live, or closing per process; close it before opening another),
-    `src/collect/` registration+selection, `src/locator/` locator AST/engine,
-    `src/agent/` the agent (the `act` executor socket plus the judgment
-    methods), `src/mcp/` the `e2e mcp` server (a live session that rides
+    `src/collect/` registration+selection, `src/mcp/` the `e2e mcp` server (a live session that rides
     the `act` socket with a queue executor so every MCP call is a harness
     action; in a directory with no config, `open_session {engine}` names the
     engine as a package, whose default export is called, or as a factory
@@ -76,17 +99,22 @@ suites that consume the built packages the way a user would.
     checks that need a stored login and are never part of `pnpm test`.
 - `packages/web` — the published `@e2e-dev/web` package: the
   browser engine, built with the public `defineEngine`, contributing the
-  `browser` fixture and `expect(browser)`. It depends on `e2e` (peer), never the
-  reverse; a target names it explicitly as `engine: web()`. There is
-  no default engine and no well-known id registry in core. It imports from
-  `e2e/engine` only: the semantics every engine must reproduce
-  (error taxonomy, text and URL matching, assertion polling, JSON-value rules)
-  are exported there, and there is no `e2e/internal` subpath.
+  `browser` fixture and `expect(browser)`. `@e2e-dev/web/engine` (and
+  `@e2e-dev/mobile/engine`) export the factory and types without `test`, so
+  `@e2e-dev/core` programs never import `e2e`'s main entry. It depends on
+  `@e2e-dev/core` (peer), never the reverse, and on `e2e` as an optional peer
+  that only the main entry loads; a target names it explicitly as
+  `engine: web()`. There is no default engine and no well-known id registry
+  in core. It imports from `@e2e-dev/core/engine` only: the semantics every
+  engine must reproduce (error taxonomy, text and URL matching, assertion
+  polling, JSON-value rules) are exported there, and an engine never imports
+  `@e2e-dev/core/lib/*`.
 - `packages/mobile` — the published `@e2e-dev/mobile` package: the
   iOS/Android engine on agent-device, built with the same public
   `defineEngine`, contributing the `device` fixture. Like the web engine it
-  depends on `e2e` (peer), never the reverse; the engine implementation
-  imports from `e2e/engine` only, and a target names it as `engine: mobile()`.
+  depends on `@e2e-dev/core` (peer) and optionally `e2e`, never the reverse; the
+  engine implementation imports from `@e2e-dev/core/engine` only, and a target
+  names it as `engine: mobile()`.
   The `@e2e-dev/mobile/tools` subpath holds the agent-side `open_app`, `swipe`,
   and `alert` tools; focused-field typing uses the engine's keyboard grammar.
   The main entry never loads the AI SDK.
@@ -97,7 +125,7 @@ suites that consume the built packages the way a user would.
   device-cloud providers (`testmu`, `browserstack`) share: one daemon per
   slot, heartbeat, and a release that fails unless the session end is
   confirmed.
-- `packages/e2e/src/engine/protocol/` - the engine protocol: the engine
+- `packages/core/src/engine/protocol/` - the engine protocol: the engine
   contract as LSP-style JSON-RPC (`connectEngine` client, `serveEngine`
   server, spawn/socket/loopback transports), so an engine can run in
   another process, machine, or language. The harness holds only protocol
@@ -266,10 +294,6 @@ suites that consume the built packages the way a user would.
   pages to `packages/e2e/docs/` (gitignored,
   `packages/e2e/scripts/prepare-build.ts`) so the published package ships
   them for agents to read offline.
-  e2e.com builds the docs from the newest `e2e@X.Y.Z` tag, not `main`: a docs
-  change goes live when the next e2e release publishes (`release.yml` calls
-  `site.yml`), and there is no docs versioning. The examples registry still
-  goes live from `main`.
 - `skills/e2e/` — the agent skill for consumers: `SKILL.md` plus
   `references/<topic>.md`, one per `e2e guide` topic. It lives at the repo
   root because `npx skills add e2e-inc/e2e` only looks in well-known
@@ -322,6 +346,13 @@ suites that consume the built packages the way a user would.
   package self-contained and leave the repository's development MCP
   configuration outside it. Example skills use `SKILL.example.md` so clients
   do not discover them as additional skills.
+  GitHub Copilot reads the generated `plugin.json` and `mcp.json` at the plugin
+  root (the Agent Plugins v1.0.0 format awesome-copilot's intake requires),
+  ahead of `.claude-plugin/`; `plugin.json` cannot name MCP servers, so
+  dropping `mcp.json` drops Copilot's server. The plugin's skill copies leave
+  out `metadata.openclaw`, since that spec takes string metadata values only
+  (ClawHub publishes from `skills/`), and a skill links no file outside its
+  own directory.
 
 ## Commands
 
@@ -337,8 +368,8 @@ pnpm test:web-benchmark   # builds, then runs the real CLI against the benchmark
 Focused work:
 
 ```bash
-pnpm --filter e2e run build
-pnpm --filter e2e run test:unit                       # unit only, no build
+pnpm --filter @e2e-dev/core run build && pnpm --filter e2e run build
+pnpm --filter e2e run test:unit                       # unit only; needs @e2e-dev/core built
 pnpm --filter e2e exec vitest run tests/unit/scheduler.test.ts
 pnpm --filter e2e exec vitest run -t 'name fragment'
 pnpm --filter @e2e-dev/web run test
@@ -348,8 +379,9 @@ pnpm --filter @e2e-dev/testbed run test:headed
 - Package `test` scripts do **not** build. Root `build` and `test` order the
   packages explicitly rather than relying on topological sort, because `e2e`
   devDepends on the web engine for its browser-backed integration tests
-  while the engine peer-depends on `e2e` — pnpm reports that cycle on every
-  install.
+  while the engine optionally peer-depends on `e2e` — pnpm reports that cycle
+  on every install. `@e2e-dev/core` builds first: `e2e` and every engine compile
+  against its `dist`.
 - `pnpm typecheck` runs `build` first, then per-package `typecheck`. The
   package `typecheck` covers `tests/**`, which is what makes
   `tests/types/sdk-types.ts` a test.
@@ -622,14 +654,18 @@ trees, on both platforms, without a device.
     A test's own `fill(secret)` is trusted code and runs none of these checks.
   - Every model tool call is parsed into a closed schema and authorized
     immediately before dispatch. Nothing runs on a refusal: an unknown tool
-    name or an undeclared field goes back to the model as the call's error
-    result (the AI SDK's `tool-error`, naming the tool or the field), the
-    next turn is the repair, and refusals count toward the failure-streak
-    guard. A node id not on the current screen is `LOCATOR_NOT_FOUND`, an
-    action failure the model reads and re-aims from. `POLICY_DENIED` is for
-    denied destinations, forbidden fills, and withheld pixels. Model text is
-    never evaluated as code, selectors, shell, or config. App content, ledger
-    text, and pixels are quoted as untrusted evidence with no policy authority.
+    name, or an undeclared field on a built-in tool that declares fields,
+    goes back to the model as the call's error result (the AI SDK's
+    `tool-error`, naming the tool or the field), the next turn is the
+    repair, and refusals count toward the failure-streak guard. A built-in
+    tool with no fields drops extra keys and runs; the schema a provider
+    receives still sets `additionalProperties: false`. A project tool keeps
+    the schema given to `defineTool`. A node id not on the current screen is
+    `LOCATOR_NOT_FOUND`, an action failure the model reads and re-aims from.
+    `POLICY_DENIED` is for denied destinations, forbidden fills, and withheld
+    pixels. Model text is never evaluated as code, selectors, shell, or
+    config. App content, ledger text, and pixels are quoted as untrusted
+    evidence with no policy authority.
   - Every navigation a test or the agent asks for (`app.open`,
     `browser.goto`, the `navigate` verb) goes through one rule,
     `resolveNavigationUrl`: only `http:`, `https:`, and the exact
@@ -693,7 +729,7 @@ trees, on both platforms, without a device.
   entry. On `0.x` the bump is `patch` for a feature or fix; never
   pick `minor` on your own. A breaking change is a `minor` with the summary
   opening `**Breaking:**`; a `minor` or `major` for a release the maintainer
-  calls opens `**Release:**` (`scripts/check-changeset-bumps.ts`, `pnpm check`). Peer ranges point one way only (engine -> `e2e`, integration ->
+  calls opens `**Release:**` (`scripts/check-changeset-bumps.ts`, `pnpm check`). Peer ranges point one way only (engine -> `@e2e-dev/core` and optionally `e2e`, integration ->
   engine) and read `>=<major.minor.patch> <major+1>`, the floor the oldest
   sibling the package works with. Raise it when a package starts relying on a
   newer sibling's export or contract field;
@@ -721,6 +757,18 @@ trees, on both platforms, without a device.
   comparator with the same `major.minor.patch` carries a prerelease, so
   `0.3.0-beta.0` satisfies neither `>=0.1.0-0 <1` nor `*`. Never hand-edit a
   package `version` or `CHANGELOG.md`; `changesets/action` owns both.
+- When you release (merge the `chore: version packages` pull request) and it
+  publishes `e2e` or an `@e2e-dev/*` package an example depends on, update the
+  examples once npm has the new versions, in a separate pull request from the
+  release (#1838 is the pattern). Raise each `e2e` and `@e2e-dev/*` range in
+  `examples/*/package.json` and `examples/*/e2e/package.json` to the newest
+  version on npm (`npm view <pkg> version`); leave a package with no newer
+  version alone. Run each changed example's suite by hand and update the "Last
+  checked" line in its README for every example you ran. Where you have no
+  simulator, emulator, or toolchain for one, install it, typecheck it, run
+  `npx e2e list`, leave its "Last checked" line alone, and say so under
+  `## Verified`. The examples commit no lockfile and gate no pull request, so
+  nothing else catches one left on an old version.
 - Canaries are hand-run, never from CI: `pnpm run canary` with `GITHUB_TOKEN`
   set versions and builds every public package as a changesets snapshot, and
   `pnpm run canary:publish` publishes them to the `canary` dist-tag, then runs

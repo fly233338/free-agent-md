@@ -2,12 +2,6 @@
   "full_name": "pytorch/pytorch",
   "points": [
     {
-      "checked_at": "2026-10-18T08:06:48Z",
-      "commit_sha": "9664c41ccfc87a9661cb2b177985131948306876",
-      "pushed_at": "2026-10-18T07:59:53Z",
-      "stars": 104840
-    },
-    {
       "checked_at": "2026-10-19T08:59:58Z",
       "commit_sha": "8536e7e76f312789501509196e281ac0bd3d8287",
       "pushed_at": "2026-10-19T08:59:29Z",

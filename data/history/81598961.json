@@ -2,12 +2,6 @@
   "full_name": "python/cpython",
   "points": [
     {
-      "checked_at": "2026-10-18T08:06:48Z",
-      "commit_sha": "97a713566be44590121f9e5410e9fbb124107da7",
-      "pushed_at": "2026-10-18T07:56:05Z",
-      "stars": 77671
-    },
-    {
       "checked_at": "2026-10-22T08:41:46Z",
       "commit_sha": "105e65bc70ede7c8c195b416218997e4433ffe9a",
       "pushed_at": "2026-10-22T08:38:10Z",
