@@ -21,6 +21,28 @@ Keep persistent user instructions for repository work in this file, and keep `CL
 3. Before committing or submitting repository content, verify that it follows these English-language requirements.
 4. Branch new work from the latest `main` and target all pull requests at `main`. Merge reviewed changes directly into `main` when authorized; do not use `feature/motion` as an intermediate integration branch.
 
+## Repository PR review follow-up
+
+For repository PR work, follow the [contributor review checklist](CONTRIBUTING.md#follow-through-on-review). Creating a PR or pushing a fix does not finish an active review task.
+
+1. Read the live PR head, unresolved threads, latest reviews, CI and mergeability before acting. Do not rely on a previous commit's status.
+2. Verify each review claim. Fix real issues, run boundary-appropriate validation and push follow-up commits while preserving shared history. For incorrect feedback, reply with concrete code or reproduction evidence.
+3. Reply to each addressed thread with the commit and checks, then resolve it when permitted. Keep unanswered or disputed feedback visible and report what remains; do not dismiss change requests or close discussions merely to unblock merging.
+4. Address failing required CI and conflicts. Use an isolated worktree when the active checkout contains unrelated work. After a fix push, re-request prior reviewers who have not reviewed the new head when permitted; otherwise report pending re-review. Do not add or ping unrelated people to solicit a merge.
+5. Re-read the live state before reporting. Summarize what was fixed, unresolved threads, CI and conflicts, including pending re-review or an external blocker. When waiting, state what is pending rather than claiming completion.
+
+Merge and publication authorization remain separate from review cleanup. These steps do not grant permission to merge, bypass required checks or publish a package.
+
+### Automatic waiting during PR follow-up
+
+During an ongoing PR follow-up task, use the current client's available monitoring or waiting tools to continue when CI or reviews change:
+
+- **Claude Code:** when this session exposes `Monitor`, prefer it to watch the PR and resume the review loop on relevant changes. Use persistent monitoring only as supported by the actual tool; inspect its schema rather than assuming every client/version has it.
+- **Codex, OpenCode and other clients:** prefer a native monitor/wait capability when exposed. Otherwise keep a lightweight shell wait active in the current agent session, sampling PR metadata about every 30 seconds and returning when the state changes or its wait deadline is reached. Re-arm the wait while follow-up remains active.
+- Compare the head/base commits, review threads (including replies/edits and resolution), latest reviews and mergeability. Fold checks into one CI phase (`pending`, `passed`, `failed` or `missing`) so each individual green job does not restart the review pass. Wake the Agent for a changed state, then verify the actual feedback/check before acting.
+- Stop when the requested follow-up is complete, the PR closes/merges, the user stops it or an external blocker needs the user. Report the exact remaining state. An approved PR with required checks green still needs existing merge authorization.
+- A session wait does not survive closing the client. Only promise unattended follow-up after session closure when a durable runner has actually been configured for that scope; otherwise leave the PR URL, head, pending items and resume instructions for the next session.
+
 ## Repository contribution Skills
 
 Source-checkout contributor Skills live under `.agents/skills/`. When adding or maintaining a built-in BYOK media provider, read `.agents/skills/add-byok-provider/SKILL.md` in this checkout. It covers provider research, implementation, references and verification. These repository-local Skills are excluded from application/plugin distribution and host installation; root `skills/` continues to hold product workflows. Installed product copies may not contain `.agents/skills/`. Other Agents following `CLAUDE.md` use this same source-checkout guidance.
@@ -90,7 +112,7 @@ Phase one retains sixteen registered domain openmotion_ names (including the ope
 
 ## MCP onboarding and capability maintenance
 
-The Studio **MCP · Connect Agent** page is the maintained product entry for connecting local Agents and discovering OpenMotion capabilities. Its plug icon is distinct from the model-provider sparkle icon. Keep `studio/src/motion/McpConnectionPage.tsx`, `mcpCapabilities.ts`, their interface translations and `shared/integration.ts` aligned with the actual public contract and installation.
+The Studio **MCP · Connect Agent** page is the maintained product entry for connecting local Agents and discovering OpenMotion capabilities. Its plug icon is distinct from the model-provider brain icon. Keep `studio/src/motion/McpConnectionPage.tsx`, `mcpCapabilities.ts`, their interface translations and `shared/integration.ts` aligned with the actual public contract and installation.
 
 When changing local MCP tools, media-generation capabilities, production Skills, host adapters, template handoff or optional MCP Apps presentation, review and update this page in the same change. Cover the affected setup steps, example prompts, template actions, capability descriptions, client compatibility, limits and FAQ. Use the installation's actual transport/configuration and the shared template catalogue; do not invent a remote endpoint, universal model access, free quota or verified Agent connection. Explain image/video/music/speech discovery, provider configuration, job tracking and the separation between generated assets and composition edits where relevant. Distinguish sixteen registered domain names (one compatibility alias) from negotiated presentation extensions.
 

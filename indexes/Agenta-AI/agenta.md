@@ -1,8 +1,8 @@
 # Agenta-AI/agenta instruction files
 
-Upstream: [Agenta-AI/agenta](https://github.com/Agenta-AI/agenta) · License: `NOASSERTION` · Commit: `8d6f0dff68eab619a4b5ae32970c342f005df74e`
+Upstream: [Agenta-AI/agenta](https://github.com/Agenta-AI/agenta) · License: `NOASSERTION` · Commit: `55a49c2d1741f0ea772d033f90dd49f0dc97baee`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Agenta-AI/agenta/AGENTS.md) | [Source](https://github.com/Agenta-AI/agenta/blob/8d6f0dff68eab619a4b5ae32970c342f005df74e/AGENTS.md) | `7e7535faa6b54e3515f06ae0724be2ed77bec52f51ab7f8f9975f231f4d1fc98` | 8,703 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Agenta-AI/agenta/CLAUDE.md) | [Source](https://github.com/Agenta-AI/agenta/blob/8d6f0dff68eab619a4b5ae32970c342f005df74e/CLAUDE.md) | `f1dd77ecb3cfa195697a49d75c3184efbf2baa4b528c7819c8ce7800d5a876ca` | 158 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Agenta-AI/agenta/AGENTS.md) | [Source](https://github.com/Agenta-AI/agenta/blob/55a49c2d1741f0ea772d033f90dd49f0dc97baee/AGENTS.md) | `1e4a9dc758d3116b40fd6ed68edc803b6cb37f2bc9fe3b7a39d06c3ea598f672` | 8,699 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/Agenta-AI/agenta/CLAUDE.md) | [Source](https://github.com/Agenta-AI/agenta/blob/55a49c2d1741f0ea772d033f90dd49f0dc97baee/CLAUDE.md) | `f1dd77ecb3cfa195697a49d75c3184efbf2baa4b528c7819c8ce7800d5a876ca` | 158 B |

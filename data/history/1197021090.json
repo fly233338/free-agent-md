@@ -2,12 +2,6 @@
   "full_name": "ultraworkers/claw-code",
   "points": [
     {
-      "checked_at": "2026-10-19T08:59:58Z",
-      "commit_sha": "22fe36072a37cb1c489589f2e98ff3dd5357bb5a",
-      "pushed_at": "2026-10-19T04:07:34Z",
-      "stars": 194913
-    },
-    {
       "checked_at": "2026-10-20T08:38:15Z",
       "commit_sha": "22fe36072a37cb1c489589f2e98ff3dd5357bb5a",
       "pushed_at": "2026-10-19T04:07:34Z",
@@ -180,6 +174,12 @@
       "commit_sha": "508b4d862d42a5fa5bde8df5b2d3670f4d4ca324",
       "pushed_at": "2026-11-10T05:59:18Z",
       "stars": 194759
+    },
+    {
+      "checked_at": "2026-11-18T11:51:11Z",
+      "commit_sha": "508b4d862d42a5fa5bde8df5b2d3670f4d4ca324",
+      "pushed_at": "2026-11-10T05:59:18Z",
+      "stars": 194764
     }
   ],
   "repo_id": 1197021090

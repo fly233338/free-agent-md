@@ -2,12 +2,6 @@
   "full_name": "OrchestratorInc/agent-orchestrator",
   "points": [
     {
-      "checked_at": "2026-10-19T08:59:58Z",
-      "commit_sha": "dc13a8c107c67028c0ca7e3a256e522954128f71",
-      "pushed_at": "2026-10-19T08:59:42Z",
-      "stars": 13342
-    },
-    {
       "checked_at": "2026-11-01T10:34:00Z",
       "commit_sha": "85f47aba961a25a21a7b9280d26f0608b0a944e9",
       "pushed_at": "2026-11-01T10:30:30Z",

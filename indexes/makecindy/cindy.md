@@ -1,8 +1,8 @@
 # makecindy/cindy instruction files
 
-Upstream: [makecindy/cindy](https://github.com/makecindy/cindy) · License: `Apache-2.0` · Commit: `0591b8ff9a4e975d50805b972f8127f622e00b84`
+Upstream: [makecindy/cindy](https://github.com/makecindy/cindy) · License: `Apache-2.0` · Commit: `2ad7caf674a283686d3a72f1186e007d0273f250`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/makecindy/cindy/AGENTS.md) | [Source](https://github.com/makecindy/cindy/blob/0591b8ff9a4e975d50805b972f8127f622e00b84/AGENTS.md) | `c8a2212d6740b0d1340f1f10c618a76caedfade2b4277dfade2012c82c5d8535` | 24,415 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/makecindy/cindy/CLAUDE.md) | [Source](https://github.com/makecindy/cindy/blob/0591b8ff9a4e975d50805b972f8127f622e00b84/CLAUDE.md) | `336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49` | 11 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/makecindy/cindy/AGENTS.md) | [Source](https://github.com/makecindy/cindy/blob/2ad7caf674a283686d3a72f1186e007d0273f250/AGENTS.md) | `03fa8ff77e4b844bd091d0bded27f5bab52f25d56a5d997071aa0ededafe86b8` | 9,891 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/makecindy/cindy/CLAUDE.md) | [Source](https://github.com/makecindy/cindy/blob/2ad7caf674a283686d3a72f1186e007d0273f250/CLAUDE.md) | `336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49` | 11 B |

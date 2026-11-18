@@ -2,12 +2,6 @@
   "full_name": "scalar/scalar",
   "points": [
     {
-      "checked_at": "2026-10-19T08:59:58Z",
-      "commit_sha": "fa9ec30b71c2b2b8378b008f6f2d6ae8482cf3ad",
-      "pushed_at": "2026-10-19T08:59:45Z",
-      "stars": 16286
-    },
-    {
       "checked_at": "2026-10-22T08:41:46Z",
       "commit_sha": "576391bcc399b07b118da8e877d45f9b66ab6d12",
       "pushed_at": "2026-10-22T08:40:43Z",
@@ -24,6 +18,12 @@
       "commit_sha": "0e0a719777e9b4b49652fd008fcb88246e6b1d00",
       "pushed_at": "2026-11-09T11:36:32Z",
       "stars": 16385
+    },
+    {
+      "checked_at": "2026-11-18T11:51:11Z",
+      "commit_sha": "98a8140ffa5fa459159704b20d7742b7ad6f8d6b",
+      "pushed_at": "2026-11-18T11:51:12Z",
+      "stars": 16427
     }
   ],
   "repo_id": 679280065

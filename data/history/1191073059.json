@@ -2,12 +2,6 @@
   "full_name": "ministackorg/ministack",
   "points": [
     {
-      "checked_at": "2026-10-19T08:59:58Z",
-      "commit_sha": "593838dad4fc37a28c2d866b55c9fba32cec6b9b",
-      "pushed_at": "2026-10-17T19:41:48Z",
-      "stars": 4979
-    },
-    {
       "checked_at": "2026-10-20T08:38:15Z",
       "commit_sha": "796a433076a1b41e7db2d1333ebd016a38660e22",
       "pushed_at": "2026-10-19T23:44:46Z",
@@ -24,6 +18,12 @@
       "commit_sha": "b833c07a818aeaffe9dcd46c7cc4c93d5e1eee25",
       "pushed_at": "2026-10-21T17:25:35Z",
       "stars": 4996
+    },
+    {
+      "checked_at": "2026-11-18T11:51:11Z",
+      "commit_sha": "0e4076cf2fff2641826555b2acbc3e4073fe1c3d",
+      "pushed_at": "2026-11-18T11:47:00Z",
+      "stars": 5169
     }
   ],
   "repo_id": 1191073059

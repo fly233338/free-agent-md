@@ -8,6 +8,10 @@ Use `CLAUDE.md` as the Claude Code instruction entry. Record future repository-r
 
 Branch new work from the latest `main` and target all pull requests at `main`. Merge reviewed changes directly into `main` when authorized; do not use `feature/motion` as an intermediate integration branch.
 
+Follow [Repository PR review follow-up](AGENTS.md#repository-pr-review-follow-up) after opening or updating a repository PR: verify feedback, fix and validate, reply and resolve, then report the live review/CI/conflict state. Keep merge and publication authorization separate.
+
+For ongoing follow-up, use `Monitor` when this session exposes it, following [Automatic waiting during PR follow-up](AGENTS.md#automatic-waiting-during-pr-follow-up); otherwise use the documented session wait and report its lifetime.
+
 ## Interface styling
 
 Follow the mandatory [shared design system rules](AGENTS.md#shared-design-system--required-for-every-agent) for every style-related change. Read [packages/design-system/README.md](packages/design-system/README.md), reuse its tokens, styles and assets, and extend the package before adding a missing reusable visual role. Feature modules must reference this source rather than maintain independent palettes or copied styles. Apply the same rule when delegating or reviewing work; authored video and domain geometry retain their own styling boundary.

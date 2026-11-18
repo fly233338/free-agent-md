@@ -2,12 +2,6 @@
   "full_name": "f/prompts.chat",
   "points": [
     {
-      "checked_at": "2026-10-19T08:59:58Z",
-      "commit_sha": "4ef0c0b7601cd6b13753d6c1c513144a0dfe23e3",
-      "pushed_at": "2026-10-19T03:19:47Z",
-      "stars": 173495
-    },
-    {
       "checked_at": "2026-10-20T08:38:15Z",
       "commit_sha": "e78128539a745e43d35302fb04ae4a3c5bf7b076",
       "pushed_at": "2026-10-20T06:48:50Z",
@@ -180,6 +174,12 @@
       "commit_sha": "7aeb3e8ee4bd423dbf314b8641f15b5bf28ccba6",
       "pushed_at": "2026-11-17T03:12:36Z",
       "stars": 177722
+    },
+    {
+      "checked_at": "2026-11-18T11:51:11Z",
+      "commit_sha": "74b28435badec653390060e64d2af27e0de45465",
+      "pushed_at": "2026-11-18T08:42:52Z",
+      "stars": 177781
     }
   ],
   "repo_id": 574523116

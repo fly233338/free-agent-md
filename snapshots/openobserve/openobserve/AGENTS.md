@@ -7,6 +7,20 @@
   Read it before any change bigger than a one-cause patch; reviewers apply its §2 tests. On
   anything mechanical (ordering, comments, lint thresholds, schema, PR rules) this file wins.
 
+## Deployment facts
+
+- In a super cluster, one region is elected to run the scheduler. Every scheduler node in that
+  region runs, and the nodes share jobs through row locks (`FOR UPDATE SKIP LOCKED`). Every new
+  spec, design and code change must honor this until schedulers are supported in more than one
+  region:
+  - Do not design for scheduled jobs that run in two regions at the same time.
+  - Do not assume that only one scheduler node runs.
+  - A scheduler node in any other region runs only the region-local AutoObserve lane.
+  - The election runs only at node startup (`src/jobs/src/job/scheduler.rs`) and is advisory. Two
+    regions that start together can both claim it, so do not use it as a lock.
+  - A job gated only on `LOCAL_NODE.is_scheduler()` runs in every region. If it must run in one
+    region, it must read the election claim.
+
 ## Build & workflow
 
 - Build with `cargo build` (debug). Never use `--release` unless explicitly asked.
@@ -69,9 +83,9 @@ Item order inside a file/module, top to bottom (clippy's default grouping):
 STRICT, and enforced in review — a comment that breaks these is deleted, not
 reworded:
 
-- **One line, or none.** A comment is at most a single line. No multi-line
-  comment blocks in code (the license header is the only exception). If the
-  point needs more than one line, it does not belong in a comment.
+- **Two lines, or none.** A comment is at most two lines. No longer comment
+  blocks in code (the license header is the only exception). If the point
+  needs more than two lines, it does not belong in a comment.
 - **Only logical comments — explain WHY.** The single allowed reason to write a
   comment is to state a non-obvious constraint, invariant, or gotcha the code
   itself cannot express. If a comment is not explaining logic, do not write it;
@@ -80,7 +94,7 @@ reworded:
   spacing, `px`, "matches the header height"), change/modification notes ("now
   we...", "changed to...", "was X"), and narration that restates what the code
   plainly does.
-- `///` / JSDoc doc comments on public APIs: one summary sentence, and only when
+- `///` / JSDoc doc comments on public APIs: at most two lines, and only when
   the behaviour is non-obvious; never to restate the signature.
 
 ## Database schema (migrations / SeaORM entities)
