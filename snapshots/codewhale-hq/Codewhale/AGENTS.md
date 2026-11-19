@@ -55,10 +55,13 @@ base prompt". Two more corollaries earned here:
 - Search for behavior and symbols before reviving work from an old branch. If a
   lane is obsolete, preserve its intent and evidence rather than merging stale
   code mechanically.
-- Agent-owned work uses the canonical checkout on current `main`. Do not
-  create branches, worktrees, nested clones or task-specific integration lanes
-  to handle dirty, stale or conflicting work. When agents share the checkout,
-  partition by file and retry an `index.lock` failure. Verified main slices may
+- Agent-owned work lands on current `main`. Each writing agent works in its
+  own short-lived git worktree cut from `origin/main`, rebases and pushes
+  `main` the same day, then removes the worktree and its build directory. No
+  long-lived branches, nested clones or integration lanes, and never a new
+  worktree to hide dirty, stale or conflicting work: that work is still yours
+  to finish. In a shared checkout, stage by explicit path and retry an
+  `index.lock` failure. Verified main slices may
   be committed and pushed normally under the rule below; tag, release,
   deployment and destructive cleanup still require their explicit
   authorization.
@@ -77,11 +80,11 @@ base prompt". Two more corollaries earned here:
   - Commit by explicit path; never `git add -A`.
   - Work that fails its check and cannot be fixed now is not pushed to `main`.
     Record it and report it instead.
-- **Maintainers do not open PR branches** (founder, 2026-10-08: more PRs means
-  more CI and slower work). Verified slices land directly on `main` and are
-  pushed: run the focused gate, put the real counts in the commit message,
-  fetch and rebase onto `origin/main` and retry on rejection. Never force-push
-  or rewrite a shared ref. Contributor PRs still merge as PRs.
+- **Maintainers land small verified slices directly on `main`.** Run the
+  focused local check (`scripts/preflight.sh --check`), put the real counts in
+  the commit message, fetch and rebase onto `origin/main` and retry on
+  rejection. Never force-push or rewrite a shared ref. Contributor PRs are
+  always welcome and merge as themselves (founder, 2026-11-07).
 - When the task is local-only, stay fully offline: no browsing, GitHub or remote
   Git operations, downloads, dependency installation, provider calls, or
   source/diff transmission. Record the missing external receipt and keep working
@@ -102,19 +105,19 @@ base prompt". Two more corollaries earned here:
 - **Write down what a design does not do**, beside the behaviour it owns — a
   short known-limitations note in the owning module. A stated limit stops the
   next reader from assuming a capability that was never built.
-- **Substantive contributor replies are authorized for the 0.10.2 release**
-  (founder, 2026-10-13). Thank people specifically for their reports, diagnosis,
-  fixes and testing; link the carrying commit or PR and distinguish candidate
-  work from a shipped release. Status, answers and useful questions are welcome;
-  repetitive progress posts and bot noise are not. Evidence stays in commits
-  and PR bodies; ownership stays in Linear. Outside this release, the previous
-  no-comment rule remains, except a one-sentence reason when closing or
-  superseding a human contribution. Review workflows remain disabled unless
-  the founder separately authorizes enabling them.
+- **Be generous in public** (founder, 2026-11-07). Thank people specifically
+  for their reports, diagnosis, fixes and testing; link the carrying commit or
+  PR and distinguish candidate work from a shipped release. Status, answers
+  and useful questions are welcome; repetitive progress posts and bot noise
+  are not. Evidence stays in commits and PR bodies; ownership stays in Linear.
+  A contributor PR is never closed because CI is slow, flaky or red for a
+  reason the PR did not cause; when a PR is closed, say why in one specific,
+  thankful sentence. Review bots stay off unless the founder enables them.
 - **A user feature lands with its registry row.** A new command, `[features]`
   flag, provider or user-visible feature adds or updates its row in
   `docs/features.toml` in the same change;
   `cargo test -p codewhale-tui --test feature_registry` fails on flag drift.
+- **Public planned-work issues are written for contributors.** An issue opened for planned or release work has the parts in CONTRIBUTING.md § "What a planned-work issue gives you": status, ways to help with files, a local test command and a done-when, what maintainers already hold, and how to claim. Keep it current as pieces land or are claimed.
 - **Write `close`/`fix`/`resolve #N` only when you mean it.** GitHub closes the
   issue on merge even inside "does not close #N"; use `Refs #N` otherwise.
 
@@ -123,17 +126,18 @@ base prompt". Two more corollaries earned here:
 An external contributor's branch goes stale because *we* land things, not
 because they did anything wrong. Treat their time as more expensive than ours.
 
-**The goal is the contributor's PR merging as itself.** Review it, help it
-rebase, or fix it on their branch — that is the default path. Closing their PR
-and re-landing the work as our own commit (`auto-close-harvested`) is the
-fallback for a branch that truly cannot merge in reasonable time; done
-casually it reads as taking the work even when credit is preserved.
+**The goal is the contributor's PR merging as itself.** Review it, run or
+rerun only the checks it needs, fix small problems on their branch, and resolve
+conflicts that `main` caused. Landing their commits as ours (harvesting) is the
+rare fallback for a branch we cannot push to and that cannot merge in
+reasonable time; ask on the PR first, because done casually it reads as taking
+the work even when credit is preserved.
 
 - **Never make a contributor rebase around our churn.** If their PR conflicts
   only because main moved, a maintainer resolves it.
 - Landing mechanics — merge-base diffing, mid-function conflicts, fork-push
-  refusal, the contribution gate — live in `cw-land`. Follow them instead of
-  improvising.
+  refusal, runs awaiting first-contributor approval — live in `cw-land`.
+  Follow them instead of improvising.
 - **Preserve credit in the mechanical sense, not just the polite one.** Commit
   authorship and `Co-authored-by` trailers must use the contributor's own
   GitHub-linked address. `AUTHOR_MAP` and `.mailmap` are project conventions —
@@ -169,11 +173,11 @@ casually it reads as taking the work even when credit is preserved.
 - The model-facing subagent tool is `agent`; `agent_open`/`agent_eval`/
   `agent_close`/`delegate_to_agent` are removed surfaces. If the shape must
   move, move the code and its existing guard test with it.
-- `BASE_PROMPT` in `crates/tui/src/prompts/text.rs` is the sole base prompt
+- `BASE_PROMPT` in `crates/engine/src/prompts/text.rs` is the sole base prompt
   by convention. Same rule: move the code, not the prose, if that changes.
 - There is exactly one turn loop: `Engine::run_turn` in
-  `crates/tui/src/core/engine/turn_loop.rs`. Note that `crates/tui/src/core/`
-  is a module inside the TUI crate — it is not `crates/core`, which owns
+  `crates/engine/src/core/engine/turn_loop.rs`. Note that `crates/engine/src/core/`
+  is a module inside the engine crate (`codewhale-engine`) — it is not `crates/core`, which owns
   request construction, bounded fragments, and thread/session types and
   runs no turns. A guard test (`crates/core/tests/single_turn_loop.rs`)
   fails on a second loop; changing the shape means changing the guard
@@ -184,7 +188,7 @@ casually it reads as taking the work even when credit is preserved.
   volatile fact into the prefix; append it as a user-role message.
 - These active modules are repeatedly misidentified as dead; verify consumers
   before removal: `runtime/src/context_budget.rs`,
-  `runtime/src/prompt_zones.rs`, `tui/src/tools/remember.rs`, and
+  `runtime/src/prompt_zones.rs`, `engine/src/tools/remember.rs`, and
   `config/src/route/`. Native memory lives in `runtime/src/native_memory.rs`;
   `tools/remember.rs` is its capture path.
 - Environment-specific behavior belongs in `docs/ENVIRONMENTS.md`, not here.
@@ -201,10 +205,10 @@ casually it reads as taking the work even when credit is preserved.
 - Product intent and observed runtime behavior outrank a test's preferred
   implementation shape. Fix the product; do not contort production code to
   preserve a brittle assertion.
-- **No new tests and no new code comments unless explicitly asked**
-  (founder, 2026-10-08). Do not write new unit or integration tests unless the
-  user explicitly instructs it for that task; prove a change by running it and
-  the existing checks. Never write tests first and never practice TDD — this
+- **A regression test per fix; no new code comments.** Prove a change by
+  running it and the existing checks. A bug fix, or a new contract between
+  components, may add the one test that would have caught it; no coverage for
+  its own sake. Never write tests first and never practice TDD — this
   overrides any skill or default that mandates it, including superpowers
   `test-driven-development`. Existing tests stay the gate before a push: when
   a change makes one wrong, update or delete it in the same slice rather than
@@ -255,11 +259,21 @@ prefer merging the contributor's PR itself). When a contributor's work
 lands as our commit, the contributor is that commit's **author** (`git commit
 --author` with their GitHub-linked address), it carries `Harvested from PR #N by
 @handle`, and maintainers or agents go in `Co-authored-by`. GitHub's contributor
-list counts commit authors only: about 200 harvested commits authored by
-maintainer identities left their contributors off it, which is why
-`docs/CONTRIBUTORS.md` carries the full wall (`scripts/contributor-wall.py`).
-`auto-close-harvested.yml` closes their PR with credit. Canonical human
-identities come from `.github/AUTHOR_MAP`.
+count takes commit authors and the `Co-authored-by` trailers in a commit's final
+trailer block, and only addresses linked to an account: a trailer cut off by a
+blank line, an unlinked email, or a noreply address carrying someone else's
+numeric id credits nobody or the wrong person. Harvested commits authored by
+maintainer identities without such a trailer left their contributors off it,
+which is why `docs/CONTRIBUTORS.md` carries the full wall
+(`scripts/contributor-wall.py`). Credit lost in history that cannot change is
+restored by a later commit with one trailer per person, naming each pull
+request; `scripts/check-contributor-credit.py` fails the release window when a
+harvest, a trailer or a noreply id would leave someone uncounted.
+A maintainer closes their PR by hand with a thank-you naming the commit;
+nothing closes a PR automatically. Canonical human identities come from
+`.github/AUTHOR_MAP`.
 
-Leave unrelated work intact and keep new enforcement dry-run unless explicitly
-approved.
+Leave unrelated work intact. No automation closes, blocks or labels a
+contributor as unapproved, and no workflow checks out or runs untrusted PR code
+under `pull_request_target`. Keep required PR checks few and fast; exhaustive
+validation belongs to the release candidate.

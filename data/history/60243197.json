@@ -2,12 +2,6 @@
   "full_name": "nextcloud/server",
   "points": [
     {
-      "checked_at": "2026-10-20T08:38:15Z",
-      "commit_sha": "dade92b6454dd398ca63f1e652c479d0ed7ce307",
-      "pushed_at": "2026-10-20T08:33:24Z",
-      "stars": 37179
-    },
-    {
       "checked_at": "2026-11-03T10:57:56Z",
       "commit_sha": "fb033d8e57963d6553525cf4147c1ecca58e3953",
       "pushed_at": "2026-11-03T10:54:57Z",
@@ -36,6 +30,12 @@
       "commit_sha": "185277024c91315478c0422af9b031ae5e3c8d69",
       "pushed_at": "2026-11-17T11:47:35Z",
       "stars": 37541
+    },
+    {
+      "checked_at": "2026-11-19T11:47:52Z",
+      "commit_sha": "4dc09ee06ce0c3b176ef98f3231013d29f19493e",
+      "pushed_at": "2026-11-19T11:45:48Z",
+      "stars": 37557
     }
   ],
   "repo_id": 60243197

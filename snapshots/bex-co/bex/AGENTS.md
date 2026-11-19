@@ -23,17 +23,20 @@ All `make` targets live in **`lego/operator/`**; see [lego/AGENTS.md](lego/AGENT
 
 - `make test` (operator, from `lego/operator/`) — CRD/RBAC codegen + envtest
 - `cd lego/backend && go test ./...` — backend (real Postgres + OpenFGA in CI)
-- `make lint` (all four modules) — golangci-lint + whole-program dead-code analysis; depguard guards the `id` convention
+- `make lint` (all four modules) — golangci-lint + whole-program dead-code analysis; depguard guards the `id` convention and each module's side of the import DAG
 - `cd lego/cli && go test ./...` — CLI launcher
 
-All three platform suites + `dashboard/yarn test` must pass before `deploy.yml` builds.
+All three platform suites + `dashboard/yarn test` must pass before `deploy.yml` builds. Each suite also runs on every PR and main push touching its workflow's `paths`, which must list every file outside its tree that its tests read (`scripts/ci_test_inputs.py` checks).
 
 ## Local cluster workflow
 
 - `bash scripts/mock-cluster.sh` — kind infra + CAPI + CAPD app cluster; kubeconfig `infra/local/bex.kubeconfig` (gitignored)
 - `bash scripts/mock-cluster.sh scale N` — add/remove workers
-- `scripts/app-apply.sh <bex.yml>` — `render.yaml`-shaped `bex.yml` → App CR (`DRY_RUN=1` preview)
+- Host requirement: `fs.inotify.max_user_instances` ≥ 512 and `fs.inotify.max_user_watches` ≥ 32768. The kernel default of 128 instances leaves workers cycling forever. The script refuses below that and prints `sudo sysctl -w fs.inotify.max_user_instances=1024 fs.inotify.max_user_watches=1048576`, which needs root on the host ([infra/local/README.md](infra/local/README.md#host-requirement-inotify-limits))
+- `bash scripts/mock-cluster.sh operator` — build `bex-operator:dev` from the tree, import it on every node, `make deploy`, wait (the bring-up already installs the Traefik edge + CRDs)
+- `scripts/app-apply.sh <render.yaml>` — applies a Blueprint through bex-api (`BEX_API_URL` + `BEX_API_TOKEN`; `DRY_RUN=1` validates only)
 - `scripts/deploy-sample.sh` / `kubectl get apps.app.bex.co` — deploy + status
+- `bash scripts/fetch-app-kubeconfig.sh <path outside the repo>` — the **production** app cluster's admin kubeconfig. It loads `HCLOUD_TOKEN` from `.env` itself when you have not exported one, and the SSH key is `~/.ssh/bex` (`BEX_SSH_PRIVATE_KEY_FILE` in `.env.example`). The control-plane host key is pinned with zero config from the stable key `~/.ssh/bex_cp_host_ed25519` (`BEX_CP_SSH_HOST_KEY_FILE`; the `.pub` half is enough), so a stale `~/.ssh/known_hosts` no longer matters. Run it before you write "no production access": a key file missing under some other name is never a gate.
 
 ## Environment variables
 
@@ -57,7 +60,7 @@ Key entry points:
 - Billing/pricing: [ADR040](docs/ADR040-billing-metronome.md) · [ADR030](docs/ADR030-pricing.md)
 - GitHub/members/infra-creds: [ADR026](docs/ADR026-github-integration.md) · [ADR019](docs/ADR019-infra-credentials.md)
 - Tenant isolation/networking: [ADR043](docs/ADR043-tenant-namespace-isolation.md) (replaces ADR022 option B)
-- Security review lineage: [ADR028](docs/ADR028-security-review.md) → [ADR072](docs/ADR072-security-review-round7.md) … [ADR083](docs/ADR083-security-review-round20.md) (see docs/AGENTS.md for full chain)
+- Security review lineage: [ADR028](docs/ADR028-security-review.md) → [ADR072](docs/ADR072-security-review-round7.md) … [ADR085](docs/ADR085-security-review-round23.md), [ADR103](docs/ADR103-security-review-static-rewrite-proxy.md), [ADR107](docs/ADR107-security-review-round24.md), [ADR110](docs/ADR110-security-review-round25.md) (see docs/AGENTS.md for full chain)
 
 ## Rules
 
@@ -71,9 +74,9 @@ Key entry points:
   - If it cannot be fixed now (it needs credentials or a decision, the red is stale, or it is an infra flake), ship anyway and report it.
   - Never hold commits locally waiting for CI. `scripts/ship-gates.sh` only warns about a red main.
   - What does block a push is the push's own defect: the real-DB backend suite, or the dashboard's `yarn lint` + `yarn test` (w6/m159), failing on your change. Fix it properly, then ship.
-- **Never `git commit`/`push` unless user runs `/ship` (Claude) or `$ship` (Codex), or explicitly requests an `rt-*` routine run.** A routine request authorizes planning, fixing, verification, and invoking ship in the same run without first filing a `.pm` milestone. Honor explicit audit-only or no-ship limits; follow the ship skill’s safety rules.
-- Never commit/print `.env` or `*.kubeconfig`.
-- **No build artifacts or evidence dumps in git (user decision 2026-11-04, w6/100 D10).** No blob over 1 MiB anywhere; `.pm/` holds markdown and small text only — wheels, tarballs, images, SBOM copies, compiled binaries and bulk logs go to object storage, and the board records their sha256 + link. Raw run output is evidence whatever its size: no `.pm` `*evidence*` directory or `json`/`jsonl`/`log`/`stdout`/`stderr` file, no `mobile/e2e/artifacts/`, no root-level image. `scripts/repo-artifact-guard.sh` enforces it in `scripts/ship-gates.sh` and `repo-artifact-guard.yml`. main was rewritten twice on 2026-11-04 to purge such files: a checkout from before the second rewrite must `git fetch && git reset --hard origin/main` (after saving its own work), never `pull --rebase` its old history back.
+- **Never `git commit`/`push` unless user runs `/ship` (Claude) or `$ship` (Codex), invokes `/loopx`, `/pmx` or `/qa-find-bugs` (each skill states what its invocation ships), or explicitly requests an `rt-*` routine run.** A routine request authorizes planning, fixing, verification, and invoking ship in the same run without first filing a `.pm` milestone. Honor explicit audit-only or no-ship limits; follow the ship skill’s safety rules.
+- Never commit/print `.env` or `*.kubeconfig`. GitHub push protection refuses a push carrying a recognized credential (`GH013`, w3/m365), and `scripts/ship-gates.sh` refuses generic credential patterns (`scripts/gitleaks.sh`): remove the value from the commit and rotate it if it is real, never follow the bypass link ([ship skill](.claude/skills/ship/SKILL.md#step-5--gate-then-push)).
+- **No build artifacts or evidence dumps in git (user decision 2026-11-04, w6/100 D10).** No blob over 1 MiB anywhere; `.pm/` holds markdown and small text only — wheels, tarballs, images, SBOM copies, compiled binaries and bulk logs go to object storage, and the board records their sha256 + link. Raw run output is evidence whatever its size: no `.pm` `*evidence*` directory or `json`/`jsonl`/`log`/`stdout`/`stderr` file, no `mobile/e2e/artifacts/`, no root-level image. `scripts/repo-artifact-guard.sh` enforces it in `scripts/ship-gates.sh` and `repo-artifact-guard.yml`. main was rewritten twice on 2026-11-04 to purge such files: a checkout from before the second rewrite must `git fetch && git reset --hard origin/main` (after saving its own work), never `pull --rebase` its old history back. `main` itself refuses deletion and force-push (ruleset `main history`, w3/m365); a deliberate rewrite follows [docs/runbooks/main-history-rewrite.md](docs/runbooks/main-history-rewrite.md).
 - **Local dev environments are pre-approved (user decision 2026-09-09).** `scripts/dev-env.sh <N> {up,down,status,clean,env}` for any `dev-N`, and `scripts/mock-cluster.sh` (bring-up, reprovision, `scale N`) on the local kind/CAPD cluster, never require user approval — run them whenever the work needs it, including destructive recovery (reprovision, `clean`) when the harness's own diagnostics point there. Still respect each harness's isolation boundaries (own `dev-N` namespaces/ports; read-only on other workstreams' stacks), and report what was rebuilt.
 - **Skill layout:** canonical `.claude/skills/<name>/SKILL.md`; `.agents/skills/<name>` is `../../.claude/skills/<name>` symlink; no `.claude/commands/`. Validate: `bash scripts/skill-layout-validate.sh`.
 - **`.env.example` mirrors `.env` names** (no values). `cp .env.example .env` must never fall out of date; `scripts/gh-secrets.sh` pushes `.env` → GitHub secrets.

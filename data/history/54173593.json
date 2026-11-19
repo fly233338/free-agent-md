@@ -2,12 +2,6 @@
   "full_name": "storybookjs/storybook",
   "points": [
     {
-      "checked_at": "2026-10-20T08:38:15Z",
-      "commit_sha": "e2442d7e5a120c326e875675c4794e4d7efe280e",
-      "pushed_at": "2026-10-20T08:36:35Z",
-      "stars": 91343
-    },
-    {
       "checked_at": "2026-11-09T11:42:06Z",
       "commit_sha": "9e90ad1b22abfeb9daaa64d8eea5ee52b754bd6d",
       "pushed_at": "2026-11-09T11:42:08Z",

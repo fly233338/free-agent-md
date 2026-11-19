@@ -2,12 +2,6 @@
   "full_name": "trycua/cua",
   "points": [
     {
-      "checked_at": "2026-10-20T08:38:15Z",
-      "commit_sha": "7d1e178522cf526512dfe3596612a3753cb46a85",
-      "pushed_at": "2026-10-20T08:38:10Z",
-      "stars": 30291
-    },
-    {
       "checked_at": "2026-10-24T08:12:46Z",
       "commit_sha": "71325c76434bba703a78a9f45ce2b8dda7416dfc",
       "pushed_at": "2026-10-24T08:08:42Z",
@@ -48,6 +42,12 @@
       "commit_sha": "b99b2bf2c078ff794e2dd31381c4b16b6a839c40",
       "pushed_at": "2026-11-15T11:04:34Z",
       "stars": 32363
+    },
+    {
+      "checked_at": "2026-11-19T11:47:52Z",
+      "commit_sha": "2046499edf4c5910e3c0c43c19f4f04c727998ba",
+      "pushed_at": "2026-11-19T11:45:11Z",
+      "stars": 32653
     }
   ],
   "repo_id": 925270205

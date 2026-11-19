@@ -2,12 +2,6 @@
   "full_name": "WeblateOrg/weblate",
   "points": [
     {
-      "checked_at": "2026-10-20T08:38:15Z",
-      "commit_sha": "12f95fe90128a799fee9aad1e8ce1db5c12ed698",
-      "pushed_at": "2026-10-20T08:38:12Z",
-      "stars": 6114
-    },
-    {
       "checked_at": "2026-11-02T11:18:59Z",
       "commit_sha": "9106f6a31fdeae6fc9e57a3bc1ffc3979824213d",
       "pushed_at": "2026-11-02T11:18:16Z",
@@ -18,6 +12,12 @@
       "commit_sha": "5f19a96723194b2ccc7cee4df6960bd0bd403351",
       "pushed_at": "2026-11-10T11:17:50Z",
       "stars": 6165
+    },
+    {
+      "checked_at": "2026-11-19T11:47:52Z",
+      "commit_sha": "5d4298889321f900bbe6b274db395a7e724c4f78",
+      "pushed_at": "2026-11-19T11:47:33Z",
+      "stars": 6174
     }
   ],
   "repo_id": 3559019

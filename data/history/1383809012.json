@@ -2,12 +2,6 @@
   "full_name": "yetone/magpie",
   "points": [
     {
-      "checked_at": "2026-10-20T08:38:15Z",
-      "commit_sha": "dee5c9d75f452756752dbbed3b46308f6d8edffc",
-      "pushed_at": "2026-10-20T08:32:41Z",
-      "stars": 17538
-    },
-    {
       "checked_at": "2026-10-25T08:30:15Z",
       "commit_sha": "0152f6696615ec51fe8b9bb9982382744fb011f6",
       "pushed_at": "2026-10-25T08:20:10Z",
@@ -102,6 +96,12 @@
       "commit_sha": "589e4ba6da51ac20143a82a30551d7a526c598ca",
       "pushed_at": "2026-11-18T11:47:39Z",
       "stars": 38495
+    },
+    {
+      "checked_at": "2026-11-19T11:47:52Z",
+      "commit_sha": "ed405d1d781d7832bababa8361fa6c299109128e",
+      "pushed_at": "2026-11-19T11:39:14Z",
+      "stars": 38946
     }
   ],
   "repo_id": 1383809012
