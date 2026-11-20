@@ -2,12 +2,6 @@
   "full_name": "kestra-io/kestra",
   "points": [
     {
-      "checked_at": "2026-10-21T08:39:21Z",
-      "commit_sha": "5190cb234be954defad1909a100086bea7c7803b",
-      "pushed_at": "2026-10-21T08:39:03Z",
-      "stars": 29916
-    },
-    {
       "checked_at": "2026-10-22T08:41:46Z",
       "commit_sha": "698830bddae9234b7f152dc4c8439768df49a913",
       "pushed_at": "2026-10-22T08:41:49Z",

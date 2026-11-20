@@ -2,12 +2,6 @@
   "full_name": "woocommerce/woocommerce",
   "points": [
     {
-      "checked_at": "2026-10-21T08:39:21Z",
-      "commit_sha": "2f46f7a092f67dc978730df1e7b2b52f613b2042",
-      "pushed_at": "2026-10-21T08:38:14Z",
-      "stars": 10558
-    },
-    {
       "checked_at": "2026-10-26T09:02:50Z",
       "commit_sha": "e0eb4174ef3154bcbd15302a70c2d8085ea34a70",
       "pushed_at": "2026-10-26T08:56:54Z",
@@ -24,6 +18,12 @@
       "commit_sha": "53e313c06b91116fc7e59b7b581fe1611a9e0ff2",
       "pushed_at": "2026-11-02T11:18:56Z",
       "stars": 10575
+    },
+    {
+      "checked_at": "2026-11-20T11:48:43Z",
+      "commit_sha": "d54562612a6b29403a93682daa37b981907333b5",
+      "pushed_at": "2026-11-20T11:46:21Z",
+      "stars": 10606
     }
   ],
   "repo_id": 2179920

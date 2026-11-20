@@ -2,12 +2,6 @@
   "full_name": "torvalds/linux",
   "points": [
     {
-      "checked_at": "2026-10-21T08:39:21Z",
-      "commit_sha": "a804c5742bff224d4cb4d25dd383554d598be32b",
-      "pushed_at": "2026-10-21T06:28:19Z",
-      "stars": 252941
-    },
-    {
       "checked_at": "2026-10-22T08:41:46Z",
       "commit_sha": "7be4bc52fd9e0e55dc9a2e0232b89427d2c4b614",
       "pushed_at": "2026-10-22T06:31:47Z",
@@ -180,6 +174,12 @@
       "commit_sha": "4405c18c95d2d0f99f6c581ef0ee8591a1aa6ccd",
       "pushed_at": "2026-11-18T17:55:14Z",
       "stars": 256033
+    },
+    {
+      "checked_at": "2026-11-20T11:48:43Z",
+      "commit_sha": "65e4fd942f72a9dba0e4e257290c4fa1aa756854",
+      "pushed_at": "2026-11-19T22:24:51Z",
+      "stars": 256189
     }
   ],
   "repo_id": 2325298

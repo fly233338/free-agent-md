@@ -2,12 +2,6 @@
   "full_name": "slint-ui/slint",
   "points": [
     {
-      "checked_at": "2026-10-21T08:39:21Z",
-      "commit_sha": "d5a3cad312a7fd970a25a755ee9dc7abc54a7fbc",
-      "pushed_at": "2026-10-21T08:36:15Z",
-      "stars": 24236
-    },
-    {
       "checked_at": "2026-11-06T11:00:19Z",
       "commit_sha": "11692b7c4c7ab7177b5b41ec07999a625e41554b",
       "pushed_at": "2026-11-06T10:55:17Z",

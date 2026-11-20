@@ -2,12 +2,6 @@
   "full_name": "vllm-project/vllm",
   "points": [
     {
-      "checked_at": "2026-10-21T08:39:21Z",
-      "commit_sha": "e410466a2a301dbc83ee0cf93caae1da102754fe",
-      "pushed_at": "2026-10-21T08:34:20Z",
-      "stars": 94602
-    },
-    {
       "checked_at": "2026-10-22T08:41:46Z",
       "commit_sha": "5957bbf125b1f6bed0dcbedba7737b27cd068f8d",
       "pushed_at": "2026-10-22T08:36:59Z",

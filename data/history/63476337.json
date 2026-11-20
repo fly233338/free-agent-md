@@ -2,12 +2,6 @@
   "full_name": "TheAlgorithms/Python",
   "points": [
     {
-      "checked_at": "2026-10-21T08:39:21Z",
-      "commit_sha": "6e03a48579ca212a08b36be00378f887dc41a003",
-      "pushed_at": "2026-10-20T05:01:26Z",
-      "stars": 225429
-    },
-    {
       "checked_at": "2026-10-22T08:41:46Z",
       "commit_sha": "6e03a48579ca212a08b36be00378f887dc41a003",
       "pushed_at": "2026-10-20T05:01:26Z",
@@ -180,6 +174,12 @@
       "commit_sha": "30507bbe41397065728167fb09aa820f9fce8dc7",
       "pushed_at": "2026-11-13T04:28:36Z",
       "stars": 226293
+    },
+    {
+      "checked_at": "2026-11-20T11:48:43Z",
+      "commit_sha": "30507bbe41397065728167fb09aa820f9fce8dc7",
+      "pushed_at": "2026-11-13T04:28:36Z",
+      "stars": 226331
     }
   ],
   "repo_id": 63476337

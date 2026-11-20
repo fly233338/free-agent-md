@@ -2,12 +2,6 @@
   "full_name": "cheaper-inference/OmniRoute",
   "points": [
     {
-      "checked_at": "2026-10-21T08:39:21Z",
-      "commit_sha": "0520f9e8b1f6f5f3c74e500eae643baa12ab2193",
-      "pushed_at": "2026-10-21T08:39:19Z",
-      "stars": 79109
-    },
-    {
       "checked_at": "2026-10-25T08:30:15Z",
       "commit_sha": "81e48878b90fb309ede580bca8b97c6953a2fc62",
       "pushed_at": "2026-10-25T08:30:07Z",
@@ -60,6 +54,12 @@
       "commit_sha": "ac6c38221cb32154e151929e3d38fc7763b5078c",
       "pushed_at": "2026-11-19T11:42:38Z",
       "stars": 88800
+    },
+    {
+      "checked_at": "2026-11-20T11:48:43Z",
+      "commit_sha": "0c9e0356f91c24a8e72ad091709c7a2ce10440b2",
+      "pushed_at": "2026-11-20T11:48:02Z",
+      "stars": 89064
     }
   ],
   "repo_id": 1157102282

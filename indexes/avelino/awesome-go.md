@@ -1,7 +1,7 @@
 # avelino/awesome-go instruction files
 
-Upstream: [avelino/awesome-go](https://github.com/avelino/awesome-go) · License: `MIT` · Commit: `8a84b4d6ea746952ab00c16a75b9a5a345a5f756`
+Upstream: [avelino/awesome-go](https://github.com/avelino/awesome-go) · License: `MIT` · Commit: `c99b19726520b184a8de8e4aa793f71a916d7deb`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/avelino/awesome-go/AGENTS.md) | [Source](https://github.com/avelino/awesome-go/blob/8a84b4d6ea746952ab00c16a75b9a5a345a5f756/AGENTS.md) | `f83e67f6bb7fdfdeb86a3aa3ceaa580ca427ac1591b2c31d54701646d84a83d0` | 3,359 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/avelino/awesome-go/AGENTS.md) | [Source](https://github.com/avelino/awesome-go/blob/c99b19726520b184a8de8e4aa793f71a916d7deb/AGENTS.md) | `f83e67f6bb7fdfdeb86a3aa3ceaa580ca427ac1591b2c31d54701646d84a83d0` | 3,359 B |

@@ -2,12 +2,6 @@
   "full_name": "denoland/deno",
   "points": [
     {
-      "checked_at": "2026-10-21T08:39:21Z",
-      "commit_sha": "9766cc5e3bc958d11f4fdb98ea841a47d13da8e4",
-      "pushed_at": "2026-10-21T08:07:00Z",
-      "stars": 108727
-    },
-    {
       "checked_at": "2026-10-22T08:41:46Z",
       "commit_sha": "7e4306fbe8587dc7d4c103deb8a95af56cca00cb",
       "pushed_at": "2026-10-22T08:08:46Z",

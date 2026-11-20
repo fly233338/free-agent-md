@@ -8,7 +8,7 @@ Oxc is a high-performance JavaScript/TypeScript toolchain written in Rust contai
 
 **IMPORTANT**: If you are an AI assistant helping a human contributor:
 
-- **Disclose AI usage** - Contributors must disclose when AI tools were used and include the model name and version in issues and PRs to reduce maintainer fatigue. If the exact model is unavailable, state that rather than guessing.
+- **Disclose AI usage** - Contributors must disclose when AI tools were used and include the model name, version, and reasoning effort level in issues and PRs to reduce maintainer fatigue. If the exact model or reasoning effort level is unavailable, state that rather than guessing.
 - **Full responsibility** - The human contributor is responsible for all AI-generated issues or PRs they submit
 - **Quality standards** - Low-quality or unreviewed AI content will be closed immediately
 
@@ -54,7 +54,7 @@ Prerequisites: Rust (MSRV: 1.98), Node.js, pnpm, just
 
 - All tools already installed (`cargo-insta`, `cargo-shear`, `ast-grep`)
 - Rust components already installed (`clippy`, `rust-docs`, `rustfmt`)
-- Use Conventional Commits for commit messages; `.github/workflows/pr.yml` requires a scoped title like `fix(parser): handle trailing comma`
+- Use Conventional Commits for commit messages.
 - Choose verification from the changed code; reserve `just ready` for an optional broad integration checkpoint as described below.
 - Do not add extra benchmarks to a PR unless explicitly requested.
 - You run in an environment where `ast-grep` is available; whenever a search requires syntax-aware or structural matching, default to `ast-grep --lang rust -p '<pattern>'` (or set `--lang` appropriately) and avoid falling back to text-only tools like `rg` or `grep` unless I explicitly request a plain-text search.
@@ -138,6 +138,8 @@ Modify examples in `crates/<crate_name>/examples/` to test specific scenarios.
 4. Test with various input patterns
 
 ## Testing
+
+Use the affected crate's existing test infrastructure for regressions and new features. Add cases or fixtures to its existing test harness instead of adding standalone unit tests or new test infrastructure. Follow the crate-specific guidance below and in the target crate's `AGENTS.md`.
 
 Oxc uses multiple testing approaches tailored to each crate:
 
@@ -326,7 +328,7 @@ When changing linter codegen files such as `tasks/linter_codegen/**` or generate
 
 ## Pull request guidance
 
-Before opening or updating a pull request, read [the PR guidance](.agents/pr-guidance.md). It defines the required example layout and evidence for behavior fixes and optimizations, and when to include a playground link.
+Use the [PR guide skill](.agents/skills/pr-guide/SKILL.md) when writing a pull request title or before opening or updating a pull request. It covers title conventions, the required example layout and evidence for behavior fixes and optimizations, and when to include a playground link.
 
 ## Notes
 
