@@ -2,12 +2,6 @@
   "full_name": "vinta/awesome-python",
   "points": [
     {
-      "checked_at": "2026-10-22T08:41:46Z",
-      "commit_sha": "4c4298751f2d5dbdf45bcea5e0b4c4039d3a22f4",
-      "pushed_at": "2026-10-22T04:37:04Z",
-      "stars": 329338
-    },
-    {
       "checked_at": "2026-10-23T08:37:36Z",
       "commit_sha": "8c385dcab9b1a7b6029a6ecb7c5b1f52597fd418",
       "pushed_at": "2026-10-22T19:52:53Z",
@@ -180,6 +174,12 @@
       "commit_sha": "4c3cb15dc695e95ae64add86b9994add8277f323",
       "pushed_at": "2026-11-17T10:02:01Z",
       "stars": 335969
+    },
+    {
+      "checked_at": "2026-11-21T11:15:08Z",
+      "commit_sha": "4c3cb15dc695e95ae64add86b9994add8277f323",
+      "pushed_at": "2026-11-17T10:02:01Z",
+      "stars": 336151
     }
   ],
   "repo_id": 21289110

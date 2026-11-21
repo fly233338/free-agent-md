@@ -17,6 +17,18 @@ Apply [PHILOSOPHY.md](./PHILOSOPHY.md) when implementing, triaging, or reviewing
 changes. It defines the core requirements and the approach to existing
 capabilities, abstractions, compatibility, and releases.
 
+## `unsafe` policy (Rust only)
+
+[UNSAFE_POLICY.md](./UNSAFE_POLICY.md) governs every `unsafe` in pacquet and
+pnpr: which crates may hold one, what a `// SAFETY:` comment has to
+discharge, and the workspace `unsafe_code` lint every other crate takes.
+`cargo test -p pnpm-unsafe-audit` enforces the parts a test can check.
+
+Read it before adding a foreign call. The short version: a crate either
+abstracts a foreign or raw-pointer API, or holds no `unsafe` at all. A new
+call goes into the `pnpm-ffi-*` crate that owns the surface, not into the
+crate that needs the result.
+
 ## pnpm v12 and v11 development policy
 
 pnpm v12, implemented in Rust under `pnpm/`, is the target for new development. pnpm v11, implemented in TypeScript under `pnpm11/`, is maintained for bug fixes.
@@ -80,6 +92,8 @@ The pnpm codebase is a monorepo managed by pnpm itself. The root contains functi
 -   `pnpr/`: The pnpm-compatible npm registry server. Self-contained sub-project with its own crates, tests, and tooling — see [`pnpr/AGENTS.md`](./pnpr/AGENTS.md).
 
 ## Setup & Build (TypeScript only)
+
+**Note:** `pn` and `pnx` are literally just shorthands for `pnpm` and `pnpx` respectively. If these commands are not found while running pnpm scripts, just define them locally in `~/.local/bin`.
 
 To set up the environment and build the project:
 
@@ -181,19 +195,19 @@ Follow the [Conventional Commits](https://www.conventionalcommits.org/) specific
 
 ### Install the git hooks before committing
 
-The git hooks in `.config/husky/` (including the `commit-msg` check described below) only run once husky has wired them into git. A fresh clone does **not** have them active until installed. **Before making any commit, ensure the hooks are installed** by running one of:
+The git hooks live in `.config/githooks/` and only run once git is pointed at them via `core.hooksPath`. A fresh clone does **not** have them active until installed. **Before making any commit, ensure the hooks are installed** by running one of:
 
 ```bash
-pnpm install      # runs the "prepare": "husky .config/husky" script as part of install
-# or, if dependencies are already installed, register the hooks on their own:
-pnpm exec husky .config/husky
+pnpm install      # runs the "prepare" script, which sets core.hooksPath
+# or, to register the hooks on their own (no dependencies needed):
+node .config/githooks/install.mjs
 ```
 
-You can confirm the hooks are active with `git config core.hooksPath` (it should point at husky's directory) and by checking that `.config/husky/_/` exists. Do not commit with hooks uninstalled — that silently skips every check, including the bare `#NNN` rejection below.
+You can confirm the hooks are active with `git config core.hooksPath` (it should print `.config/githooks`). The `commit-msg` checks are dependency-free Node.js scripts, so they run even before `pnpm install`. Do not commit with hooks uninstalled — that silently skips every check, including the bare `#NNN` rejection below.
 
 ### Never use bare `#NNN` issue/PR references
 
-**Do not write a bare `#NNN` (a `#` followed by digits) anywhere in a commit message.** A `commit-msg` hook (`.config/husky/reject-bare-issue-refs.mjs`) rejects them.
+**Do not write a bare `#NNN` (a `#` followed by digits) anywhere in a commit message.** A `commit-msg` hook (`.config/githooks/reject-bare-issue-refs.mjs`) rejects them.
 
 GitHub turns any `#NNN` into a link to issue/PR `NNN` of *this* repo, which is almost never what a bare reference means. This is a frequent AI mistake, in these forms:
 
@@ -206,7 +220,7 @@ For references to issues/PRs in **this** repo, also use the qualified form `pnpm
 
 ### Never use a bare `@mention`
 
-**Do not write a bare `@name` (an `@` followed by a username-like token) anywhere in a commit message.** A `commit-msg` hook (`.config/husky/reject-bare-mentions.mjs`) rejects them.
+**Do not write a bare `@name` (an `@` followed by a username-like token) anywhere in a commit message.** A `commit-msg` hook (`.config/githooks/reject-bare-mentions.mjs`) rejects them.
 
 GitHub turns any `@name` into a mention of that user/org/team, which is wrong either way it is meant:
 
@@ -442,6 +456,34 @@ try {
 }
 ```
 
+## Worktrees
+
+Development happens in linked git worktrees, one directory per task,
+usually hanging off a bare clone. Multiple workers (agents and humans)
+run concurrently, each in its own worktree.
+
+**One worktree works on one branch for its whole life.** Never switch an
+existing worktree to another branch with `git switch <other>`
+or `git checkout -b`. The worktree you are in may be another worker's
+workspace tomorrow, and the branch you take it to may be someone else's
+task. Start every new branch in a fresh worktree instead:
+
+```bash
+git worktree add ../<dir-name> -b <branch-name> origin/main
+```
+
+Hooks (`post-checkout` and `pre-commit`, via
+`.config/githooks/reject-worktree-rebind.mjs`) enforce this for agent sessions:
+
+-   A checkout or commit binds the worktree to its branch. A first-observed
+    *switch* binds to the branch it left, so the guard checks even that switch.
+-   A branch switch away from the bound branch fails after git has already
+    switched. Switch back to the bound branch, which is always allowed.
+-   pre-commit rejects a commit on any other branch.
+-   Renaming the bound branch with `git branch -m` moves the binding.
+-   A human who genuinely wants to rebind a worktree can re-run with
+    `PNPM_ALLOW_WORKTREE_REBIND=1`.
+
 ## Working with GitHub PRs, Issues, and Comments
 
 The [`pull-requests`](./.agents/skills/pull-requests/SKILL.md) skill covers taking
@@ -490,7 +532,7 @@ Codex reads that directory as-is. Claude Code only looks in `.claude/skills`, so
 
 Add a new skill under `.agents/skills`; nothing else needs to change.
 
-Git only writes a real symlink on Windows when the clone has `core.symlinks=true`, which needs Developer Mode or an elevated shell. Without it `.claude/skills` is checked out as a text file holding the target path, and Claude Code finds no skills. `CLAUDE.md` is a symlink to `AGENTS.md`, so such a clone loses the project instructions the same way.
+Git only writes a real symlink on Windows when the clone has `core.symlinks=true`, which needs Developer Mode or an elevated shell. Without it `.claude/skills` is checked out as a text file holding the target path, and Claude Code finds no skills.
 
 ## Key Configuration Files
 

@@ -2,12 +2,6 @@
   "full_name": "androidx/androidx",
   "points": [
     {
-      "checked_at": "2026-10-22T08:41:46Z",
-      "commit_sha": "74146e18ff840deb5934c0d0eacb77c89517e666",
-      "pushed_at": "2026-10-22T08:38:20Z",
-      "stars": 6113
-    },
-    {
       "checked_at": "2026-11-05T11:03:12Z",
       "commit_sha": "7dee825866b11781a849d31203d2a8cc59c714ab",
       "pushed_at": "2026-11-05T10:58:03Z",

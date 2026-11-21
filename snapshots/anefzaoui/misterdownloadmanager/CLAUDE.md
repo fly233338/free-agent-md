@@ -19,7 +19,8 @@ craft-libs), laid out the way Internet Download Manager users expect. Start by r
    `unix.rs`; the rest of the workspace is safe, portable Rust (`unsafe_code = "deny"`). A
    feature works on every system, or says why it can't (`cfg` with a comment).
 4. Fix root causes, keep data contracts aligned between producers and consumers, and verify the
-   whole system end to end after each change.
+   whole system end to end after each change. How: the `verify` skill (`.claude/skills/verify`); what to
+   check by what a diff touches: [REVIEW.md](REVIEW.md). Every PR says `Verified:` and `Not verified:`.
 5. Every PR updates [ROADMAP.md](ROADMAP.md): move its item to done (or add it), keep the
    statuses true. Public file: no security details beyond CHANGELOG's wording, no private notes.
 6. Every PR description shows what it changed in screenshots, as many as it takes: each changed

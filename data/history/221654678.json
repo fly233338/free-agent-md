@@ -2,12 +2,6 @@
   "full_name": "deepset-ai/haystack",
   "points": [
     {
-      "checked_at": "2026-10-22T08:41:46Z",
-      "commit_sha": "6f10dd7fbd538dffc1edb84c628e2f6efed144a4",
-      "pushed_at": "2026-10-22T08:39:43Z",
-      "stars": 26808
-    },
-    {
       "checked_at": "2026-11-04T11:01:57Z",
       "commit_sha": "87e66738f22dd1fe6d262ba20e3f31bf50cc1d38",
       "pushed_at": "2026-11-04T10:53:10Z",

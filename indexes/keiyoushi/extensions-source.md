@@ -1,8 +1,8 @@
 # keiyoushi/extensions-source instruction files
 
-Upstream: [keiyoushi/extensions-source](https://github.com/keiyoushi/extensions-source) · License: `Apache-2.0` · Commit: `ef952a64df831c33c29c276d9c283b4cd7633ce1`
+Upstream: [keiyoushi/extensions-source](https://github.com/keiyoushi/extensions-source) · License: `Apache-2.0` · Commit: `293eb3cdbf4ca73ff238ab54cec3f095a3bdbdc2`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/keiyoushi/extensions-source/AGENTS.md) | [Source](https://github.com/keiyoushi/extensions-source/blob/ef952a64df831c33c29c276d9c283b4cd7633ce1/AGENTS.md) | `d649c2787d2c21b496a0058b9b63243008a568aef291e1e363730f08f7b82bff` | 4,239 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/keiyoushi/extensions-source/CLAUDE.md) | [Source](https://github.com/keiyoushi/extensions-source/blob/ef952a64df831c33c29c276d9c283b4cd7633ce1/CLAUDE.md) | `336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49` | 11 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/keiyoushi/extensions-source/AGENTS.md) | [Source](https://github.com/keiyoushi/extensions-source/blob/293eb3cdbf4ca73ff238ab54cec3f095a3bdbdc2/AGENTS.md) | `d649c2787d2c21b496a0058b9b63243008a568aef291e1e363730f08f7b82bff` | 4,239 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/keiyoushi/extensions-source/CLAUDE.md) | [Source](https://github.com/keiyoushi/extensions-source/blob/293eb3cdbf4ca73ff238ab54cec3f095a3bdbdc2/CLAUDE.md) | `336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49` | 11 B |

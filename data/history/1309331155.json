@@ -2,12 +2,6 @@
   "full_name": "vercel-labs/scriptc",
   "points": [
     {
-      "checked_at": "2026-10-22T08:41:46Z",
-      "commit_sha": "12973aadfafb35527af5ad89c3bf114a1460fd24",
-      "pushed_at": "2026-10-22T08:41:33Z",
-      "stars": 6370
-    },
-    {
       "checked_at": "2026-10-23T08:37:36Z",
       "commit_sha": "64db69aefc1105435b2fce50886d44a97af8efaa",
       "pushed_at": "2026-10-23T08:33:10Z",
@@ -60,6 +54,12 @@
       "commit_sha": "b2ede3d8befe6e833a54fab7d5e07f95c25e277c",
       "pushed_at": "2026-11-19T11:47:51Z",
       "stars": 6584
+    },
+    {
+      "checked_at": "2026-11-21T11:15:08Z",
+      "commit_sha": "0a3ad7ffd93bcc985ec198fbc0969dcabb66eb8d",
+      "pushed_at": "2026-11-21T11:02:24Z",
+      "stars": 6604
     }
   ],
   "repo_id": 1309331155

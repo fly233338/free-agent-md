@@ -2,12 +2,6 @@
   "full_name": "awslabs/aidlc-workflows",
   "points": [
     {
-      "checked_at": "2026-10-22T08:41:46Z",
-      "commit_sha": "120d777a42139db77c7d0e1fdac7512da5b0091c",
-      "pushed_at": "2026-10-22T08:38:35Z",
-      "stars": 5460
-    },
-    {
       "checked_at": "2026-10-24T08:12:46Z",
       "commit_sha": "05297d1d9693c2732f7afa1977ca0a434f0e4507",
       "pushed_at": "2026-10-24T08:09:05Z",
@@ -30,6 +24,12 @@
       "commit_sha": "59b64b0d818d309c78a0a22da39bc33fd2268374",
       "pushed_at": "2026-11-11T11:05:10Z",
       "stars": 6018
+    },
+    {
+      "checked_at": "2026-11-21T11:15:08Z",
+      "commit_sha": "4073f1b37351fb6aa13d03054cbef18f203d658e",
+      "pushed_at": "2026-11-21T10:59:04Z",
+      "stars": 6189
     }
   ],
   "repo_id": 1096054771

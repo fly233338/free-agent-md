@@ -1,0 +1,189 @@
+# botmux
+
+飞书话题群 ↔ AI 编程 CLI 桥接。Daemon 监听飞书消息，每个新话题自动 spawn 一个独立 CLI 进程（Claude Code / Codex / Antigravity / Grok / Pi 等 20+ 种，完整列表见 README）。
+
+## 构建 & 运行
+
+```bash
+bun run build                # tsc 编译
+bun run daemon:restart       # 重启 daemon（自动恢复 active sessions）
+bun run daemon:logs          # 查看日志
+```
+
+- 每次修改后需要 `bun run build` 然后 `bun run daemon:restart`
+
+⚠️ **别用裸 `node` 起 daemon —— 用 `bun run daemon:*`。** 会话存储硬依赖 SQLite 引擎
+（`node:sqlite` 需 Node ≥ 22.13，或任意 bun 的 `bun:sqlite`），而裸 `node` 由 exec 时的
+PATH 解析，那不是写它的环境：2026-09-08 某次 restart 的 PATH 把 `/usr/bin` 排在 fnm shim
+之前 ⟹ 解析成 v18.20.4 ⟹ **55 个 bot daemon 全部启动即崩**，飞书里所有话题看似全丢（57 个
+SQLite 库其实完好）。**supervisor 自身不需要 SQLite，所以它照常打印「✅ daemon 已重启」**
+—— 这个失败形状是记在这里的唯一理由：报成功、孩子全灭，看日志前无从分辨。
+现在 preflight 会在**拆掉现有 fleet 之前**按引擎能力拒绝（逃生阀 `BOTMUX_INTERPRETER=<abs>`）。
+
+**包管理器是 bun**（`packageManager: bun@1.4.4`，锁文件 `bun.lock`）。装依赖用 `bun install --frozen-lockfile`。
+
+⚠️ `trustedDependencies: ["electron","node-pty"]` **不能删**：bun 默认**不跑依赖的生命周期脚本**，而 `node-pty` 要靠它 `node-gyp` 编出 `build/Release/pty.node` —— 少了这个，PTY 全废、编译版二进制也打不出来（`pty.node` 是被嵌进去的）。electron 的 postinstall 负责下载对应平台的二进制。
+
+这个名单**刻意只有两项**（与 pnpm 时代的 `onlyBuiltDependencies` 逐字一致），别照着"顺手补全"往里加 esbuild —— 实测 esbuild 虽然有 postinstall，但它的二进制由 `@esbuild/<platform>` 平台包直接提供：空白目录里 `bun install esbuild` 不跑任何脚本，`esbuild --version` 照样输出 0.28.2。加进白名单只会让 bun 比 pnpm 多跑脚本、扩大两者的行为差异，与迁移目标相反。
+
+注意与「用户怎么装 botmux」区分开：`install-diagnostics.ts` 的 `InstallKind`（含 `'pnpm-global'`）与 `maintenance.ts` 的自动更新说的是**终端用户的安装方式**，线上确实有人 `pnpm i -g botmux`。那些**不是**本仓库的构建工具链，不要跟着一起改。
+
+### Bun 开发链路
+
+daemon / supervisor / dashboard 都能直接跑 TypeScript，不必先 `bun run build`：
+
+```bash
+bun run daemon:bun           # bun src/index-daemon.ts
+bun run supervisor:bun       # bun src/index-supervisor.ts
+bun run dashboard:bun        # bun src/index-dashboard.ts
+bun run build:bun            # 打自包含单文件二进制（scripts/build-bun-binary.mjs）
+```
+
+发版编译用的 Bun 版本**钉在 1.4.4**，唯一来源是 `package.json` 的 `packageManager`（`.github/workflows/` 各处与它一致，`test/release-darwin-codesign-gate.test.ts` 守着）。本地 bun 与它不一致时，编译产物、bun.lock 重写、`bun test` 的行为可能和 CI 不一致：`bun run build` 与 `scripts/build-bun-binary.mjs` 开头会比对并**告警（不拦截）**，见 `scripts/check-bun-version.mjs`。对齐用告警给出的官方安装命令装指定版本——它解压到同目录再 `mv` 换 inode，fleet 正跑着的 bun 进程不受影响。
+
+**测试里 spawn 子进程必须走 `test/helpers/ts-runner.ts`**，不要写 `spawn(process.execPath, ['--import','tsx', …])`：那是 Node-only 形态，Bun 下 `process.execPath` 是 bun 二进制、`bun --import tsx` 不合法，子进程会全部起不来。helper 按运行时解析（Node 加 tsx loader、Bun 原生跑 TS）。片段里 import 仓库模块（`.js` specifier 实际是 `.ts`）时用 `spawnTsEvalWithRepoImports`，普通 `spawnTsEval` 在 Node 下会 ERR_MODULE_NOT_FOUND。
+
+**临时探针 / 变异脚本 / 自写的 vitest 配置一律套 `bun scripts/fenced-run.ts -- <命令>`。** 仓库的 HOME 围栏和 tmux 围栏只挂在 `vitest.config.ts` 与 `bunfig.toml` 上：`bun /tmp/probe.ts` 直接调真实模块、或自写一个不带 setupFiles 的 vitest 配置，都**没有围栏**，会写真实 `~/.botmux`、`~/.config/systemd/user` 和 fleet 的 `-L botmux` tmux。2026-11-06 一个评审探针不带 HOME 调了 `enableAutostart()`，把真实 botmux.service / watchdog 改成 `ExecStart=/opt/botmux`，崩溃守护静默失效 5 小时。fenced-run 给子进程临时 HOME、私有 TMUX_TMPDIR + 拒绝宿主 socket 的 tmux shim、把 SESSION_DATA_DIR 指到临时 HOME 并清掉继承的会话身份标记和 daemon IPC 端口，并默认去掉 user bus（`systemctl --user` 碰不到真实 user manager；botmux 的 scope 代码看到 `BOTMUX_FENCED_RUN=1` 时只用环境里给出的总线变量、不再从 `/run/user/<uid>/bus` 推导，strict envPolicy 也保留这个标记；确需时加 `--keep-user-bus`）；触到宿主 socket 以退出码 3 失败。围栏只拦住经 PATH 解析的 tmux 和继承来的环境：探针里不要用绝对路径调 tmux（如 `/usr/bin/tmux`）、不要 `env -i` 清空环境后再 spawn tmux——这两种写法绕过 shim，能直达 fleet 的默认 socket；需要碰 tmux 时只用私有 `-L`/`-S` 目标或仓库 test helper。仓库根目录新增 `vitest*.config.ts` 必须挂 tmux 围栏，`test/vitest-config-fences.test.ts` 守着。
+
+**单测里不碰真实 systemd。** vitest unit 项目和 bun 腿另挂 systemd 围栏（`test/helpers/systemd-fence.ts`）：测试进程自己调 `systemd-run`、`busctl`、`systemctl --user`（含 `env …`、`sh -c` 包装和绝对路径）就让该测试失败，被测代码吞掉异常也一样；子进程经 PATH 上的 shim 被拒（退出码 1）。scope / fleet-scope 代码一律注入 `run`、`readlink` 或 `pidNamespace` 假实现，不要为了测它去连真实 user manager——在独立 PID 命名空间里，交出去的 PID 会被宿主 systemd 解释成另一个进程。
+
+**本机测试有整机并发闸**（`scripts/test-concurrency.mjs`，接在 `vitest.config.ts` 的 sequencer 与 `scripts/run-bun-tests.mjs` 上）：vitest 选中 ≥50 个文件、或跑全量 `test:bun` 时，在 `/tmp/botmux-test-slots` 的 flock 名额上排队，整机同时最多 `核数/16` 份（64 核 = 4 份）；vitest 默认 `maxWorkers = min(16, 核数/名额)`。CI（`CI=true`）上两者都不生效，行为不变。看到 `[test-gate] 名额已满` 说明机器忙——别用 `BOTMUX_TEST_GATE=0` 绕过，定向测试（少量文件）本来就不排队；其余覆盖变量见脚本头注释。
+
+worktree 里也能直接用 bun，且**不额外占依赖体积**——只要不跑 install（见下节）。实测在「源码 + `node_modules` symlink 到 canonical」的 worktree 里，`bun src/cli.ts`、`bun run build`、`tsc`、`vitest`、`build:bun`（`pty.node` 经 symlink 解析，不复制）以及编出二进制跑 smoke 六项，全部正常。
+
+### worktree 的 node_modules：共享还是独立（改前必读）
+
+worktree 的 `node_modules` **形态不统一**，是逐个手工决定的，不是包管理器行为：
+
+| 形态 | 体积 | 风险 |
+|---|---|---|
+| symlink → canonical | 0 字节 | 见下面两条 🔴 |
+| 独立 `bun install` | ~800M | 安全，互不影响 |
+
+**🔴 铁律：绝不在 worktree 里跑 `bun install`（历史上是 `pnpm install`，换成 bun 后同样禁止）。** 理由不是「浪费一次重装」，是下面两条实测出来的后果——而且它们**与包管理器无关**，bun 与 pnpm 在「穿透 symlink 写进被指向目录」上逐字同构：
+
+1. **两个 worktree 同时 symlink 到同一个目标时，install 会失败并把共享目录删掉**：
+   ```
+   ENOTDIR: not a directory, mkdir '<worktree>/node_modules'
+   → 目标目录被删除
+   ```
+   单个 symlink 时 exit 0、目标完好；双 symlink 指同一目标时 **pnpm** exit 236 且目标被清掉（同场景 **bun** exit 0、目标完好——这一项 bun 更稳，但别指望它兜底）。canonical 的 `node_modules` 是 ~50 个 live daemon 的依赖来源——`/proc/<pid>/maps` 里能看到它们 mmap 着 `node-pty` 的 `pty.node`。已在跑的进程靠 inode 存活不会立刻崩，但**任何重启、spawn worker、或新起 CLI 会话都会失败**，等于 fleet 不可恢复。
+
+2. **共享依赖时，后装的 worktree 会静默覆盖先装的版本**：A 要 `ms@2.1.3`、B 要 `ms@2.0.0`、共享同一 `node_modules` → B 装完后 **A 解析到 `2.0.0`**，而 A 的 `package.json` 写的是 `2.1.3`。**exit 0，零报错零警告**，症状会在完全无关的地方冒出来。
+
+所以：**依赖需求与 canonical 完全一致**时才用 symlink（省 750M）；一旦分支动了 `package.json` / lockfile，就该独立 install，并且**在 worktree 之外**做（比如把改动推上去让 CI 装，或在 canonical 上装完再 symlink）。
+
+### 编译态（单文件二进制）注意
+
+编译版里没有 `dist/` 落在磁盘上——模块图在虚拟只读的 `/$bunfs/` 下，`__dirname` 是 `/$bunfs/root`。所以**任何把 `__dirname` 拼出的路径写到磁盘、或交给别的进程用的代码，在编译态都是坏的**（那个路径进程外不存在，且 sh 里未转义的 `$bunfs` 还会被展开成空串）。曾因此把 install.sh 装在 `~/.botmux/bin/botmux` 的二进制**覆盖成 47 字节的壳**。判断运行形态用 `isStandaloneBinary()`（`src/core/self-spawn.ts`），子进程一律走 `resolveEntrySpawn` / `spawnWorker` re-exec `process.execPath`，不要拼 `dist/*.js` 路径。
+
+注意 CI 的 smoke（`scripts/smoke-bun-binary.mjs`）用空 `bots.json`，而 daemon 在 0 个 bot 时会直接以 `Invalid BOTMUX_BOT_INDEX=0` 拒绝启动——**daemon 内的代码路径在前几项检查里结构上不可达**，别把「smoke 绿」当成 daemon 编译态已验证。
+
+### 多 checkout：全局 `botmux` 指向谁
+
+全局 `botmux` 命令走 `~/.botmux/bin/botmux` 瘦 wrapper，指向「最后认领的 checkout」的 `dist/cli.js`（daemon 启动时也会写；编译态下则改为 `exec` 二进制自身，且当该路径就是正在运行的二进制时会跳过写入，不再自毁）：
+
+```bash
+bun run use:here             # 把全局 botmux 指向当前 checkout（仅改指向，不重启 daemon）
+bun run switch:here          # = build + use:here 一步到位
+BOTMUX_NO_CLAIM=1 bun run use:here   # 逃生阀：本次不认领
+```
+
+纯 `bun run build` 故意不认领——review/验证别人 PR 时不会悄悄抢走全局指向。实现见 `scripts/claim-botmux-bin.mjs`。
+
+单实例候选版本可在 daemon 启动环境设置绝对路径 `BOTMUX_WRAPPER_BIN=<candidate>/bin`，
+让 daemon 和 worker 共用独立 wrapper，保留共享全局 binary。
+不要仅为隔离 wrapper 将 daemon 放入新的 user namespace：恢复的 CLI 可能仍在宿主
+namespace，新 worker 无权读取它的 `/proc/<pid>/fd`，会导致 transcript 桥接失联。
+
+### 改动需用户手动测试时 → 部署本 checkout 到 live daemon
+
+当改动需要用户在飞书里**手动验证**（而非纯单测能覆盖），改完自测绿后执行：
+
+```bash
+bun run switch:here && bun run daemon:restart
+```
+
+这里故意用 `bun run daemon:restart`，确保从当前 checkout 的 `dist/cli.js` 重启；不要依赖裸 `botmux restart`，它可能被 PATH 中更靠前的 npm 全局安装抢先。否则用户测的还是旧代码（典型症状：新加的命令/配置「找不到」）。⚠️ 这会让**所有 bot** 都跑本 checkout 的 build；测试/合并完成后记得切回 canonical checkout，以免 review worktree 被删后全局 shim 失效。
+
+## 模块结构
+
+- `daemon.ts` — 薄编排层，组装各模块并启动
+- `worker.ts` — Worker 子进程，通过适配器管理 CLI + PTY
+- `server.ts` — Web 终端 HTTP 服务（xterm.js）
+- `bot-registry.ts` — 多机器人配置加载 + 状态管理
+- `config.ts` — 全局配置
+- `adapters/cli/` — CLI 适配器，每种 CLI 一个文件（新增适配器的完整步骤见 `src/adapters/cli/CLAUDE.md`）
+- `adapters/backend/` — 会话后端：`PtyBackend`、`TmuxBackend`
+- `skills/` — 开箱即用的 Skill 定义 + installer
+- `core/types.ts` — `DaemonSession` 是核心类型，所有模块从此导入
+- `core/` — `worker-pool`、`command-handler`、`session-manager`、`cost-calculator`、`scheduler`
+- `core/command-schema.ts` / `command-router.ts` / `session-phase.ts` / `cli-idle-wait.ts` — 斜杠命令的**分类层**（见下节「命令路由」）
+- `im/lark/` — 飞书：事件路由（`event-dispatcher`）、卡片（`card-builder`/`card-handler`）、API（`client`）、消息解析（`message-parser`）
+- `utils/` — `idle-detector`（CLI 空闲检测）、`terminal-renderer`（xterm.js 截屏）、`logger`
+
+## 命令路由（改斜杠命令判定必读）
+
+daemon 两条入口（`handleNewTopicAdmitted` / `handleThreadReplyAdmitted`）对斜杠命令只做一次
+`classifySlash(...)`（`src/core/command-router.ts`，纯函数），之后按决策执行；设计与决策记录见
+`docs/design/2026-09-11-command-router.md`（§15 是逐期的执行记录）。改动时守住三件事：
+
+- **命令注册只在 `src/core/command-schema.ts`**：名字/别名、会话政策（无会话时预建 / 不建 / 只对已有会话）、两条入口的前置特判位置、多行豁免、help 键。`DAEMON_COMMANDS` 等五个集合都从这张表推导，别再手写集合或在入口里加 `if (cmd === '/xxx')`。加命令 = 加一行 + `handleCommand` 加 case，`test/command-schema.test.ts` 会红到两边对齐。
+- **路由判定的任何变化都会让 `test/command-router-oracle-diff.test.ts` 变红**：它把 `test/legacy-oracle/` 里冻结的老判定（零 src import）与新路由器在 ≈269 万组输入上逐字差分。红了先判断是回归还是有意变化；有意变化要同时登记到差分测试的 `INTENTIONAL` 名单和设计文档 §9 的有意变化表，别去改 oracle。
+- **话题指令头也只在 `src/core/topic-header.ts` 解析**：`/t` `/topic` 与生命周期别名 `/th` `/tw`（= `/t here|worktree`）、`/repo wt <目标> [分支]` 都由它给出 `TopicHeader`，入口不做正则预判；相斥组合（生命周期变体 + `/repo`）由 `topic-spec.ts` 拒绝，不做静默优先级。
+- **会话相位**（`session-phase.ts`）由现有旗标推导，`ds.cliReady` / `cliReadyGeneration` 只由 worker 的 `prompt_ready` 置位、不由 `ready` 清零；runtime 级联（`cli-idle-wait.ts` + daemon 的 `runPassthroughCascade`）只在 PTY 家族后端、非 adopt 会话上跑。
+
+## 飞书 owner 身份边界（setup/onboarding 改动必读）
+
+这里曾发生过一次路径回归：Dashboard onboarding 已经防住跨应用复制 owner，后来新增的 scripted `setup add --create-app` 只做格式校验，又绕过了同一条身份边界。以后新增或修改创建 Bot 的入口时，必须遵守以下不变量：
+
+- `ou_`（`open_id`）是 **app-scoped**：只对签发/观察它的飞书应用有效，绝不能从来源 Bot 复制到另一个 Bot。`BOTMUX_OWNER_OPEN_ID` 也只是 `BOTMUX_LARK_APP_ID` 视角下的 session owner，不是当前 turn 的发送者，更不是可跨应用复用的 owner 配置。
+- 跨应用/新建应用的 owner 优先使用完整邮箱、手机号或 `on_`（`union_id`；仍需满足同租户/开发者条件）。新应用创建前，只能通过来源应用转换 daemon 已认证的当前 owner；任意其它 `ou_` 必须在创建应用前拒绝。
+- Dashboard onboarding、交互式 setup、scripted `setup add` 以及后续任何新增入口，都必须复用 `src/setup/owner-identity.ts`，不要只校验格式后直接写 `allowedUsers`。在创建应用前归一化来源 owner，在写 `bots.json` 前用目标应用校验；暂时性网络/scope 错误保持 inconclusive，目标应用明确判定不可用时 fail closed。
+- `BOTMUX_OWNER_OPEN_ID` / `__OWNER_OPEN_ID` 是 daemon 认证的 session 身份。新增 backend / runner / RPC 子进程时，必须通过 `applySessionOwnerEnv` 在可配置 env 合并完成后注入并冻结，不能让 bot/backend 配置覆盖它；ownerless session 必须同时删除两个变量。
+- 回归测试必须覆盖 managed-Agent 场景（source app 的 `BOTMUX_OWNER_OPEN_ID=ou_*` 创建 target app），并验证真人 owner 在目标 Bot 下的 `canOperate`；Bot-to-Bot 消息通、权限 scope 通或参数格式合法，都不能证明 owner 身份正确。
+
+## 影响范围评估（改前必做）
+
+任何改动落地前，先想清楚它波及的**其它平台、其它 CLI、其它会话类型**——本仓库是多 CLI × 多后端 × 多 IM 的横向架构，一处改动很容易踩到共用代码路径。默认「牵一发动全身」，主动排查回归面，别只测自己那条路。
+
+- **跨平台**：改了 macOS 相关逻辑要同时考虑 Linux（daemon 实际跑在 Linux）；涉及路径、shell、进程、PTY、编码的代码尤其要两边都想到
+- **跨 CLI**：改某个 CLI 适配器时，确认没动到 `adapters/cli/` 的共用基类/工具（`shared-hints`、`runner-input`、`registry` 等）或 worker 侧共用逻辑，否则可能连带影响其它 20+ 个 CLI。共用改动要在至少一个「别的 CLI」上验证仍可用
+- **跨后端 / 跨会话类型**：改动涉及 `PtyBackend` vs `TmuxBackend`、话题会话 vs 群会话 vs adopt/restore、sandbox on vs off、v3 workflow vs 普通会话时，逐一核对受影响的组合
+- **改公共层**（`core/`、`config.ts`、`bot-registry.ts`、`im/lark/`）时影响面最大——PR 描述里写清评估结论：动了什么共用路径、哪些平台/CLI/会话类型受影响、各自怎么验证的
+
+## 测试原则（写/改测试必读）
+
+测试要证明**行为**，不是给实现拍照。下面几类已经集中治理过，不要再新增：
+
+- **不读 `src/` 源码文本做断言。** `readFileSync('src/worker.ts')` 后 `toContain` 某行代码、或比 `indexOf` 先后，钉的是实现文本：改名、重构就红，代码还在但已经走不到时照样绿。git 历史里这类文件几乎每次改 `worker.ts` / `daemon.ts` 都得跟着改字符串。被测逻辑埋在闭包里时，**把它抽成可导出的纯函数再测**，而不是 grep；治理时因为没有 seam 而删掉的绊线记在 `docs/plans/2026-10-20-test-seam-backlog.md`，动到对应代码时顺手补上。只有真正的结构约束才保留这种写法：K1 import 边界与编译态限制、K2 没有行为 seam 的安全护栏、K3 高危回归绊线（数据丢失、fleet 崩溃、消息丢失或重复）、K4 机器可校验的一致性。保留时在用例或外层 `describe` 上方写 `// 源码结构护栏(Kx)：<为什么只能读源码、守的是什么不变量>`；只是把 src 下的 HTML/CSS 当夹具或交给浏览器、并不断言其文本的，写 `// 非文本断言：<说明>`。`test/test-hygiene.test.ts` 会拒绝没有标注的读源码用例。从 `worker.ts` / `daemon.ts` 切出真实函数执行再断言结果（`test/helpers/worker-function-harness.ts`）是没有 seam 时的过渡写法，扫描器不拦，但它依赖函数名和自由变量名，能导出时就直接 import。
+- **不钉文案和文档措辞。** 断言 docs / README / 卡片文案里有某句话，或断言另一个测试文件里有某个用例标题，都证明不了行为。文档由代码生成时，用 `--check` 式的漂移检查；需要「文档覆盖全部枚举值」这类一致性时，两侧都从真实数据取，不要抄字符串。
+- **不钉内部常量。** `expect(TIMEOUT_MS).toBe(60_000)` 只是把字面量再抄一遍。外部协议值（飞书错误码、终端转义序列、跨进程退出码、HTTP 路由、wire format）可以钉；常量之间的关系（`A >= B + C`）写成关系断言。
+- **不为死代码写测试。** 一个导出如果只有测试在调用，要么接进生产路径，要么连同测试一起删掉。测试隔离用的 `reset*` / `clear*Cache` 钩子不在此列。
+- 落笔前自问两句：这条测试会在**真实的行为回归**时变红吗？会在**无害的重构、改文案、调参数**时变红吗？前一问答「会」、后一问答「不会」，才值得写。
+
+## 独立对抗复核（改持久状态语义必做）
+
+改动**新增或修改持久状态的行为语义**——任务认领/结算、暂停恢复、通知投递、账本计数、重试窗口、会话生命周期——push 前做一次**独立对抗复核**。动机：同一心智模型既写实现又写测试，**「交叠」类缺陷（状态语义与时序/并发交叉处）靠读代码和自查发现不了**；由未参与实现的独立上下文在提交前从异常场景攻一遍，能把问题留在提交侧，减少外部评审往返。#2237（有状态定时任务）的复盘显示，这类「交叠」缺陷集中在下面三类通用场景（另有一类是测试覆盖缺失，见下「变异复验」）；其中五处旁路由提交前的一次独立复核发现并随修复一并提交。
+
+- **触发条件**：持久状态的**行为语义**变了（纯重构、只读展示、纯文案不算）。拿不准就按触发处理——复核成本远低于一轮外部评审往返。
+- **做法**：由**未参与实现的独立上下文**（另一会话/另一 agent）执行，只提供 diff、设计文档与现有测试环境，不传达实现者自己的解读。本条面向 agent 贡献流程（AGENTS.md 转发至此），**不设 CI 门禁**，不约束人类贡献者。
+- **攻击面至少覆盖三类通用场景**（与具体功能无关）：①**人工中途干预**——操作进行到一半人介入（暂停/取消/改配置），流程转回来时状态是否自洽；②**多步写入只完成一半**——前半步落盘、后半步失败，重启或下一轮是否永久静默/永久重复；③**周期循环 × 长操作/等待窗口交叠**——tick、重试窗口、超时与下一次常规运行在时间上穿插时，先后与重入是否成立。
+- **探针证据**：每个怀疑用**真实组件 + 假时钟**（可控 timer）跑出复现序列才算数，**不接受仅读代码得出的「应该没问题」**。
+- **变异复验**：对本次新增的测试，摘掉被测守卫（或把条件写反）必须**咬红**；照旧绿说明测试没钉住行为，按「测试原则」修。
+- **产出**：问题清单（**级别/场景/探针证据/建议修法**）连同修法、回归用例写进 PR 描述（**只写问题清单与探针证据，不写由谁执行的复核编排**）；复核未发现问题的，注明攻过哪些场景即可。
+
+## PR 规范
+
+- 标题与 commit message 同格式：`type(scope): 中文描述`
+- 描述用**中文说明**：改了什么、为什么、影响面（涉及哪些模块/会话类型）
+- 附**实际测试验证**：贴出跑过的命令和关键结果（`bun run build`、`bun run test`、相关 e2e），不要只写「应该没问题」；需要 live 验证的先 `bun run switch:here && bun run daemon:restart` 在飞书里实测并注明结果
+- UI 类改动（飞书卡片 / dashboard / web 终端）附**截图示意**，让 reviewer 不用跑代码就能看到效果
+- **不写飞书群内真人名字，也不写机器人协作花名/内部 review 编排**：commit message 与 PR 标题/描述进的是**公开 git 历史**，读者不需要知道群里谁参与、谁审的。① 不出现群成员真名——验证描述用中性客观表述（如「矮视口下成员/机器人行都能滚动可见」，而不是「某某/某某两行成员」）；② 不出现 `@Codex`、`Codex 复审`、`双审`、`首审`、`双审收敛` 这类多 bot 协作花名，验证只陈述**做了什么验证、结果如何**的客观事实，不写「谁审的」。（`Co-authored-by` git 署名 trailer 属正常署名规范，不在此列。）
+
+## Git 提交 & 发版规范
+
+- commit message 格式：`type(scope): 中文描述`。`type`（feat/fix/docs/chore 等）和 `scope`（模块名）保留英文，冒号后的描述用中文；同样**不带飞书真人名字与机器人协作花名**（见上「PR 规范」）
+- 日常 `git commit` + `git push` 不会触发发版；打 `v*` annotated tag 并 push 才发版（**仅在用户明确要求时**），CI 自动从 tag 提取版本号发布 npm + 创建 GitHub Release
+- **不要**手动修改 `package.json` 的 `version` 字段；tag message 用中文撰写，CI 会用作 Release body
+- **正式版（latest）必须从 master 出**：正式版 tag 必须是规范的 `vX.Y.Z`，并按版本号递增的顺序打（origin 上已有更高的正式版 tag 就拒）。在此前提下，CI 放行两种 tag —— ① 被打 tag 的 commit 包含最新 `origin/master`（在 master tip、或 rebase 到最新 master 的子分支上打 tag）；② 被打 tag 的 commit 在 master 的 first-parent 链上（可以不是 tip，但 merge 进来的分支内部提交不算），且包含 npm latest 对应的 tag，以及版本号介于 npm latest 与本版之间的所有正式版（只有 tag 的、已发到 npm 的都算）的 tag；npm 上已发布过更高版本号的正式版时 ② 不成立。所以打完 tag 后 master 照常合 PR 不会让发版被拒、发版期间不用按住合码，后合入的进下一版（Actions 里 preflight 的 summary 会列出没进这一版的 master 提交）；拿不到 npm latest 或对应 tag 时只认 ①。② 被拒、提示缺的基线 tag 不在 master 上时（比如一个误打在个人分支上的正式版 tag），只能在当前 master tip 上按 ① 重打。这套判定在 preflight 先跑一次（尽早拒绝），签名审批之后、任何包发布之前在 `publish-gate` 按当时的 master、tag 和 npm 再跑一次并固定结论，`binary-subpackages` 在第一次发包前、本版本的子包还一个都没发时再判一次（应对「Re-run failed jobs」只重跑它），子包发出去之后的 `release` 只复核 publish-gate 的固定值（#1150）；这几个 job 都要 `fetch-depth: 0`，浅克隆里守门直接拒绝；所以审批期间就算有更低的版本发布、tag 被删重建或 latest 被回滚，审批后也会在发包前拒掉。例外（已知局限）：本版本只要已有任何包上了 npm，续发就沿用原判定（此时重判只能烧掉版本号），这时删 tag、发更低的热修、再在同一提交重建 tag 去续发，发出的版本会不含热修——**某个版本只要有包上了 npm，就不要删它的 tag，热修改发更高的版本号**。要删掉误打、且还没有任何包上 npm 的正式版 tag 时，先取消它那次可能还在等签名审批的 Release 运行。恢复失败的正式版只用「Re-run failed jobs」，不用「Re-run all jobs」。审批之后点 Cancel 能拦住还没开始的发包（发包 job 用 `!cancelled()`，不用 `always()`）；发到一半被取消的，用「Re-run failed jobs」续发。判定见 `.github/scripts/release-master-guard.mjs`，规则与理由见 `release.yml` preflight 的「Guard — stable release must come from master」。非 master 分支灰度用 `-canary.N`/`-beta.N`/`-rc.N` 后缀（CI 自动路由到对应 npm dist-tag，其它 `-` 后缀兜底到 `next`，都不污染 latest）；验证 canary：`botmux update canary`（或 `npm i -g botmux@canary`）

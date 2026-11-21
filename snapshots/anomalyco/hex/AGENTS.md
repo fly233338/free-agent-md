@@ -42,7 +42,9 @@ feature with its own pane joins the sidebar as a normal item while on and is
 hidden while off; a behaviour-only feature is just its toggle. Today: Meetings
 (beta), Voice Filter (Dev; locked on while its macOS driver is installed, and
 a stable build with the driver keeps its pane for Uninstall alone), Playground
-(Dev), Live text, Live chapters, Vocabulary help, Words on screen
+(Dev), Paste Last picker (Dev, macOS; the mixed dictation-and-annotation
+picker and History, `labs.paste_last_picker`), Live text, Live chapters,
+Vocabulary files, Words on screen, Learn from corrections
 (macOS), Rewrite reads nearby text (macOS), Switch model with keyboard
 language (#216), Mouse shortcuts (#209, macOS), Also pause the browser (#301,
 macOS), Share dictation shortcut (#176, Windows), Free memory when idle
@@ -166,7 +168,13 @@ substitute for source inspection or a second roadmap.
 - `transcription/gguf_session`: the `transcribe.cpp` session owner shared by `parakeet` and
   `transcription/local_transcriber`; it recreates the native session around each run (and
   each live stream) so inference scratch stays bounded, and owns chunked
-  long-audio transcription.
+  long-audio transcription. `transcription/stream_tuning` owns the stream
+  geometry it probes: `HEX_STREAM_CHUNK_MS`/`HEX_STREAM_RIGHT_MS`, else Labs ›
+  Faster live text's tuple chosen from the model's GGUF chunk menus, else the
+  model's default. Only a probe that passed the GPU and capability gates may
+  be re-probed, a change is adopted while nothing records, a failed re-probe
+  keeps the geometry in hand, and a tuple the model's menu rejects falls back
+  to the default instead of disabling streaming.
 - `transcription/speech_detector`: the optional Silero voice activity detector, loaded once on
   the CPU and downloaded in the background, that keeps speechless dictation
   captures and meeting chunks away from the transcription models.
@@ -204,7 +212,7 @@ substitute for source inspection or a second roadmap.
 - `transcription/model_details`: what a catalog model's details view adds:
   licence credit, source and licence links, the publisher's notice, measured
   memory, and benchmarks the publisher (never Hex) measured (Parakeet Ultra,
-  Orukeet).
+  Orukeet, Fluid Speech Pro).
 - `transcription/custom_models`, `transcription/gguf_header`: your own speech
   models: GGUF imports checked from their header alone (family, variant,
   languages, F32/F16/Q8_0 tensors, plus Q4_K/Q5_K/Q6_K under Labs › Smaller
@@ -396,7 +404,7 @@ substitute for source inspection or a second roadmap.
 - `linux/audio_control`: While-dictating mute through `wpctl`/`pactl`, Lower
   audio through `audio/output_ducking`, and MPRIS pause over D-Bus (zbus),
   restoring only what it changed, plus idle-sleep prevention for dictations.
-- `linux/input_route`: System default's Bluetooth avoidance on Linux. ALSA's
+- `linux/input/route`: System default's Bluetooth avoidance on Linux. ALSA's
   default cannot name another PipeWire source, so Hex marks its ALSA streams
   (`PIPEWIRE_ALSA`: `state.restore-target = false` and its PID, set on the
   main thread at startup) and moves them off a Bluetooth default source to

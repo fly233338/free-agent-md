@@ -2,12 +2,6 @@
   "full_name": "twbs/bootstrap",
   "points": [
     {
-      "checked_at": "2026-10-22T08:41:46Z",
-      "commit_sha": "0a7d4423c00e3dab021ec70570224f7d41466f4f",
-      "pushed_at": "2026-10-21T18:17:29Z",
-      "stars": 175004
-    },
-    {
       "checked_at": "2026-10-23T08:37:36Z",
       "commit_sha": "45f38383645985e613de7ac55466d8fba60b852c",
       "pushed_at": "2026-10-22T18:55:10Z",
@@ -180,6 +174,12 @@
       "commit_sha": "50976e1798fd09f5b887dae2e7ee890ca2b67837",
       "pushed_at": "2026-11-20T07:16:14Z",
       "stars": 175094
+    },
+    {
+      "checked_at": "2026-11-21T11:15:08Z",
+      "commit_sha": "22d67a4ba7674266a9c9ec5b9b8d4a26d8acb7bb",
+      "pushed_at": "2026-11-21T01:17:12Z",
+      "stars": 175103
     }
   ],
   "repo_id": 2126244
