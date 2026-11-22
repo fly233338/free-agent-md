@@ -2,12 +2,6 @@
   "full_name": "xerj-org/xerj",
   "points": [
     {
-      "checked_at": "2026-10-23T08:37:36Z",
-      "commit_sha": "214f243f99993893c47ae266b9cf5c240b2c3225",
-      "pushed_at": "2026-10-23T08:37:17Z",
-      "stars": 13227
-    },
-    {
       "checked_at": "2026-10-31T09:44:15Z",
       "commit_sha": "bde519cae9ac56bffa2205aff4ebc8f0f8618d71",
       "pushed_at": "2026-10-31T09:31:59Z",
@@ -18,6 +12,12 @@
       "commit_sha": "720b9990a2f85c17d53434950578f9a37fb3dc0c",
       "pushed_at": "2026-11-01T10:23:15Z",
       "stars": 18524
+    },
+    {
+      "checked_at": "2026-11-22T11:34:16Z",
+      "commit_sha": "136e0d141474aebcf03f426efc8f481342be3c2d",
+      "pushed_at": "2026-11-22T11:26:08Z",
+      "stars": 19330
     }
   ],
   "repo_id": 1284653133

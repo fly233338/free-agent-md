@@ -60,3 +60,11 @@ Follow [MCP onboarding and capability maintenance](AGENTS.md#mcp-onboarding-and-
 ## Core capabilities and shared APIs
 
 Follow [Core capabilities and shared APIs](AGENTS.md#core-capabilities-and-shared-apis). Every new or extended core capability must support external MCP calls. Product controls and in-app Agents may compose these capabilities according to developer and user needs, using the same API or MCP operations and shared domain implementation. Preserve the same data, job, version, validation and conflict semantics across entry points; keep public discovery, applicable UI consumers, documentation and adapter verification aligned.
+
+## Studio routing and shell boundaries
+
+Follow [Studio routing and shell boundaries](AGENTS.md#studio-routing-and-shell-boundaries) and [docs/routing.md](docs/routing.md). Use canonical semantic path routes kept in sync across `shared/spa-routes.ts`, `studio/src/router/createAppRouter.tsx`, and `studio/src/router/routeRegistry.ts` (no new `/?page=...` routes), register every Studio page lazily in `studio/src/router/lazyPages.ts` (`LAZY_PAGE_MODULE_PATHS`), keep `WorkspaceFrame.tsx` free of static page imports and parser barrels, avoid reserved backend/cloud prefixes (including `/mcp`), and verify `npm run check` (`scripts/check-routing.ts`), `studio/src/shellBoundary.test.ts`, and `tests/spa-routes.test.ts` on routing or shell edits.
+
+## Studio internationalization (i18n)
+
+Follow [Studio internationalization (i18n)](AGENTS.md#studio-internationalization-i18n) and [docs/i18n.md](docs/i18n.md). Keep feature copy in `studio/src/i18n/*-ui.json`, register any new module in `studio/src/i18n/manifest.ts` with all 10 non-English locales and intact `{var}` placeholders, never statically import locale JSON or `sourceCatalog.ts` from runtime code, avoid new `locale === 'zh-CN'` UI copy branches, and run `npm run check` plus `studio/src/shellBoundary.test.ts`.

@@ -2,12 +2,6 @@
   "full_name": "kortix-ai/CompanyOS",
   "points": [
     {
-      "checked_at": "2026-10-23T08:37:36Z",
-      "commit_sha": "448155157294c872e4101ef388583a079ef184a2",
-      "pushed_at": "2026-10-23T08:34:50Z",
-      "stars": 20302
-    },
-    {
       "checked_at": "2026-10-24T08:12:46Z",
       "commit_sha": "69e13b7d8d0f6eaa68f6f1ecf06f78f22c48ecce",
       "pushed_at": "2026-10-24T08:09:59Z",
@@ -66,6 +60,12 @@
       "commit_sha": "0d1304d277a74d59844ccf20f1c747d5879bc5c9",
       "pushed_at": "2026-11-20T11:48:30Z",
       "stars": 20775
+    },
+    {
+      "checked_at": "2026-11-22T11:34:16Z",
+      "commit_sha": "de6b555c2dc6170b07d2a70a0464105a8becb0dc",
+      "pushed_at": "2026-11-22T11:33:26Z",
+      "stars": 20782
     }
   ],
   "repo_id": 868173144

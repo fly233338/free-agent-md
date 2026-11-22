@@ -2,12 +2,6 @@
   "full_name": "coleam00/Archon",
   "points": [
     {
-      "checked_at": "2026-10-23T08:37:36Z",
-      "commit_sha": "1df9dcda8f6a04b9cb3593f98a6a2d75d02097ef",
-      "pushed_at": "2026-10-23T08:36:34Z",
-      "stars": 23750
-    },
-    {
       "checked_at": "2026-11-02T11:18:59Z",
       "commit_sha": "52f668dc5cbf7a2a85f9ab71408eae2c56de0699",
       "pushed_at": "2026-11-02T11:13:59Z",
@@ -36,6 +30,12 @@
       "commit_sha": "22c7f484c9cdca75065d48bd850ab434ecb56738",
       "pushed_at": "2026-11-13T10:57:22Z",
       "stars": 23910
+    },
+    {
+      "checked_at": "2026-11-22T11:34:16Z",
+      "commit_sha": "da4642fd23aad01c2ec3188475c92167ac6686a4",
+      "pushed_at": "2026-11-22T11:30:58Z",
+      "stars": 23980
     }
   ],
   "repo_id": 929121414

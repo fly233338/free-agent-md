@@ -2,12 +2,6 @@
   "full_name": "boykopovar/AnyPS5",
   "points": [
     {
-      "checked_at": "2026-10-23T08:37:36Z",
-      "commit_sha": "0dd46f186712062d71f5795634e9d1a35dd69a5e",
-      "pushed_at": "2026-10-23T08:34:14Z",
-      "stars": 47027
-    },
-    {
       "checked_at": "2026-10-24T08:12:46Z",
       "commit_sha": "aeeaefad98613c63a49ea2daae4d4558304b14cd",
       "pushed_at": "2026-10-24T08:09:55Z",
@@ -138,6 +132,12 @@
       "commit_sha": "35e39b5c5b66d4804fe7ea4b9334bd4320191bdc",
       "pushed_at": "2026-11-21T11:12:10Z",
       "stars": 59118
+    },
+    {
+      "checked_at": "2026-11-22T11:34:16Z",
+      "commit_sha": "314bcdbc217113f837c01d76a62c03626a11036e",
+      "pushed_at": "2026-11-22T11:24:47Z",
+      "stars": 59893
     }
   ],
   "repo_id": 1322250666

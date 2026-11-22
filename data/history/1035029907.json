@@ -2,12 +2,6 @@
   "full_name": "earendil-works/pi",
   "points": [
     {
-      "checked_at": "2026-10-23T08:37:36Z",
-      "commit_sha": "906e1302f94829ec7e228059199681c11faec0b0",
-      "pushed_at": "2026-10-23T08:31:53Z",
-      "stars": 117317
-    },
-    {
       "checked_at": "2026-10-24T08:12:46Z",
       "commit_sha": "f715a15c101ca8a44d759bceeb7ec2a51024c81c",
       "pushed_at": "2026-10-24T08:00:24Z",
@@ -180,6 +174,12 @@
       "commit_sha": "780bf31fcaeb252fa9b68df3964c735eae75bde3",
       "pushed_at": "2026-11-21T08:24:38Z",
       "stars": 123131
+    },
+    {
+      "checked_at": "2026-11-22T11:34:16Z",
+      "commit_sha": "9c4652688590abb836b40ebd1e4725ecf9a7c7d1",
+      "pushed_at": "2026-11-22T01:24:22Z",
+      "stars": 123274
     }
   ],
   "repo_id": 1035029907

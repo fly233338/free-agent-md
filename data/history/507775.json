@@ -2,12 +2,6 @@
   "full_name": "elastic/elasticsearch",
   "points": [
     {
-      "checked_at": "2026-10-23T08:37:36Z",
-      "commit_sha": "faad0b2324c91a889e22e154e222e89191953857",
-      "pushed_at": "2026-10-23T08:32:29Z",
-      "stars": 78349
-    },
-    {
       "checked_at": "2026-10-27T09:05:49Z",
       "commit_sha": "33847c523bc6ad710249fd96afc23005b1adbbc3",
       "pushed_at": "2026-10-27T09:04:57Z",
@@ -60,6 +54,12 @@
       "commit_sha": "2cfefc1a363e8ceb4654483a882038b6b509f1b1",
       "pushed_at": "2026-11-20T11:48:44Z",
       "stars": 78681
+    },
+    {
+      "checked_at": "2026-11-22T11:34:16Z",
+      "commit_sha": "0b9a3cba56671991095209cd305e864b896aadf1",
+      "pushed_at": "2026-11-22T11:20:52Z",
+      "stars": 78739
     }
   ],
   "repo_id": 507775

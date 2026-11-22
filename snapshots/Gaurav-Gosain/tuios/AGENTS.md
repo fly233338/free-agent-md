@@ -40,7 +40,7 @@ go run ./cmd/tuios-web --debug
 # so the libraries are named one by one. `just test` runs this line under the
 # limits below.
 go test ./... ./progstatus/... ./vt/... ./swatch/... ./shot/... ./tml/... \
-  ./plot/... ./loom/... ./sketch/...
+  ./plot/... ./loom/... ./sketch/... ./acp/... ./harness/... ./nitpick/...
 
 # Leave the machine usable. The maintainer works on this box while the suite
 # runs, and an uncapped build or test run takes every core. taskset confines the
@@ -86,7 +86,7 @@ Run `just check --changed` before you mark a pull request ready. It runs
 | Check | What it runs | Fails the gate |
 |-------|--------------|----------------|
 | `fmt` | `gofmt -l` and `goimports -l` | yes |
-| `vet` | `go vet`, also with `-tags ghostty` when libghostty-vt is built | yes |
+| `vet` | `go vet`, also with `-tags ghostty` when libghostty-vt is built for the pinned release, in `$GHOSTTY_VT_CACHE` or `.ghostty-vt` | yes |
 | `lint` | `golangci-lint` with `.golangci.yml`, at the CI version | yes |
 | `tuioslint` | the `internal/lint` tests | yes |
 | `vuln` | `govulncheck`, for each module the branch touched | yes |
@@ -128,9 +128,31 @@ runs:
 CHANGES_BASE=origin/main scripts/ci-changes.sh
 ```
 
-A test that fails now and then on code that cannot reach it goes in
-`.github/flaky-tests.txt`. A failed run whose failures are all on that list
-retries them once. Any other failure fails the job.
+The mixed-versions job pairs this build with the v0.12.1 release, the
+previous minor (`scripts/e2e-mixed-versions.sh NEW OLD`). A client and a
+daemon one minor release apart must work together. The job runs when a change
+reaches the packages `internal/session` builds from, and on main. Move its
+release with each minor release.
+
+CI runs each test once. A failed test fails the job, and no job retries it.
+A test that fails now and then has a bug: find the cause and fix it. Do not
+rerun the job until it passes.
+
+### Land a pull request
+
+A pull request lands on main by fast-forward (`ff-merge`), after the whole
+suite passed on its head:
+
+1. Rebase the branch on main, so main can fast-forward to the head.
+2. Add the `full-suite` label. The label runs every CI job and the whole e2e
+   suite on the head, with the string frame and sim shards.
+3. Wait until `CI result` and `e2e-tui result` pass on that run.
+   `scripts/full-suite-passed.sh OWNER/REPO SHA` exits 0 when both did.
+4. Fast-forward main to that exact SHA.
+
+A push after the label runs the whole suite again. The push to main then
+skips the real cells and string and sim shards it already ran. A red sim shard
+does not fail `e2e-tui result`.
 
 ### Keep main green
 
@@ -138,8 +160,8 @@ Main runs every Go test job and the whole e2e suite, so it catches what a
 pull request's selection left out. The idle-cost tests (`TestIdleCostStaysLow`,
 `TestDockIdleCostWithComponentsStaysLow` and the like) and the timing budgets
 in the unit tests fail there first. When one fails on main after your change
-lands, fix the cause at once. Do not retry it away, add it to the flaky list,
-or loosen its budget to make it pass.
+lands, fix the cause at once. Do not retry it away or loosen its budget to
+make it pass.
 
 A timing test waits on a condition, never on a fixed sleep. A clock budget
 compares the fastest of several short runs, because load only adds time, and
@@ -148,14 +170,23 @@ does not apply under `-race`.
 ### Binary size
 
 The binary-size job builds tuios as the release does (`CGO_ENABLED=0`,
-`-trimpath`, `-ldflags "-s -w"`) for linux/amd64 and darwin/arm64. It fails
-when either is over the 50 MB ceiling in `scripts/binary-size.sh`, and it
-comments the size change against main on the pull request. `just size` runs
+`-trimpath`, `-ldflags "-s -w"`) for linux/amd64, darwin/arm64 and
+windows/amd64. It fails when one is over the 50 MB ceiling in
+`scripts/binary-size.sh`, and it comments the size change against main on the pull request. `just size` runs
 the same check. State the size cost of a change in the pull request body.
 The room under the ceiling is not a budget to spend: each pull request still
 reports its size delta and trims what it can.
 Raise the ceiling only on purpose, in its own commit, with `docs/perf.md`
 ("Binary size budget").
+
+A shipped tuios is built with inlining off in the packages
+`scripts/noinline-packages.txt` lists, which saves about 0.8 MB. Every build
+of `./cmd/tuios` reads that list: a shell line as
+`GOFLAGS="$(scripts/goflags.sh)" go build ...`, GoReleaser through
+`TUIOS_GOFLAGS`, Go code through the file, the e2e suite
+through `goBuild`. A package joins the list only when nothing on a hot path
+(drawing a frame, input, the pty read loop, the daemon's pane streams) calls
+into it. `go install ...@vX` and the Nix package do not read the list and build the larger binary.
 
 ### Browser build (Learn tuios)
 
@@ -207,8 +238,10 @@ Some parts of tuios are Go modules of their own, published under
 that points the go command at the folder in this repository. They are
 `progstatus/` (`tuios.dev/progstatus`), `vt/` (`tuios.dev/vt`), `swatch/`
 (`tuios.dev/swatch`), `shot/` (`tuios.dev/shot`), `tml/` (`tuios.dev/tml`),
-`plot/` (`tuios.dev/plot`), `loom/` (`tuios.dev/loom`) and `sketch/`
-(`tuios.dev/sketch`). `go.work` lists them all.
+`plot/` (`tuios.dev/plot`), `loom/` (`tuios.dev/loom`), `sketch/`
+(`tuios.dev/sketch`), `acp/` (`tuios.dev/acp`), `harness/`
+(`tuios.dev/harness`) and `nitpick/` (`tuios.dev/nitpick`). `go.work` lists
+them all.
 
 - `go.work` makes the app, `e2e/tui` and each library one workspace, so a
   change to a library and to the app lands in one pull request. Never add a
@@ -251,7 +284,8 @@ that points the go command at the folder in this repository. They are
 
 Some packages embed an archive that `go generate` packs from the files beside
 it: `skills/` (`skills/tuios.tar.gz`), `internal/learn/lessons`,
-`internal/harness` and `internal/integration`. Run `go generate` in the
+`harness/` (the bundled manifests, in the library) and
+`internal/integration`. Run `go generate` in the
 package after you edit those files. A test in each package fails when the
 archive and the files differ. Rebase with `scripts/rebase.sh origin/main`. It
 regenerates `skills/tuios.tar.gz` at each stop where that archive is the only
@@ -311,15 +345,14 @@ tuios/
 │   ├── release/            # Finds published releases and verifies a downloaded binary (tuios update)
 │   ├── netutil/            # Small network helpers the servers share
 │   ├── memtrim/            # Gives the heap a burst left behind back to the OS once the process settles
-│   ├── dnd/                # The kitty drag and drop protocol (OSC 72) on the wire: parse, join chunks, write
-│   ├── harness/            # Agent harness manifests and detection
+│   ├── harness/            # tuios policy over tuios.dev/harness: prompt answers, resume, launch flags, permission ladder, title label
 │   ├── herdrplugin/        # herdr plugins: manifest, discovery, the command runner (the host is internal/session/plugin_host.go)
 │   ├── herdrcli/           # herdr's command line, answered by tuios
 │   ├── integration/        # Wires harness hooks, plugins and MCP entries (tuios integration)
 │   ├── mcp/                # The MCP server behind tuios mcp
 │   ├── risk/               # Marks an approval risky by the shipped and configured rules
 │   ├── pushnotify/         # Sends Inbox items to a phone through ntfy, Pushover or a webhook
-│   ├── agentproto/         # Headless agents over ACP and the Codex app-server: the pane program of start-agent --protocol
+│   ├── agentproto/         # Headless agents over ACP (through tuios.dev/acp) and the Codex app-server: the pane program of start-agent --protocol
 │   ├── learn/              # Learn tuios: tour model, event contract, page commands, lessons/ (the tracks as data and the engine)
 │   ├── webshell/           # In-memory pty and fake shell for the browser build
 │   ├── tutor/              # tuios tutor: Learn mode in this terminal, in a sandbox, with the coach card
@@ -355,7 +388,10 @@ tuios/
 │                           #  transcript, guestenv, perf, fuzz, testutil,
 │                           #  atomicfile, lazyre, linediff, oneline, pathroot,
 │                           #  plural, sortx, units, winacl, winjob, winpath)
+├── acp/                    # tuios.dev/acp, a Go module of its own: the Agent Client Protocol client, versions 1 and 2; the JSON-RPC peer, negotiation, typed updates
+├── harness/                # tuios.dev/harness, a Go module of its own: agent CLI detection; the manifest format, 26 bundled manifests, Identify, Classify and Explain
 ├── loom/                   # tuios.dev/loom, a Go module of its own: draws TML into cells; flex layout, retained tree, palettes per depth, keys and mouse
+├── nitpick/                # tuios.dev/nitpick, a Go module of its own: go/analysis hygiene rules with a measured precision; cmd/nitpick checks changed lines
 ├── plot/                   # tuios.dev/plot, a Go module of its own: eleven chart kinds (bar, line, area, heatmap, pie, world map and more) as cells with theme roles
 ├── progstatus/             # tuios.dev/progstatus, a Go module of its own: OSC 7501 parser, record store, encoder
 ├── shot/                   # tuios.dev/shot, a Go module of its own: a cell grid to PNG, SVG, HTML, ANSI or text; mosaic turns pictures into cells
@@ -367,6 +403,7 @@ tuios/
 │   ├── parser.go           # Parser state machine
 │   ├── screen.go           # Screen buffer management
 │   ├── scrollback.go       # History ring (10,000 lines unless configured)
+│   ├── dnd/                # The kitty drag and drop protocol (OSC 72) on the wire: parse, join chunks, write
 │   ├── snapshot/           # Capture, pack, apply and replay a pane's state (the daemon's wire snapshot)
 │   └── vtgen/              # Grammar-based terminal input generator for the fuzzers
 ├── pkg/                    # Embeddable facade (tuios), applist, fuzzy
@@ -483,8 +520,13 @@ the ones a change trips most often. Each test's doc comment gives the reason.
 | No colour literal in render code | `internal/lint` `TestNoHardCodedColoursInRenderCode` | `//tuios:allow-color <reason>` |
 | Daemon code starts a process with `childproc.Command`, never `exec.Command` or `os.StartProcess` | `internal/lint` `TestDaemonChildrenGoThroughChildproc` | `//tuios:allow-exec <reason>` |
 | Every `git` starts through `childproc.Git`, which turns off repository hooks and filters | `internal/lint` `TestGitGoesThroughChildprocGit` | `//tuios:allow-exec <reason>` |
+| Every build of `./cmd/tuios` reads `scripts/noinline-packages.txt` | `internal/lint` `TestEveryTuiosBuildReadsTheNoinlineList` | `tuios:allow-build <reason>` |
 | A client quits through `OS.QuitCmd`, never a bare `tea.Quit` | `internal/lint` `TestEveryClientQuitGoesThroughQuitCmd` | `//tuios:allow-quit <reason>` |
 | Lessons name real actions, overlays, events and keys | `internal/lint` `TestLessonsMatchTheApp` | none |
+| The Dockerfile's Go version equals go.mod's toolchain line | `internal/lint` `TestDockerfileGoMatchesToolchain` | none |
+| A task card's lifecycle fields are written only in `internal/session/task_move.go` (`Session.moveCard`) | `internal/lint` `TestOnlyTaskMoveWritesACardsLifecycle` | none |
+| A task event is published by `Daemon.taskEvent`, inside the state change that made it | `internal/lint` `TestTaskEventsArePublishedInsideTheirChange` | none |
+| A file transfer job's state is written only by `transferJob.to` and `reopen` | `internal/lint` `TestOnlyToWritesATransferState` | none |
 | Every `tea.NewProgram` takes `app.ProgramOptions()`, with no other `tea.With*` option than `WithOutput`, and a transport's `MakeOptions` before it | `internal/app` `TestEveryProgramTakesTheSharedOptions` | none |
 | No emoji in a string or rune literal under `internal/` and `cmd/` | `internal/app` `TestNoEmojiInSourceStrings` | `emojiSourceAllowed` |
 | A new overlay kind has a place in `overlayKindOrder` | `internal/app` `TestEveryOverlayKindHasAPlaceInTheStack` | none |
@@ -563,6 +605,11 @@ What the selector does with a change:
   no test ran selects nothing, and the selector reports no error. When your
   change needs e2e cover, add to a test that reaches the code. A changed test
   file selects the tests it changes.
+- A changed comment selects no test. The doc comment of a test selects that
+  test. A change above the package clause of a test file runs the whole suite.
+- A change to the unexported fields of a struct selects the tests that ran a
+  function that names one of those fields. Any other change to a type
+  selects the tests that ran a function that names the type.
 - A test newer than the map runs on every change that reaches the binary,
   until the next night's map knows it.
 - A draft pull request skips the shards. Mark it ready for review to run them.
@@ -579,8 +626,32 @@ cd e2e/tui && TUIOS_E2E=1 go test -list '^Test' . |
   go run ./testselect -base origin/main -map ../../.dev/map/testmap.txt
 ```
 
+The whole suite is split into E2E_SHARDS shards of E2E_LANES lanes by the
+measured times in `e2e/tui/shardplan/durations.txt`, and the shard plan job
+fails when a lane is over E2E_LANE_LIMIT. Refresh the file (its header has the
+command) when that job fails, or when it reports more than about 50 tests
+without a measured time; a new test counts at the mean until then. Add a shard
+when a fresh file still leaves lanes within a minute of the limit.
+
 A test that claims to cover a bug must fail on a build with the fix removed.
 `e2e/tui/NEGATIVE_CONTROLS.md` records those runs and the rules for them.
+
+`TUIOS_E2E_BACKEND` picks how a test runs the tuios client. `real`, the
+default, runs the built binary on a PTY. `sim` runs the client and the daemon
+in the test process (`e2e/tui/backend_test.go`). The CLI calls and hooks still
+run the built binary. A test keeps the same `*tuitest.Terminal` on both.
+
+```bash
+cd e2e/tui && TUIOS_E2E=1 TUIOS_E2E_BIN=/tmp/tuios TUIOS_E2E_BACKEND=sim go test -count=1 -run '^TestX$' .
+```
+
+Under `sim` the tests of a package share one process environment, so a test
+has one isolation root and its knobs go through `testknob.Set`. A test that
+needs something only a process of its own gives (real ssh, another tuios
+binary, a live upgrade, pids or signals) calls `requireReal(t, why)` first,
+which skips it under `sim`. `TUITEST_TRACE=FILE` writes the observation trace
+of each test, on either backend: every `tuiosCLI` call and every wait and
+input of each client. The same test has the same trace on both backends.
 
 ### Kept Unit Tests
 
@@ -650,7 +721,7 @@ emulator ones above:
   compositor against `ansi.StringWidth`.
 - `internal/session`: the frame reader, the gob payloads (decode, bound,
   round trip), the JSON verb dispatcher, and selectors.
-- `internal/harness`: `Classify` against `Explain` over the bundled
+- `harness` (tuios.dev/harness): `Classify` against `Explain` over the bundled
   manifests and over fuzzed ones.
 - `internal/config` and `internal/tape`: key normalisation, the config
   pipeline, and the tape lexer and parser.
@@ -752,7 +823,7 @@ go run ./cmd/tuios tape play examples/demo.tape
 ### Keybind Registry
 
 - Leader key configurable but defaults to `ctrl+b`
-- Check action descriptions in `internal/config/registry.go`
+- Every action is one entry of `actionTable` in `internal/config/actions.go`, with its description; `ActionDescriptions` and `LookupAction` are derived from it
 - Key normalization handles `opt+` → `alt+` conversion on macOS
 
 ## Important Files to Know

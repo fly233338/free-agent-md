@@ -2,12 +2,6 @@
   "full_name": "pnpm/pnpm",
   "points": [
     {
-      "checked_at": "2026-10-23T08:37:36Z",
-      "commit_sha": "901f2438e0da55de78d1ade80fad7941d1cb51e3",
-      "pushed_at": "2026-10-23T08:35:11Z",
-      "stars": 36903
-    },
-    {
       "checked_at": "2026-11-03T10:57:56Z",
       "commit_sha": "4898dfbdc5ab3f947000b45986f98dcaa00d3cb5",
       "pushed_at": "2026-11-03T10:55:07Z",
@@ -42,6 +36,12 @@
       "commit_sha": "cf65777af1d934755416666ef089ea447a904ec1",
       "pushed_at": "2026-11-21T11:11:53Z",
       "stars": 37147
+    },
+    {
+      "checked_at": "2026-11-22T11:34:16Z",
+      "commit_sha": "94ab1d2b1e14086492a60273c7b7fd7015461f0d",
+      "pushed_at": "2026-11-22T11:32:57Z",
+      "stars": 37154
     }
   ],
   "repo_id": 50565430

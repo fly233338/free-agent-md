@@ -1,8 +1,0 @@
-# rustfs/rustfs instruction files
-
-Upstream: [rustfs/rustfs](https://github.com/rustfs/rustfs) · License: `Apache-2.0` · Commit: `f36a77138985385a19b5ec0ff2c9f1382b01d70d`
-
-| Type | Path | Snapshot | Fixed source | SHA-256 | Size |
-|---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/rustfs/rustfs/AGENTS.md) | [Source](https://github.com/rustfs/rustfs/blob/f36a77138985385a19b5ec0ff2c9f1382b01d70d/AGENTS.md) | `5b87b8c920d5193beb33ebc80bded9d47f76dc6e1f1ab18a60ccb6c76539e33e` | 14,307 B |
-| `AGENTS.md` | `.github/AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/rustfs/rustfs/.github/AGENTS.md) | [Source](https://github.com/rustfs/rustfs/blob/f36a77138985385a19b5ec0ff2c9f1382b01d70d/.github/AGENTS.md) | `5c002d9e70bc3c80f8bd248fd8f4a46f75f15da42fb4ce1b4699a4b8cf534d29` | 1,828 B |

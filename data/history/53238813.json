@@ -2,12 +2,6 @@
   "full_name": "Homebrew/brew",
   "points": [
     {
-      "checked_at": "2026-10-23T08:37:36Z",
-      "commit_sha": "786fc9e8c4786b20bc69f387c60692593468301b",
-      "pushed_at": "2026-10-23T08:37:16Z",
-      "stars": 50086
-    },
-    {
       "checked_at": "2026-11-21T11:15:08Z",
       "commit_sha": "20e97c73d3d685824f302c9db85fc283744afb60",
       "pushed_at": "2026-11-21T10:59:32Z",

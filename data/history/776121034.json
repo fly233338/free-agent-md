@@ -2,12 +2,6 @@
   "full_name": "BasedHardware/omi",
   "points": [
     {
-      "checked_at": "2026-10-23T08:37:36Z",
-      "commit_sha": "577af33d2b47f161afeb5251d549968dd51b6db5",
-      "pushed_at": "2026-10-23T08:33:07Z",
-      "stars": 13801
-    },
-    {
       "checked_at": "2026-10-30T10:08:14Z",
       "commit_sha": "56265ae21055697b28e10f2dc94797c99c8fe776",
       "pushed_at": "2026-10-30T10:07:01Z",
@@ -36,6 +30,12 @@
       "commit_sha": "a73632ce0ec9ae5ca42686c33f7bd46a6a12c9ab",
       "pushed_at": "2026-11-11T11:01:01Z",
       "stars": 13953
+    },
+    {
+      "checked_at": "2026-11-22T11:34:16Z",
+      "commit_sha": "6b226187273e257e89d03f12b1a62b5261f74d96",
+      "pushed_at": "2026-11-22T11:31:32Z",
+      "stars": 14008
     }
   ],
   "repo_id": 776121034

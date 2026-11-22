@@ -1,8 +1,8 @@
 # BerriAI/litellm instruction files
 
-Upstream: [BerriAI/litellm](https://github.com/BerriAI/litellm) · License: `NOASSERTION` · Commit: `6245f94734938b0cfc25d208064a01806518040d`
+Upstream: [BerriAI/litellm](https://github.com/BerriAI/litellm) · License: `NOASSERTION` · Commit: `90dce4b93bd2b090621a6b9083311294d3358bc6`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/BerriAI/litellm/AGENTS.md) | [Source](https://github.com/BerriAI/litellm/blob/6245f94734938b0cfc25d208064a01806518040d/AGENTS.md) | `ab85d492b1285e7ede329e5af7e49841928a410236984f14fdb6b0664b80f212` | 23,916 B |
-| `AGENTS.md` | `.github/AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/BerriAI/litellm/.github/AGENTS.md) | [Source](https://github.com/BerriAI/litellm/blob/6245f94734938b0cfc25d208064a01806518040d/.github/AGENTS.md) | `f82c31f859c09c29eb322e8d621b1ff0a42ad7368e63a4fbb76adb56491f1ab5` | 381 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/BerriAI/litellm/AGENTS.md) | [Source](https://github.com/BerriAI/litellm/blob/90dce4b93bd2b090621a6b9083311294d3358bc6/AGENTS.md) | `dc164027d8168a557fd0b0e28b29b81273142ff0a6351eda62a4f6dee3e93b92` | 24,813 B |
+| `AGENTS.md` | `.github/AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/BerriAI/litellm/.github/AGENTS.md) | [Source](https://github.com/BerriAI/litellm/blob/90dce4b93bd2b090621a6b9083311294d3358bc6/.github/AGENTS.md) | `34b111cea15bba0a11a4db5f3d86b28e3e908ee05335db4b88ffff192fae6e77` | 718 B |

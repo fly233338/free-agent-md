@@ -1,7 +1,7 @@
 # cssnano/cssnano instruction files
 
-Upstream: [cssnano/cssnano](https://github.com/cssnano/cssnano) · License: `MIT` · Commit: `3bb04ca45b559af7d869649f2d1a37b75091e3b4`
+Upstream: [cssnano/cssnano](https://github.com/cssnano/cssnano) · License: `MIT` · Commit: `0dbf39f4f6526a74c4557b4f8071c6b13c1f1295`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/cssnano/cssnano/AGENTS.md) | [Source](https://github.com/cssnano/cssnano/blob/3bb04ca45b559af7d869649f2d1a37b75091e3b4/AGENTS.md) | `5225177695bd91953dfe18e48d287ff77f5c9ba4a2daa20cc06a032b933f7bbe` | 12,947 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/cssnano/cssnano/AGENTS.md) | [Source](https://github.com/cssnano/cssnano/blob/0dbf39f4f6526a74c4557b4f8071c6b13c1f1295/AGENTS.md) | `ba32d77eb27d5f1e0ea680f4aa5b65f23ec92ab4b3fea5e90b52281035f5b187` | 15,719 B |

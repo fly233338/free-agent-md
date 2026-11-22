@@ -1,8 +1,8 @@
 # debpalash/VoiceStudio instruction files
 
-Upstream: [debpalash/VoiceStudio](https://github.com/debpalash/VoiceStudio) · License: `AGPL-3.0` · Commit: `54465ec203e7a7d68894a09d89c1f6002bc70e59`
+Upstream: [debpalash/VoiceStudio](https://github.com/debpalash/VoiceStudio) · License: `AGPL-3.0` · Commit: `2bb21302241793977055c44f7c52815bcbf0261e`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/debpalash/VoiceStudio/AGENTS.md) | [Source](https://github.com/debpalash/VoiceStudio/blob/54465ec203e7a7d68894a09d89c1f6002bc70e59/AGENTS.md) | `bc8550c41d9f9f21b2d86c50bc0a54f430deb4aa4ebdb25cc566ccfb342bd124` | 10,801 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/debpalash/VoiceStudio/CLAUDE.md) | [Source](https://github.com/debpalash/VoiceStudio/blob/54465ec203e7a7d68894a09d89c1f6002bc70e59/CLAUDE.md) | `87db0c519de4dbd2aacb99b44b7d5ce7a0d6ae8d65d483d0cc1dc49d54130f3f` | 27,460 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/debpalash/VoiceStudio/AGENTS.md) | [Source](https://github.com/debpalash/VoiceStudio/blob/2bb21302241793977055c44f7c52815bcbf0261e/AGENTS.md) | `6bbb1127d36316690fbf46a0b6cb123a1057a53e1a061e86f45866556c44c66f` | 10,981 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/debpalash/VoiceStudio/CLAUDE.md) | [Source](https://github.com/debpalash/VoiceStudio/blob/2bb21302241793977055c44f7c52815bcbf0261e/CLAUDE.md) | `eea9dbb6a4761b2a5ad164ad00e981e10f765ec0af75c6934223026dd2e64ebb` | 27,654 B |

@@ -2,12 +2,6 @@
   "full_name": "better-auth/better-auth",
   "points": [
     {
-      "checked_at": "2026-10-23T08:37:36Z",
-      "commit_sha": "d32b5b271ce6f36f62a3296f0c9fbc1427d33a7f",
-      "pushed_at": "2026-10-23T08:35:19Z",
-      "stars": 30426
-    },
-    {
       "checked_at": "2026-11-12T11:24:34Z",
       "commit_sha": "3d233e438fe0bb7a06d9d87a55af02b81a9db787",
       "pushed_at": "2026-11-12T11:24:02Z",

@@ -2,12 +2,6 @@
   "full_name": "PX4/PX4-Autopilot",
   "points": [
     {
-      "checked_at": "2026-10-23T08:37:36Z",
-      "commit_sha": "989a01382b395862672682587bfb9811b247b6c4",
-      "pushed_at": "2026-10-23T08:33:05Z",
-      "stars": 12880
-    },
-    {
       "checked_at": "2026-11-16T11:33:53Z",
       "commit_sha": "dc7b9011cbc32df255d9e87309505921d3e3f316",
       "pushed_at": "2026-11-16T11:33:42Z",
