@@ -2,12 +2,6 @@
   "full_name": "Martian-Engineering/lossless-claw",
   "points": [
     {
-      "checked_at": "2026-10-24T08:12:46Z",
-      "commit_sha": "fb783420b84d6881e614d3aa3c9a463e1e88018d",
-      "pushed_at": "2026-10-23T18:15:25Z",
-      "stars": 4911
-    },
-    {
       "checked_at": "2026-10-25T08:30:15Z",
       "commit_sha": "fb783420b84d6881e614d3aa3c9a463e1e88018d",
       "pushed_at": "2026-10-23T18:15:25Z",
@@ -180,6 +174,12 @@
       "commit_sha": "e10491d33ad97fd2e9a8e9e3a966cf2a45c56370",
       "pushed_at": "2026-11-22T06:37:48Z",
       "stars": 4921
+    },
+    {
+      "checked_at": "2026-11-23T12:59:00Z",
+      "commit_sha": "9ddac255a5552a9a1944d21bb2ca02c3b46aea2e",
+      "pushed_at": "2026-11-22T17:14:06Z",
+      "stars": 4922
     }
   ],
   "repo_id": 1161277811

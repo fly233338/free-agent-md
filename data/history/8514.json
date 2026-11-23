@@ -2,12 +2,6 @@
   "full_name": "rails/rails",
   "points": [
     {
-      "checked_at": "2026-10-24T08:12:46Z",
-      "commit_sha": "f8f02d243059b1e8c5849791f7888ea9780c1842",
-      "pushed_at": "2026-10-24T08:04:06Z",
-      "stars": 58850
-    },
-    {
       "checked_at": "2026-10-31T09:44:15Z",
       "commit_sha": "cb7c7992a7175a355ca236fa2af0705b2498cdaa",
       "pushed_at": "2026-10-31T09:41:35Z",

@@ -2,12 +2,6 @@
   "full_name": "cssnano/cssnano",
   "points": [
     {
-      "checked_at": "2026-10-24T08:12:46Z",
-      "commit_sha": "469e653e91997623bf2f1262ab54ddae480e0ee9",
-      "pushed_at": "2026-10-24T00:26:23Z",
-      "stars": 4982
-    },
-    {
       "checked_at": "2026-10-25T08:30:15Z",
       "commit_sha": "469e653e91997623bf2f1262ab54ddae480e0ee9",
       "pushed_at": "2026-10-24T21:17:44Z",
@@ -180,6 +174,12 @@
       "commit_sha": "0dbf39f4f6526a74c4557b4f8071c6b13c1f1295",
       "pushed_at": "2026-11-21T23:11:48Z",
       "stars": 4980
+    },
+    {
+      "checked_at": "2026-11-23T12:59:00Z",
+      "commit_sha": "a53b3c8877d7b191464934766d1e4ab7db395e55",
+      "pushed_at": "2026-11-23T12:53:20Z",
+      "stars": 4981
     }
   ],
   "repo_id": 33943153

@@ -47,6 +47,20 @@ platform's: a `color` a bar button only inherits from the page leaves UIKit's ti
 writing apps should therefore say less — structure (a header's heading and buttons, a
 `tablist`, an `alertdialog`) and leave colours, fonts and metrics to the platform.
 
+## Apple platforms: public API only
+
+Exact's Apple hosts use only Apple's public API: the classes, methods, properties, keys and
+notifications that Apple's SDK headers declare and its documentation describes. App Store
+review rejects an app that uses anything else ([App Review Guideline
+2.5.1](https://developer.apple.com/app-store/review/guidelines/#software-requirements)). So
+shipped code calls no private method, reads no undocumented key, and names no private class:
+it looks none up by name, compares no class's name and holds no literal of one. Find a platform
+view through public API, such as its accessibility elements, a delegate or a notification.
+Where public API cannot reach it, do without, and name the known difference in the LLP that
+owns the feature and in the code. Private API is for development builds only, inside an `#if`
+on `EXACT_INSPECT` or `EXACT_AGENT`; LLP 1035.003 names the only exceptions.
+`host/apple/inspect-gate.test.mjs` checks the sources for private class names.
+
 ## Numeric typography
 
 On graphical hosts, use tabular digits for numeric columns and values that change
@@ -79,60 +93,38 @@ section binds (`rules/RULES.md`, "Agents").
   Rolldown remains the app bundler. Node and npm are not required.
 - The web artifacts (`app.wasm`, the Markdown editor, text flow) build with a pinned
   nightly (`WEB_TOOLCHAIN` in `scripts/app.mjs`) that builds std for size; everything
-  else is `rust-toolchain.toml`'s stable, which the six checks use. `build.mjs`
+  else is `rust-toolchain.toml`'s stable, which the gate and hourly lane use. That
+  stable moves to each Rust release within two weeks, with the lints the release
+  adds fixed or allowed in the same commit (LLP 1153.003 D6.1). `build.mjs`
   names the install commands when the nightly or its `rust-src` is missing.
 
 - `kernel/tables/schema.json` is the one declaration authority; `kernel/build.rs`
   generates from it. Edit the table, never generated code.
-- Every source file ≤ 1,500 lines. Stage (`git add -A`) and run `bun scripts/caps.mjs`.
+- Every source file ≤ 1,500 lines. Stage (`git add -A`) before running the gate; caps reads tracked files.
 - Writing or changing a test: read `docs/testing.md` (waits, isolation, coverage, measuring).
-- The six checks: `cargo build --all-targets --keep-going` ·
-  `cargo test --tests --no-fail-fast` · `cargo clippy --all-targets
-  --keep-going -- -D warnings` and `cargo fmt --all -- --check` (run both) ·
-  `bun scripts/caps.mjs` · `bun scripts/boot.mjs` · `cargo check --workspace
-  --all-targets --keep-going`. The flags keep Cargo from
-  stopping at the first failing crate or test binary. The first three's scope is the root
-  `default-members`. The sixth (Charlie, 2026-10-12) compiles every crate and target
-  of the workspace and runs none of their tests: on 2026-10-11 six things outside
-  `default-members` were broken on origin/main while the five were green, and it
-  catches the ones that did not compile (`exact-web-js`, `exact-linux`'s tests). It
-  needs the pinned Bun first on PATH (or named by `BUN`): app crates' build scripts
-  run Bun, and under an older one each fails with "Bun … is older than …". It shares
-  no compiled crate with the build, so it costs its whole time again: on an 18-core
-  Mac, 2 to 5 s with nothing changed, 45 to 90 s after a touched kernel line
-  (the build: 7 to 13 s), 2.4 min cold. The async lane (`bun scripts/async.mjs`, per commit on
-  origin/main) runs the first three with `--workspace`, which covers the sixth, plus the `async lane:` ignored tests,
-  the web JS target's conformance run (`host/web-js/conform.mjs --strict`) and its
-  Chrome-oracle Firefox/WebKit steps (`conform-firefox`, `conform-webkit`),
-  the separate game workspace's locked tests, the UIKit XCTests, touch smoke and
-  the tvOS and watchOS compiles
-  (`build.mjs --test --ios`; `build.mjs --tvos --no-install`, which builds and signs
-  the Apple TV bundle and asks for no simulator; `build.mjs --watchos --no-install`,
-  which builds and signs Caltrain's watch bundle with the pinned nightly and
-  `rust-src`, and asks for no simulator), the SVG and motion parity smokes' Linux legs
-  (`smoke.mjs svg --hosts linux`, `smoke.mjs motion --hosts linux`: the paint walk's
-  pixels against Chrome's; their macOS and iOS legs are run by hand), the
-  Contract semantics (`semantics/README.md`: the Lean proofs, the extracted VM's, and
-  `contract-difftest` running the runner and the web JS target against the Lean
-  semantics; each skipped when its inputs are those of a run that passed,
-  `scripts/async-inputs.mjs`), then `metrics.mjs --long`. It runs only the tests that the
-  commits since the last commit it checked can affect (`scripts/affected.mjs`, below), and
-  every step in full at least daily. A second, hourly tier (`bun scripts/async.mjs --tier 2`) builds
-  the platforms that ride on another host's code: tvOS on the UIKit presenter
-  (installed on an Apple TV simulator, which that machine must have),
-  plus cross-target Cargo checks of the Linux host with every Linux app (`-p '*-linux'`)
-  and the Windows host with Windows Desk (x64 and ARM64), and Weatherlight's Android APK (its Rust
-  for `aarch64-linux-android` and the reader's and its module's Kotlin). Tier 2 needs the three Rust cross targets,
-  Zig (C and C++) and the pinned Linux Hermes bundle on this Mac, and for Android the SDK
-  with platform 37.2, an NDK, a JDK 17 or newer and the `aarch64-linux-android` target and Hermes bundle. These checks qualify
-  compilation, not native window, KMS, or input behavior. Building
-  `--all-targets` resolves features as `cargo test` does, so the two share artifacts.
-- A green `--workspace` build proves the apps compile, not that they work: their Apple
-  crates are rlibs to Cargo, and the archive an app links is built only by
-  `host/apple/build.mjs`, when the app is built to run. When a change can affect how an
-  app runs (the kernel, the runner, a host, the app itself), build and launch the apps it
-  touches (`bun host/apple/build.mjs --ios <app>-apple --run`, `bun host/web/dev.mjs --app
-  <app>`) and use them as a person would, with `scripts/agent.mjs` or by hand.
+- **The only blocking gate is `bun scripts/gate.mjs`.** Run it, push, and fix what
+  the hourly lane attributes to you. Its warm budget after a one-crate edit is 30 s.
+  It runs format, caps, boot, an incremental Cargo check of default members, and
+  small Rust and Bun unit suites. Every part runs after failures and prints its time.
+  A cold checkout must provision and compile its dependencies first.
+- **Everything else runs hourly:** `bun scripts/async.mjs` checks origin/main's newest
+  tip over all commits since its last run. It runs the full build, default-member
+  tests, workspace check and clippy, format, caps, boot and wasm check; `affected.mjs`
+  selects the other Cargo and Bun suites, app drives, macOS and UIKit XCTests,
+  conformance and Apple platform builds. The quick difftest runs each hour; the
+  longer semantics checks reuse passing input fingerprints. Every suite runs at
+  least daily. New failures are bisected independently through affected commits with the
+  failing suites and their prerequisite builds; the actual parent must pass. A probe
+  that cannot finish names its range without assigning blame. Logs and attribution are in the lane's
+  `target/async/`, local issues and git notes (`refs/notes/async`, `async2`).
+- The hourly lane also installs tvOS and builds
+  Linux, Windows x64 and ARM64, and Weatherlight's Android APK. It needs the Rust
+  cross targets, Zig, pinned Hermes bundles, Android SDK/NDK and JDK. `--tier 2` runs
+  only these platform checks in a separate worktree. A cross-target
+  compile proves compilation; presentation and input need the native hardware.
+- A green Cargo check proves compilation, not an app's behavior. The hourly lane
+  builds and drives affected apps and runs the platform tests. Use `scripts/agent.mjs`
+  or the app itself to investigate a behavior; the driver commands are below.
 - `bun scripts/affected.mjs` lists the test suites a branch's changes can affect (the working
   tree included) and the command for each; `--run` runs the Cargo and Bun ones, and `--why
   <suite>` says why one was selected. A suite reads its Cargo dependencies, its imports and
@@ -154,8 +146,9 @@ section binds (`rules/RULES.md`, "Agents").
   fails the build. A game builds the wasm target (LLP 1071 §8), and `--wasm` is the
   internal flag for the uses below. The dev loop, the agent's web host, the smoke's app drive and
   metrics run what the build makes: on the JS target an edit rebuilds and reloads the
-  page (~0.1 s, no state carried); a native client opening the dev URL is forwarded to
-  the resident loop's producers (`dev.mjs --wasm`, started at its first request).
+  page, carrying compatible state and, while the logic is unchanged, settled answers.
+  A native client opening the dev URL is forwarded to the resident loop's producers
+  (`dev.mjs --wasm`, started at its first request).
   Delivery bakes the web crate without its wasm for the native streams and publishes
   the JS build of that bake's plan as the web root; the smoke's bare-plan fixtures and
   conformance's oracle stay `--wasm` (LLP 1071 §7, "Retiring the wasm target on the web").
@@ -167,7 +160,7 @@ section binds (`rules/RULES.md`, "Agents").
   web app ships against its budget, in seconds, before and after a cut). macOS: `bun host/apple/build.mjs --run`;
   iOS: `bun host/apple/build.mjs --ios --run` (a simulator; `--sim` or `EXACT_SIM` picks one);
   tvOS: `bun host/apple/build.mjs --tvos --run` (an Apple TV simulator; LLP 1008 §9;
-  `--tvos --no-install` compiles it with none, which is what to run after a change to Swift it shares with iOS);
+  `--tvos --no-install` compiles it with none, which the hourly lane runs after a change to Swift it shares with iOS);
   `--device --run` on a connected iPhone (signed with a team profile on this Mac);
   `--host` also builds the sample host (LLP 1031 D10), the native app that embeds two
   sessions, which `bun scripts/smoke.mjs host` drives and `scripts/agent.mjs host
@@ -176,22 +169,20 @@ section binds (`rules/RULES.md`, "Agents").
   `ExactKit` (session, view, app owner — what an embedder links) and the executables
   as adapters over it. `apps/<name>/app.json` is the app manifest (LLP 1030 D2): the
   bundle id, name, host files, and deploy policy come from it, never from a crate name.
-- When you touch `contract/`, `runner/`, `plan/` or `semantics/`, run `cargo run -p
-  contract-difftest -- quick` before landing. It checks the semantics on what you changed,
-  takes about 10 s warm, and is advice, not a check (`semantics/README.md`, "Using it day to
-  day"; `contract verify <app>` is the app author's version).
-- The gate tests only `default-members`. Of the hosts it holds the web host
-  (`exact-web`) and the Apple host's Rust (`exact-apple`; its tests that drive a real
-  socket through URLSession, wait on the wall clock or launch Bun, Swift or a nested
-  cargo build are `async lane:`, and its Swift is the XCTests). The
-  others (`exact-web-js`, `exact-web-capabilities`, `exact-linux`, `exact-windows`,
-  `exact-render`, …), `js/`, `gpu/` and most apps are
-  not tested by it (the sixth check compiles them, their tests too, and runs none),
-  and the async lane reports a failing test only after the push. When you touch one, or
-  what its tests read, run its tests before landing (`bun scripts/affected.mjs` names
-  them): `cargo test -p exact-linux --lib --tests --no-fail-fast`, or `--bins` for a
-  bin-only crate such as `exact-web-js`. Advice, not a check.
+- The hourly lane runs `cargo run -p contract-difftest -- quick` and the longer
+  Contract semantics checks (`semantics/README.md`). Non-default crates and hosts
+  run their affected tests there too; a local full-workspace build is not a gate.
 - Verify by running, never by grepping. Fix loops get three rounds, then stop and say so.
+- The code to push has been simplified, its tests follow the [test optimization
+  guidelines](docs/testing.md), and its prose and commit message follow the [writing
+  guidelines](#writing). Do this before testing; prose edited after testing needs no rerun
+  unless it changes behavior, like a prompt or agent context.
+- Land it (LLP 1176; Charlie, 2026-11-14: "just land stuff, we can fix it later if it breaks
+  something"). When your change passes the gate on your own tree, merge it yourself, at
+  once, as a squash, and fix forward what it breaks. Do not hold it for a main that moved
+  during the checks, for a failure main already has (say so where its owner will see it), or
+  for a second pass after a rebase with no conflict. A pull request that `rules/RULES.md` says
+  needs a human's approval still does. Give each change in flight its own warm worktree.
 - To see a change work, drive the app: `bun scripts/agent.mjs <web|macos|ios|linux> tree
   "tap change-station" "type station-search Palo" "clock +60000" state logs "screenshot
   out.png"` — the ten operations of LLP 1012 and LLP 1079 (`perf`: a subtree's work by
@@ -201,24 +192,29 @@ section binds (`rules/RULES.md`, "Agents").
   scripts/agent.mjs trace <file>` reads, `trace --pid <pid>` asks a running app for, and `trace --phone` copies off a
   phone; `--plan <dir>` joins another build's source map), the same on every host, with the clock
   in your hands (`clock settle` instead of waiting; `"screenshot out.png over 600 every
-  50"` films motion on it as a contact sheet, `.apng` to play). The driver refuses a
-  build older than its sources and names the rebuild (LLP 1012.001.000). `bun scripts/smoke.mjs
+  50"` films motion on it as a contact sheet, `.apng` to play). Android reader drives refuse films.
+  Use `android --live` and `adb shell screenrecord` to see Android's reader layers play.
+  The driver refuses a build older than its sources and names the rebuild (LLP 1012.001.000).
+  `bun scripts/smoke.mjs
   <web|macos|ios|linux|host>` is the whole app driven that way. The Linux host
-  (`cargo build --profile host-dev -p caltrain-linux`: a development build, as
-  `build.mjs` makes for Apple; `--release` is the one that ships) runs headless
+  (`bun scripts/build-linux.mjs caltrain`: a development build, as
+  `build.mjs` makes for Apple; a release build is the one that ships) runs headless
   anywhere, macOS included. `host-dev` compiles incrementally unless the shell
   exports `CARGO_INCREMENTAL=0`, which a hand-run cargo obeys (a touched kernel
   line is then 17 s, not 6) and `build.mjs` overrides, saying so.
 - The terminal host (LLP 1101): `cargo build --profile host-dev -p harness-terminal`,
   then `./target/host-dev/harness` runs the coding harness in this terminal (inline;
   `--fullscreen` for the alternate screen), or `exact-terminal <entry.contract>` any
-  terminal entry. With operations it runs headless (`--size 80x24 type prompt "hi" key
-  Enter until "…" print`); headless, the frames go into a terminal emulator (`vt100`)
-  and `print`, `screenshot` read its screen (`print --all` the scrollback, `document`
-  the whole laid-out document). Develop it in `host-dev`: a debug build lays out a long
+  terminal entry. After `--drive` it runs the operations headless (`--size 80x24 --drive
+  type prompt "hi" key Enter until "…" print`); headless, the frames go into a terminal
+  emulator (`vt100`) and `print`, `screenshot` read its screen (`print --all` the
+  scrollback, `document` the whole laid-out document). With `--print`, `--json`, or a
+  pipe on stdin or stdout, an entry runs once and exits (LLP 1101.003: `harness --print
+  --prompt "…"`, `exact-terminal apps/todo/terminal.contract --json /done`); the other
+  words are its location (`--help`). Develop it in `host-dev`: a debug build lays out a long
   document hundreds of times slower. `exact-terminal` is in `default-members`
   (`tests/it/screen.rs` drives inline mode through the emulator); `harness-data` is not,
-  so when you touch the harness run `cargo test -p harness-data`.
+  so the hourly lane runs `cargo test -p harness-data` when the harness changes.
   `examples/replay.rs` replays a recorded session through the same emulator.
   The LLP reader is the other terminal app (LLP 1101.004): `cargo build --profile
   host-dev -p llp-terminal`, then `./target/host-dev/llp [llp/ or a document]`.
@@ -251,7 +247,8 @@ section binds (`rules/RULES.md`, "Agents").
   instead: the host's two Rust modules, by the SHA-256 of every input
   (`~/.cache/exact/apple-modules`, `host/apple/modules.mjs`), and, into a
   `target/` that has compiled nothing, the registry crates another build
-  compiled, which Cargo then accepts or not by its own fingerprints
+  compiled and, for an app, the checkout's own crates another app of the
+  checkout compiled, which Cargo then accepts or not by its own fingerprints
   (`~/.cache/exact/apple-crates`, `host/apple/crates.mjs`). A development web
   build takes the compiler and the leaf wasm modules the same way
   (`~/.cache/exact/web-modules`, `host/web-js/module.mjs`; `bun

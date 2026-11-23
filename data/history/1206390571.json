@@ -2,12 +2,6 @@
   "full_name": "debpalash/VoiceStudio",
   "points": [
     {
-      "checked_at": "2026-10-24T08:12:46Z",
-      "commit_sha": "bc29614a71e63c837ea46cbeca21a308e520e47f",
-      "pushed_at": "2026-10-24T08:01:25Z",
-      "stars": 83826
-    },
-    {
       "checked_at": "2026-10-26T09:02:50Z",
       "commit_sha": "fa09c16e33ebcee0a51e042b1ad2d143aa111c33",
       "pushed_at": "2026-10-26T09:02:37Z",
@@ -72,6 +66,12 @@
       "commit_sha": "2bb21302241793977055c44f7c52815bcbf0261e",
       "pushed_at": "2026-11-22T10:41:51Z",
       "stars": 116211
+    },
+    {
+      "checked_at": "2026-11-23T12:59:00Z",
+      "commit_sha": "1214e264d9e4facef560e1583370edbc7a6beff7",
+      "pushed_at": "2026-11-23T10:37:24Z",
+      "stars": 116900
     }
   ],
   "repo_id": 1206390571
