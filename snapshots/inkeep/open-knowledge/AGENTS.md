@@ -1,0 +1,110 @@
+# OpenKnowledge Agent Guide
+
+This is the public OpenKnowledge repository. Keep changes compatible with the published package and standalone clone experience.
+
+## Start Here
+
+- Read [README.md](./README.md) for the project overview.
+- Read [CONTRIBUTING.md](./CONTRIBUTING.md) before changing public PR flow, dependencies, or exported docs.
+- Use pnpm 12 or newer. Corepack and npm need a Node.js to provide it, such as the `.node-version` release; the standalone installer needs none. pnpm commands run the Node.js version `package.json`'s `devEngines.runtime` pins, which equals `.node-version`; select `.node-version` yourself before running `node` directly.
+- This repo does not use code comments. Read [Comment policy](#comment-policy) before writing any.
+
+## Commands
+
+```bash
+pnpm install
+pnpm run check
+pnpm run build
+```
+
+Use these during development:
+
+```bash
+pnpm run format
+pnpm run lint
+pnpm run typecheck
+pnpm run test
+```
+
+For routine local Turbo runs, use an absolute `TURBO_CACHE_DIR` inside this worktree; use `TURBO_FORCE=true` only for a deliberate fresh run.
+
+A test that reads files outside its own package's Turbo inputs is named `*.uncached.test.ts` (or `.tsx`, `.mjs`, matching the file's language); `pnpm run test:uncached` runs those on every call, and no cached tier does.
+
+Run local apps:
+
+```bash
+pnpm --filter @inkeep/open-knowledge-app run dev
+
+cd docs
+pnpm run dev
+```
+
+## Repo Layout
+
+- `packages/app` - web app and editor UI
+- `packages/cli` - CLI and package entrypoint
+- `packages/core` - shared domain logic
+- `packages/desktop` - Electron desktop app
+- `packages/plugin` - agent integration package
+- `packages/server` - local collaboration server
+- `docs` - documentation site
+
+## Process safety
+
+Never signal a pid you did not spawn. Signal a held `ChildProcess` before it exits (its group only then); never a pid from a file, `ps` or stdout, a `?? <n>` fallback or literal `0`/`1`/`-1`. The one pid from a file you may signal is a `server.lock` pid at the two places that stop a server through its lock, `runStop` in the CLI and `terminateServerByPid` in the desktop app, and only after `assessLockHolder` confirms, immediately before each signal, that the process holding that pid is the one that wrote the lock. Two acts in the maintainers' gate tooling, which this repository does not carry, go further, and nothing else does: the lifeline watcher the guard of each gate step forks into the step's process group may run `kill -s KILL 0`, which ends the group it belongs to; and after the step's first process exits, its supervisor may still signal the step's group while that lifeline, a live member, holds the group. Gate: `ok/no-sentinel-signal-target`.
+
+## Comment policy
+
+**Write no comments.** Explanation belongs in names, types, tests, the commit message, the PR body, or a doc — a comment is the one place it rots unseen. This inverts the usual open-source norm, so it surprises people; it is deliberate, and `pnpm run lint` enforces it.
+
+Keep only these, and nothing else:
+
+- **Directives a tool parses**, anchored at the comment's first line: `biome-ignore lint/style/noVar: reason`, `@ts-expect-error the fixture is deliberately malformed` (a reason is required), `oxlint-disable-next-line`, `@vitest-environment jsdom`, `@ts-nocheck`, `@vite-ignore`, `/// <reference types="vite/client" />`, `SPDX-License-Identifier: GPL-3.0-or-later`, `/* @lintignore knip cannot see the dynamic import site */` (block or JSDoc form only; the line-comment form is rejected because knip does not read it). If a tool reads it, it is code.
+- **JSDoc carrying `@deprecated`.** The allowlist also defines an audit-tag class, but its tag list is empty in this repo, so that class admits nothing here: a tag-bearing JSDoc block is rejected as prose.
+- **Contract markers**, which the comment must BEGIN with: `STOP: a cross-file contract a reader must not break`, `WARN: a sibling that silently drifts if this changes`, `UPSTREAM(electron/electron#19920): a code shape forced on us from outside this repo`.
+- **A validated citation**, as in `precedent #42`; the numbered titles are listed in [`PRECEDENTS.md`](./PRECEDENTS.md) at the repo root.
+- **Registered guard markers**: write `error-log-shape-ok: <why>` and `presence-exempt: <why>` only. The predicate also admits `documented exemption from Precedent #30`, `Defect class: <slug>` and `TOLERATED: <why>`, but their checkers live in test trees the mirror does not carry, so lint accepts them here while nothing reads them — that is prose wearing a marker, and it is a review finding even though the gate is green. The set is fixed; you cannot invent a new one.
+- **Type-only JSDoc**, in a .mjs or .js file only: a JSDoc block whose every line is a bare type annotation, which is the only typing mechanism the JavaScript strata have. Two hard edges: a description after the identifier makes the block prose, and the same block in a .ts file is prose, because TypeScript has real syntax there.
+
+An `UPSTREAM` referent must be one of four shapes, so it always resolves to something a reader can look up: a GitHub issue (`electron/electron#19920`), an RFC (`RFC 9457`), a CommonMark section (`CommonMark §6.5`), or a package version (`vite@7.1.0`). Anything else fails lint.
+
+Banned: `plain prose`, JSDoc description text, `//////// section dividers`, commented-out code such as `const disabled = true;`, `TODO`, `FIXME`, `@ts-ignore`, and process metadata such as `PRD-1234` or `at line 370`. Process metadata stays banned **inside** an allowlisted comment too: a legitimate STOP marker still fails lint if it carries a ticket number, a spec path, or a line reference.
+
+A marker is not a license, and passing lint is not the same as being legitimate. Lint rejects a referent it cannot resolve (`UPSTREAM(some blog post): not a resolvable referent`) and a citation of a precedent that does not exist (`precedent #999`). It cannot tell whether a well-formed marker is load-bearing, so a `STOP:` essay or a `WARN:` that warns of nothing passes lint and gets caught in review instead — as a worse finding than the comment it disguises. The same applies to reasoning parked in a suppression's reason slot: a suppression reason is free text, so a paragraph of design rationale smuggled into one passes lint, and is a review finding for the same reason.
+
+If `pnpm run lint` fails on a comment, the diagnostic names the class, the fix, and a link into [`lint-plugins/no-comments/README.md`](./lint-plugins/no-comments/README.md), which is the full policy. Delete the comment, or convert it to one of the forms above.
+
+Shell scripts are declared in scope by `no-comments.config.jsonc`, but the sweep that reads the hash grammars is not part of this mirror, so `pnpm run lint` here checks the JavaScript and TypeScript families only. A `.sh` file is gated upstream; the same policy applies to it, and a reviewer will hold it to that.
+
+## Public Mirror Rules
+
+- This repo is generated from an allowlist. Do not rely on hidden source-only folders being present.
+- Do not open pull requests here. Report bugs and feature requests as detailed issues using `CONTRIBUTING.md`. Maintainers publish changes through the mirror; its sync pull requests are automation.
+- Top-level public docs such as `README.md`, `CONTRIBUTING.md`, and `AGENTS.md` are overlay files. Keep them public-safe and standalone.
+- Do not add secrets, private customer context, internal-only specs, local paths, or generated debug artifacts.
+- Keep dependency updates paired with `pnpm-lock.yaml`. Run `pnpm run notices` when third-party notices may change.
+
+## Changesets
+
+Every behavior-changing PR ships a `.changeset/<kebab-name>.md` file. The body becomes the user-facing entry on the next beta's GitHub Release and on the stable Release notes — that's how npm consumers and desktop auto-update users learn what changed. Write release-note copy, not a commit-message reprise.
+
+- Create one with `pnpm run changeset`, or hand-write a file named `.changeset/<descriptive-kebab-slug>.md`.
+- Use a name no shipped changeset has used. A stable that carried the name counts it as released, so the new notes would never appear; the PR check refuses the file and asks for a rename.
+- Front-matter: at minimum `'@inkeep/open-knowledge': patch`. OpenKnowledge follows semver with a **pre-1.0 shift-down**: while we're below `1.0.0`, what semver would call a major (breaking API change) is encoded as `minor`, and what semver would call a minor (new feature) is encoded as `patch`. Most changesets are `patch`. `minor` is rare — reserve it for large API contract changes or large feature additions. **Never declare `major` pre-1.0** (see the `"//"` line in `.changeset/config.json`).
+
+**Changelog authoring and review.** Use one short sentence for the user-visible outcome; a second only for a necessary qualification or upgrade action. Maximum 50 words per changeset body, across paragraphs and bullets. Omit implementation details, internal identifiers and exhaustive edge cases; link migration instructions. Reviewers check accuracy, required actions and brevity; request technical detail in docs. Never split one explanation across changesets to evade the budget.
+
+- Don't write inline references to sibling-package versions (e.g. `@inkeep/open-knowledge-core@0.5.0-beta.6`) — the fixed-group lock-step bumps are computed at release time and any number you'd write would be wrong.
+- Skip changesets for docs-only edits, test-only edits, or CI-only edits that don't change runtime behavior.
+
+Cadence: merging a PR with a changeset triggers a beta publish within minutes via the event-driven `release.yml` on the public mirror.
+
+## Before Finishing
+
+While iterating, run the tests for what you changed with `pnpm --dir packages/<pkg> run test`, plus `pnpm run lint` and `pnpm run typecheck`, widening to affected consumers for shared inputs. A red is yours to fix when it is in a test you added or edited or names a file you changed: fix its cause, never by retrying blindly, suppressing it, or skipping or commenting out a test. Note any other red in one line in your report, "also red on the base" or "unknown", and do not chase it. A red, yours or not, means you do not report the work as passing. Then run:
+
+```bash
+pnpm run check
+```
+
+For UI or editor changes, also run the affected package tests from `packages/app`.

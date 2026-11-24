@@ -4,6 +4,8 @@ Read and follow [AGENTS.md](AGENTS.md) before working in this repository. It is 
 
 Use `CLAUDE.md` as the Claude Code instruction entry. Record future repository-rule updates here and keep them aligned with `AGENTS.md`.
 
+Follow the [project editing contract](docs/product/edit-core.md) when changing Studio, cloud or headless editing behavior.
+
 ## Branch workflow
 
 Branch new work from the latest `main` and target all pull requests at `main`. Merge reviewed changes directly into `main` when authorized; do not use `feature/motion` as an intermediate integration branch.
@@ -23,7 +25,7 @@ For repository template edits, follow [Template production and reuse](AGENTS.md#
 
 ## Candidate and publication controls
 
-New repository installations use the source bootstrap in docs/install.md by default. Published npm application installation is optional and requires an explicit user choice; follow docs/install.md for channel and host selection. Never silently substitute npm for source or mix installations. Preserve existing installations, projects, credentials and unrelated host settings. npm remains the source dependency/build tool.
+New Agent connections default to the hosted Cloud MCP guide in `docs/install.md` (Streamable HTTP `/mcp` + OAuth 2.1). Legacy local source/stdio installation and the published npm guide template are archived in `docs/templates/legacy-npm-install.md` (consumed by `scripts/install-guide.mjs` and `scripts/install-onboarding.mjs`); only use legacy npm or local source installation when explicitly selected. Never silently mix cloud, local source and npm installations. Preserve existing installations, projects, credentials and unrelated host settings. npm remains the repository dependency/build tool.
 
 Follow [the release workflow manual](docs/release-workflows.md): one manually dispatched Motion package and release entry with prepublish and publish modes, plus snapshot-only recovery. Select `main` for all entries; other execution refs are rejected for new release work. Select `test` (default, DEV templates) or `stable` (prod templates). Blank test versions use short workflow-counter `test.N` numbering; stable requires an explicit new `MAJOR.MINOR.PATCH`. Keep full run/source identities in the records. Use candidate-install.md for local testing and keep results private. Publishing requires the explicit publish mode. Reuse an existing candidate with its exact version and run ID, or build and validate within the publishing run. Public candidates must use an exact reviewed source SHA integrated into `main`. Scan tracked source plus the outer npm tgz and inner application; preserve the positive distribution list and licenses. Keep candidate, native registry installation, real Agent creation and human acceptance evidence separate.
 
@@ -53,9 +55,9 @@ The design-system workbench is an independent package-owned editing surface. Kee
 
 ## MCP onboarding
 
-The MCP main page is the shared capability and usage handbook. Follow [MCP maintenance](AGENTS.md#mcp-onboarding-and-capability-maintenance) for every capability change and every scenario built from existing tools, even without a new tool. Update its entry points, examples, prerequisites, recovery and limitations in the same change; reuse shared instruction builders with feature UI and test both atomic tool coverage and scenario coverage. Platform export must remain aligned between Export and the handbook.
+The MCP main page is the shared capability and usage handbook for **Streamable HTTP `/mcp`** (OAuth 2.1 + PAT; ChatGPT Cloud supported on public HTTPS + OAuth 2.1) and the unified OpenDesign Model Gateway (no workspace BYOK forms). Follow [MCP maintenance](AGENTS.md#mcp-onboarding-and-capability-maintenance) for every capability change and every scenario built from existing tools, even without a new tool. Update its entry points, examples, prerequisites, recovery, P1/P2 boundaries and limitations in the same change; reuse shared instruction builders with feature UI and test both atomic tool coverage and scenario coverage. Platform export must remain aligned between Export and the handbook.
 
-Follow [MCP onboarding and capability maintenance](AGENTS.md#mcp-onboarding-and-capability-maintenance). Changes to local MCP, media generation, Agent adapters, templates or optional presentation must keep the Studio connection page, capability descriptions, setup instructions and compatibility boundaries current in the same change.
+Follow [MCP onboarding and capability maintenance](AGENTS.md#mcp-onboarding-and-capability-maintenance). Changes to Streamable HTTP MCP, 3-way cloud asset import, unified OpenDesign media generation, Agent adapters, templates or optional presentation must keep the Studio connection page, capability descriptions, setup instructions and compatibility boundaries current in the same change.
 
 ## Core capabilities and shared APIs
 

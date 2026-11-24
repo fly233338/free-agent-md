@@ -69,7 +69,9 @@ waiting in loops, and work someone else had already done. Tests were a small par
 - **Don't wait in loops.** Start a long command in the background and carry on, or wait for it once. No
   `sleep` or `until grep` polling of builds, harnesses or CI.
 - **One test per changed behaviour.** None for a refactor or a file move, none that reads source text, and no
-  harness where vanilla has nothing to compare (Horizon's own features, performance work).
+  harness where vanilla has nothing to compare (Horizon's own features, performance work). When registering new
+  `#[ignore = "daily"]` tests under `tools/ci/ignored-tests/`, prefer a focused file (`tools/ci/ignored-tests/<area>.txt`)
+  rather than appending to the giant shared lists.
 - **A red check isn't always yours.** When `verify` fails in a test your change can't reach, say so in the pull
   request and move on; don't hunt it.
 - **Bot reviews are advice.** CodeRabbit is often right and sometimes wrong. Check each finding against the code,
@@ -100,7 +102,7 @@ Game workspace (root `Cargo.toml`); `launcher/` and `crates/horizon-telemetry-se
 | `horizon-prepare` | Builds `.local/horizon-client/26.3` from the player's own Minecraft install (runs the Java exporters) |
 | `horizon-server` | `horizon-server`: `server.toml`, CLI, supervisor of the headless game ([docs/hosting.md](docs/hosting.md)) |
 | `horizon-server-files` | `server.properties`, eula, ops/whitelist/bans, usercache |
-| `horizon-anticheat` | The dedicated server's anticheat, off by default: `[anticheat]` settings, violation levels, the checks' rules; the hub runs them (`lan/anticheat.rs`) ([docs/anticheat.md](docs/anticheat.md)) |
+| `horizon-anticheat` | The dedicated server's anticheat, on by default (`combat` and `ground` act; `timer` and `prediction` log only): `[anticheat]` settings, violation levels, the checks' rules; the hub runs them (`lan/anticheat.rs`) ([docs/anticheat.md](docs/anticheat.md)) |
 | `horizon-cosmetics` | Cosmetic items Horizon clients draw on players (off by default): the item format, bones and animations ([docs/cosmetics.md](docs/cosmetics.md)) |
 | `horizon-addresses` | Every built-in address of an outside service vanilla doesn't contact (Horizon layer; [docs/layers.md](docs/layers.md#built-in-addresses)) |
 | `horizon-friends`, `horizon-relay` | Play with Friends: invite codes, encrypted tunnel, the relay ([docs/play-with-friends.md](docs/play-with-friends.md)) |

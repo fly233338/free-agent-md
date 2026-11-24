@@ -1,0 +1,105 @@
+# AGENTS.md
+
+This file gives coding agents repository-specific guidance for working on Bilibili Evolved. Read `CONTRIBUTING.md` first, then use this file as the practical checklist for implementation and verification.
+
+Follow the [feature scope and restrictions](CONTRIBUTING.md#功能范围与限制) in `CONTRIBUTING.md` when proposing, implementing, or reviewing changes, including the prohibition on computing API signatures directly in the project.
+
+## Project Structure
+
+- `src/` contains the userscript core, built-in components, shared runtime APIs, settings UI, and other code shipped with the main script.
+- `registry/lib/components/` contains installable components. New components should be placed under the appropriate category directory and use `index.ts` as the webpack entry.
+- `registry/lib/plugins/` contains plugins. Use a plugin when the feature only makes sense as an extension of another component.
+- Third-party components that are meant to remain outside the main repository should be added through `registry/lib/docs/third-party.ts` instead of mixing external component registration with in-repo source changes.
+- `dist/` and `registry/dist/` are build outputs. Development branches should not keep generated dist files; release output branches such as `preview`, `master`, and `master-cdn` get them from CI builds.
+- Feature documentation outputs under `doc/features/` are generated from metadata. Update them only when the task is explicitly about generated docs or release preparation.
+
+## Development Setup
+
+- The package manager is `pnpm`.
+- Install root dependencies with `pnpm install`.
+- Install registry dependencies from `registry/` when building registry features.
+- Use the VS Code tasks from `.vscode/tasks.json` as the source of truth for local task commands when in doubt.
+
+Common commands:
+
+```sh
+pnpm run type
+pnpm run lint-check
+pnpm tsx dev-tools/dev-server/index.ts
+pnpm tsx dev-tools/dev-server/command.ts sessions
+pnpm tsx dev-tools/dev-server/command.ts shutdown
+```
+
+The dev server starts and watches the development core build, serves the local userscript, and provides registry feature URLs for browser testing. Registry feature URLs are virtual build-on-request outputs served from memory. WebSocket is the command and event control plane; use `dev-tools/dev-server/command.ts` for single-feature build, watch, stop, start-debug, stop-debug, scaffold, and graceful server shutdown commands. See `dev-tools/dev-server/README.md` for protocol details and `CONTRIBUTING.md` for Tampermonkey setup details.
+
+## Component And Plugin Guidelines
+
+- Define components with `defineComponentMetadata`.
+- Follow existing plugin definitions for code under `registry/lib/plugins/`.
+- New components should include `author` metadata.
+- Component `name` values should be specific and camelCase. Display names and option names should clearly describe the feature instead of using generic labels.
+- If a component has an `index.md`, do not duplicate the same description in metadata unless the existing pattern for that component requires it.
+- Use `urlInclude` and `urlExclude` for page matching instead of manually repeating page checks in `entry`.
+- Keep `entry` focused on the work that must happen when the component starts.
+- Supporting disable and re-enable without a page refresh is optional. If teardown and reinitialization would account for roughly half the feature's implementation, prefer omitting `reload` and `unload` and requiring a page refresh. When supporting live toggling, implement both hooks and put cleanup in `unload`. Do not rely on the return value of `entry` for cleanup.
+- Use existing shared core APIs, component APIs, and plugin APIs before adding new infrastructure. Do not add new uses of `styledComponentEntry` or `toggleStyle` from `@/components/styled-component`; declare fixed component styles through metadata `instantStyles` instead.
+- Use the observer APIs from `core/observer`, such as `mutationObserve`, `childList`, `visible`, `sizeChange`, `urlChange`, and `videoChange`, instead of directly constructing native `MutationObserver`, `IntersectionObserver`, or `ResizeObserver` instances when the project API covers the required behavior.
+- `videoChange` runs the callback on setup and wraps it in a new listener each time, even when passed the same callback. Register it once per page if the callback checks whether the feature is enabled. If the listener should exist only while the feature is enabled, pass an `AbortSignal` and abort it in `unload` before registering again. After repeated live toggles, verify that a single video change triggers only one callback.
+- Put fixed component styles in SCSS files and load them through metadata `instantStyles`. Do not embed fixed CSS in TypeScript strings, HTML `style` attributes constructed in TypeScript, `style.cssText`, or individual DOM style assignments. For styles that require a different loading lifecycle, use the existing style APIs to load SCSS and handle cleanup explicitly.
+- When writing SCSS, check shared Sass files before adding local helpers. For example, `ui/_common.scss` is available through `@import "common"` and provides common mixins such as fullscreen and centering helpers.
+- For dark mode, reuse existing `--be-color-*` variables for text, backgrounds, and borders so components follow the shared theme palette.
+- For options, follow existing `defineOptionsMetadata` and `options` patterns so defaults, labels, and validators stay close to metadata.
+- Model exclusive choices as one option, usually with an enum or dropdown, instead of multiple mutually exclusive boolean options.
+- For dynamic style switching, keep the style rules in SCSS and toggle a state class on `html` so CSS responds to that state. Prefer this over manually adding and removing stylesheets in TypeScript.
+- Runtime style writes are allowed for computed positions and dimensions, CSS custom properties, and restoring existing inline styles. Keep fixed declarations in SCSS even when the same element also needs dynamic values.
+
+## Code Style
+
+- Follow the repository ESLint and Prettier configuration.
+- Use named exports except in files covered by the existing ESLint overrides, such as Vue single-file components and build-related files.
+- Keep control-flow bodies braced.
+- Preserve the existing TypeScript, Vue 2, and SCSS conventions around the code being changed.
+- Avoid unnecessary defensive branches, empty error handling, duplicated state, and one-off abstractions.
+- Use comments for intent or constraints that are difficult to infer from the code. Keep routine behavior clear through names and structure.
+- Prefer existing Bilibili API wrappers, request helpers, settings helpers, observer utilities, style utilities, and UI components over reimplementing equivalent behavior.
+- Prefer stable Bilibili APIs and existing wrappers over reading page-internal globals or framework internals when the data is available from an API.
+- Avoid per-video requests to `x/web-interface/view`, including through `VideoInfo.fetchInfo()`, just to fill optional fields such as uploader avatars or descriptions in video lists and carousels. Browsing through items can quickly trigger the endpoint's rate limits.
+- Scope DOM selectors to the nearest stable parent class or page region. Avoid broad selectors that can match unrelated Bilibili UI.
+- Keep names and types aligned with behavior. If a function starts returning a broader shape, update the type and name instead of overloading a misleading contract.
+- Be careful with data units and API failure states. Do not cache a failed request as if it were a successful value, and keep byte, bit, count, id, and URL semantics explicit.
+
+## Generated Files
+
+- Do not manually edit generated docs or dist outputs as part of ordinary feature or bug-fix work.
+- If generated files must be updated, use the project’s existing build or docs generation workflow and include only the intended generated changes.
+- Do not commit unrelated cache, profile, local debug, or package-manager output files.
+
+## Validation
+
+Choose validation based on the risk and scope of the change.
+
+- Run `pnpm run type` for TypeScript type checking.
+- Run `pnpm run lint-check` for lint validation.
+- For core userscript changes, use the dev server's core watcher, which automatically compiles the development build.
+- For registry feature changes, run `pnpm tsx dev-tools/dev-server/command.ts build <component|plugin> <id>` while the dev server is running.
+- Run `pnpm exec tsc -p dev-tools/tsconfig.json` for development tool TypeScript changes.
+- For browser-facing behavior, verify the changed feature in a real browser with the local userscript installed.
+- For API-shape or Bilibili-rollout-dependent changes, record what page or account state was actually self-tested.
+
+The pull request CI workflow runs the following checks and builds. Do not repeat `build-core` or the full `build-features` build as routine local validation; run them locally only when explicitly requested, reproducing a CI failure, changing shared build infrastructure, or preparing a release.
+
+1. `pnpm run type`
+2. `pnpm run lint-check`
+3. `pnpm run build-core`
+4. install dependencies in `registry/`
+5. `pnpm run build-features`
+
+When a change affects page behavior, also check the browser console for new runtime errors and test the relevant Bilibili page type, such as video, bangumi, live, feeds, space, settings panel, or the affected component area.
+
+## Branches And Commits
+
+- Use `preview-features` as the base for new features.
+- Use `preview-fixes` as the base for bug fixes.
+- Commit messages only need to clearly describe the change; the repository does not require a strict conventional commit format.
+- If you credit AI assistance, use the component's `author` metadata as described in `CONTRIBUTING.md`. Keep Git authorship and commit messages focused on the human contributors and the changes they made.
+- Do not create release tags, push release branches, or perform release steps unless the task is explicitly about releasing.

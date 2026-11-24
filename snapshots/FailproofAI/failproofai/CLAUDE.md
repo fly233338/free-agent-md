@@ -262,7 +262,12 @@ only a marked copy or a link into a FailproofAI `hermes-plugin/`, refuses anythi
 else with the same name, and uses the `yaml` package's comment-preserving
 `Document` API for config changes. `failproofai update` migrates profiles already
 using FailproofAI (legacy shell hooks or a copy) to the link, gated on the daemon
-answering `policyEvaluation`; legacy shell hooks never run for Hermes cron jobs.
+answering `policyEvaluation`; legacy shell hooks never run for Hermes cron jobs. It then
+restarts each running gateway (Hermes and OpenClaw) through the host's own drain-aware
+restart (`hermes gateway restart`, `openclaw gateway restart --safe`) so it loads the
+updated plugin — a gateway keeps the plugin it imported at start. Only a service-managed
+gateway is touched: without a service, `hermes gateway restart` runs the new gateway in the
+caller's foreground (`src/hooks/gateway-restart.ts`; `update --no-restart` opts out).
 
 Settings file paths:
 
@@ -467,7 +472,14 @@ it is **daemon-only** (`requiresHealthyDaemon`): install refuses without a daemo
 and when no verdict comes back `before_tool_call` and `before_agent_run` **fail
 closed** (blocked, reason logged through `api.logger`) while `before_agent_finalize`
 does not force a revise — that cannot bring the daemon back and would only loop the
-turn. All I/O is async: the gateway is a long-running multi-channel process. It
+turn. All I/O is async: the gateway is a long-running multi-channel process. That
+also means **no short timer may decide that a pending connection is unreachable**: a
+timer shares the gateway's event loop with every agent, so a busy gateway makes it fire
+late and ahead of I/O that already completed. A 250 ms connect timer did exactly that
+and reported a healthy daemon as unreachable (#1024). The client now has one 30 s
+budget for the whole request, shared by both attempts, and retries once after 100 ms —
+a pause that starts only after a connection has already failed, so it classifies
+nothing. It
 carries **no inline tool maps** (unlike the OpenCode/Pi shims) — it forwards raw
 event/tool names and a Claude-shaped stdin (`params→tool_input`,
 `toolName→tool_name`, `transcriptPath→transcript_path`,
@@ -902,13 +914,15 @@ in-process fallback on that path: a second policy engine reachable by breaking t
 is not a guarantee, and a machine where stopping one service silently disables every
 guardrail is not a guarded machine.
 
-The mismatch case denies with a message naming the version and `failproofai update`,
-because the remedy differs from "the daemon is down" and that difference is the whole
-value of telling them apart. The accepted cost: both sides hardcode `PROTOCOL_VERSION`,
-so the first time it is bumped a machine whose CLI updated via npm before its daemon did
-denies until `failproofai update` runs. `publish.yml` ships both from one commit and
-`daemonVersionSkew()` hints on every CLI command, so the window is bounded and announces
-itself.
+A version mismatch outside the supported range denies with a message naming the version
+and `failproofai update`, because the remedy differs from "the daemon is down". Inside the
+range it does not deny: the daemon answers every version from `MIN_PROTOCOL_VERSION` to
+`PROTOCOL_VERSION` in the client's own version, and a client facing an older daemon asks
+again in the daemon's version (crates/PROTOCOL.md). This was strict until 1.0.15: a Hermes
+gateway still holding the v1 plugin it loaded before an upgrade was refused by the v2
+daemon, and every Slack/Telegram tool call denied until the gateway was restarted. A
+request older than a field is read without it — a v1 request is evaluated with its profile
+unknown — so compatibility never widens what a scoped deployment applies to.
 
 **In-process evaluation still exists**, reachable only when `daemonConfigured` is false —
 which means the machine is not yet set up. No hooks are installed then either, so
@@ -983,7 +997,12 @@ that is optional and absent on three machines out of four at build time.
 
 **2. The GitHub Release asset.** `failproofaid-<os>-<arch>.gz` plus a `SHA256SUMS` manifest,
 which `daemon-download.ts` fetches for this CLI's own version, verifying the SHA-256
-**before** decompressing. Covers installs that skipped optional dependencies, tarballs
+**before** decompressing. `SHA256SUMS` comes from the same release as the binary, so it
+catches corruption but not a replaced asset. A CLI installed from the npm registry also holds
+the decompressed binary to the digest `build-daemon-packages.mjs` recorded in the npm package
+(`failproofaidBinaries`; the release's own CLI tarball is packed before it exists). That digest is the same one the npm channel checks, and the one a
+copy already at `~/.failproofai/bin` must still match before `ensureFailproofaidBinary()`
+reuses it. Covers installs that skipped optional dependencies, tarballs
 installed from disk, and anyone installing the daemon standalone. The URL is *constructed*
 from `package.json`'s version, never discovered — no API call, no `releases/latest`
 redirect, no rate limit, and no way to end up with a daemon built from different source than
@@ -1029,13 +1048,43 @@ binary — so the hook path can never block on the network. Two escape hatches:
 `FAILPROOFAI_NO_DOWNLOAD=1` (air-gapped: fail with a reason instead of reaching out, while
 an already-installed binary keeps working — it gates *fetching*, not the npm copy) and
 `FAILPROOFAI_DAEMON_BASE_URL` (an internal mirror, and what the tests point at a local HTTP
-server).
+server). The mirror must be https. Plain http is accepted only for a loopback address,
+because over http `SHA256SUMS` arrives on the same unauthenticated connection as the binary.
+The rule covers every redirect hop too: `fetchBytes()` follows redirects by hand and refuses
+a hop to plain http before requesting it (`fetch`'s own following went there silently).
 
 The release also carries `failproofai-<version>.tgz`, the CLI's own npm tarball, packed by
 the `cli-tarball` job at the version being published and covered by the same `SHA256SUMS`.
 It is how you install the CLI without the registry (`npm i -g ./failproofai-<version>.tgz`),
 and it is attached on every release — that job is deliberately **not** gated on
 `has_daemon`.
+
+### How releases authenticate to npm
+
+Both npm workflows publish through **trusted publishing (OIDC)**; there is no `NPM_TOKEN`.
+Each `npm publish` exchanges the publishing job's GitHub OIDC token for a short-lived token
+scoped to that one package, which npm grants only if the package has a trusted-publisher
+entry on npmjs.com matching the repo, the workflow **filename** and the job's
+**environment**: `publish.yml` + `npm-failproofai` for `failproofai`, the four platform
+packages and every alias; `publish-failproofai-ts-sdk.yml` + `npm-failproofai-ts-sdk` for
+`@failproofai/sdk`. The entries are set up by hand from the comment at the top of each
+workflow, and `__tests__/ci/npm-trusted-publishing.test.ts` keeps that comment, the job's
+environment, the npm upgrade and the prerequisite check in agreement. What will bite:
+
+- **A new package cannot publish through this until it exists.** npm only accepts an entry
+  for a package that is already on the registry, so a new daemon platform or alias has to be
+  published once by hand and given its entry before a release includes it — otherwise that
+  package fails at `npm publish`, which for a platform package stops the release.
+- **npm 11.5.1+, not the npm that ships with Node 22.** npm 10 never attempts the exchange;
+  it falls back to setup-node's placeholder token and the registry refuses the publish
+  without saying why. Both publishing jobs upgrade npm and check it first.
+- **No stored token may come back as a fallback.** npm tries OIDC first and quietly uses any
+  token it finds when that fails, so a re-added `NODE_AUTH_TOKEN` would hide a broken entry.
+- **Provenance is automatic.** A retry without provenance must say `--provenance=false`;
+  merely dropping `--provenance` signs again.
+- **`id-token: write` is job-wide.** Every step in a publishing job can mint a publish token,
+  so third-party code belongs in jobs without it. The TS SDK workflow publishes a tarball
+  built elsewhere; `publish.yml`'s `publish` job still runs `bun run build` itself.
 
 ### Always add unit tests for new behaviour
 When you add or change logic, add a corresponding test in `__tests__/`. Never modify
@@ -1143,7 +1192,9 @@ src/hooks/
                               @failproofai/failproofaid-<os>-<arch> optional dependency
                               (no network — the air-gapped path), and
                               downloadFailproofaidBinary() fetches the release asset for
-                              this version, SHA-256 verified before it is decompressed.
+                              this version, SHA-256 verified before it is decompressed
+                              and, on a published build, against the recorded
+                              failproofaidBinaries digest after.
                               Never throws; FAILPROOFAI_NO_DOWNLOAD /
                               FAILPROOFAI_DAEMON_BASE_URL opt out of or redirect the
                               download only
@@ -1345,6 +1396,42 @@ line in `sdk/typescript/src/version.ts` and `sdk/typescript/package.json`, which
 `sdk/typescript/scripts/release.mjs` keeps in step and `__tests__/ci/ts-sdk-pipeline.test.ts`
 asserts agree.
 
+### How a post-release bump reaches `main`
+
+**Through a reviewed pull request; nothing in CI pushes to `main`.** Each release workflow
+(`publish.yml`, `publish-failproofai-ts-sdk.yml` and both PyPI workflows) ends by committing
+the next version and handing it to `scripts/push-version-bump.sh`. That script pushes the
+commit to a `version-bump/<package>-<version>` branch with the job's own token and opens the
+pull request for it. If GitHub refuses to open one, it prints a link to a pre-filled pull
+request instead, as a warning, and the release still succeeds. The pull request needs one
+approval like any other change. Until it merges, `main` still carries the version that was
+just released, so the next release from `main` is refused as already published. Merge the
+bump first. A pull request opened by the job's token starts no workflow runs (GitHub drops
+events that token causes), so the bump's checks run on `main` once it merges.
+
+Why not a direct push:
+- `failproofai-rules` rejects the job's `GITHUB_TOKEN` on `main` (GH013), and that token
+  can't go on the bypass list. It is the same identity in every workflow run on every
+  branch, so a bypass for it would be a bypass for anyone with write access.
+- The version-bot App that used to push here *was* such a bypass, readable by any job
+  that asked for its secret. When it was removed, every release broke at its **first**
+  step, because `publish.yml` minted its token before the npm publish. Now nothing before a
+  publish needs a write credential.
+- **Opening the pull request needs "Allow GitHub Actions to create and approve pull
+  requests"** (Settings > Actions > General). It is one switch for both actions: with it on,
+  a workflow on any branch can also *approve* a pull request, and that approval counts as
+  the required review. So turn it on only together with a review requirement a workflow
+  cannot meet: require code owner review (a `CODEOWNERS` file plus the ruleset's "Require
+  review from Code Owners"), or required reviewers from a team in `failproofai-rules`. With
+  the switch off, every bump still pushes its branch and prints the link.
+
+Submodule pointers work the same way. No workflow pushes gitlink bumps into another
+repository any more, and `bump-platform-submodule.yml` is gone. Dependabot's
+`gitsubmodule` updates open the pull requests: here for `skills`, and in `platform` and
+`agenteye` (their own `dependabot.yml`) for `failproofai/oss`. Both upstreams are public,
+so this needs no credential. `__tests__/ci/version-bump.test.ts` runs the script against a
+real git remote and pins every workflow to it.
+
 ### The Python packages' scheme
 
 `scripts/python-version.py` is the single place it is written down, and both PyPI publish
@@ -1360,14 +1447,15 @@ and it is permanent the moment it uploads.
 The same rule `publish.yml` applies to npm (`-beta.N`), spelled in PEP 440.
 
 **You normally edit nothing.** `preflight` resolves the version and refuses one PyPI has
-already taken; `bump` pushes the next one to `main` after a successful upload — the version
-line *and* a stub `## <version> — <date>` section opened by `scripts/changelog-open.py` in
-the same commit — so main is already sitting on the next beta, with a section to write
-entries into, when the previous release finishes. Both halves land together on purpose: a
-version with no section is what `scripts/changelog-section.py` refuses at release time, and
-because bump commits carry a skip-ci marker that state used to go red on the next unrelated
-PR rather than on itself. Hand-edit `<pkg>/_version.py` only to **leave** the current beta
-line — a stable cut (`0.0.1b4` → `0.0.1`), or a minor/major bump.
+already taken; `bump` proposes the next one after a successful upload — the version line
+*and* a stub `## <version> — <date>` section opened by `scripts/changelog-open.py` in the
+same commit, on a `version-bump/` branch (see above) — so once that pull request merges,
+main sits on the next beta with a section to write entries into. Both halves land together
+on purpose: a version with no section is what `scripts/changelog-section.py` refuses at
+release time, and when bump commits went straight to main with a skip-ci marker, that state
+went red on the next unrelated PR rather than on itself. Hand-edit `<pkg>/_version.py` only
+to **leave** the current beta line — a stable cut (`0.0.1b4` → `0.0.1`), or a minor/major
+bump.
 
 Two things that will bite:
 

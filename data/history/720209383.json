@@ -2,12 +2,6 @@
   "full_name": "CapSoftware/Cap",
   "points": [
     {
-      "checked_at": "2026-10-25T08:30:15Z",
-      "commit_sha": "94a800cbac807f35a8bd3a862dd5d24853d8152c",
-      "pushed_at": "2026-10-25T08:25:46Z",
-      "stars": 23717
-    },
-    {
       "checked_at": "2026-10-26T09:02:50Z",
       "commit_sha": "98fe6cb46d3f3bf4d90a1397bf5ac755223a8dfa",
       "pushed_at": "2026-10-26T09:00:22Z",
@@ -18,6 +12,12 @@
       "commit_sha": "e29f7cb53e297433b2b1799bf647a95844e1324c",
       "pushed_at": "2026-11-23T12:58:45Z",
       "stars": 25467
+    },
+    {
+      "checked_at": "2026-11-24T13:51:04Z",
+      "commit_sha": "1c3bd1c923c2f4a4b46f5fa1abb7f4cd58875fe8",
+      "pushed_at": "2026-11-24T13:48:13Z",
+      "stars": 25520
     }
   ],
   "repo_id": 720209383

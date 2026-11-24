@@ -1,7 +1,7 @@
 # nightly-labs/openbot instruction files
 
-Upstream: [nightly-labs/openbot](https://github.com/nightly-labs/openbot) · License: `NOASSERTION` · Commit: `4fe527ee2a84150e541d35b406385ef1b359c117`
+Upstream: [nightly-labs/openbot](https://github.com/nightly-labs/openbot) · License: `NOASSERTION` · Commit: `a5e76dccced4d40d9c2975da8ecb3c90c496f60a`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/nightly-labs/openbot/AGENTS.md) | [Source](https://github.com/nightly-labs/openbot/blob/4fe527ee2a84150e541d35b406385ef1b359c117/AGENTS.md) | `98307d1fed2b509c64a658235049b7fb1481206601c4d6830ee7d3515c54cc56` | 26,172 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/nightly-labs/openbot/AGENTS.md) | [Source](https://github.com/nightly-labs/openbot/blob/a5e76dccced4d40d9c2975da8ecb3c90c496f60a/AGENTS.md) | `75cc77f7cf07de635bf55bc364628de21014251bbe45dd11ebfbbd59beece939` | 26,126 B |

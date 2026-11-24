@@ -38,6 +38,7 @@ Users report game bugs with Lichii logs (`eden_log.txt`, `eden_log.txt.old`). Ea
 | 040032B023CA4000 | Orbitals |
 | 0400921025B32000 | Sonic Frontiers (Switch 2 Edition) |
 | 04003F40232DE000 | Hyrule Warriors: Age of Imprisonment |
+| 010015100B514000 | Super Mario Bros. Wonder (Switch 1) |
 | 040015100B514001 | Super Mario Bros. Wonder - Nintendo Switch 2 Edition + Meetup in Bellabel Park |
 | 01004D300C5AE000 | Kirby and the Forgotten Land (Switch 1) |
 | 04004D300C5AE001 | Kirby and the Forgotten Land - Nintendo Switch 2 Edition |
@@ -50,6 +51,7 @@ Users report game bugs with Lichii logs (`eden_log.txt`, `eden_log.txt.old`). Ea
 | 01003EC027CC8000 | Deep Rock Galactic: Survivor (Switch 1) |
 | 01001F5010DFA000 | Pokémon Legends: Arceus (Switch 1) |
 | 01006A800016E000 | Super Smash Bros. Ultimate (Switch 1) |
+| 01005D2011EA8000 | Kingdom Hearts: Melody of Memory (Switch 1) |
 | 0100F43008C44000 | Pokémon Legends Z-A |
 | 0400FF500E34A001 | Xenoblade Chronicles: Definitive Edition - Nintendo Switch 2 Edition |
 | 0400E95004038001 | Xenoblade Chronicles 2 - Nintendo Switch 2 Edition |

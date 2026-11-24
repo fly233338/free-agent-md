@@ -1,0 +1,73 @@
+# NSGo
+
+NSGo is a cross-platform native UI engine with a Go backend, ported from the design of NSH. Read [ARCHITECTURE.md](ARCHITECTURE.md) before coding, then the relevant subjects.
+
+## Principles
+
+- Treat NSH's checkout beside the repository (`../nsh`, written `nsh/` in the documents) as read-only reference. Never edit, commit or vendor it. Keep it checked out at the latest release tag, never `main`.
+- Before designing a subsystem, read how NSH does it in `nsh/docs/dev/` and its crate's module docs.
+- Write idiomatic Go. NSH is a reference, not a constraint: keep its behavior and names by default, depart where a design is clearer or easier to maintain, and record why in the owning subject.
+- Keep tests NSGo's own: no test reads NSH's checkout, runs NSH's apps or cases, or holds NSGo to what NSH does. TSX above all grows its own way from here (decided by the user, 2026-11-08).
+- Assume only macOS, Xcode and Go on a user's machine. Building every target except the x86_64 emulator's from there must need nothing else: no NDK, Android SDK, JDK, GTK or Windows toolchain.
+- Never hand-write C. Reach system APIs through purego or `syscall`, and use cgo only where Go itself demands it: linking for iOS and x86_64 Android, and the one function an embedded iOS framework exports, which the tool generates.
+- Write Swift only where an Apple API has no other interface: the widget extension and its reload library in `cmd/nsgo/widgets`, and the SwiftUI host of Apple Watch apps in `cmd/nsgo/watch`, as watchOS has no public UIKit, which the tool compiles with Xcode's swiftc and apps never write (decided by the user, 2026-11-09). StoreKit 2's library for in-app purchases in `cmd/nsgo/storekit` is one more, as its products and transactions are Swift's alone, compiled the same way only for apps that set `apple.purchases` ([#353](https://github.com/nsgo-dev/nsgo/issues/353)).
+- Prebuild what users cannot build with Go and Xcode, such as the Android runtime's `classes.dex` and `classes.jar`, and commit it with the command that rebuilds it (`internal/platform/android/runtime/build.sh`). Pull requests change only the Java: CI tests a runtime built from it, and maintainers rebuild `classes.dex` and `classes.jar` from main and commit them in a `bot/android-runtime` pull request, as binaries cannot be merged.
+- When implementing, fixing or optimizing anything, check whether other targets' backends need the same change, and make it or record the gap in the [roadmap](docs/roadmap.md).
+- Keep each package's imports within the [dependency graph](ARCHITECTURE.md#boundaries); `internal/moduletest/layering_test.go` checks it.
+- Give each API one home, as NSH's modules do: `core` for elements and the environment, `base` for controls and navigation, `ui` for their styled forms, `mobile` and `desktop` for what only phones or only desktops have.
+- When `core` implements another package's API, its exported part names that package in its comment.
+- Write configuration files people edit by hand in YAML, never JSON, including ones ported from NSH's JSON files.
+- Mark unimplemented designs as goals or open questions; never document them as existing behavior.
+- Do nothing implicitly by device: no size, form or behavior that changes on its own for a desktop, a phone or a TV, such as larger controls on desktops and smaller ones on phones. Such changes belong to a component's author: `ui` and apps may make them, `core` and `base` never.
+- Use native views, at MyGo's quality: a component shows the same on every platform. What one platform has natively, such as iOS's Liquid Glass, others imitate the same way rather than drop.
+- Build the web as a desktop app, not a web page: it looks and behaves as NSGo does on macOS, Windows and Linux, never as a site does, such as a pointing hand over buttons.
+
+## Components
+
+`base` holds NSGo's built-in unstyled components, with `nsh-base` the reference for the behavior and names of those NSH has. `ui` holds its built-in styled components in NSGo's own look.
+
+- A `base` component takes the app's styles part by part and has no look; themes, styled controls and variants belong in `ui`.
+- A `ui` component with a `base` form is that form with a look: behavior, state and accessibility stay in `base`, and what it needs that `base` lacks goes into `base`, never a second implementation in `ui`. A component with no behavior worth sharing lives whole in `ui`.
+- A `ui` component is product-neutral: what only the gallery's demos use stays in `examples/gallery`.
+- A `ui` component takes its look, the color it shows included, from `Variant`, a type of its own (`ButtonVariant`) whose zero value is the default, never from boolean fields or a shared color type.
+- Most `ui` components have one size. One that needs more takes `Size`, a `ui.Size` of default, small or large whose zero value is the default, never a `Small` or `Compact` boolean; so far `Button`, `Tabs` and `Switch`. What is one shape at any scale takes `Size` in points instead: `Avatar`, `AvatarGroup`, `ProgressRing`, `Spinner` and `IconButton` ([variants and sizes](docs/architecture/themes.md#variants-and-sizes)).
+- A component says its own words through its package's catalogs (`locales/`), never string literals, in English and NSGo's other languages ([languages](docs/architecture/languages.md)).
+- In `base` and `ui`, keep one component to a file, named after it (`iconbutton.go`), with the types and parts only it uses; what several share gets a file of its own.
+- Lists, trees, tables and sidebars have two looks, default and selected: no hover and no press. Only the rows of a popup that drops down, such as a menu or a select, follow the pointer.
+- Leave the pointer's look alone, as native apps do, on every backend and the web included: pressables keep the platform's arrow, no backend picks a cursor of its own, and `Style.Cursor` is for what the arrow cannot say, such as text fields and resize or scrub drags. A view hides the pointer only while it holds a lock requested through `Ref.LockPointer`.
+- Keep a scroll bar against its container's edge: the scroll view fills the container and the padding goes on its content, never around the scroll view.
+- Everything that scrolls follows touchpads and touchscreens smoothly and glides on with inertia when let go, on every target and the web included: scroll through `Scroll`, `List` or the platform's own scrolling, never by stepping offsets from pointer or wheel events. Past an edge, follow the platform: a rubber band on macOS and iOS, its stretch on Android, a stop for touchpads on Windows and Linux, and whatever the browser does on the web.
+- In the gallery, a playground centers its forms, and a form with no width of its own fills a centered column; what lists its results downward, such as a command palette, starts at the top and fills the stage (`Start`). A number's knob is a value left of a 180-point slider.
+- In the gallery, a `base` component keeps its simplest form, in the text's color and grays.
+- In the gallery, a knob for a prop the `base` form has goes in `BaseKnobs`, shown above the divider and driving both forms; `Knobs`, below it, holds only what `ui` adds.
+- A complex component takes a directory of its own, whose package may hold many files (`base/dock`, `ui/chat`), and drops the component's name from its API (`dock.Area`). Packages under `base` share code through `base/internal`.
+
+## Working with the user
+
+- Do each task in its own Git worktree, never in the main checkout, which other agents may be changing at the same time.
+- Confirm before choosing an answer to an open question in [ARCHITECTURE.md](ARCHITECTURE.md#open-questions).
+- Commit or push only when the user asks.
+- When an agent creates or comments on an issue or pull request, end it with the agent's model, such as `🤖 Claude Opus 5.5`.
+- Bring a branch up to date with another, such as `benchmark` with `main`, by rebasing it onto that branch, never by merging; push the result with `--force-with-lease`.
+
+## Verification
+
+Run `go tool nsgo check` and `go tool nsgo test` from the repository root, never `go vet`, `go test`, `go build` or `go run` directly; when the tool cannot do something an app or this repository needs, extend the tool. The development setup lives in [Contributing](docs/public/en/contributing.md).
+
+To vet the platforms a change touches, name them all in one `go tool nsgo check -target a,b -jobs n`, which vets those targets instead of the host, rather than starting several checks, which wait for each other; `check.yml` vets every target.
+
+Run `bun run build` in `website/` when changing the website; it type-checks the site and rebuilds the gallery it embeds.
+
+Every workflow runs on its own: `test.yml` and `codeql.yml`, which test and scan the code, `check.yml`, which builds and vets every target (`go tool nsgo check -target all`) so nothing that breaks the build merges, the website's deployment, pull request triage, labels, `quality.yml`, Dependabot and `release.yml`, which publishes a version tag's changelog section once `test.yml` passes.
+
+## Documentation
+
+- Update a document only when a fact its reader needs changes.
+- Avoid secondary labels and descriptions that restate a heading or value; let the layout explain.
+- Keep each document within its budget and written for its reader.
+- Record completed user-visible outcomes as one-clause bullets with references such as `(#12 by @alice)`, merging related ones, in a fragment of their own under [`changelog.d/`](changelog.d/README.md) headed by their type (`### Fixed`), never in `CHANGELOG.md`, which a release fills from the fragments in type order (`go run ./tools/changelog release X.Y.Z`).
+- Keep only what is not released in `CHANGELOG.md`: once a version's GitHub release is published, remove its section, whose notes then live on [Releases](https://github.com/nsgo-dev/nsgo/releases).
+- Repair documents you touch instead of only appending to them.
+- Keep `docs/public/` and `skills/nsgo/` current with the code: when what an app writes, the tool's commands and flags, testing, packaging or a rule above that app authors share changes, update the public docs and the skill in the same change. The skill, which agents install with `bunx skills add nsgo-dev/nsgo`, holds only what an agent needs to follow and links the docs for the rest; `skills_test.go` checks the names it mentions, and the website generates `llms.txt` from `docs/public/en/`.
+- Keep `README.md` and `README.zh-CN.md` equivalent; everything else, including code comments, is English.
+- Keep documentation on the code branch and reconcile it during merges.

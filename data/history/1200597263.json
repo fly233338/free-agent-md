@@ -2,12 +2,6 @@
   "full_name": "Graphify-Labs/graphify",
   "points": [
     {
-      "checked_at": "2026-10-25T08:30:15Z",
-      "commit_sha": "92741d162b2094ffc2fed58cfbd8ee823e9da62c",
-      "pushed_at": "2026-10-23T17:59:28Z",
-      "stars": 134626
-    },
-    {
       "checked_at": "2026-10-26T09:02:50Z",
       "commit_sha": "92741d162b2094ffc2fed58cfbd8ee823e9da62c",
       "pushed_at": "2026-10-23T17:59:28Z",
@@ -180,6 +174,12 @@
       "commit_sha": "a3db62f680cde2cf516642bbfef1e3ab33fd30d8",
       "pushed_at": "2026-11-23T00:39:23Z",
       "stars": 152295
+    },
+    {
+      "checked_at": "2026-11-24T13:51:04Z",
+      "commit_sha": "013a6461c31da6e003c0dea191aca84c94cb8d47",
+      "pushed_at": "2026-11-23T19:14:02Z",
+      "stars": 152781
     }
   ],
   "repo_id": 1200597263

@@ -1,7 +1,8 @@
 # surveyjs/survey-library instruction files
 
-Upstream: [surveyjs/survey-library](https://github.com/surveyjs/survey-library) · License: `MIT` · Commit: `d4a8f9d6208576fdb5bffd9d9ab0f12f82930d15`
+Upstream: [surveyjs/survey-library](https://github.com/surveyjs/survey-library) · License: `MIT` · Commit: `a38b040551b2584e348db04f7cb2573598412c50`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/surveyjs/survey-library/CLAUDE.md) | [Source](https://github.com/surveyjs/survey-library/blob/d4a8f9d6208576fdb5bffd9d9ab0f12f82930d15/CLAUDE.md) | `b5308316bffd7d7f16043f03ad1e94ae52d6fbf68691368bfc40798f3838ccf4` | 7,679 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/surveyjs/survey-library/AGENTS.md) | [Source](https://github.com/surveyjs/survey-library/blob/a38b040551b2584e348db04f7cb2573598412c50/AGENTS.md) | `da1a99a2e3fb0abf19051a11b6b91bfed73ccb55d78ca8d78cd358bb61aa6e8b` | 9,719 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/surveyjs/survey-library/CLAUDE.md) | [Source](https://github.com/surveyjs/survey-library/blob/a38b040551b2584e348db04f7cb2573598412c50/CLAUDE.md) | `fbe9cc81ec56d5ef776cb1f0f8c77d54a46b5471354faa06d1c373095dc3a171` | 198 B |

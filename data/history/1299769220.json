@@ -2,12 +2,6 @@
   "full_name": "openai/codex-security",
   "points": [
     {
-      "checked_at": "2026-10-25T08:30:15Z",
-      "commit_sha": "af973f94224aea3035b96987e878301a3769da8c",
-      "pushed_at": "2026-10-25T08:29:28Z",
-      "stars": 11196
-    },
-    {
       "checked_at": "2026-10-29T10:04:58Z",
       "commit_sha": "4a94dd6e78301625b473420ad6d15119c254238c",
       "pushed_at": "2026-10-29T10:04:23Z",

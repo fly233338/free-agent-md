@@ -1,8 +1,8 @@
 # OpenCTI-Platform/opencti instruction files
 
-Upstream: [OpenCTI-Platform/opencti](https://github.com/OpenCTI-Platform/opencti) · License: `NOASSERTION` · Commit: `e7bae50fea87817a204ede58701c5a96aafe3463`
+Upstream: [OpenCTI-Platform/opencti](https://github.com/OpenCTI-Platform/opencti) · License: `NOASSERTION` · Commit: `97778dcfd66a61288272fa60cf2ad1cc6d35871b`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/OpenCTI-Platform/opencti/AGENTS.md) | [Source](https://github.com/OpenCTI-Platform/opencti/blob/e7bae50fea87817a204ede58701c5a96aafe3463/AGENTS.md) | `d592c0a4ef17f08f83c09deb0e260e6f00810d1ea4c00d72d0176cc89b994ace` | 2,247 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/OpenCTI-Platform/opencti/CLAUDE.md) | [Source](https://github.com/OpenCTI-Platform/opencti/blob/e7bae50fea87817a204ede58701c5a96aafe3463/CLAUDE.md) | `336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49` | 11 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/OpenCTI-Platform/opencti/AGENTS.md) | [Source](https://github.com/OpenCTI-Platform/opencti/blob/97778dcfd66a61288272fa60cf2ad1cc6d35871b/AGENTS.md) | `d592c0a4ef17f08f83c09deb0e260e6f00810d1ea4c00d72d0176cc89b994ace` | 2,247 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/OpenCTI-Platform/opencti/CLAUDE.md) | [Source](https://github.com/OpenCTI-Platform/opencti/blob/97778dcfd66a61288272fa60cf2ad1cc6d35871b/CLAUDE.md) | `336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49` | 11 B |

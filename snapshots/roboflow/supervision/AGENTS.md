@@ -10,6 +10,7 @@ ______________________________________________________________________
 - Outline a plan before making changes.
 - Check whether the feature already exists under a different name.
 - Confirm alignment with `src/supervision/` architecture.
+- For pull request reviews, follow [.github/skills/code-review/SKILL.md](.github/skills/code-review/SKILL.md).
 
 ______________________________________________________________________
 
@@ -52,6 +53,8 @@ These supplement [CONTRIBUTING.md](.github/CONTRIBUTING.md) — covering gaps or
 
 **Doc headings**: `###` max in docstrings and docs. `####` renders identically to bold in mkdocs — use `**bold**` instead.
 
+**Docstring API references**: reference local classes, functions, and methods with Sphinx roles (`:class:`, `:func:`, or `:meth:`) and fully qualified targets rooted at `supervision.` rather than plain code literals or relative names. Use `~` to display a short name, for example, \`\`:class:\`~supervision.detection.core.Detections\`\`\`.
+
 **Type hints**: required on all new code. mypy is enforced by pre-commit (`.pre-commit-config.yaml`).
 
 **Function docstrings**: every new or modified function, including private helpers and tests, must have a succinct docstring explaining its purpose. Put function-level why/what/how context inside the function docstring, not in a comment before the function. Public APIs still require the full Google-style structure described below.
@@ -68,6 +71,8 @@ These supplement [CONTRIBUTING.md](.github/CONTRIBUTING.md) — covering gaps or
 - No network or filesystem access outside `supervision/assets/`.
 
 **⚠ Test structure** — agents frequently fail here; read [CONTRIBUTING.md §Tests](.github/CONTRIBUTING.md#-tests) carefully: AAA structure, class grouping, bare simple parametrized values, `pytest.param(..., id="semantic-slug")` for compound or unclear cases (never parallel `ids`), one-line docstring per test.
+
+**Reference parity tests** — follow [CONTRIBUTING.md §Reference parity tests](.github/CONTRIBUTING.md#reference-parity-tests): evaluate the live reference package on the same inputs, and keep it in development dependencies only.
 
 For branching, commit, code style, and API design conventions see [CONTRIBUTING.md](.github/CONTRIBUTING.md).
 
@@ -92,6 +97,23 @@ Always name the version introduced and the removal version:
 ```python
 warn_deprecated("'foo' deprecated in `0.29.0`, removed in `0.32.0`. Use 'bar'.")
 ```
+
+**Keep `@deprecated` wrappers minimal.** `pydeprecate` owns the warning and the forwarding, so the wrapper only needs to name the target and call `void(...)`:
+
+```python
+@deprecated(
+    target=_new_name,
+    deprecated_in="0.32.0",
+    remove_in="0.35.0",
+    stream=_DEPRECATION_WARNING_STREAM,  # lets SUPERVISION_DEPRECATION_WARNING=0 silence it
+)
+def old_name(x: int) -> str:
+    """Deprecated: use :func:`new_name`."""
+    return void(x)  # type: ignore[no-any-return]
+```
+
+- Do not write tests that assert the deprecation warning is emitted; that is `pydeprecate`'s behavior, not ours.
+- Do not cast the return value of `void(...)`; add `# type: ignore[no-any-return]` instead.
 
 ______________________________________________________________________
 
@@ -152,3 +174,16 @@ diff /tmp/baseline.txt /tmp/after.txt
 ```
 
 Any test passing in baseline but failing after = blocker.
+
+## GitHub Actions
+
+- Keep public CI on standard GitHub-hosted runners.
+- Cancel superseded PR runs with a workflow-specific concurrency group. Preserve every push test run for regression tracing. Serialize documentation publishing without cancelling active pushes.
+- Apply path filters only to PR events. Filter PR link checks to Markdown and their configuration. Filter PR GitHub configuration tests to their scripts, fixtures, documentation, and dependency inputs. Keep required checks triggered for every PR so path filters cannot block merging.
+- Keep the full Python version matrix on Linux, and the oldest and newest matrix versions on macOS and Windows. This reduces repeated OS and Python combinations while retaining every Python minor and platform. Preserve OpenCV backend and isolated wheel coverage on every OS.
+- Set a timeout on every runner job, including reusable workflows and result guardians.
+- Cache dependencies in test workflows. Disable caching when building or publishing releases so publishing jobs cannot restore caches from test runs. Retain distribution artifacts for three days.
+- Pin actions to full commit SHAs with release-version comments. Keep the GitHub Actions Dependabot ecosystem enabled.
+- Default workflow permissions to read-only and elevate individual jobs only when needed. Disable checkout credential persistence unless that checkout must push.
+- Pass event values through environment variables and quote shell expansions. Never interpolate branch names, dispatch inputs, or release metadata into shell code.
+- Keep the conflict labeler API-only. A `pull_request_target` job must never check out or execute PR code.

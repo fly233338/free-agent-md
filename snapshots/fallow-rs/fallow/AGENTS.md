@@ -37,6 +37,36 @@ Fallow's native lifecycle is authoritative:
 implement -> panel-review -> review -> ship -> sweep
 ```
 
+Run an objective from the maintainer through the full lifecycle in one pass.
+Do not stop after `implement`, and do not wait for a prompt to ship or sweep.
+Use `panel-review` only when the change has design or user-facing decisions.
+
+An objective is done only when all of these are true:
+
+- every pull request of the objective is merged to `main`, and the CI of the
+  merged commit is complete and green (armed auto-merge is not enough);
+- every companion pull request is merged to the default branch of its
+  repository;
+- every needed follow-up that the work found is fixed, or has a GitHub issue
+  that the final report links (for a repository outside `fallow-rs`, a draft
+  issue in the final report). An improvement idea with no known need goes
+  under "Possible follow-ups" in the PR body, not in an issue;
+- the touched branches and worktrees are clean.
+
+A note in `.plans/`, in `/tmp`, or in the chat report does not track a
+follow-up. An open pull request is not done. This is also true while CI runs.
+When a merge is blocked, report the pull request, the blocker, and the next
+action. Three stops are not blocks: a draft or no-merge request from the
+maintainer, a maintainer step that a documented procedure requires (for
+example the npm approval of a release), and an open decision for the
+maintainer, reported with a recommended answer.
+
+Ask each open decision as a multiple-choice question with the question tool
+of the client (`AskUserQuestion` in Claude Code). Give 2 to 4 options, each
+with one line about its effect. Put the recommended option first and mark it
+as recommended. Ask all open decisions in one round. When the client has no
+question tool, write each question with lettered options.
+
 Use the corresponding tracked skills under `.agents/skills/`. Codex consumes
 that canonical tree directly. Claude adapters under `.claude/skills/` are
 generated and must pass `npm run check:agent-adapters`.
@@ -103,6 +133,20 @@ Any bug fix needs:
 
 If a step cannot be run, state that explicitly instead of presenting partial
 evidence as complete.
+
+## Write for the reader
+
+Write code comments, docs, commit messages, PR text, and changelog entries
+for a reader who did not see the session. Do not put the conversation, the
+prompt, discarded attempts, or the edit history into them. Describe the code
+as it is now. For a regression, state what breaks without the code, and link
+the issue. `scripts/check-comment-quality.mjs` blocks narration and history
+comments in commits, CI, and Claude edits.
+
+Before you open or update a pull request, read each changed comment, doc,
+commit message, and PR text as a reader with no access to the session.
+Remove each reference to the session. Explain each term that a new reader
+does not know.
 
 ## Knowledge and publication boundaries
 
