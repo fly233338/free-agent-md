@@ -138,8 +138,10 @@ New and changed code follows these targets. Do not migrate untouched code only
 to comply.
 
 - HTTP errors use one envelope,
-  `{"error": {"code", "message", "request_id", "details"?}}`, with UPPER_SNAKE
-  codes declared in the OpenAPI component. Go handlers write it through
+  `{"error": {"code", "message", "request_id", "details"?}}`, with codes
+  declared in the OpenAPI component: UPPER_SNAKE on the public Product (Web)
+  API, lower snake_case on the Agent API and internal contracts, whose codes
+  the teamhub CLI passes through (see `apps/teamhub-cli/AGENTS.md`). Go handlers write it through
   `writeError`; never return a bare `{"error": "..."}` or a hand-built `gin.H`.
 - Logging: Go uses `slog`; Node services log through the injected
   `createJsonLogger` from `@linger/service-kit/node`, never `console.*`

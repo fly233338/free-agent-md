@@ -1,0 +1,173 @@
+# CLAUDE.md
+
+Guidance for Claude Code in this repository. This file holds the commands, the invariants, the gates and the philosophy. Inventories (file lists, counts, history) deliberately live in the code and its READMEs, not here — when this file disagrees with the code, the code wins; fix the doc.
+
+## What TREK is
+
+A self-hosted, real-time collaborative travel planner. npm-workspaces monorepo:
+
+- **`shared/`** (`@trek/shared`) — Zod schemas, the **single source of truth** for API contracts, plus all i18n locales. Must be built before server/client typecheck or run.
+- **`server/`** (`@trek/server`) — NestJS API (Express adapter), SQLite via `better-sqlite3`, WebSocket sync, built-in MCP server, sandboxed plugin runtime.
+- **`client/`** (`@trek/client`) — React 19 + Vite + Zustand + Tailwind PWA, offline-first via Dexie/IndexedDB.
+- **`plugin-sdk/`** (`trek-plugin-sdk`) — **not a root workspace**: own lockfile, published to npm independently, must ship standalone. Run its commands from `plugin-sdk/`.
+
+Each package has its own `CLAUDE.md`; this file covers the monorepo picture.
+
+## Commands
+
+Run from the repo root unless noted. **Use `npm run ... --workspace=<pkg>`, not `npm -w <pkg>`**.
+
+```bash
+npm run dev                       # build shared, then watch shared + server + client concurrently
+npm run build                     # build shared → server → client (order matters)
+npm run lint                      # lint all three workspaces, check-only (npm run lint:fix applies the fixes in shared and server)
+npm run format                    # prettier --write all three
+npm run lint:knip                 # knip over client/server/shared (knip.jsonc): unused files, exports, types, deps may only shrink against scripts/ci/knip-baseline.json (CI gate; --update lowers it)
+```
+
+Tests:
+
+```bash
+npm run test                                       # all workspaces
+npm run test --workspace=server                    # vitest run (server); also test:unit / test:integration / test:ws
+npm run test:e2e                                   # server e2e (boots Nest against a temp SQLite)
+npm run test:pg --workspace=server                 # the Postgres lane (vitest.pg.config.ts; needs TREK_TEST_DB_URL, e.g. postgres://postgres:trek@127.0.0.1:55432/postgres)
+npm run test:cov                                   # coverage (lcov) for all four packages incl. plugin-sdk
+cd client && npm run test                          # client vitest run
+cd client && npm run e2e                           # Playwright (CI runs the public and app projects; the screenshot and help-media ones are local)
+cd client && npm run lint:pages                    # enforce the Page pattern (CI gate)
+cd client && npm run lint:rtl                      # physical left/right sides may only shrink per file (CI gate)
+cd client && npm run lint:dup                      # lines in copied code may only shrink per file, at SonarCloud's thresholds (CI gate)
+cd client && npm run lint:pairs                    # desktop and phone views of a feature import its shared hook; every phone screen is listed (CI gate)
+cd client && npm run lint:size                     # no source file past 1000 lines, longer ones only shrink (CI gate; server has the same)
+cd client && npm run lint:strict                   # strictNullChecks + noImplicitAny errors may only shrink per file; new files start at zero (CI gate)
+cd client && npm run lint:warnings                 # eslint (typed) errors fail, warnings per rule may only shrink, new rules start frozen (CI gate)
+cd server && npm run lint:warnings                 # the same for the server, against server/scripts/eslint-baseline.json (CI gate)
+cd server && npm run lint:format                   # Prettier outside the baseline list (CI gate; shared has the same in lint-prettier.yml)
+cd server && npm run lint:strict                   # strict type errors per file may only shrink, a new file has none (CI gate)
+cd client && npm run lint:format                   # Prettier outside the baseline list (CI gate)
+cd client && npm run lint:layers                   # components never import pages/ or mobile/ (CI gate)
+cd client && npm run lint:offline                  # views may not import src/api/ beyond the baseline (CI gate)
+cd client && npm run lint:skips                    # no .only; skipped tests may only shrink (CI gate)
+cd client && npm run lint:i18n-keys                # every key the client names exists in en; unused en keys may only shrink (CI gate)
+cd server && npm run lint:boundaries               # no new import cycles or cross-domain reach-ins (CI gate)
+cd server && npm run lint:dialect                  # SQLite-only SQL spellings may only shrink (CI gate; rules in server/CLAUDE.md)
+cd server && npm run lint:engine-dispatch          # engine checks outside src/db/dialect/ and src/db/engine/ may only shrink (CI gate)
+cd server && npm run probe:pg                      # dialect helpers + the repository statements it reaches against Postgres (CI job; needs TREK_PG_PROBE_URL)
+cd server && npm run check:pg-baseline              # the Postgres baseline in server/assets/postgres/ matches the entities and the migrations (CI gate)
+cd server && npm run lint:tx                       # no new method writing twice outside one transaction (CI gate)
+cd server && npm run lint:test-sql                 # raw SQL fixtures in tests/ may only shrink; seed through tests/helpers/factories (CI gate)
+cd server && npm run lint:test-mocks               # vi.mock of config, realtime and db modules in tests/ may only shrink (CI gate)
+cd server && npm run lint:test-new-service         # hand-built services and repositories in tests/ may only shrink (CI gate)
+cd server && npm run lint:query-api                # MikroORM QueryBuilder calls in the repositories may only shrink (CI gate)
+cd server && npm run lint:mcp-zod                  # inline zod in the MCP tool files may only shrink; fields derive from @trek/shared (CI gate)
+cd server && npm run lint:service-http             # { error, status } results and their caller-side branches may only shrink; services throw DomainError (CI gate)
+cd server && npm run lint:response-contracts        # route handlers without @ResponseContract may only shrink (CI gate)
+cd client && npm run theme:lint                    # styling that bypasses appearance tokens may only shrink per file (CI gate)
+npm run typecheck --workspace=server               # tsc --noEmit (also client/shared; server also has typecheck:tests)
+```
+
+Run a single test file or test:
+
+```bash
+npx vitest run tests/unit/nest/weather.controller.test.ts   # (from server/ or client/)
+npx vitest run -t "name of the test"                        # by test-name pattern
+```
+
+i18n parity (CI gate — every non-`en` locale must have the identical file set and top-level keys):
+
+```bash
+npm run i18n:parity --workspace=shared            # audit (exit 0)
+npm run i18n:parity:strict --workspace=shared     # CI gate (exit 1 on drift)
+```
+
+Dev ports: the server listens on **3001**; the Vite dev server proxies the API, websocket, uploads, MCP and OAuth paths to it (see `client/vite.config.js`). `.nvmrc` pins the Node major the Docker image runs and every CI job reads; `engines` in each package.json states the range that installs (npm only warns outside it). `server/.env.example` is the env-var reference.
+
+## Server invariants
+
+Nest owns everything: every domain is a DI module under `server/src/nest/<domain>/` (`controller` + `service` + `module`, registered in `app.module.ts`), and ESLint refuses imports of the deleted legacy `services/` layer. `server/src/nest/README.md` is the module blueprint; **`weather/` is the reference implementation** — copy its shape. The domain's Zod contract lives in `shared/src/<domain>/`.
+
+- **`bootstrap.ts` — `buildApp()`** is the single builder for production and the test harness. **Composition order is load-bearing**: everything registered on the raw Express instance must come **before `app.init()`**, because Nest's router throws `NotFoundException` on unmatched routes and nothing registered after init is reachable. Don't add routes to that pre-init shell — it bypasses every global guard, interceptor and filter.
+- **`/mcp` bodies are raw by design** — the parser wrappers exempt `/mcp` so the MCP SDK reads the untouched stream; never `@Body()` a `/mcp` route.
+- **Auth is default-deny**: global guards run as `APP_GUARD`s; public routes opt out with `@Public()`, and a boot-time ratchet (`validate-route-guards.ts`) refuses any public route not on its allow-list.
+- **Trip-scoped routes** verify trip access (404) and the permission (403) — `@UseGuards(JwtAuthGuard, TripAccessGuard)` + `@RequirePermission('<action>')` per handler — and forward `X-Socket-Id` to the broadcast so the originating client doesn't echo its own change. **Never gate a multipart upload with a guard** (the client sees ECONNRESET instead of 403 — check in the handler).
+- **DB** (`server/src/db/`): `better-sqlite3`, WAL, FK on. MikroORM's migrations (`db/migrations/`) are the only schema source, **including for tests** — the hand-kept `schema.ts`/`migrations.ts`/`seeds.ts` test builders are gone. Seeding is MikroORM's too (`db/seeders/`), applied at boot from `buildApp()`; the ORM shares the one better-sqlite3 connection (bound in `server/src/db/orm-driver.ts`) rather than opening its own. Queries go through repositories (`server/src/db/repositories/`) and `UnitOfWork` (`server/src/nest/database/unit-of-work.ts`) for transactions — there is no `DatabaseService`. `better-sqlite3` itself is ESLint-restricted to `src/db/` plus a short, named allow-list (`server/eslint.config.mjs`), so a domain reaching for the driver directly fails lint. `NODE_ENV=test` gives each vitest worker an isolated `:memory:` DB.
+- **Realtime**: `/ws` is a Nest gateway in `server/src/nest/realtime/` — inject `RealtimeService`. Tests observe broadcasts through a `FakeRealtimeService` (`server/tests/helpers/fake-realtime.ts`), never by mocking the transport module.
+- **MCP**: tools are declared in `<domain>.mcp.ts` files beside each module, on the `server/src/nest-mcp/` decorator layer. A validation or permission change on a REST route must land in the parallel MCP tool in the same change. See `MCP.md`.
+- **Addons** are admin-toggleable feature modules keyed by `ADDON_IDS` in `server/src/addons.ts`.
+- **Plugins** (`server/src/nest/plugins/`): one forked child process per plugin, permission-gated RPC (a handler is registered only if the plugin holds the unlocking permission), install-time manifest/signature/egress/version-range gates. The protocol tables are **generated** into `plugin-sdk/` and `shared/` by `gen:plugin-facts`; `check:plugin-facts` is the CI gate. Author tooling is `plugin-sdk/`; the `trek-plugin-dev` skill covers authoring.
+- **Storage**: uploads go through the driver abstraction in `server/src/nest/storage/` (local / S3 / mirror). Never touch the filesystem or the S3 SDK from a domain service.
+- **Crons** go through `server/src/nest/scheduling/` only — never a `@Cron` decorator (it bypasses the test-time gate).
+
+## Client invariants
+
+Offline-first, with a layered data flow. A Page never owns state directly:
+
+- **Page pattern** (enforced by `lint:pages`, spec in `client/src/pages/PATTERN.md`): a `*Page.tsx` is a **wiring container** composing a co-located `use<Page>()` hook; it must not call React state/effect/memo hooks itself.
+- **Data flow**: `store (Zustand, client/src/store/) → repo (client/src/repo/) → api (client/src/api/) | Dexie (client/src/db/offlineDb.ts)`. Writes go through `client/src/sync/mutationQueue.ts`: optimistic Dexie write, then a replay with an `X-Idempotency-Key` header on reconnect. `client/src/store/slices/remoteEventHandler.ts` applies incoming WebSocket events. Components never call the API directly.
+- **Styling**: semantic Tailwind tokens (`bg-surface*`, `text-content*`, `border-edge*`, `bg-accent*`) or the underlying `var(--token)` variables — never color literals, arbitrary-value color classes or numeric inline `fontSize`, so user-chosen scheme/transparency/text-size keep working. `theme:lint` holds the bypasses per file to a baseline that only shrinks (CI gate); mark intentional exceptions (map/PDF/brand) with a `theme-lint-disable` line comment, which is counted too.
+- **Reading direction**: Arabic runs the app right to left, so spacing, insets and alignment that follow the text use the logical forms (`ms-`/`me-`/`ps-`/`pe-`/`start-`/`end-`/`text-start`/`border-s`/`rounded-s`, `marginInlineStart`, `insetInlineEnd`, `textAlign: 'start'`). `lint:rtl` counts the physical ones per file against `client/scripts/rtl-baseline.json`, which may only shrink; geometry that is physical on purpose in new code (maps, measured positions, time axes) carries an `rtl-lint-disable` comment.
+- **PWA**: `vite-plugin-pwa` + Workbox cache tiles, API and uploads; `prebuild` generates icons.
+
+## Shared contracts & i18n
+
+- A route is "done" only once its contract lives in `shared/` and both sides import the inferred types. Edit the Zod schema, rebuild shared, then server (validation + DTO types) and client (typed requests) pick it up.
+- Locale files live in `shared/src/i18n/<locale>/`, one file per domain; `en/` is canonical. When you add or change a key, **add a real translation to every locale** — parity fails CI on missing keys, and an English placeholder is not acceptable in a non-`en` locale.
+- Count-bearing strings are plural groups: the key holds the general form and `key.one`, `.few` … the forms the language's `Intl.PluralRules` selects. Pass `{ count }` as a number and never choose between two keys with `count === 1`; details in `shared/CLAUDE.md`.
+
+## Project direction
+
+These principles come out of a full-repo audit and shape all new code:
+
+- **Protect the crown jewels.** The client's offline-first data core (repos + mutation queue + Dexie), the out-of-process plugin sandbox, the Zod contract layer, and the auth primitives are production-grade. Extend them; never route around them or rewrite them in anger.
+- **No "modern shell over legacy core."** The debt pattern is a modern frame delegating to the old approach underneath (on the client: feature components calling the raw API past the offline core). New code goes all-in on the target architecture; when touching a legacy seam, migrate it rather than adding another wrapper.
+- **Single source of truth over manual synchronization.** Never add a hand-mirrored copy of state, schema, or contract (server↔Dexie↔Zustand, schema↔SQL, the plugin contract). Derive from one source, or guard the copy with a parity test that cannot silently skip — the server entities are the precedent: `npm run gen:entities`/`check:entities --workspace=server` (`server/scripts/generate-entities.ts`) regenerate them from the live migrated schema instead of hand-editing, and a parity test (PARITY-009) pins entity-vs-DB drift (delete rules, index names) at zero skips. The Kysely table types the repositories query through are generated the same way (`gen:db-types`/`check:db-types`, `server/scripts/generate-db-types.ts`).
+- **DI over global mutable module state.** New server code injects its dependencies; new client code avoids `window`-global buses and mutable module state.
+- **Use the runtime's native idioms.** Prefer React 19 features (`useOptimistic`, Actions, `use()`/Suspense) and Nest subsystems (providers, pipes, guards, `@nestjs/schedule`) over hand-rolled equivalents.
+- **Fail closed, gates stay on.** Security switches default to safe; misconfiguration must refuse, not degrade. Never lower a quality gate to land a change — no new `any`, no new `eslint-disable`, no downgrading rules to `warn`, no lowered coverage thresholds.
+
+## Conventions (from CONTRIBUTING.md)
+
+- **Target the `dev` branch** for PRs, not `main` (exception: `wiki/`-only changes).
+- **Discuss first**: outside contributions are pitched in the `#github-pr` Discord channel before any code is written.
+- **PRs follow `.github/PULL_REQUEST_TEMPLATE.md`** and need a linked issue (`Closes #N`) for fixes or an approved feature discussion for features.
+- **Conventional commits** (`fix(maps): ...`, `feat(budget): ...`). **No Co-Authored-By or other tool-attribution trailers.**
+- One focused change per PR; no breaking changes; no unrelated reformatting. Tests ship in the same change — the project holds 80%+ coverage.
+- **Parity is law** when touching a route: same URL, method, query/body, HTTP status, `Set-Cookie` and JSON body, including bespoke error strings. Nest defaults POST to 201 — add `@HttpCode(200)` where the contract returns 200. Declare static sub-routes (`/reorder`) **before** `:id` param routes.
+
+## Quality gates in CI
+
+`.github/workflows/test.yml` runs, per package: typecheck (server also `typecheck:tests`, client also the strict-mode ratchet `lint:strict`), lint (client and server through `lint:warnings`, which also holds the warning count per rule), `lint:pages`, `lint:rtl`, `lint:size` (client and server), the server's `lint:strict`, `lint:boundaries`, `lint:tx`, `lint:dialect`, `lint:engine-dispatch`, `lint:test-sql`, `lint:test-mocks`, `lint:test-new-service`, `lint:query-api`, `lint:mcp-zod`, `lint:service-http` and `lint:response-contracts`, the client's and server's `lint:format`, `lint:layers`, `lint:offline`, `lint:dup`, `lint:pairs`, `lint:skips`, `lint:i18n-keys` and `theme:lint`, shared's `contracts:open`, the repo-wide `lint:knip` (in `server-lint`), `check:plugin-facts`, `i18n:parity:strict` (with the untranslated-strings ratchet), the S3 contract suite, TREK on Postgres (`server-postgres`, once per supported major, 14 and 18, each in three slices: first the Postgres probe (in the first slice), every dialect helper on SQLite and Postgres and the statements every repository method reaches with sample arguments, its SQL errors per method and the methods it cannot measure held to a baseline that only shrinks and fails while it is still unmeasured; then the Postgres lane, every suite that boots the app on the real database module, found by `server/tests/postgres/lane.ts` rather than listed, plus PARITY-PG and the write lock; see `server/CLAUDE.md`), the browser end-to-end flows (Chromium and WebKit, in the Playwright container, in two slices), a client build with `check:gl-split`, coverage for all four packages, then a SonarCloud scan. It also builds the Docker image and boots it until `/api/health/ready` answers, on SQLite and on Postgres 18, and lints and renders the Helm chart against the Kubernetes schemas and runs `docker compose config` on every compose file (both in `docker`, each part when its area changed). `lint-prettier.yml` additionally runs `lint` + `lint:format` on `shared/`, both check-only. `plugin-sdk` has no lint script and is outside the eslint gates. **Not in CI**: the screenshot and help-media Playwright projects; run them locally. There are no git hooks; nothing runs before a commit except you. Other workflows build Docker images, scan them, and publish `trek-plugin-sdk` on `plugin-sdk-v*` tags.
+
+- **Job names read "<Area> <what>[ <variant>][ i/n]"** (`Server tests 3/10`, `Server Postgres 14 2/3`, `Docker and Helm`): the area first, one of Changes, Shared, Server, Client, Docker or Sonar, then lower case, with no colon, no parentheses and no middle dot, and a slice only at the end, so the checks list sorts by area. The workflow is named `CI`, so a check reads `CI / Server tests 3/10`. Job ids are the names in kebab-case (`server-tests`), the jobs stand in `test.yml` in area order, and the list at the top of `test.yml` says what each job holds. A new job follows the scheme and joins that list; `scripts/ci/workflow-jobs.test.mjs` fails on a name outside it. `ci-ok`, `lint` and `check-target` keep their names: the ruleset requires them by name.
+- **What the folded jobs hold.** `Shared tests` is the plugin SDK's typecheck and coverage, run before the root install so the SDK resolves only its own dependencies, then i18n parity and shared's coverage. `Client types` is the typecheck and the strict ratchet; `Client checks` the source ratchets, then the production build with `check:gl-split`. `Docker and Helm` builds and boots the image when the image area changed and checks the chart and compose files when the deploy area changed. Inside a folded job each group of steps runs after a failure in another, so one red check shows every gate that failed; the step names say which.
+- **Tests run beside the gates, in shards.** The client and server suites run in ten slices each on parallel runners (`client-tests`, `server-tests`, through each package's `vitest.shard.config.ts`), the Postgres lane in three per major, and the end-to-end flows in two, and `client-coverage`/`server-coverage` merge their blob reports and check the thresholds against the whole. A red slice is usually a failing test, a red merge job usually a threshold. A sliced job states its slice count in its matrix's shard axis, the `i/n` in its name and its `--shard=i/n`; `scripts/ci/workflow-jobs.test.mjs` fails until all three agree, and on any job naming `matrix.shard` or `--shard` whose axis is not the one-line `shard: [1, ..., n]` it reads.
+- **`ci-ok` is the required check.** The branch ruleset requires `ci-ok` (plus `lint` and `check-target` from their own workflows), and `ci-ok` needs every job above except the scan. It fails if any of them failed or was cancelled and passes if they passed or were skipped. A new gate job counts only once it is listed in `ci-ok`'s `needs:`, and `scripts/ci/workflow-jobs.test.mjs` (in `test:ci-scripts`) fails while a job other than the scan is missing there.
+- **The release pull request mirrors the push run.** On the pull request from `dev` into `main` (head branch in this repository), `changes` sets `mirror` and turns every area off (`scripts/ci/changed-areas.mjs`), so no test, gate or scan job runs, and `ci-ok` runs `scripts/ci/mirror-push-run.mjs`: it waits for the `ci-ok` of the push run of `test.yml` on `dev` for exactly the PR's head commit and passes or fails with it. No such push run, one that ended without a verdict, or a wait past 17 minutes fails with a re-run hint, never passes. A push to `dev` lists its changes against the merge base with `main`, not against the previous push, so the run it mirrors covers every area the pull request brings in, even when an earlier push's run was cancelled or red. Testing that commit twice doubled the jobs past the 60 slots.
+- **Guides name paths that exist**: the `changes` job runs `scripts/ci/doc-paths.mjs`, which resolves every backtick path in the CLAUDE.md files, `README.md`, `server/src/nest/README.md` and the wiki against the tracked files; the missing ones are listed in `scripts/ci/doc-paths-baseline.json`, which only shrinks (`--update` after a fix).
+- **What runs is decided by `changes`, not by `on.paths`**: `scripts/ci/changed-areas.mjs` maps the changed files to the `code`, `image` and `deploy` areas (tests: `npm run test:ci-scripts`). A path filter on the workflow would leave `ci-ok` unreported on a docs-only PR and block it. Add a new top-level file the build reads to the right area there. A change to `test.yml`, to `scripts/ci/` or to a local action under `.github/actions/` runs everything.
+- **Setup goes through one local action.** Every job that installs dependencies uses `.github/actions/setup/action.yml` (`scope` full, client or shared; `build-shared`) instead of its own `npm ci`; `workflow-jobs.test.mjs` fails on a job that installs on its own (plugin-sdk's own install in its directory excepted). The action restores node_modules on an exact key (runner image, scope, Node ABI, `.nvmrc`, the lockfile and every workspace `package.json`, so npm ci still refuses a `package.json` out of step with the lockfile; no restore-keys) and shared/dist on a key over shared's sources and build config, and runs `npm ci` or the shared build on a miss. Only pushes to dev and main save, the npm download cache included; pull requests only read.
+- **End-to-end runs in the Playwright container**, `mcr.microsoft.com/playwright:v<version>-noble` pinned by digest, so no step installs browsers or system libraries. Dependabot bumps only the lockfile: on every Playwright PR move the tag and its digest in `client-e2e` by hand (`docker buildx imagetools inspect mcr.microsoft.com/playwright:v<version>-noble`); `workflow-jobs.test.mjs` fails until the tag names the lockfile's `@playwright/test` version.
+- **Budget: `ci-ok` within ten minutes.** One code run starts at most about 35 long jobs (gates, slices, Postgres, e2e, Docker), so two PR runs fit in the organisation's 60 concurrent jobs. Every job sets `timeout-minutes` of at most 20 (15 for the long ones, 10 for the short ones), which `workflow-jobs.test.mjs` holds. A new long job, slice or shard needs a reason that outweighs its slot; the job-count note at the top of `test.yml` has the numbers.
+- **Runners and Node**: jobs run on `ubuntu-24.04`, not `ubuntu-latest`, and every `setup-node` reads `.nvmrc`. Third-party actions (anything outside `actions/*`) are pinned by commit SHA with the tag in a comment; Dependabot keeps both current.
+- **Security scans are advisory.** `security.yml` runs `npm audit` (what the image installs, plus `plugin-sdk`) on every PR and push into dev and main, and Docker Scout on the built image for main. Neither is required: a newly published advisory would turn every open PR red at once. Fixes are held as floors in the root `package.json` `overrides`; npm ignores an `overrides` block in a workspace `package.json`, so never put one there.
+- **Releases** are dispatched by hand and refuse a commit whose `ci-ok` is not green. `docker-dev.yml` (any branch, usually dev) is the canary: it builds the dispatched commit as the next minor or major `-pre.N` and moves only `:latest-pre` and `:<major>-pre`. `docker.yml` (main only) bumps the version, commits and tags it, builds both platforms from exactly that commit and moves `:latest`, `:<major>`, `:<major>.<minor>` and `:<version>`. Its `bump=auto` only finalizes a prerelease in flight; without one it stops and asks for patch, minor or major. Ship a release that migrates or changes a lot as a prerelease first, and as a minor, so installs pinned to `:<major>.<minor>` can wait it out.
+
+**SonarCloud** (project `liketrek_TREK`, the built-in Sonar way gate; the run takes 20–25 min, so get it right before pushing) measures **new code only** on a PR; any failing condition blocks it:
+
+| Condition (new code) | Must be |
+|---|---|
+| Coverage | ≥ 80% |
+| Duplicated lines | ≤ 3% |
+| Security / reliability / maintainability rating | A |
+| Security hotspots reviewed | 100% |
+
+- **Duplication is the one that bites.** Desktop and phone shells (`client/src/components/<X>` ↔ `client/src/mobile/screens/.../M<X>`) are deliberate mirrors of each other's markup; their logic lives in one shared hook per feature. Every line added identically to both counts against the 3% budget, so a feature touching both shells fails on its own. Put the logic in ONE hook/module (precedents: `useInstanceSettings`, `useRangeBypass` under `client/src/components/Admin/`) and leave only markup in each shell. `lint:dup` finds the same copies in `client/src` before the push and holds every file to `client/scripts/dup-baseline.json`; `lint:pairs` holds each pair in `client/scripts/feature-pairs.json` to its shared hook and makes every new phone screen either join a pair or say why it has no twin. Locale files are excluded from duplication, so i18n additions are free.
+- **Coverage is per new line across all four packages.** A new file without tests drags the PR under 80%. Files in `sonar.coverage.exclusions` don't count either way.
+- **Ratings are about new issues.** One new bug drops reliability; one new vulnerability drops security. Don't introduce hotspot patterns (`Math.random` in anything security-adjacent, `child_process` through PATH, backtracking regexes, secret-looking strings). Path-wide suppressions live only in `sonar-project.properties` with a written justification; one-off findings are resolved on SonarCloud, never with an inline `// NOSONAR`.
+- **Check it yourself.** The `sonarqube` MCP is connected: `list_pull_requests` → `get_project_quality_gate_status` shows each condition's value; `search_duplicated_files` + `get_duplications` show what tripped duplication; `search_sonar_issues_in_projects` lists new issues. Test files are excluded from analysis — when duplication fires, the source is the problem.
+
+## Reference docs
+
+- `MCP.md` (MCP server, tools, scopes) · `README.md` (deployment, env vars, reverse proxy) · `server/src/nest/README.md` (module blueprint, test layout) · `server/src/app-config/README.md` (env parsing quirks) · `plugin-sdk/README.md` (plugin author guide).
+- `wiki/` — end-user documentation. `Dockerfile` / `docker-compose*.yml` — the deployment path and the local S3 test stack.

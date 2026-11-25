@@ -4,7 +4,11 @@ Frappe is a web framework: Python backend, JavaScript desk UI, MariaDB or Postgr
 
 Maintainers review every pull request against [code_review.md](code_review.md). Follow this file while you work, and check your diff against that one before you open the pull request.
 
-The Studio editor under `studio/frontend/` is a separate Vue app with its own conventions; read [studio/frontend/AGENTS.md](studio/frontend/AGENTS.md) before changing it or the `frappe/studio` package.
+Studio has its own code conventions: the editor, a Vue app at `studio/frontend/`, and its Python package at `frappe/studio/`. Read [studio/AGENTS.md](studio/AGENTS.md) before changing either.
+
+Building or editing a Studio app or page — block trees, data bindings, page scripts, exported apps: read [skills/studio-app-building/SKILL.md](skills/studio-app-building/SKILL.md).
+
+Creating or changing a print format: read [skills/print-formats/SKILL.md](skills/print-formats/SKILL.md).
 
 ## Before you write code
 
@@ -13,6 +17,7 @@ The Studio editor under `studio/frontend/` is a separate Vue app with its own co
 3. Read the whole flow before you change either end: the JS caller, the whitelisted method, the controller and its hooks. A wrong value on the server usually comes from the client, and a wrong value on the client from the server. Find where the bad value is produced.
 4. Look for what already exists. Grep `frappe.utils`, `frappe.ui`, `frappe.model`, the desk components and the CSS for a helper, control, class, field or setting that already does the job. Grep every function, CSS class, token and icon name you use before you use it. Never guess a name.
 5. A new feature, setting, DocType, hook or API, or a large refactor, needs agreement in an issue first.
+6. Use `frappe.read_doc` instead of `frappe.get_doc` when permissions need to be checked.
 
 ## Making the change
 

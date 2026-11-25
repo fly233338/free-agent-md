@@ -2,12 +2,6 @@
   "full_name": "heygen-com/hyperframes",
   "points": [
     {
-      "checked_at": "2026-10-26T09:02:50Z",
-      "commit_sha": "3f1950b806e72fece41552077b491f1c8c6e8b28",
-      "pushed_at": "2026-10-26T09:01:19Z",
-      "stars": 72504
-    },
-    {
       "checked_at": "2026-10-27T09:05:49Z",
       "commit_sha": "1bc4bd9ca4d96443113710d0a8f60fc25908ad89",
       "pushed_at": "2026-10-27T09:05:07Z",
@@ -144,6 +138,12 @@
       "commit_sha": "646157c34728327cd8640e659b60bc70d04abd55",
       "pushed_at": "2026-11-23T12:56:23Z",
       "stars": 88638
+    },
+    {
+      "checked_at": "2026-11-25T13:04:05Z",
+      "commit_sha": "d494f25c7b3048de45c38767503d94ebe34d2970",
+      "pushed_at": "2026-11-25T13:03:21Z",
+      "stars": 89898
     }
   ],
   "repo_id": 1177402105

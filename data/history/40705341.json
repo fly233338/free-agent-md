@@ -2,12 +2,6 @@
   "full_name": "surveyjs/survey-library",
   "points": [
     {
-      "checked_at": "2026-10-26T09:02:50Z",
-      "commit_sha": "944bebab0abfa38a975a9f7596394beee1a83ac2",
-      "pushed_at": "2026-10-26T08:56:21Z",
-      "stars": 4915
-    },
-    {
       "checked_at": "2026-10-27T09:05:49Z",
       "commit_sha": "225c9371e41c252db80fbd0520b643d00876136d",
       "pushed_at": "2026-10-27T08:14:28Z",
@@ -180,6 +174,12 @@
       "commit_sha": "a38b040551b2584e348db04f7cb2573598412c50",
       "pushed_at": "2026-11-24T13:23:31Z",
       "stars": 4938
+    },
+    {
+      "checked_at": "2026-11-25T13:04:05Z",
+      "commit_sha": "fb46b13c3ad4f9ac5f14053b89af087de68b7750",
+      "pushed_at": "2026-11-25T12:49:51Z",
+      "stars": 4942
     }
   ],
   "repo_id": 40705341

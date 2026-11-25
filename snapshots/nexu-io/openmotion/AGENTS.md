@@ -4,7 +4,7 @@ OpenMotion is a standalone container-first application at the repository root (s
 
 ## Project editing
 
-Follow the [project editing contract](docs/product/edit-core.md) for changes to persisted edits. Keep action semantics in edit-core, route Studio HTTP and remote MCP through the same cloud executor, and verify identical saved results and project undo behavior.
+Follow the [project editing contract](docs/product/edit-core.md) for changes to persisted edits. Hosted Studio runs edit-core locally and submits prepared changes through the ordered project queue. Keep subsequent edits responsive while earlier receipts are outstanding. Remote MCP can run the same edit-core in the cloud. Verify identical saved results and project undo behavior.
 
 ## Local validation
 
@@ -53,6 +53,7 @@ Source-checkout contributor Skills live under `.agents/skills/`. When adding or 
 
 When applying or migrating an existing shared control in Studio, follow the [ODUI apply Skill](.agents/skills/odui-apply/SKILL.md).
 For Open Design UI work, choose the repository-local Skill by intent. Use [odui-dev](.agents/skills/odui-dev/SKILL.md) for the local catalogue and live preview, [odui-build](.agents/skills/odui-build/SKILL.md) to create or evolve a component, [odui-apply](.agents/skills/odui-apply/SKILL.md) to adopt an existing component in Studio, and [odui-check](.agents/skills/odui-check/SKILL.md) before review. The component registry and component guide remain the shared source of truth.
+For OpenMotion / OpenDesign Next desktop client work (Electron thin shell, universal host bridge, local atomic capabilities, Web Connect Script, two-tier signed config, environment switching, auto-update, or desktop release workflows), follow the [desktop client development Skill](.agents/skills/desktop-client-dev/SKILL.md).
 
 ## Shared design system — required for every Agent
 
@@ -130,6 +131,17 @@ Follow [Studio routing and lazy-loading architecture](docs/routing.md) whenever 
 5. **Verify boundary regressions.** Run `npm run check` (`scripts/check-routing.ts`), `studio/src/shellBoundary.test.ts`, `tests/spa-routes.test.ts`, and `npm run build:studio` when touching routes or shell imports; do not weaken boundary checks to silence a leak.
 
 `AGENTS.md` owns this requirement; `CLAUDE.md` links here. Apply it to all Studio routing and shell work.
+
+## Desktop and viewport layout contract
+
+Follow [Desktop & Responsive Layout Contract](docs/layout-contract.md) whenever modifying Studio shells, overlays, dialogs, drawers, or desktop window chrome.
+
+1. **Consume shared desktop safe-area variables.** Default variables live in `packages/design-system/base.css` (`--om-desktop-safe-top`, `--om-desktop-inset-left`, `--om-desktop-inset-right`, `--om-desktop-titlebar-height`) and `--om-workspace-top` is maintained by `WorkspaceFrame.tsx`. Never add `position: fixed` full-viewport overlays (`inset: 0`, `top: 0`) or centered modals (`top: 50%`) without `--om-desktop-safe-top` / `--om-workspace-top` clearance and `dvh` bounds.
+2. **Keep `.om-application` a flex column.** Never replace it with hardcoded `grid-template-rows` counts; optional banners (promo, auth recovery, status) must stack cleanly below `.om-app-header` in desktop windowed mode.
+3. **Preserve platform & zoom invariants.** In-flow Linux custom window controls keep `insetRight: 0`; OS-overlaid insets (macOS traffic lights, Windows `titleBarOverlay`) scale inversely with `zoomFactor`; never target a size container directly inside its own `@container` rule.
+4. **Verify layout regressions.** Run `npm run check` (`scripts/check-layout.ts`) after any layout, modal, drawer, or desktop chrome edit; do not bypass or weaken the guard.
+
+`AGENTS.md` owns this requirement; `CLAUDE.md` links here. Apply it to all Studio and desktop layout work.
 
 ## Studio internationalization (i18n)
 

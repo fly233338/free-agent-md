@@ -1,8 +1,8 @@
 # nexu-io/openmotion instruction files
 
-Upstream: [nexu-io/openmotion](https://github.com/nexu-io/openmotion) · License: `Apache-2.0` · Commit: `db2758dfeb7864f38f9e28c19ae69536a6c021b6`
+Upstream: [nexu-io/openmotion](https://github.com/nexu-io/openmotion) · License: `Apache-2.0` · Commit: `791a6082611f8ce7aba5fd0dfcc8621be00eb581`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/nexu-io/openmotion/AGENTS.md) | [Source](https://github.com/nexu-io/openmotion/blob/db2758dfeb7864f38f9e28c19ae69536a6c021b6/AGENTS.md) | `1ea22415ff29864b9fbcc0b06a3d510d785097803a4b09fdd62f2cc8c9ff7c64` | 37,464 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/nexu-io/openmotion/CLAUDE.md) | [Source](https://github.com/nexu-io/openmotion/blob/db2758dfeb7864f38f9e28c19ae69536a6c021b6/CLAUDE.md) | `91c8e45799d319c72fb82f320dc091f8d802201dd47f344b3c303e7c52b8df54` | 13,504 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/nexu-io/openmotion/AGENTS.md) | [Source](https://github.com/nexu-io/openmotion/blob/791a6082611f8ce7aba5fd0dfcc8621be00eb581/AGENTS.md) | `d62da1585be2e871b6f5092e650f411aad1cb0532102d69bbf37b1a5d8e9e982` | 39,374 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/nexu-io/openmotion/CLAUDE.md) | [Source](https://github.com/nexu-io/openmotion/blob/791a6082611f8ce7aba5fd0dfcc8621be00eb581/CLAUDE.md) | `529c5ab2466b563b92244f78577aefbdd282510dd968ed56a2901ae48364de98` | 14,376 B |

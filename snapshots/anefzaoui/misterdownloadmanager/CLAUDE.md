@@ -16,8 +16,9 @@ craft-libs), laid out the way Internet Download Manager users expect. Start by r
 2. Every user-visible text goes through `crate::i18n`; run `python tools/i18n/extract.py`
    after adding one.
 3. Windows-only calls live in `crates/app/src/win32.rs`, their Linux and macOS counterparts in
-   `unix.rs`; the rest of the workspace is safe, portable Rust (`unsafe_code = "deny"`). A
-   feature works on every system, or says why it can't (`cfg` with a comment).
+   `unix.rs`, and Android's in `android.rs`, which `unix.rs` re-exports; the rest of the workspace
+   is safe, portable Rust (`unsafe_code = "deny"`). A feature works on every system, or says why
+   it can't (`cfg` with a comment).
 4. Fix root causes, keep data contracts aligned between producers and consumers, and verify the
    whole system end to end after each change. How: the `verify` skill (`.claude/skills/verify`); what to
    check by what a diff touches: [REVIEW.md](REVIEW.md). Every PR says `Verified:` and `Not verified:`.

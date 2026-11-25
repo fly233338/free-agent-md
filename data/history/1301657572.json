@@ -2,12 +2,6 @@
   "full_name": "superdesigndev/treg",
   "points": [
     {
-      "checked_at": "2026-10-26T09:02:50Z",
-      "commit_sha": "fba619fd7bd63837d464214a1e22449b16bd83d4",
-      "pushed_at": "2026-10-26T08:59:20Z",
-      "stars": 6066
-    },
-    {
       "checked_at": "2026-11-04T11:01:57Z",
       "commit_sha": "4dfadeb729af24e7f1f685d38b51dacdbd579efb",
       "pushed_at": "2026-11-04T10:58:48Z",
@@ -48,6 +42,12 @@
       "commit_sha": "a1a647ad2f17aeedbebe5720e6329b1b1676de02",
       "pushed_at": "2026-11-20T11:40:10Z",
       "stars": 8554
+    },
+    {
+      "checked_at": "2026-11-25T13:04:05Z",
+      "commit_sha": "1ff6d52cd2de9c37ad8ae47ebdeb67b160e9b26f",
+      "pushed_at": "2026-11-25T13:03:25Z",
+      "stars": 8889
     }
   ],
   "repo_id": 1301657572

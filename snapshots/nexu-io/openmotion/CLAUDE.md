@@ -4,7 +4,7 @@ Read and follow [AGENTS.md](AGENTS.md) before working in this repository. It is 
 
 Use `CLAUDE.md` as the Claude Code instruction entry. Record future repository-rule updates here and keep them aligned with `AGENTS.md`.
 
-Follow the [project editing contract](docs/product/edit-core.md) when changing Studio, cloud or headless editing behavior.
+Follow the [project editing contract](docs/product/edit-core.md) when changing Studio, cloud or headless editing behavior. Hosted Studio submits locally prepared edits in order. Programmatic clients can submit semantic commands.
 
 ## Branch workflow
 
@@ -38,6 +38,7 @@ Each publication uses its exact sealed candidate bytes. Require both macOS and W
 ## UI design system and interaction feedback
 
 Follow the [ODUI apply Skill](.agents/skills/odui-apply/SKILL.md) when applying or migrating an existing shared control in Studio.
+Follow the [desktop client development Skill](.agents/skills/desktop-client-dev/SKILL.md) when working on the OpenDesign Next Electron desktop client, universal host bridge, local atomic capabilities, Web Connect Script, signed config, or desktop release pipelines.
 
 Use opaque, solid theme surfaces for product UI, including menus, Popovers, tooltips, dialogs and floating controls. Do not introduce frosted glass, translucent content backgrounds or background blur (`backdrop-filter`). Maintain this treatment in the shared design system, not feature-local overrides. Modal scrims may use a uniform tint without blur; authored video and imported artwork remain independent. The authoritative rule is in [AGENTS.md](AGENTS.md#ui-design-system-and-interaction-feedback).
 
@@ -70,3 +71,7 @@ Follow [Studio routing and shell boundaries](AGENTS.md#studio-routing-and-shell-
 ## Studio internationalization (i18n)
 
 Follow [Studio internationalization (i18n)](AGENTS.md#studio-internationalization-i18n) and [docs/i18n.md](docs/i18n.md). Keep feature copy in `studio/src/i18n/*-ui.json`, register any new module in `studio/src/i18n/manifest.ts` with all 10 non-English locales and intact `{var}` placeholders, never statically import locale JSON or `sourceCatalog.ts` from runtime code, avoid new `locale === 'zh-CN'` UI copy branches, and run `npm run check` plus `studio/src/shellBoundary.test.ts`.
+
+## Desktop and viewport layout contract
+
+Follow [Desktop and viewport layout contract](AGENTS.md#desktop-and-viewport-layout-contract) and [docs/layout-contract.md](docs/layout-contract.md). Every `position: fixed` top/full-viewport overlay or centered modal must respect `--om-desktop-safe-top` (or `--om-workspace-top`) and `dvh` bounds, `.om-application` must stay a flex column, Linux in-flow window controls must keep `insetRight: 0`, and `npm run check` (`scripts/check-layout.ts`) must pass.

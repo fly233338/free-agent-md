@@ -1,5 +1,5 @@
 {
-  "full_name": "Fei2411/DS-Bot",
+  "full_name": "Fei-Craft/DS-Bot",
   "points": [
     {
       "checked_at": "2026-11-11T11:05:45Z",
@@ -18,6 +18,12 @@
       "commit_sha": "881b57b54046fb355095e9c11f7918bd62b8bf1e",
       "pushed_at": "2026-11-21T11:15:08Z",
       "stars": 8596
+    },
+    {
+      "checked_at": "2026-11-25T13:04:05Z",
+      "commit_sha": "d104d9ca18d69a35460f14e15dff4d553181433a",
+      "pushed_at": "2026-11-25T12:57:55Z",
+      "stars": 8918
     }
   ],
   "repo_id": 1409013846

@@ -24,7 +24,9 @@ npm run build          # production web build → apps/geolibre-desktop/dist/
 npm run lite:build     # same, but DuckDB-WASM from jsDelivr — for hosts with a per-asset size cap
 npm run tauri:build    # desktop installers → apps/geolibre-desktop/src-tauri/target/release/bundle/
 npm run typecheck      # alias for the full build (tsc -b && vite build) — writes to dist/, not a pure type-check
-npm run ci             # full local gate: build + frontend + worker + backend + rust check
+npm run ci             # full local gate: lint + ci:frontend + typecheck:tests + ci:backend + check:rust
+npm run ci:frontend    # build + frontend + worker tests (CI runs the halves as parallel jobs)
+npm run ci:backend     # sidecar + identity server (coverage-gated) + docker/tests (needs Python and the npm CLI, no npm install)
 ```
 
 Tests:
@@ -35,10 +37,13 @@ npm run test:frontend:coverage                     # same, plus a coverage summa
 node --import tsx --test tests/<name>.test.ts      # a single frontend test file
 npm run test:backend                               # pytest backend/geolibre_server/tests
 npm run test:backend:coverage                      # same, plus pytest-cov (gated on a floor)
+npm run test:server-api:coverage                   # backend/geolibre_server_api suite, gated on a floor
+npm run test:python:coverage                       # python/ package suite, gated on a floor
 python -m pytest backend/geolibre_server/tests/test_x.py::test_y   # a single backend test
 npm run test:worker                                # typecheck workers/viewer
 npm run test:e2e                                   # Playwright smoke tests (e2e/) against the built web app
 npm run check:rust                                 # cargo check the Tauri crate
+npm run typecheck:tests                            # tsc over tests/, ratcheted on an error-count baseline (docs/maintenance.md)
 cd python && pytest                                # the geolibre Python package's own suite
 ```
 
@@ -83,7 +88,10 @@ truth. Data flows one way:
 4. `MapCanvas` subscribes to `layers`; `MapController.syncLayers`
    (`@geolibre/map`) reconciles MapLibre sources/layers and the layer control.
    **You don't mutate MapLibre directly from UI** — change store state and let
-   sync apply it.
+   sync apply it. Transient construction and analysis previews, including
+   COGO/trace and Line of Sight, may own temporary map sources and layers.
+   Keep them outside saved project layers and remove them when the preview
+   closes or its map is replaced. Saved results still enter through the store.
 
 Rendering is MapLibre GL JS in the webview, with **deck.gl** for
 raster/point-cloud/3D overlays.
@@ -94,9 +102,13 @@ raster/point-cloud/3D overlays.
 (plugin interface + built-in plugins) · `@geolibre/embed` (typed iframe embed
 client) · `geolibre-desktop` (shell layout, Tauri I/O, composition).
 
-**Plugins:** built-in plugins live in `packages/plugins/src/plugins/`, are
-exported from that package's `index.ts`, and registered in
-`apps/geolibre-desktop/src/hooks/usePlugins.ts`. External plugins load from zips
+**Plugins:** built-in implementations live in `packages/plugins/src/plugins/`.
+Their canonical metadata is in `builtin-plugin-metadata.ts` and lazy module
+loaders are in `builtin-plugins.ts` in the same package. `usePlugins.ts`
+registers those descriptors with `manager.registerLazy`; host code uses specific
+package entrypoints. The root `index.ts` retains SDK exports. When adding a
+built-in, follow [the catalog recipe](docs/plugin-api.md#add-a-built-in-plugin-in-this-repository).
+External plugins load from zips
 or a `plugin.json` manifest; bundled drop-ins under
 `apps/geolibre-desktop/public/plugins/<id>/` bake into both web and desktop
 builds. See `docs/plugin-api.md`.
@@ -127,9 +139,14 @@ and the server ships untested.
 ## Conventions
 
 - Never commit directly to `main`; branch and open a PR.
-- Tauri CSP allowlists tile/style hosts (OpenFreeMap, CARTO) — new external
-  map/tile hosts must be added there. Map/tile-host CORS for selected release
-  assets is handled by a dev-server raster proxy.
+- CSP: `connect-src`/`img-src` allow any `https:` (desktop also `http:`), so a
+  new map/tile/service host needs no CSP change. `script-src` is pinned: the
+  desktop (`tauri.conf.json`) and web (`docker/nginx.conf`) CSPs list
+  version-specific jsDelivr paths that `tests/tauri-csp.test.ts` re-derives, so
+  a bump that moves a CDN script URL (or a new script host) must update both
+  files — see [`docs/maintenance.md`](docs/maintenance.md#desktop-csp-script-src-allowlist).
+  Map/tile-host CORS for selected release assets is handled by a dev-server
+  raster proxy.
 - For MapLibre control styling fixes, add scoped overrides in
   `apps/geolibre-desktop/src/index.css`, never edit `node_modules`.
 - UI strings are translatable via **react-i18next**; catalogs live in
@@ -140,8 +157,8 @@ and the server ships untested.
   not the physical `ml-`/`left-` forms. **Read `docs/i18n.md` in full before any
   i18n work** — skipping it is the most common source of locale bugs.
 - **Some things upstream doesn't export are mirrored by hand, and drift fails
-  silently.** Before bumping `maplibre-gl`, any `maplibre-gl-*` package, or
-  `geolibre-wasm` — including Dependabot PRs — read
+  silently.** Before bumping `maplibre-gl`, any `maplibre-gl-*` package,
+  `geolibre-wasm`, or `@tauri-apps/plugin-http` — including Dependabot PRs — read
   [`docs/maintenance.md`](docs/maintenance.md) and run the frontend suite. That
   page also covers the coverage floors, the `npm audit` allowlist, the npm
   publish layout for `@geolibre/core`/`@geolibre/map`, the committed

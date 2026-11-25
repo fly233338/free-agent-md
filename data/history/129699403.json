@@ -2,12 +2,6 @@
   "full_name": "tuist/tuist",
   "points": [
     {
-      "checked_at": "2026-10-26T09:02:50Z",
-      "commit_sha": "b4bfce11933c706452441e43771ffc7f4b7cf139",
-      "pushed_at": "2026-10-26T09:02:18Z",
-      "stars": 5851
-    },
-    {
       "checked_at": "2026-10-30T10:08:14Z",
       "commit_sha": "580ff335e0fae008775964aec80973c9eeba5822",
       "pushed_at": "2026-10-30T10:07:48Z",

@@ -1,0 +1,12 @@
+{
+  "full_name": "hashicorp/terraform-provider-azurerm",
+  "points": [
+    {
+      "checked_at": "2026-11-25T13:04:05Z",
+      "commit_sha": "ea5b3aeea6bd3b47fcfdc15b3778bcf45fce9f53",
+      "pushed_at": "2026-11-25T09:40:45Z",
+      "stars": 4984
+    }
+  ],
+  "repo_id": 93446042
+}
