@@ -2,12 +2,6 @@
   "full_name": "pingdotgg/t3code",
   "points": [
     {
-      "checked_at": "2026-10-27T09:05:49Z",
-      "commit_sha": "1ebbc205f6d99edd09882341ba1a420732287495",
-      "pushed_at": "2026-10-27T09:05:10Z",
-      "stars": 30611
-    },
-    {
       "checked_at": "2026-10-28T09:46:18Z",
       "commit_sha": "07f7f976097b56450364fe136aac9253f4f7d8e1",
       "pushed_at": "2026-10-28T09:45:23Z",
@@ -156,6 +150,12 @@
       "commit_sha": "f7ec366acddb573c3b13dc2c7b575c0c62aed7e9",
       "pushed_at": "2026-11-25T13:03:32Z",
       "stars": 78796
+    },
+    {
+      "checked_at": "2026-11-26T12:44:40Z",
+      "commit_sha": "a0885a912318fba7270b39a5ccbb0588136268b8",
+      "pushed_at": "2026-11-26T12:42:55Z",
+      "stars": 80302
     }
   ],
   "repo_id": 1153130349

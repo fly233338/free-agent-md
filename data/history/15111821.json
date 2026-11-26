@@ -2,12 +2,6 @@
   "full_name": "grafana/grafana",
   "points": [
     {
-      "checked_at": "2026-10-27T09:05:49Z",
-      "commit_sha": "f5b6911255c20ff74e3e3e505a0e74ed6614e568",
-      "pushed_at": "2026-10-27T09:03:44Z",
-      "stars": 77542
-    },
-    {
       "checked_at": "2026-10-29T10:04:58Z",
       "commit_sha": "6b2cdaf8033a83e0b862364e40453ce5064b9008",
       "pushed_at": "2026-10-29T10:03:52Z",

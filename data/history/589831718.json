@@ -2,12 +2,6 @@
   "full_name": "Comfy-Org/ComfyUI",
   "points": [
     {
-      "checked_at": "2026-10-27T09:05:49Z",
-      "commit_sha": "426f5eea52a7ece1dd599fff4cb6cd1f352ddd24",
-      "pushed_at": "2026-10-27T07:41:24Z",
-      "stars": 143415
-    },
-    {
       "checked_at": "2026-10-28T09:46:18Z",
       "commit_sha": "79cf64c21a1dba50749945ba9fe2e3a692f45438",
       "pushed_at": "2026-10-28T07:43:04Z",
@@ -180,6 +174,12 @@
       "commit_sha": "a2103ae69d98d8ef94c150f5a472b89775eed929",
       "pushed_at": "2026-11-25T12:59:09Z",
       "stars": 148559
+    },
+    {
+      "checked_at": "2026-11-26T12:44:40Z",
+      "commit_sha": "8b0f107157b58f9ec79a19fb3182e78cb30f0a23",
+      "pushed_at": "2026-11-26T12:13:01Z",
+      "stars": 148700
     }
   ],
   "repo_id": 589831718

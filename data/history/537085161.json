@@ -2,12 +2,6 @@
   "full_name": "cloudflare/workerd",
   "points": [
     {
-      "checked_at": "2026-10-27T09:05:49Z",
-      "commit_sha": "2059e9fb875d5e56f77bd0aa3df3ee8ccd95afe0",
-      "pushed_at": "2026-10-27T09:00:16Z",
-      "stars": 9080
-    },
-    {
       "checked_at": "2026-11-02T11:18:59Z",
       "commit_sha": "1fca4fbd5a26abe6b152b21917c58482d87319e0",
       "pushed_at": "2026-11-02T11:16:28Z",
@@ -30,6 +24,12 @@
       "commit_sha": "583a3b0275d574421f5f51ce0f6644cf26e92cf7",
       "pushed_at": "2026-11-24T13:40:26Z",
       "stars": 9253
+    },
+    {
+      "checked_at": "2026-11-26T12:44:40Z",
+      "commit_sha": "3e420d0bd81ce65973820e89107b7f6ff9d3a042",
+      "pushed_at": "2026-11-26T12:43:43Z",
+      "stars": 9273
     }
   ],
   "repo_id": 537085161

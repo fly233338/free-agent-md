@@ -2,12 +2,6 @@
   "full_name": "meta/astryx",
   "points": [
     {
-      "checked_at": "2026-10-27T09:05:49Z",
-      "commit_sha": "a63eb54f562a91f1cb3ff5b4a2df1067e2925522",
-      "pushed_at": "2026-10-27T09:01:49Z",
-      "stars": 13765
-    },
-    {
       "checked_at": "2026-10-31T09:44:15Z",
       "commit_sha": "25f61ea59008be80f574f45f1bd82e59285ce3f2",
       "pushed_at": "2026-10-31T09:43:50Z",
@@ -144,6 +138,12 @@
       "commit_sha": "ac3e9a57be84b316705f7f79fca5462cb0ac3c35",
       "pushed_at": "2026-11-25T12:51:48Z",
       "stars": 33012
+    },
+    {
+      "checked_at": "2026-11-26T12:44:40Z",
+      "commit_sha": "286b4a1a18dafa4dd4abaf1130fb848deb3a5ebb",
+      "pushed_at": "2026-11-26T12:31:32Z",
+      "stars": 33255
     }
   ],
   "repo_id": 1131202426

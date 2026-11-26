@@ -1,17 +1,17 @@
 {
-  "full_name": "Anil-matcha/open-duet",
+  "full_name": "Anil-matcha/suparagent",
   "points": [
-    {
-      "checked_at": "2026-10-27T09:05:49Z",
-      "commit_sha": "b1c48727beb5dfdc866ccfd450d7d17c5b51df50",
-      "pushed_at": "2026-10-27T09:04:32Z",
-      "stars": 6209
-    },
     {
       "checked_at": "2026-11-02T11:18:59Z",
       "commit_sha": "f517e1cd28f4628579259d42d644060ec80ba9a1",
       "pushed_at": "2026-11-02T11:15:54Z",
       "stars": 6506
+    },
+    {
+      "checked_at": "2026-11-26T12:44:40Z",
+      "commit_sha": "fd8fc075627137f10f9e02f10f8e4152dd52ec35",
+      "pushed_at": "2026-11-26T12:32:03Z",
+      "stars": 7171
     }
   ],
   "repo_id": 645381450

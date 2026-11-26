@@ -2,12 +2,6 @@
   "full_name": "getopenscreen/openscreen",
   "points": [
     {
-      "checked_at": "2026-10-27T09:05:49Z",
-      "commit_sha": "27d9be27bda01dda8d2118a964cdab1263af224d",
-      "pushed_at": "2026-10-27T08:51:17Z",
-      "stars": 4975
-    },
-    {
       "checked_at": "2026-11-14T10:34:51Z",
       "commit_sha": "492749e94ba4306a291fb51fc7d1a918d310d0ac",
       "pushed_at": "2026-11-14T10:31:59Z",
@@ -30,6 +24,12 @@
       "commit_sha": "20abd8c8542e8ed1bd655012e607f9a27b082737",
       "pushed_at": "2026-11-23T12:55:04Z",
       "stars": 7882
+    },
+    {
+      "checked_at": "2026-11-26T12:44:40Z",
+      "commit_sha": "f4eda9b08274bc50e3bd3875b45d672ec6869cb8",
+      "pushed_at": "2026-11-26T12:39:50Z",
+      "stars": 8139
     }
   ],
   "repo_id": 1181567753

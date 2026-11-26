@@ -32,36 +32,8 @@ Before modifying code in any module:
 Not every module has a README yet — when one exists, treat it as the primary reference for that
 module.
 
-**Path map:**
-
-|       Module       |                                       Description                                        |
-|--------------------|------------------------------------------------------------------------------------------|
-| `zeebe/`           | Core process engine (broker, engine, protocol, exporters)                                |
-| `zeebe/gateway`    | gRPC gateway for client access                                                           |
-| `operate/`         | Process monitoring webapp                                                                |
-| `tasklist/`        | User task management webapp                                                              |
-| `identity/`        | Authentication and authorization                                                         |
-| `optimize/`        | Process analytics (skipped with `-Dquickly`)                                             |
-| `db/`              | Database layer (rdbms, rdbms-schema)                                                     |
-| `search/`          | Search client abstraction (Elasticsearch, OpenSearch, RDBMS)                             |
-| `service/`         | Domain service layer between REST controllers and engine                                 |
-| `clients/`         | Client libraries (Java, Spring Boot starters)                                            |
-| `gateways/`        | Gateway implementations (HTTP mapping, MCP)                                              |
-| `security/`        | Security core, protocol, validation                                                      |
-| `qa/`              | Cross-component acceptance tests                                                         |
-| `testing/`         | Process testing libraries                                                                |
-| `authentication/`  | OIDC token processing and Spring Security integration                                    |
-| `document/`        | Document API and storage                                                                 |
-| `monitor/`         | Metrics and monitoring definitions for Camunda components                                |
-| `schema-manager/`  | Elasticsearch/OpenSearch index schema management                                         |
-| `microbenchmarks/` | JMH benchmarks for performance validation                                                |
-| `load-tests/`      | Cluster-level load and reliability tests                                                 |
-| `c8run/`           | Packaged Camunda 8 distribution for local spin-up                                        |
-| `debug-cli/`       | CLI tool for inspecting and troubleshooting Camunda clusters                             |
-| `webapp/`          | Unified webapp: React/TypeScript frontend (`client/`) and Spring Boot server (`server/`) |
-| `webapps-common/`  | Shared Java utilities used across Operate, Tasklist, and other web modules               |
-| `webapps-backup/`  | Shared backup/restore service for Elasticsearch/OpenSearch snapshots                     |
-| `webapps-schema/`  | Shared Elasticsearch/OpenSearch index mappings and templates for web application data    |
+For a map of top-level modules and what each owns, see the Module map in
+`docs/architecture/overview.md`; each module's `README.md` has the details.
 
 **Ask first:**
 
@@ -125,128 +97,19 @@ Types: `build`, `ci`, `deps`, `docs`, `feat`, `fix`, `merge`, `perf`, `refactor`
 
 ### Referencing code in issues, PRs, and comments
 
-When pointing at specific lines of repository code in any GitHub-rendered or shared artifact — issue,
-PR description, PR/review comment, or a linked note — use a **stable GitHub permalink** instead of a
-bare `path:line` reference. GitHub renders the linked lines inline, and pinning a commit SHA keeps the
-reference correct even after the file changes later. A bare `path:line` is only acceptable in local,
-throwaway context (never in something a teammate will read on GitHub).
-
-Derive the link locally — no API calls, no `gh`:
-
-```bash
-slug=$(git remote get-url origin | sed -E 's#^(git@github\.com:|https?://github\.com/)##; s#\.git$##')
-sha=$(git log -1 --format=%H -- "<path>")   # commit that last touched the file
-echo "https://github.com/$slug/blob/$sha/<path>#L<start>-L<end>"   # single line: #L<start>
-```
-
-- **SHA choice:** default to the file's last-touching commit (`git log -1 --format=%H -- <path>`). The
-  file content at that commit equals the current committed content, so the line numbers are valid, and
-  for existing code that commit is already on the remote. Use `git rev-parse HEAD` when linking code
-  from the current PR branch. Always use the full 40-char SHA — a branch name or short SHA is less
-  stable and can 404.
-- **Format:** `https://github.com/<slug>/blob/<sha>/<path>#L<start>` for one line, `#L<start>-L<end>`
-  for a range. `<path>` is repo-root-relative.
-- **The SHA must already be pushed to the remote**, otherwise the link 404s — verify with
-  `git branch -r --contains <sha>` (non-empty). The file's last-touching commit satisfies this once the
-  code is merged. If the file has local edits that are not pushed yet, do not link an unpushed SHA: pick
-  a SHA that is already on `main` (e.g. `git rev-parse origin/main`) and select the line range against
-  that version of the file.
+In anything a teammate reads on GitHub (issues, PR descriptions, PR or review comments), link
+repository code with a stable GitHub permalink pinned to a pushed commit SHA. Never use a bare
+`path:line`. Load the `github-permalink` skill before writing the text — it builds the link.
 
 ### Build pipeline
 
-All builds use the Maven wrapper (`./mvnw`). Use `-T1C` (one thread per CPU core) for standalone
-builds. Use `-T2` (two threads total) when running builds alongside other resource-intensive
-processes (e.g., an IDE, Docker containers, or other concurrent builds).
+Maven (`./mvnw`) and Gradle (`./gradlew`) are expected to behave the same. Use the one the user
+prefers (prompt, memory, or settings), otherwise Maven, which is still used for releasing. Load
+`maven-run-build` or `gradle-run-build` for commands instead of improvising them.
 
-#### Always-green policy
-
-Before every AI-assisted session, establish a green baseline in two steps:
-
-**Step 1 — Check that `main` CI is healthy** (before pulling or branching):
-
-```bash
-gh run list --branch main --limit 5 --repo camunda/camunda
-```
-
-If `main` is red, inform the engineer and continue — CI can fail for infra reasons unrelated to
-the code. Do not block on this, but note any failures so they are not confused with regressions
-introduced during the session.
-
-**Step 2 — Build the full repo locally right after branching** (blocking):
-
-```bash
-./mvnw install -Dquickly -T1C
-```
-
-This installs all module JARs and catches any cross-module compilation errors before work begins
-(e.g. an API change on `main` that breaks a downstream module). Do not proceed until this is
-green — a compilation error here will waste far more time if discovered mid-session.
-
-**Step 3 — Once the target module is known, verify it passes locally:**
-
-```bash
-./mvnw verify -pl <module> -Dquickly -DskipTests=false -T1C
-```
-
-If the module has sub-modules, target the specific sub-module where the code lives rather than the top-level directory, otherwise you may get a false green with no tests run.
-
-Any pre-existing failure here must be noted before the session begins — do not absorb it silently.
-
-Never suppress warnings or failures to force a build to pass.
-
-```bash
-# Fast inner loop (single module / affected tests only) to iterate quickly
-./mvnw verify -pl <module> -Dtest=<TestClassName> -DskipTests=false -DskipITs -Dquickly
-
-# Full pipeline before committing the change
-./mvnw license:format spotless:apply -T1C && ./mvnw verify -pl <module> -DskipTests=false -Dquickly
-```
-
-Do not proceed without a green baseline.
-
-If a test fails during the baseline check, re-run it once to determine whether it is flaky. If it
-passes on retry, treat the baseline as green and proceed. If it fails consistently, it should not
-be on the target branch — stop and inform the engineer.
-
-If it is flaky (non-deterministic):
-
-1. Search for an existing open issue in camunda/camunda. If none exists, raise one using
-   the `create-issue` skill (use the bug template; also add the `kind/flake` label).
-2. Assign the issue to the engineer.
-3. Treat the baseline as passed and proceed — do not disable the test.
-
-#### Module-scoped builds (preferred)
-
-```bash
-# Build a module and its dependencies (recommended for monorepo work)
-./mvnw install -pl <module> -am -Dquickly -T1C
-
-# Build only a single module (requires dependencies to be already installed and unchanged)
-./mvnw install -pl <module> -Dquickly -T1C
-
-# Run a single test class in a module
-./mvnw verify -pl <module> -Dtest=<TestClassName> -DskipTests=false -DskipITs -Dquickly
-
-# Run a single integration test in a module
-./mvnw verify -pl <module> -Dit.test=<IntegrationTestClassName> -DskipTests=false -DskipUTs -Dquickly
-```
-
-Note: `-Dquickly` skips tests, formatting checks, and Optimize — use it for fast iteration only. Add `-DskipTests=false` to run tests while still skipping checks. Before committing, always run the full pipeline in the "Before submitting" section instead.
-
-Note: some modules are split into sub-modules where tests live (e.g. `zeebe/engine`, `zeebe/broker`). If running tests against a top-level module produces no results, target the specific sub-module instead.
-
-Never use `-am` with `verify` — it runs tests in all dependency modules. Use `-am` only with `install -Dquickly` when rebuilding dependencies.
-
-#### Before submitting
-
-Always run these steps before every commit — never skip them, even for "obvious" or single-line
-changes. Skipping formatting reliably breaks the `Java checks` CI job.
-
-1. Format code: `./mvnw license:format spotless:apply -T1C` — **mandatory** before every commit
-   that touches Java sources, markdown or `pom.xml` files. Run it again after any subsequent edit.
-2. Build the changed module (see "Module-scoped builds" above for commands)
-3. Run module tests and verify zero failures
-4. Verify the full repo still compiles: `./mvnw install -Dquickly -T1C`
+Always scope work to the relevant module(s). Never run full-repo builds for single-module work.
+Before every commit, format the code, build the changed module, and run its tests with zero
+failures. Skipping formatting reliably breaks the `Java checks` CI job.
 
 ### Scoped instructions
 
@@ -302,13 +165,13 @@ read it. If you can't name both, don't write it.
 - Always tear down resources you create (indices, containers, clients, clusters), even on failure, to
   avoid cross-run flakiness.
 - Use JUnit 5. Migrate JUnit 4 tests when modifying them.
-- Do not add a class-level `@DisplayName` to a new `@Nested` test class while the repo is on
-  Surefire 3.5.x (`plugin.version.surefire` in `parent/pom.xml`) — a Surefire regression
-  reports such classes under their flattened display name instead of their fully-qualified name in
-  the XML test report, breaking FQN-based tooling (flaky-test tracking, CI report parsing). Method-
-  level `@DisplayName` (on `@Test`/`@ParameterizedTest`) is unaffected. Existing occurrences were
-  commented out rather than deleted — leave that pattern in place until Surefire is upgraded past
-  the regression.
+- Do not add a class-level `@DisplayName` to a new `@Nested` test class while the Surefire
+  regression persists (reproduced on 3.5.6 and 3.6.1; `plugin.version.surefire` in
+  `parent/pom.xml`) — Surefire reports such classes under their flattened display name instead of
+  their fully-qualified name in the XML test report, breaking FQN-based tooling (flaky-test
+  tracking, CI report parsing). Method-level `@DisplayName` (on `@Test`/`@ParameterizedTest`) is
+  unaffected. Existing occurrences were commented out rather than deleted — leave that pattern in
+  place until a Surefire release fixes the regression.
 - Detailed guide: `docs/testing.md` and `docs/testing/`.
 - Reference example: `qa/acceptance-tests/src/test/java/io/camunda/it/StandaloneCamundaTest.java`
 
@@ -327,28 +190,16 @@ read it. If you can't name both, don't write it.
 - Keep PRs focused on a single concern
 - Describe why the changes are necessary and note alternatives considered
 - Keep descriptions brief and concise
-- For bug fixes: ask the engineer whether the fix needs backporting to stable branches before
-  opening the PR. If yes, add the appropriate `backport stable/X.Y` label(s) when creating it
-  (see "Backporting" below).
+- Bug fixes should be backported to all affected stable branches that are still supported: add the
+  matching `backport stable/X.Y` label(s) when creating the PR (see "Backporting" below and the
+  `backport` skill). Only ask the engineer if it is unclear which branches are affected or the
+  backport looks risky or non-trivial.
 
 ### Backporting
 
-Automated by a GitHub Action (`korthout/backport-action`, see `.github/workflows/backport.yml`;
-human docs in `CONTRIBUTING.md`). **Never create backport PRs, branches, or cherry-picks yourself,
-and never offer to.** Trigger a backport only through the automation — a label, or a `/backport`
-comment — never by hand.
-
-- **Start:** add one `backport stable/X.Y` label per target branch (e.g. `backport stable/8.7`).
-  Not-yet-merged PR → runs on merge. Already-merged PR → comment `/backport`. Multiple labels →
-  multiple backport PRs.
-- **Success:** action opens the backport PR. A bot approves it and enables auto-merge once CI passes,
-  but only when the backport touches `zeebe/`, `clients/`, a `pom.xml`, shared build/webapps config,
-  or CI-relevant `.github/` files — the approval job lives in the Zeebe CI workflow and is gated on
-  those paths. A backport touching none of them needs a human review and merge.
-- **Conflicts:** action opens a **draft** PR with conflict markers committed as-is plus a comment
-  with resolution steps. You may resolve them (check out the branch, fix conflicts and markers) —
-  but only on a draft PR the action already opened. When asked to backport, first check whether
-  such a draft PR exists.
+Backports run only through the backport automation (a `backport stable/X.Y` label or a `/backport`
+comment). **Never create backport PRs, branches, or cherry-picks yourself, and never offer to.** For
+how to trigger one and handle conflicts, use the `backport` skill.
 
 ### Git workflow
 

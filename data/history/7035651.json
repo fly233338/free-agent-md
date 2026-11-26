@@ -2,12 +2,6 @@
   "full_name": "scala/scala3",
   "points": [
     {
-      "checked_at": "2026-10-27T09:05:49Z",
-      "commit_sha": "85c4ca44e646f453ea96d64d6aae274f64039306",
-      "pushed_at": "2026-10-27T09:00:07Z",
-      "stars": 6329
-    },
-    {
       "checked_at": "2026-10-30T10:08:14Z",
       "commit_sha": "0c941e8fa86d9efb3cb0e26d907de184e5316ba3",
       "pushed_at": "2026-10-30T10:03:01Z",

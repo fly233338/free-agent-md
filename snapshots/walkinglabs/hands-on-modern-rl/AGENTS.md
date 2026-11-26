@@ -25,6 +25,7 @@ npm run assets:optimize
 ## Editing Rules
 
 - Keep changes scoped. Do not rewrite unrelated docs or config.
+- When editing existing course material, preserve the original structure, narrative style, examples, and level of detail. By default, make the smallest local changes needed to correct errors or improve wording. A request to review, polish, or fix a page does not authorize a full rewrite, course reorganization, or edits to neighboring pages. If a broader restructuring appears necessary, explain the proposed scope and obtain explicit confirmation before applying it.
 - Prefer adding new course material under `docs/` and updating sidebar/nav in `docs/.vitepress/config.mjs`.
 - Run `npm run verify` before pushing if you touched config, theme, or build scripts.
 - When adding/moving/renaming pages, update both Chinese and English sidebars if applicable.
