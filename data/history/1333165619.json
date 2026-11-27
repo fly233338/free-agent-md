@@ -2,12 +2,6 @@
   "full_name": "dataelement/dsh-desktop",
   "points": [
     {
-      "checked_at": "2026-10-28T09:46:18Z",
-      "commit_sha": "ef9b82ffdfac3716248e4edcc9f2291173638737",
-      "pushed_at": "2026-10-28T09:46:04Z",
-      "stars": 16826
-    },
-    {
       "checked_at": "2026-11-25T13:04:05Z",
       "commit_sha": "8b56e218e28a24fc1fe4448a810595d058d93dbf",
       "pushed_at": "2026-11-25T12:57:38Z",

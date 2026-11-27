@@ -2,12 +2,6 @@
   "full_name": "stablyai/orca",
   "points": [
     {
-      "checked_at": "2026-10-28T09:46:18Z",
-      "commit_sha": "b050ac28f9a122bf86849b3c1972855053858455",
-      "pushed_at": "2026-10-28T09:46:10Z",
-      "stars": 108469
-    },
-    {
       "checked_at": "2026-10-29T10:04:58Z",
       "commit_sha": "84a4995e65ad4a7a658d72acf2b9ddab1944530c",
       "pushed_at": "2026-10-29T10:04:55Z",
@@ -180,6 +174,12 @@
       "commit_sha": "a8bb2f5da0739749cc43f6833443f3d0c727eab0",
       "pushed_at": "2026-11-26T12:43:49Z",
       "stars": 139533
+    },
+    {
+      "checked_at": "2026-11-27T12:36:00Z",
+      "commit_sha": "bbc38eebc90ead2b1e9beb79b0fbb39c5a8c2d23",
+      "pushed_at": "2026-11-27T12:35:19Z",
+      "stars": 141721
     }
   ],
   "repo_id": 1183888342

@@ -2,12 +2,6 @@
   "full_name": "MetaMask/metamask-extension",
   "points": [
     {
-      "checked_at": "2026-10-28T09:46:18Z",
-      "commit_sha": "1710150987ae943d5bc7a58feaa1f2b7c7f5ab82",
-      "pushed_at": "2026-10-28T09:43:01Z",
-      "stars": 13250
-    },
-    {
       "checked_at": "2026-11-19T11:47:52Z",
       "commit_sha": "5adb820a2b0db5904fcac23bdbbfa12c78b1f6ca",
       "pushed_at": "2026-11-19T11:44:35Z",

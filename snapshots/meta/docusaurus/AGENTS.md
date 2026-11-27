@@ -21,7 +21,8 @@ Monorepo based on:
 - `packages/` - Core Docusaurus packages and plugins, published to npm
   - `docusaurus/` - Main CLI and core functionality
   - `docusaurus-plugin-*` - Official plugins, the main ones are `docs`, `blog`, `pages`
-  - `docusaurus-theme-classic/` - Default theme, based on the Infima.dev design system and CSS modules
+  - `docusaurus-theme-classic/` - Default theme, based on the Infima design system and CSS modules
+  - `docusaurus-infima/` - The Infima design system (`@docusaurus/infima`), loaded by the classic theme
   - `docusaurus-theme-common/` - Reusable headless theme components and utilities, unopinionated
   - `docusaurus-bundler/` - Webpack/Rspack bundler abstraction
   - `docusaurus-types/` - TypeScript definitions
@@ -112,7 +113,9 @@ Update Vitest failing snapshots with the `-u` option. Do not blindly update snap
 
 Before pushing, run `pnpm lint`, `pnpm typecheck:tests` (and `pnpm --filter website typecheck` for website or package changes, after building the changed packages) and the tests of the code you changed, as CI does.
 
-The exports of package entry points (`package.json` `main` and `exports`) are public API, even when undocumented (see the comments in `packages/docusaurus-theme-common/src/index.ts`) or unused by the monorepo: third-party sites, plugins and themes use them. Never remove them as dead code: report them, and only remove one when the maintainer explicitly decides to, as a breaking change. `/internal` entry points (like `@docusaurus/theme-common/internal`) have no stability guarantee, but removing their exports is still a breaking change PR.
+The exports of package entry points (`package.json` `main` and `exports`) are public API, even when undocumented (see the comments in `packages/docusaurus-theme-common/src/index.ts`) or unused by the monorepo: third-party sites, plugins and themes use them. Never remove them as dead code: report them, and only remove one when the maintainer explicitly decides to, as a breaking change. `/internal` entry points (like `@docusaurus/theme-common/internal`) have no stability guarantee: changing their behavior is not a breaking change, but removing their exports is still a breaking change PR.
+
+Changing a theme component that the theme's swizzle config (`getSwizzleConfig()`) doesn't mark as `safe` to eject or wrap is not a breaking change: unsafe components are implementation details (see [What is safe to swizzle?](website/docs/swizzling.mdx#what-is-safe-to-swizzle)). Components missing from the config are unsafe.
 
 To fix CSpell unknown words, don't run `pnpm lint:spelling:fix`: it checks the whole repository and is slow. Instead:
 
@@ -130,6 +133,10 @@ Task-specific instructions live in skills, following the [Agent Skills](https://
 - [`verification`](.agents/skills/verification/SKILL.md) - Prove how code behaves before reporting it, including on another platform (like Windows from macOS)
 
 ## Conventions
+
+### TypeScript
+
+- Unless asked otherwise, write new code in TypeScript, not in JS with or without JSDoc types. Existing JS code can stay as it is.
 
 ### Typechecking
 
@@ -156,6 +163,10 @@ After adding or changing `translate()` or `<Translate>` messages in a theme or p
 - Argos skips some pages (`isBlacklisted()` in `argos/tests/screenshot.spec.ts`, like `/tests/pages/markdown-tests-md`): check it before picking one
 - For a CommonMark repro, import a `_`-prefixed `.md` partial in an existing `.mdx` page of `website/_dogfooding/_docs tests/tests/` (like `_admonitions-md.md` in `admonitions.mdx`). `_` files get no route, while a new docs page changes the sidebar of every dogfood docs page screenshot
 
+### Git worktrees
+
+Start each new worktree from an up-to-date `origin/main`: `git fetch origin main`, then branch from `origin/main`, or merge it when the worktree already exists. Then run `pnpm install` if `pnpm-lock.yaml` changed, and rebuild the packages. Never pull, check out or edit `main` in the main checkout: it can hold the maintainer's local edits.
+
 ## Contributing, Issue and PR Guidelines
 
 Docusaurus maintainers work locally with an env variable `DOCUSAURUS_MAINTAINER=true` set. Make sure to check its presence to know which rules to apply.
@@ -173,6 +184,8 @@ They can create pull-requests. Before creating, updating, checking the CI of, or
 Never use auto-merge (`gh pr merge --auto`), and never merge a PR before its CI checks are finished and green. The skill documents the only known exception.
 
 Their commits and PRs already disclose the usage of AI with the agent's co-author trailer and PR footer: don't add `(AI-assisted)` to them. Disclose it in the comments you post on their behalf (reviews, replies, issue comments…).
+
+When they correct you with a new agent rule while you work on a task, add it in a separate session and PR, never in the task's PR. Write it in general terms: the task only illustrates the wrong behavior. Several agent rules can share one PR.
 
 ### For all others (non-maintainers)
 

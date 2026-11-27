@@ -1,7 +1,7 @@
 # realiti4/claude-swap instruction files
 
-Upstream: [realiti4/claude-swap](https://github.com/realiti4/claude-swap) · License: `MIT` · Commit: `390c50408cb7150ed47b64e248b5c0e1efc3bf67`
+Upstream: [realiti4/claude-swap](https://github.com/realiti4/claude-swap) · License: `MIT` · Commit: `0ff32d689b10d20f39430907537aecef9896a6af`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/realiti4/claude-swap/AGENTS.md) | [Source](https://github.com/realiti4/claude-swap/blob/390c50408cb7150ed47b64e248b5c0e1efc3bf67/AGENTS.md) | `f9fd317ed72a6bd32df07a0f0963b51d43391787bcf77572243d8bce80b67120` | 3,209 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/realiti4/claude-swap/AGENTS.md) | [Source](https://github.com/realiti4/claude-swap/blob/0ff32d689b10d20f39430907537aecef9896a6af/AGENTS.md) | `f9fd317ed72a6bd32df07a0f0963b51d43391787bcf77572243d8bce80b67120` | 3,209 B |

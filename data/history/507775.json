@@ -2,12 +2,6 @@
   "full_name": "elastic/elasticsearch",
   "points": [
     {
-      "checked_at": "2026-10-28T09:46:18Z",
-      "commit_sha": "b723426727bc58ff384e7f645edf04808ed15a9d",
-      "pushed_at": "2026-10-28T09:43:00Z",
-      "stars": 78419
-    },
-    {
       "checked_at": "2026-10-29T10:04:58Z",
       "commit_sha": "4e2aeba6c43dba05c889a824e4613f2e4eca51f6",
       "pushed_at": "2026-10-29T10:04:02Z",

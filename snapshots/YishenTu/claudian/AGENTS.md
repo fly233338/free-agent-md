@@ -1,108 +1,44 @@
 # AGENTS.md
 
-## Project
+## Loading and verification
 
-Claudian is an Obsidian plugin that embeds provider-backed coding agents in a sidebar and inline-edit flow. Claude is the default provider. Codex, Grok, OpenCode, and Pi are optional providers that plug into the same conversation model through `Conversation.providerId` and opaque provider-owned `providerState`.
-
-Do not assume provider parity. Check each provider's `capabilities.ts`, `registration.ts`, and UI config before wiring shared behavior.
-
-## Instruction Map
-
-- This file is the canonical cross-agent guide. Keep shared instructions here.
-- `CLAUDE.md` files should import the nearest `AGENTS.md`; do not duplicate shared guidance there.
-- Before editing a scoped area, read its nearest scoped guide:
-  - `src/core/AGENTS.md`
-  - `src/features/chat/AGENTS.md`
-  - `src/providers/claude/AGENTS.md`
-  - `src/providers/codex/AGENTS.md`
-  - `src/providers/grok/AGENTS.md`
-  - `src/providers/opencode/AGENTS.md`
-  - `src/providers/pi/AGENTS.md`
-  - `src/style/AGENTS.md`
-
-## Commands
+- For test changes or changes to the code they cover, follow `tests/AGENTS.md`, even when no test edit is planned.
+- Tests follow the guides of the source they cover; they do not inherit `src/` instructions automatically.
+- Build, dependency, lockfile, locale/static-asset import, and `esbuild.config.mjs` changes also require `scripts/AGENTS.md`. Composition changes require the guides of the services being wired.
+- For changes to provider execution, prompt construction, model selection, provider settings, or conversation persistence, follow `src/core/AGENTS.md` even when editing implementations or consumers outside `src/core/`.
+- For settings UI changes, also follow `src/features/settings/AGENTS.md`, including controls rendered by providers and other feature panels.
+- Use the Node version in `.node-version`. For code changes, the full verification command is:
 
 ```bash
-npm run dev
-npm run build
-npm run typecheck
-npm run lint
-npm run lint:fix
-npm run test
-npm run test:watch
-npm run test:coverage
+npm run typecheck && npm run lint && npm run test && npm run build && npm run check:performance
 ```
 
-Use focused commands while iterating. Before handing off code changes, run the narrowest meaningful verification plus broader checks when the change touches shared behavior. The default full check is:
+- `npm run test` runs the Vitest unit/integration suite and the Node script checks.
+- For focused changes, `npm run test:affected -- --base origin/main` selects related tests; it does not replace typecheck, lint, build, or performance checks. Documentation-only changes need `git diff --check` and their affected documentation tests, not a production build; run them locally, because CI skips changes limited to the `documentationPaths` in `scripts/ciTestSelection.mjs`.
+- Dev and production builds load `.env.local` and may copy artifacts into the configured `OBSIDIAN_VAULT`. Check that destination before building; clearing the shell variable does not prevent reloading it from the file.
 
-```bash
-npm run typecheck && npm run lint && npm run test && npm run build
-```
+## Architectural constraints
 
-Tests mirror `src/` under `tests/unit/` and `tests/integration/`.
+- `src/main.ts` is the sole concrete composition root and lifecycle publisher. App subcomposition returns complete domains, never a second root or service locator.
+- `src/composition/` holds main-owned wiring that must reach both `app/` and `features/`. Only `main.ts` and other composition modules import it; it never imports `main.ts` or concrete providers, and `main.ts` still constructs, registers, and tears it down.
+- App repositories/settings/storage depend on core contracts, not feature orchestration or provider-native protocols. Concrete provider imports are confined to `main.ts` and provider-default assembly.
+- Features use `FeatureHost` and core registries, never concrete app/provider implementations. `FeatureHost` stays feature-neutral; chat-only capabilities belong in chat's `ChatFeatureHost` extension. Providers use `ProviderHost`, never feature orchestration. Core imports none of these implementations.
+- Shared ACP code contains protocol mechanics and protocol-level normalization only; provider launch policy, extensions, provider-specific normalization, and history stay provider-owned.
+- Each piece of mutable state or policy has one authoritative owner; other modules read derived projections or call the owner's API. Do not add parallel flags, maps, or guards that must be kept in sync; consolidate into the owner instead. Code that only looks alike under different provider semantics is not shared policy.
+- Within that owner, model a lifecycle with more than two stages, or data valid only in some stages, as one discriminated union (a phase plus that stage's data) rather than independent booleans or nullable fields. Exceptions: facts that vary independently, and fields with deliberately different lifetimes; note which in a comment.
 
-## Architecture
+## Local conventions
 
-| Area | Ownership |
-| --- | --- |
-| `src/app/` | Shared settings defaults and plugin-level storage helpers |
-| `src/core/` | Provider-neutral runtime, registry, storage, tool, and type contracts |
-| `src/providers/*/` | Provider adaptors, provider-owned runtime protocol, history, storage, settings, and UI |
-| `src/features/chat/` | Sidebar chat orchestration against provider-neutral contracts |
-| `src/features/inline-edit/` | Inline edit modal and provider-backed edit services |
-| `src/features/settings/` | Shared settings shell and provider tab assembly |
-| `src/shared/` | Reusable UI components |
-| `src/style/` | Modular CSS built into `styles.css` |
+- Before adding complexity for a speculative or vanishingly unlikely race or security edge case, explain the concrete failure mode, likelihood, and complexity cost to the user and get their buy-in. Do not silently expand scope for theoretical robustness.
+- Use English for code/comments/identifiers/commits/code blocks. Soft-wrap Markdown. Put uncommitted notes, traces, and throwaway scripts in `.context/`. No production `console.*`.
+- TypeScript files use PascalCase for their main concept, camelCase for utility bags, and kebab-case for external package names. Preserve `index.ts` barrels, `types.ts` buckets, and source-mirrored test names; this does not require creating new barrels or type buckets. No interface `I` prefix. Preserve acronym capitals in filenames and matching owned identifiers (`ACPClientConnection`, `buildACPUsageInfo`, `URLs`); leading acronyms remain lowercase in camelCase (`acpConnection`). Preserve external API names and serialized keys. Folders use kebab-case; imports omit `.ts` and prefer `@/`.
+- UI actions use native controls. Buttons that do not submit a form declare `type="button"`; non-native controls need equivalent accessible names, roles, and keyboard behavior.
+- Route new or changed plugin-authored UI text through `t()`, including notices, tooltips, placeholders, and accessible names. Exception: composer permission-mode labels, and mode descriptions that are already English literals, stay English in every locale.
 
-The feature layer depends on `core/` contracts, not provider internals. Provider-specific session fields belong behind typed helpers in the owning provider directory.
+## Regression verification
 
-## Provider Rules
+- For behavior changes, demonstrate the intended failing regression before implementation and rerun it afterward. Documentation/mechanical changes are exempt; when automation is infeasible, record a repeatable reproduction and verify the nearest stable contract.
 
-- Prefer provider-native behavior over local reimplementation. Adapt provider output at the boundary instead of shadowing provider features.
-- Keep live streaming and history replay responsibilities separate. Live output should come from the provider runtime protocol when available; provider transcript files are the replay source.
-- New provider behavior must be expressed through registries and capabilities: `ProviderRegistry`, `ProviderWorkspaceRegistry`, `ProviderChatUIConfig`, provider capabilities, and provider-owned settings reconciliation.
-- Model, permission, plan-mode, command, MCP, skill, and subagent behavior is provider-specific unless the core contract explicitly makes it shared.
-- When provider behavior is uncertain, inspect real runtime output first. Put throwaway scripts, traces, and handoff notes in `.context/`.
-- Treat provider-native history and transcripts as read-only. Never mutate or delete provider session data when a Claudian conversation changes.
-- Only explicitly enabled models belong in the chat selector: no synthetic provider entries, no hidden session models, and no provider-default fallback when none are enabled.
-- Runtime-discovered commands are read-only in Claudian; providers own their editing and deletion.
-- Auxiliary query runners own their own process and session, independent from the chat runtime.
+## Instruction maintenance
 
-## Development Rules
-
-- Use `rg` or `rg --files` for repo searches.
-- Write code, comments, identifiers, commit messages, and code blocks in English.
-- Keep comments sparse. Explain non-obvious intent, protocol constraints, or invariants; do not narrate obvious code.
-- Do not use `console.*` in production code.
-- Preserve user data and provider-native files. Settings writers should merge with existing provider-owned data instead of clobbering it.
-- Put non-committed notes, handoff files, traces, and throwaway scripts in `.context/`.
-- Do not add new production dependencies without a clear need and an explicit tradeoff.
-
-## TDD Workflow
-
-- For new behavior or bug fixes, write or update the failing test first in the mirrored `tests/` path.
-- Make the narrowest implementation change that passes the focused test.
-- Refactor after the test is green, preserving the provider and feature ownership boundaries above.
-- If a change cannot be tested directly, document why and cover the closest stable contract instead.
-
-## Project structure
-
-- Organize code by clear domain responsibility rather than accumulating related files in flat directories.
-- Keep each feature's public entry point small and obvious; place its contracts, state, orchestration, adapters, persistence, and implementation in focused subfolders when the feature warrants them.
-- Use meaningful ownership-based folder names. Do not create catch-all `utils`, `common`, or miscellaneous folders.
-- Mirror the relevant production structure in tests so ownership and coverage remain easy to find.
-- Avoid both flat dumping grounds and unnecessary nesting. Before a material reorganization, propose the target tree and explain each group's responsibility.
-- Preserve project tooling, build configuration, imports, and test discovery when moving files, and verify the affected build and tests afterward.
-
-## Naming Conventions
-
-- **Symbols**: `PascalCase` for classes, interfaces, types, enums, and enum members; `camelCase` for variables, functions, and properties; `SCREAMING_SNAKE_CASE` for module-level constants and values in enum-like const objects. No `I` prefix on interfaces. Treat acronyms as words (`SdkSessionReadResult`), except in types mirroring an external SDK (`SDKMessage`).
-- **Files**: name the file after its primary exported concept in `PascalCase.ts`; use `camelCase.ts` only for utility bags with no dominant export (when in doubt, `PascalCase`). Use `kebab-case.ts` only to mirror an external package name (`tests/__mocks__/claude-agent-sdk.ts`). Barrels stay `index.ts`, type buckets stay `types.ts`, tests mirror the source name plus `.test.ts` (qualifiers allowed: `fileLink.dom.test.ts`).
-- **Folders**: `kebab-case`.
-- **Imports**: no `.ts` extensions; prefer `@/` aliases over deep relative paths.
-
-## Review Expectations
-
-- Findings first: correctness, regression risk, API or contract ambiguity, and missing tests.
-- Treat maintainability issues as real findings when they increase future change cost or failure risk.
-- Call out duplicated logic, unclear ownership, and tight coupling with a concrete refactoring direction.
+- Keep non-obvious constraints at their narrowest common scope, with one authoritative home and explicit exceptions. Remove implementation inventories, generic advice, inherited duplicates, and retired decisions.

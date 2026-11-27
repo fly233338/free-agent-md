@@ -2,12 +2,6 @@
   "full_name": "libretro/RetroArch",
   "points": [
     {
-      "checked_at": "2026-10-28T09:46:18Z",
-      "commit_sha": "d2db43ba2a9b7a4d015ba9ef812f3061053dc4b8",
-      "pushed_at": "2026-10-28T09:45:07Z",
-      "stars": 14463
-    },
-    {
       "checked_at": "2026-11-20T11:48:43Z",
       "commit_sha": "e9c761ff0d98c017bd5494826d943184d731c2df",
       "pushed_at": "2026-11-20T11:41:33Z",

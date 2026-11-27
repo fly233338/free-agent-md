@@ -2,12 +2,6 @@
   "full_name": "Aliucord/Aliucord",
   "points": [
     {
-      "checked_at": "2026-10-28T09:46:18Z",
-      "commit_sha": "77c3f501a191f7c124d05d6602a39b4c0a2d954c",
-      "pushed_at": "2026-10-14T11:45:06Z",
-      "stars": 4912
-    },
-    {
       "checked_at": "2026-11-01T10:34:00Z",
       "commit_sha": "77c3f501a191f7c124d05d6602a39b4c0a2d954c",
       "pushed_at": "2026-11-01T00:22:41Z",
@@ -132,6 +126,12 @@
       "commit_sha": "81b3794045a4c7f81ed20ecd76a155113e300f6b",
       "pushed_at": "2026-11-20T12:45:31Z",
       "stars": 4947
+    },
+    {
+      "checked_at": "2026-11-27T12:36:00Z",
+      "commit_sha": "2e9a2cc3a8044f53eb0e7117195808c520b462c4",
+      "pushed_at": "2026-11-27T03:18:52Z",
+      "stars": 4948
     }
   ],
   "repo_id": 342909700

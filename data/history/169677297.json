@@ -2,12 +2,6 @@
   "full_name": "vlang/v",
   "points": [
     {
-      "checked_at": "2026-10-28T09:46:18Z",
-      "commit_sha": "d5593029ac72679556cda4ec1568171bb7508652",
-      "pushed_at": "2026-10-28T09:44:30Z",
-      "stars": 38061
-    },
-    {
       "checked_at": "2026-11-01T10:34:00Z",
       "commit_sha": "02af5e8dbe5b7a01a28216e2dc020eb1d496fc39",
       "pushed_at": "2026-11-01T10:28:00Z",
@@ -30,6 +24,12 @@
       "commit_sha": "aaa0471203b4e961221934244007b968f15f0f5f",
       "pushed_at": "2026-11-25T12:56:28Z",
       "stars": 38150
+    },
+    {
+      "checked_at": "2026-11-27T12:36:00Z",
+      "commit_sha": "8e2c4f63e1b467400ab1a584cc17a60e0652dbeb",
+      "pushed_at": "2026-11-27T12:32:05Z",
+      "stars": 38159
     }
   ],
   "repo_id": 169677297

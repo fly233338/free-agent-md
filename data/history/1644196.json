@@ -2,12 +2,6 @@
   "full_name": "JuliaLang/julia",
   "points": [
     {
-      "checked_at": "2026-10-28T09:46:18Z",
-      "commit_sha": "ad45ab67bdec1d3051c3595f0a620b7466144ab4",
-      "pushed_at": "2026-10-28T09:40:55Z",
-      "stars": 49218
-    },
-    {
       "checked_at": "2026-11-04T11:01:57Z",
       "commit_sha": "cf40a92bbde1b27cd918432adf14a14ed963dafd",
       "pushed_at": "2026-11-04T10:58:38Z",

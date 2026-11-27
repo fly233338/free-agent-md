@@ -2,12 +2,6 @@
   "full_name": "surveyjs/survey-library",
   "points": [
     {
-      "checked_at": "2026-10-28T09:46:18Z",
-      "commit_sha": "22ec8c88f941832e89bdff69fd580d8c259dbda8",
-      "pushed_at": "2026-10-28T09:34:51Z",
-      "stars": 4915
-    },
-    {
       "checked_at": "2026-10-29T10:04:58Z",
       "commit_sha": "ee29a8094f71bf248af0b3f0c933fb4d073656fd",
       "pushed_at": "2026-10-29T09:54:15Z",
@@ -179,6 +173,12 @@
       "checked_at": "2026-11-26T12:44:40Z",
       "commit_sha": "00afccbcd940748f8eca3571f2490720c9991b20",
       "pushed_at": "2026-11-26T12:25:50Z",
+      "stars": 4942
+    },
+    {
+      "checked_at": "2026-11-27T12:36:00Z",
+      "commit_sha": "64a5757abeb973fb464603689d7290ee60f25fa7",
+      "pushed_at": "2026-11-27T11:40:12Z",
       "stars": 4942
     }
   ],

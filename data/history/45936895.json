@@ -2,12 +2,6 @@
   "full_name": "Automattic/wp-calypso",
   "points": [
     {
-      "checked_at": "2026-10-28T09:46:18Z",
-      "commit_sha": "962f88c0d8346bf2b9cfbd91ae47b7dd33ddb217",
-      "pushed_at": "2026-10-28T09:45:51Z",
-      "stars": 12647
-    },
-    {
       "checked_at": "2026-11-16T11:33:53Z",
       "commit_sha": "b84d2b218ae9fc6ccdabe25c27f93a712bb185d5",
       "pushed_at": "2026-11-16T11:33:30Z",
@@ -30,6 +24,12 @@
       "commit_sha": "c05a46160414e3d7eb87f46dab868f6f66e419f9",
       "pushed_at": "2026-11-25T12:58:59Z",
       "stars": 12651
+    },
+    {
+      "checked_at": "2026-11-27T12:36:00Z",
+      "commit_sha": "07f6d3326c4b64aaae9246ca52c55e88199fa506",
+      "pushed_at": "2026-11-27T12:25:46Z",
+      "stars": 12652
     }
   ],
   "repo_id": 45936895

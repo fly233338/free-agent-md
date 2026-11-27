@@ -2,12 +2,6 @@
   "full_name": "polarsource/polar",
   "points": [
     {
-      "checked_at": "2026-10-28T09:46:18Z",
-      "commit_sha": "222b1fb8aba88574f0f55636600e08de7cb293e8",
-      "pushed_at": "2026-10-28T09:46:16Z",
-      "stars": 10433
-    },
-    {
       "checked_at": "2026-10-30T10:08:14Z",
       "commit_sha": "f81e9ca2827ed4e63b272f4358e8cd8fe1e00b79",
       "pushed_at": "2026-10-30T10:07:33Z",

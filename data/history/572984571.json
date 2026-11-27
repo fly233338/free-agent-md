@@ -2,12 +2,6 @@
   "full_name": "twentyhq/twenty",
   "points": [
     {
-      "checked_at": "2026-10-28T09:46:18Z",
-      "commit_sha": "65e87a00b79c9ec5f33124878ccc86e6c4185cb0",
-      "pushed_at": "2026-10-28T09:45:28Z",
-      "stars": 59967
-    },
-    {
       "checked_at": "2026-10-29T10:04:58Z",
       "commit_sha": "a86bc4cf8a20f3a261c7cb2b9cc95d7922a10bb2",
       "pushed_at": "2026-10-29T10:04:14Z",
@@ -102,6 +96,12 @@
       "commit_sha": "83d5e905854ced48a963e2872e9971cd4ba40b7c",
       "pushed_at": "2026-11-24T13:50:40Z",
       "stars": 61409
+    },
+    {
+      "checked_at": "2026-11-27T12:36:00Z",
+      "commit_sha": "c055b481a049fb8631e98e63540b1ebb103d4a9d",
+      "pushed_at": "2026-11-27T12:35:20Z",
+      "stars": 61542
     }
   ],
   "repo_id": 572984571
