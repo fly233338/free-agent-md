@@ -1,8 +1,8 @@
 # sbt/sbt instruction files
 
-Upstream: [sbt/sbt](https://github.com/sbt/sbt) · License: `Apache-2.0` · Commit: `e1439317ed6a6b64f9c7df50ab642300f421a80f`
+Upstream: [sbt/sbt](https://github.com/sbt/sbt) · License: `Apache-2.0` · Commit: `6f97edacc579d20f9df0598f9f6a45eaa15d3e1a`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/sbt/sbt/AGENTS.md) | [Source](https://github.com/sbt/sbt/blob/e1439317ed6a6b64f9c7df50ab642300f421a80f/AGENTS.md) | `12dccd2bb5d85fde480e5baca739f1c0170919935d0dc9f56c9a9d168828bfc8` | 3,830 B |
-| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/sbt/sbt/CLAUDE.md) | [Source](https://github.com/sbt/sbt/blob/e1439317ed6a6b64f9c7df50ab642300f421a80f/CLAUDE.md) | `12dccd2bb5d85fde480e5baca739f1c0170919935d0dc9f56c9a9d168828bfc8` | 3,830 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/sbt/sbt/AGENTS.md) | [Source](https://github.com/sbt/sbt/blob/6f97edacc579d20f9df0598f9f6a45eaa15d3e1a/AGENTS.md) | `12dccd2bb5d85fde480e5baca739f1c0170919935d0dc9f56c9a9d168828bfc8` | 3,830 B |
+| `CLAUDE.md` | `CLAUDE.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/sbt/sbt/CLAUDE.md) | [Source](https://github.com/sbt/sbt/blob/6f97edacc579d20f9df0598f9f6a45eaa15d3e1a/CLAUDE.md) | `12dccd2bb5d85fde480e5baca739f1c0170919935d0dc9f56c9a9d168828bfc8` | 3,830 B |

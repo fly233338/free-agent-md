@@ -1,0 +1,144 @@
+# QuantMind 开发指南（AGENTS.md）
+
+本文件为 AI 编码助手（Claude Code / Codex / QwenPaw 等）在此仓库中工作时提供指导。
+
+## 项目概述
+
+QuantMind 是一个量化交易平台，后端为 Python（FastAPI），前端为 Electron/React/TypeScript。开源版（OSS）采用单容器部署，所有后端服务运行在同一个容器中。
+
+## 后端服务（统一入口 `backend/main_oss.py`）
+
+| 服务 | 端口 | 职责 |
+|------|------|------|
+| api | 8000 | 用户认证、策略管理、社区 |
+| engine | 8001 | Qlib 回测、AI 策略生成、模型推理 |
+| trade | 8002 | 订单管理、持仓、风控 |
+| stream | 8003 | 实时行情、WebSocket 推送 |
+
+## 常用命令
+
+### 后端
+```bash
+# 启动全部服务（Docker）
+docker-compose up -d
+
+# 本地运行单个服务
+SERVICE_MODE=api python backend/main_oss.py
+
+# 测试（在项目根目录执行）
+python backend/run_tests.py unit        # 单元测试
+python backend/run_tests.py integration # 集成测试
+python backend/run_tests.py all         # 全部测试
+python backend/run_tests.py trade-long-short  # QMT MVP 链路测试
+
+# 代码检查与格式化
+ruff check backend/
+ruff format backend/
+```
+
+### 前端（Electron 应用，位于 `electron/`）
+```bash
+npm install              # 安装依赖
+npm run dev              # 开发模式（Electron 桌面端）
+npm run dev:web          # 开发模式（Web 浏览器）
+npm run typecheck        # 类型检查
+npm run dashboard:build  # 生产环境构建
+```
+
+## 架构要点
+
+- **特征工程**：48 维特征由外部服务写入 `market_data_daily` 表
+- **交易服务**：外部报单前强制「本地优先」落库持久化
+- **Redis 库分配**：0=通用，1=认证，2=交易，3=行情，4=回测，5=缓存
+- **共享模块**：`backend/shared/` 存放跨服务代码（DB 管理器、Redis 客户端、配置、日志）
+- **瞬时时间（成交/委托）**：`sim_trades.executed_at` 等瞬时列一律 `TIMESTAMPTZ` + aware UTC。写入走 `backend/shared/utc_datetime.py` 的 `utc_now()` / `UtcDateTime`，JSON 输出带 `Z`。禁止再把 naive UTC 和 Asia/Shanghai 墙钟混用，否则 asyncpg 会让整笔成交回滚。存量库由 `backend/shared/db_init.sql` 第 66 节（存量库收敛，已合并原 `data/upgrade_v1.0.1 ~ v1.0.8`）对齐。
+- **策略存储**：`backend/shared/strategy_storage.py` 是所有策略增删改查的唯一入口
+- **自动推理膨胀防线（硬性规则）**：「某一天是否已推理」必须同时看 `pred.parquet` 和落库分数（`backend/services/engine/inference/backfill_guard.py`），不允许只凭 parquet 判缺口——落库 commit 在先、parquet 合并在后，中间被 OOM/超时杀掉就会留下永久缺口，Beat 每 30 分钟重推一次。禁止再写「合并失败只记日志、状态仍 completed」的实现；禁止给 `engine_signal_scores` / `qm_research_candidate_snapshot` 的保留期清理加回 `model_version` / `feature_version` 条件（否则换模型后旧块永不删除）。存量收敛用 `backend/scripts/cleanup_inference_signal_bloat.py`（默认 dry-run），日常兜底为 Celery `engine.tasks.purge_inference_signal_storage`。回归护栏：`backend/tests/test_inference_backfill_leak_guard.py`。
+- **报告归档（技能中心「股票报告」页）**：`backend/services/engine/routers/report_archive.py` 是报告文件浏览/上传/移动/删除的唯一入口（前缀 `/api/v1/reports`，经 `engine_proxy.py` 白名单转发到 engine 8001）。归档根目录 `QM_REPORT_ARCHIVE_DIR`（默认 `/data/reports/stock_reports`），结构 `{根}/{市场中文名}/{股票名}/{股票名}{代码}_{日期}_{报告类型}.{md,pdf}`。QuantBot 各技能落盘后由该模块统一呈现。
+- **投研报告产出方式**：投研报告一律由 QuantBot 技能包（`skills/stock-deep-research` 等）生成 md+PDF 后落盘到报告归档目录，由「技能中心 → 报告档案」浏览。**禁止**在 backend 内新增「容器内多 Agent 投研图管线」类实现（历史上有一条 langgraph 管线，因依赖未随镜像构建、线上零调用且无任何产出，已整体下线并删除）。
+- **Celery worker 必须唯一**：`SERVICE_MODE=all` 下 `main_oss.py` 默认**不启动**内嵌 worker（需 `EMBEDDED_CELERY_WORKER=true`），消费队列的只有 `celery-worker` 容器。重复 worker 会瓜分 `qlib_backtest_srv` 队列消息，表现为定时任务随机「不执行」；排查看 `redis-cli client list | grep cmd=brpop` 应只有 1 个。
+- **市场数据同步不内置默认调度**：是否开启、何时触发一律以用户在前端「同步调度」保存的 Redis 配置为准（`quantmind:sync_schedule:{market}`），未配置时 5 个市场全部 `enabled=false`；`MARKET_SUGGESTED_TIMES` 只是前端时间预填建议值（次日 00:00 以后错峰），不参与触发。详见 `backend/services/engine/README.md` →「定时调度与市场数据同步」。
+- **代码版本落后提示（硬性规则）**：管理后台右上角「落后 N 个提交」只允许走下面这条链路。禁止改回 Gitee/GitHub compare 接口，禁止用两边 `git rev-list --count` 相减，禁止把计数文件提交进 `master`（会每记一次就多一个提交，而且文件内容永远比 HEAD 少 1）。
+  - 上游真相是客户会拉到的 Gitea `master`（绝对地址 `https://quantmindai.cn/gitea/qusong0627/QuantMInd.git`）。GitHub、Gitee 只是镜像，不能单独当计数源。
+  - 维护端在推送 `master` 之后执行 `python scripts/publish_release_index.py --push`。脚本用 `git rev-list` 生成 `release-index.json`（`commits` 从新到旧，`head` 为第一项），并强制更新远端分支 `release-index`（只动这一支）。客户服务器禁止运行该脚本。
+  - 客户后端只读 raw 绝对地址，默认 `https://quantmindai.cn/gitea/qusong0627/QuantMInd/raw/branch/release-index/release-index.json`，可用 `QUANTMIND_RELEASE_INDEX_URL` 覆盖。本机部署提交来自 `deploy/update.sh` 写入的 `backend/shared/version.json`（完整 `commit` 与 `rev_count`，已 gitignore）。落后数等于本机 SHA 在 `commits` 里的下标；SHA 不在列表中时 `status=diverged`，前端不显示个数。
+  - 容器内没有 `.git`。禁止在运行中的后端里 `git fetch` / `git rev-list`。对比逻辑只在 `backend/shared/version.py`。
+
+## 股票代码标准化（重要，全系统 QuantDB 后缀口径）
+
+- **唯一通用格式**：后缀式（如 `600036.SH`，指数同步后缀如 `000300.SH`）。后端 / 前端 / PG / Redis / API / 行情一律此格式。
+- **唯一例外**：Qlib 桥接用全小写 `sh600036`，仅在进出 Qlib 层边界经 `to_qlib()` 转换，不落库。
+- **层边界必须经 `StockCodeUtil` 显式转换，禁止散落手写切片**，禁止跨层混用：
+  - 后端：`backend/shared/stock_utils.py` → `StockCodeUtil.normalize(code)`（正典，即 `to_suffix`）/ `.to_qlib(code)`；`.to_prefix(code)` / `.split_prefix()` 仅过渡期读老数据用，新写入禁用
+  - 前端：`electron/src/utils/portfolioUtils.ts` → `normalizeSymbol(code)`（输出后缀式）；`normalizeStockCode` 已废弃
+- **Redis 键格式（迁移后）**：
+  - 快照：`market:snapshot:600036.SH`
+  - 序列：`market:series:600036.SH`
+  - 读端保留老键兼容直到最终清理，见迁移脚本 `--delete-old`
+- **存量迁移**：`backend/scripts/migrate_stock_code_to_suffix.py`（PG 通用列 + Redis 键，幂等，先 `--dry-run`）
+- **市场自动识别**：
+  - `SH`：60、68、90 开头
+  - `SZ`：00、30、20 开头
+  - `BJ`：43、83、87、88、92 开头
+
+## 环境变量
+
+必需的 `.env` 键（默认值见 `docker-compose.yml`）：
+- `DB_HOST`、`DB_PORT`、`DB_NAME`、`DB_USER`、`DB_PASSWORD`
+- `REDIS_HOST`、`REDIS_PORT`
+- `SECRET_KEY`、`JWT_SECRET_KEY`
+- `STORAGE_MODE=local`（OSS 版必需）
+
+## 代码风格
+
+- Python：行宽 88，使用 ruff 做检查与格式化
+- TypeScript：提交前端改动前必须运行 `npm run typecheck`
+
+## 开发与部署工作流
+
+### 1. 前端开发（NPM 模式）
+- **本地开发模式**：前端统一使用本地 `npm run dev`（Electron 桌面端 / Vite Web 模式，自带 HMR 热重载）。
+- **前端修改规则**：**修改前端（electron/src）代码后，不需要每次重新构建或重启服务器上的 `web` 容器**，本地可实时热重载预览调试。提交前运行 `npm run typecheck` 保证类型安全即可。
+
+### 2. 后端同步与部署
+- **后端修改规则**：**修改后端（backend/）代码后，必须推送到仓库并同步重启远程服务器上的后端容器**。
+
+```bash
+# 1. 本地提交并推送
+git add .
+git commit -m "descriptive message"
+git push gitee <目标分支>
+
+# 2. 同步并重启后端服务（服务名见 docker compose config --services）
+# 注意：目标服务器的 SSH 别名/主机与项目目录因人而异，部署前先向用户询问确认。
+# 用 ${SSH_TARGET} 和 ${PROJECT_DIR} 表示用户提供的具体值。
+ssh ${SSH_TARGET} "cd ${PROJECT_DIR} && git pull && docker compose restart quantmind celery-worker celery-beat"
+```
+
+### 3. 镜像构建规则（是否需重新打包）
+- **后端代码走 bind mount**（`./backend:/app/backend` 等挂载进容器），镜像只含 Python 依赖环境。
+- **纯代码改动（未新增 pip 依赖、未改 Dockerfile/构建参数）**：只需 `git pull && docker compose restart`，**无需重新打包镜像**。
+- **需要重build 的场景**：①新增了 `requirements.txt` 未收录的 Python 依赖；②升级 torch/qlib/duckdb 等底层库；③全新服务器首次部署无现成镜像。
+- **重build 方式**（利用 Docker build cache，通常仅增量安装新增包）：服务器上执行 `docker compose build quantmind`，再 `docker compose up -d`。
+- 本地 Windows 无法直接构建 linux/amd64 镜像，重build 一律在服务器或 CI 上进行。
+
+### 4. QwenPaw（QuantBot）技能更新
+- **统一入口**：`bash scripts/quantbot_init.sh`（在服务器上、项目根目录执行）。一次完成：本地 `skills/` 全部技能经 API 导入技能池 → 广播到 `default` 工作区并启用 → 写入量化人格（SOUL/PROFILE/AGENTS）。
+- **部署脚本硬性规则**：`deploy/update.sh` / `deploy/full-deploy.sh` 的技能同步**只允许**调用 `deploy/sync-qwenpaw-skills.sh`。该脚本经 `docker exec qwenpaw` 探活并执行 `quantbot_init`（容器内 `127.0.0.1:8088`）。**禁止**在部署脚本里再写 `curl http://127.0.0.1:$QWENPAW_PORT/health` 或在 updater 容器宿主网络外直跑 `quantbot_init`——Web 一键更新的 updater 是 bridge 网络，`127.0.0.1` 不是宿主，会导致「升级成功但技能/人格未同步」。
+- **禁止手工拷贝技能目录**（如直接 `rsync`/`docker cp` 到 `skill_pool/` 或 `workspaces/default/skills/`）：磁盘文件与 `skill.json` 清单会漂移，导致后续上传冲突（31 个技能全量 conflict）且无法经 API 删除，只能逐个手工清理。
+- 只更新技能：`--skills-only`；只写人格：`--persona-only`。
+- 技能更新后需 `docker restart qwenpaw` 使其生效；验证用 `docker exec qwenpaw qwenpaw skills list`（技能数与启用数应一致）和 `docker exec qwenpaw qwenpaw skills test <name>`。
+- QwenPaw 镜像自带 reportlab 与中文字体（`docker/Dockerfile.qwenpaw`），报告 PDF 转换优先在 qwenpaw 容器内直接执行 `python3 /app/backend/scripts/md_to_pdf_report.py`（backend 为 bind mount，共享 `/data` 卷），无需 `docker exec quantmind`。
+
+## 关键文件
+
+- `backend/main_oss.py` - 全部后端服务的统一入口
+- `backend/run_tests.py` - 多模式测试运行器
+- `backend/shared/` - 跨服务共享模块
+- `backend/shared/version.py` - 部署版本读取与 Gitea release-index 落后提交对比（唯一入口）
+- `backend/services/engine/routers/report_archive.py` - 报告归档 API（技能中心「股票报告」页后端）
+- `scripts/publish_release_index.py` - 维护端发布 `release-index` 分支（推送 master 后执行）
+- `docker-compose.yml` - 本地部署配置
+- `scripts/quantbot_init.sh` - QwenPaw 技能/人格一键初始化（技能更新唯一入口）
+- `deploy/sync-qwenpaw-skills.sh` - 部署链路技能同步唯一实现（经 docker exec qwenpaw，供 update/deploy/full-deploy 调用）
+- `docker/Dockerfile.qwenpaw` - QwenPaw 扩展镜像（reportlab + docker CLI）

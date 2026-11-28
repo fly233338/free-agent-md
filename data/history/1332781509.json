@@ -2,12 +2,6 @@
   "full_name": "elie222/rakazo",
   "points": [
     {
-      "checked_at": "2026-10-29T10:04:58Z",
-      "commit_sha": "7fde978fbd1d1314f16907bf33af79b7ff9b2425",
-      "pushed_at": "2026-10-29T10:04:54Z",
-      "stars": 6184
-    },
-    {
       "checked_at": "2026-11-05T11:03:12Z",
       "commit_sha": "39da2656b593c79ad271ea4d337ae1ce2acabcfd",
       "pushed_at": "2026-11-05T11:02:19Z",
@@ -66,6 +60,12 @@
       "commit_sha": "27233fb7ad1e516e454ac7ab872f5401cf79372c",
       "pushed_at": "2026-11-25T13:03:53Z",
       "stars": 9757
+    },
+    {
+      "checked_at": "2026-11-28T11:54:55Z",
+      "commit_sha": "5a17b8d4a6da6202078fc882207dec5c401b7da2",
+      "pushed_at": "2026-11-28T11:37:24Z",
+      "stars": 10064
     }
   ],
   "repo_id": 1332781509

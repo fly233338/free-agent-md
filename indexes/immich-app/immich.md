@@ -1,7 +1,7 @@
 # immich-app/immich instruction files
 
-Upstream: [immich-app/immich](https://github.com/immich-app/immich) · License: `AGPL-3.0` · Commit: `a608f8fe2440dca3f1ada0d434e0554a3dc17719`
+Upstream: [immich-app/immich](https://github.com/immich-app/immich) · License: `AGPL-3.0` · Commit: `24f34078cf61af0ba098fac691fb50131a26cdad`
 
 | Type | Path | Snapshot | Fixed source | SHA-256 | Size |
 |---|---|---|---|---|---:|
-| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/immich-app/immich/AGENTS.md) | [Source](https://github.com/immich-app/immich/blob/a608f8fe2440dca3f1ada0d434e0554a3dc17719/AGENTS.md) | `b37768f7fe60527281e87f603d09f54f61ec06d08d72fb00faedb0923d6f1601` | 2,450 B |
+| `AGENTS.md` | `AGENTS.md` | [Raw](https://raw.githubusercontent.com/fly233338/free-agent-md/main/snapshots/immich-app/immich/AGENTS.md) | [Source](https://github.com/immich-app/immich/blob/24f34078cf61af0ba098fac691fb50131a26cdad/AGENTS.md) | `b37768f7fe60527281e87f603d09f54f61ec06d08d72fb00faedb0923d6f1601` | 2,450 B |

@@ -2,12 +2,6 @@
   "full_name": "tangency-labs/solidcraft",
   "points": [
     {
-      "checked_at": "2026-10-29T10:04:58Z",
-      "commit_sha": "4cee4db19b3150a3840d768e2b64c32b8701362d",
-      "pushed_at": "2026-10-29T10:00:48Z",
-      "stars": 11796
-    },
-    {
       "checked_at": "2026-10-31T09:44:15Z",
       "commit_sha": "4fda59af808248a0c6ebe4ff2da7c8c6fa30f8b8",
       "pushed_at": "2026-10-31T09:42:13Z",
@@ -84,6 +78,12 @@
       "commit_sha": "0eca495194c22b7940cd2508dc7b587b76e514b9",
       "pushed_at": "2026-11-27T12:31:56Z",
       "stars": 18660
+    },
+    {
+      "checked_at": "2026-11-28T11:54:55Z",
+      "commit_sha": "48cdd5f5a50446e0e3757856bbcf170f7793c3fe",
+      "pushed_at": "2026-11-28T11:45:53Z",
+      "stars": 18859
     }
   ],
   "repo_id": 1409246014

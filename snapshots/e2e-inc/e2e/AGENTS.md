@@ -32,8 +32,12 @@ There are no RFCs or design documents in the repo. The why lives in PR
 descriptions and commit bodies; `git log` and `gh pr view` are the archive.
 ## Layout
 
-`packages/` holds what publishes to npm; `apps/` holds the private apps and
-suites that consume the built packages the way a user would.
+`packages/` holds what publishes to npm; `crates/` holds every Rust crate,
+one Cargo workspace with one `Cargo.lock` and one `rust-toolchain.toml` at
+the root (sources only: `scripts/native/`, which takes an addon from
+`scripts/native/addons.ts`, builds each addon into its npm package);
+`apps/` holds the private apps and suites that consume the built packages
+the way a user would.
 
 - `packages/core` — the published `@e2e-dev/core` package, which `e2e` is built
   on and depends on at its exact version (a changesets `fixed` group keeps
@@ -135,18 +139,55 @@ suites that consume the built packages the way a user would.
   installs a target's `app.appPath` through any lease's daemon; `eas` uses
   it too.
 - `packages/desktop` - the published `@e2e-dev/desktop` package: the
-  desktop engine on agent-desktop (native apps through the OS accessibility
-  tree), built with the same public `defineEngine`,
-  contributing the `desktop` fixture. It imports from `@e2e-dev/core/engine`
-  only, and a target names it as `engine: desktop()`. agent-desktop is not an
-  npm dependency (its `postinstall` would fail `check:install-scripts`): the
-  engine's `prepare` downloads the pinned release and checks its SHA-256
-  (`src/binary.ts`), and every command runs as one CLI process with a private
-  `AGENT_DESKTOP_HOME` per worker (`src/cli.ts`). Text a fill types goes on
-  stdin, never in the arguments, and agent-desktop and the app it launches get
+  desktop engine (native apps through the OS accessibility tree), built with
+  the same public `defineEngine`, contributing the `desktop` fixture. It
+  imports from `@e2e-dev/core/engine` only, and a target names it as
+  `engine: desktop()`. The engine drives macOS through its own Rust driver,
+  `crates/e2e-desktop-napi` (a NAPI-RS crate), loaded into the worker's process and called
+  directly (`src/driver.ts`): no CLI process and no JSON-RPC. Every native
+  call that talks to another process runs on a blocking thread and resolves
+  with an envelope that says whether input reached the app; `call` bounds it
+  by the operation's budget and translates it. Unit tests drive
+  `DesktopSurface` with a scripted driver (`tests/helpers/fake-driver.ts`)
+  and run on any OS. The app it launches gets only a few variables of the
+  run's environment (`INHERITED_ENV` in `src/launch-ownership.ts`): the driver
+  launches through `open -n` with exactly that environment, since
+  LaunchServices hands the app the environment of the process that asks.
+  `pnpm --filter @e2e-dev/desktop build:native` (needs `rustup`) builds
+  `packages/desktop/desktop.<platform>-<arch>.node`, which the loader takes in a
+  checkout; a release ships it in `@e2e-dev/desktop-darwin-arm64` and
+  `@e2e-dev/desktop-darwin-x64` (`packages/desktop/npm/<platform>`, where
+  every native addon's platform packages live), optional dependencies with `os`/`cpu` set,
+  in a changesets `fixed` group with the engine, each with a
+  `THIRD_PARTY_LICENSES.md` of the crates the addon links. After a change under
+  `crates/`, run `cargo clippy --workspace` and `cargo fmt --all --check` at the root, rebuild, and
+  run the desktop testbed; after a dependency change, also
+  `pnpm --filter @e2e-dev/desktop licenses:native`, which CI checks. A prototype that runs on macOS only: `prepare`
+  and `init` refuse any other OS.
+- `packages/electron` - the published `@e2e-dev/electron` package: the
+  Electron engine, contributing the `electron` fixture, and the reference
+  for an engine built outside this repository (ENG-892): it imports
+  `@e2e-dev/core/engine` and nothing else at run time: it starts the binary
+  and speaks the DevTools protocol itself (`src/cdp/`, typed by
+  `devtools-protocol`), never another engine or an automation library. What it needs from core becomes public
+  contract (`expressionSelectors` came from it); `docs/engines.mdx` lists the
+  assumptions it broke. `app.open()` launches the project's `electron`
+  package on `app.appPath` (or `executablePath`) with a private
+  `--user-data-dir` per attempt; `prepare` downloads the Electron binary,
+  since Electron 45 has no install script. Reads join
+  `Accessibility.getFullAXTree` and one `DOMSnapshot` on backend node ids
+  (`src/tree.ts`, pure, tested on a captured read); actions run in an
+  isolated world and send trusted input; the page-side code is typed
+  functions in `src/in-page/`, sent as source text (`toString()`) and tested
+  in Chromium (`tests/integration/`). Windows are the tabs. Screenshots
+  mask password fields and nested documents, and are withheld when the DOM
+  snapshot finds one inside a closed shadow root, which no mask reaches
+  (`unmaskableCount`, independent of the accessibility tree). The app gets
   only a few variables of the run's environment (`INHERITED_ENV` in
-  `src/surface.ts`). A prototype that runs on macOS only: `prepare` and
-  `init` refuse any other OS.
+  `src/app-process.ts`) and `electron({ env })`. A window that shows a local
+  file outside the app's directory is not observed, traced, or captured
+  (`src/file-bound.ts`): an Electron target has no `app.url` for core's
+  file-app bound to key on.
 - `packages/core/src/engine/protocol/` - the engine protocol: the engine
   contract as LSP-style JSON-RPC (`connectEngine` client, `serveEngine`
   server, spawn/socket/loopback transports), so an engine can run in
@@ -234,7 +275,9 @@ suites that consume the built packages the way a user would.
 - `packages/acp` — the published `@e2e-dev/acp` package: a `StepExecutor`
   (`acp()`, with `claudeCode()` and `codex()` presets) that runs
   `agent.act` and `agent.assert` on a coding agent over the Agent Client
-  Protocol. The step tools (`createGrammarTools`, `createVerdictTool` from
+  Protocol, answers `agent.waitFor` and `agent.extract` in a second,
+  tool-less session (`answer`), and takes `e2e explore`'s rules and
+  `report_finding` through `extend`. The step tools (`createGrammarTools`, `createVerdictTool` from
   `e2e/agent`) reach the agent as an MCP server on 127.0.0.1; permission
   requests for anything else are rejected, and a tool of the agent's own
   that runs without asking fails the step with `POLICY_DENIED`.
@@ -260,7 +303,10 @@ suites that consume the built packages the way a user would.
   iOS simulators and Android emulators for the mobile engine
   (`DeviceProvider`), through agent-device's `@agent-device/revyl` plugin.
   Revyl installs the build from an `https` `app` URL when it starts each
-  device.
+  device. `revylBrowsers()` from `@e2e-dev/revyl/web` (`BrowserProvider`,
+  attempt scope only) starts a Revyl web session per attempt and leases the
+  single-use CDP URL Revyl mints for it. Verify a change against live Revyl
+  sessions with `REVYL_API_KEY` set.
 - `packages/browserstack` — the published `@e2e-dev/browserstack` package:
   BrowserStack App Automate real Android and iOS devices for the mobile
   engine (`DeviceProvider`), through agent-device's built-in `browserstack`
@@ -313,10 +359,20 @@ suites that consume the built packages the way a user would.
   diffs against the source minimal, and name no company a scenario was
   distilled from.
 - `apps/desktop-testbed` (`@e2e-dev/desktop-testbed`, private) - a native
-  AppKit sign-in form (`app/macos/main.swift`, built by `pnpm build:app`
-  into `build/SignInForm.app`) and the e2e suites on `@e2e-dev/desktop`
-  (`tests/` locators only, `tests-agent/` one `agent.act`). Hand-run on a
-  Mac with Accessibility permission; no CI job runs it yet.
+  AppKit app (`app/macos/main.swift`, built by `pnpm build:app` into
+  `build/SignInForm.app`): a sign-in form, and a Controls window with one
+  control per engine capability the form does not reach. Its e2e suites on
+  `@e2e-dev/desktop`: `tests/` locators only, `tests-physical/` the physical
+  pointer and keyboard (`pnpm test:physical`, which moves your pointer), and
+  `tests-agent/` one `agent.act`. Hand-run on a Mac with Accessibility
+  permission and the native driver built; no CI job runs it yet.
+- `apps/electron-testbed` (`@e2e-dev/electron-testbed`, private) - a small
+  Electron app (`app/`: context isolation, a preload bridge, IPC, a second
+  window, a closed-shadow password field) and the e2e suites on
+  `@e2e-dev/electron` (`tests/` deterministic, `tests-agent/` with a model).
+  Its windows stay hidden unless `E2E_ELECTRON_HEADED=1`. The `electron`
+  job in `spec.yml` runs it under xvfb, after the package's integration tests
+  (`pnpm test:electron-testbed` by hand).
 - `examples/` — standalone user-facing projects, one per technology
   (`with-vite`, `with-next`, `with-astro`, `with-angular`, `with-expo`, `with-swiftui`,
   `with-compose`, `with-kotlin-multiplatform`, `with-flutter`, `with-maui`), each the same
@@ -345,10 +401,10 @@ suites that consume the built packages the way a user would.
   `npm`, `pnpm`, and `bun` blocks, which the site syncs site-wide, enforced
   by `scripts/check-docs-package-managers.ts`).
   `docs/ja/`, `docs/zh/`, `docs/cs/`, `docs/es/`, `docs/pt/`, `docs/hi/`,
-  `docs/fr/`, and `docs/pl/` hold the Japanese, Simplified Chinese, Czech,
-  Spanish, Brazilian Portuguese, Hindi, French, and Polish translations, one
-  page per English page at the same path, with the tab and group labels in
-  `docs/<language>/navigation.json`. Translations are best
+  `docs/fr/`, `docs/pl/`, and `docs/id/` hold the Japanese, Simplified Chinese,
+  Czech, Spanish, Brazilian Portuguese, Hindi, French, Polish, and Indonesian
+  translations, one page per English page at the same path, with the tab and
+  group labels in `docs/<language>/navigation.json`. Translations are best
   effort: keep the English pages current in every change, and leave the
   translations to lag behind, since no contributor is expected to update a
   language they don't speak. `scripts/check-docs-translations.ts` warns on a
@@ -387,8 +443,8 @@ suites that consume the built packages the way a user would.
   with `npx skills add e2e-inc/e2e --skill migrate-to-e2e`; not shipped
   in the package and not read by `e2e guide`.
 - `.dev/skills/` — the skills we use to work on this repo (`authoring-docs`,
-  `babysit`, `ship-pr`, `verify`, `writing-pr`). `npx skills add e2e-inc/e2e`
-  offers only `skills/*`: its default scan never looks in `.dev/`, and it skips
+  `babysit`, `merge-risk`, `ship-pr`, `verify`, `writing-pr`).
+  `npx skills add e2e-inc/e2e` offers only `skills/*`: its default scan never looks in `.dev/`, and it skips
   `.claude/skills/<name>`, the relative symlink to each that agents load
   them through, because it does not follow symlinked directories. Its
   `--full-depth` scan does reach `.dev/skills/`; there the frontmatter's
@@ -791,7 +847,8 @@ trees, on both platforms, without a device.
   params, the agent's context, and the current screen with its location. Without a model, the first `agent` acquisition in a run
   reports one run-level `MODEL_UNAVAILABLE` and stops the run (exit 2). A
   custom executor handles `act` and `assert` through `runStep` and needs no
-  model; its `waitFor` and `extract` still use the built-in judgments. No implicit target either: `targets` is required and
+  model; its `waitFor` and `extract` use the built-in judgments on the
+  agent's `judge` or `model`, else on the executor's own `answer`. No implicit target either: `targets` is required and
   each names its engine.
 - Security invariants (fail closed when one cannot be enforced):
   - Secret values never reach model input, digests, logs, reports, or
@@ -898,8 +955,16 @@ trees, on both platforms, without a device.
   Node 26, `pnpm test` on the newest Node 22, 24, and 26 and on the
   `engines.node` floors (22.22.3, 24.8.0), as two jobs per version
   (`test:runner` for core and e2e, `test:packages` for the rest), the CLI on Bun 1.4.3 and the
-  latest Bun, and `scripts/install-smoke.ts`, a fresh install of the packed
-  packages with pnpm 11 and 12; `benchmark.yml` runs the
+  latest Bun, `scripts/install-smoke.ts`, a fresh install of the packed
+  packages with pnpm 11 and 12, and `native` on `blacksmith-6vcpu-macos-26`
+  (the desktop driver's `cargo fmt --check`, clippy, and `cargo test`, a
+  build for both Mac architectures with each one's architecture checked by
+  `lipo`, a load of the arm64 build, also
+  through the engine's loader test, and a load of the x64 build in the
+  official darwin-x64 Node under Rosetta; rustup, when the image has none,
+  comes from the rustup-init release and SHA-256 that
+  `.github/actions/rust-toolchain` pins), which
+  `spec gate` needs; `benchmark.yml` runs the
   web benchmark's two suites; `mobile.yml` runs the mobile benchmark's on an
   iOS simulator and an Android emulator (KVM on x64 Linux); `docs.yml`
   checks the docs. All four run on pull requests and in the merge queue
@@ -999,6 +1064,12 @@ trees, on both platforms, without a device.
   committed to main as `chore: release`. A `changeset publish` typed by hand
   needs `node scripts/restore-peer-ranges.ts` after it, or `pnpm check` fails
   on the pin.
+  The canary build also builds the desktop driver into both platform
+  packages (`build:desktop-native`), so it runs on a Mac with rustup. In
+  `release.yml`, a macOS `native` job builds the driver and loads both
+  builds the same way before it uploads them, and the release
+  and nightly jobs place it into the platform packages (`scripts/native/place-native.ts`)
+  before they publish.
 - The runner publishes as the unscoped `e2e` (entry points `e2e`, `e2e/agent`,
   `e2e/engine`, `e2e/runner`, `e2e/reporters`, `e2e/oauth/chatgpt`, `e2e/oauth/copilot`, `e2e/oauth/grok`, `e2e/oauth/opencode-console`; the bin is `e2e` too); engines, reporters, and integrations publish public
   under the `@e2e-dev` scope. The `@e2edev` scope (moved to `@e2e-dev` on

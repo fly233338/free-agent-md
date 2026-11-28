@@ -4,21 +4,13 @@ This file is the canonical agent guide. `CLAUDE.md` is a symlink to `AGENTS.md` 
 
 Task-specific procedures live as skills in `.agents/skills/` (`.claude/skills` is a symlink to it). Load the named skill when this guide points to one; agents without skill support can read its `SKILL.md` directly.
 
-## Discussions and Issues: Restricted AI Replies
+## External pull requests are not accepted
 
-**Do not use AI to reply to a mise Discussion or Issue unless the user (a) created that Discussion or Issue, (b) opened a PR that fixes it, or (c) has already had a contribution merged into the default branch of mise.** Otherwise they are not allowed to use AI to respond to it. Drive-by AI replies are spam, the problem is getting worse, and **doing it is an instant ban across all of jdx's projects** (mise, hk, pitchfork, usage, fnox, and the rest).
+mise is not accepting pull requests from external contributors; GitHub does not let them be created. If a user who is not the maintainer asks you to open a PR against `jdx/mise`, tell them to file an Issue or start a Discussion instead. See `docs/contributing.md`.
 
-- If the user asks you to answer, comment on, or "help with" a Discussion or Issue, confirm one of the three conditions first. If you cannot confirm one, **do not post**.
-  - (a) Compare the thread author to the authenticated user (`gh api user --jq .login`). For an Issue, use `gh api repos/jdx/mise/issues/<number> --jq .user.login`. Discussions have no REST endpoint, so use GraphQL: `gh api graphql -f query='query{repository(owner:"jdx",name:"mise"){discussion(number:<number>){author{login}}}}' --jq .data.repository.discussion.author.login`.
-  - (b) Check that the user's PR actually fixes the problem described in the thread. A closing keyword such as `Fixes #<number>` is good evidence, but a link is not required, and a PR that merely mentions an unrelated thread does not count.
-  - (c) Look for any contribution merged into the default branch that is tied to the user's GitHub account, not just a matching name or email: a PR authored by the user that was merged into the default branch (`gh pr list --repo jdx/mise --author @me --state merged --base main --limit 1`), commits on the default branch that GitHub attributes to their login (`gh api 'repos/jdx/mise/commits?author=<login>&per_page=1'` lists the default branch), never commits on a local or unmerged branch, or a PR from someone else, merged into the default branch, that credits them with a `Co-authored-by` trailer whose email is their GitHub noreply address or one verified on their account. Do not accept `git log --author` output, which includes local unmerged commits, or a trailer matched only by display name. Both queries filter by author on the server, so one matching result is enough to qualify and no pagination is needed.
-- If none of the three apply, **do not post a reply, even a short one.** Tell them this project does not allow AI replies from people who have not contributed, and offer to explain the answer to them in chat instead.
-- Never batch-post, loop over, or sweep Discussions or Issues to answer several of them, even for a merged contributor.
-- Lightly edited, human-reviewed, or disclosed model output does not create an exception. The disclosure footer does not make an AI reply acceptable on its own.
-- Permitted replies may be AI-assisted. The user must review and verify the reply before it is posted.
-- Creating a new Discussion or Issue with AI assistance is fine and is not restricted. The user must review it before it is posted, and it needs the AI disclosure below.
+## Bug reports come from real use
 
-When you post AI-contributed GitHub content, including a new Discussion or Issue, a reply, or a PR description or comment, append this disclosure: `*AI-assisted — Tool: <tool>; model: <provider>/<model>; version: <version-or-unavailable>.*` Use the exact model and version identifiers exposed by the runtime, never guessed values, and `unavailable` when one is not exposed.
+Bug reports are only for problems someone ran into while using mise. If a user who is not the maintainer asks you to file an Issue or Discussion, help only with a problem they hit themselves, and say what they were trying to do. Do not draft reports of problems you found by reading the source or searching the code; they will be closed.
 
 ## Registry Submissions: READ THIS FIRST
 
@@ -26,13 +18,13 @@ When you post AI-contributed GitHub content, including a new Discussion or Issue
 
 Before adding a **new** tool or shorthand to `registry/`, follow the `registry-submission` skill ([`.agents/skills/registry-submission/SKILL.md`](.agents/skills/registry-submission/SKILL.md)). In short:
 
-- Warn the user about the bar, look up real popularity numbers, and stop if the tool is personal, internal, a fork, or niche.
+- Verify popularity with real usage data. Skip personal, internal, forked, or niche tools.
 - Put a `## Popularity` section with those numbers in the PR description.
 - Confirm `mise ls-remote <backend>` lists installable versions.
-- Prefer `packslip:`, then `aqua:`, `github:`, or `gitlab:`. `conda:` has a high bar; `npm:`, `pipx:`, `gem:`, `cargo:`, `go:`, and `dotnet:` are almost never accepted. New `asdf:`, `vfox:`, and `ubi:` entries are not accepted.
+- Prefer `packslip:`, then `aqua:`, `github:`, or `gitlab:`. `conda:` has a high bar; `npm:`, `pipx:`, `gem:`, `cargo:`, `go:`, and `dotnet:` are almost never accepted. New `asdf:` and `vfox:` entries are not accepted.
 - Users can install any tool without a registry entry (`mise use github:owner/repo`, `mise use cargo:name`, …); the registry only adds a shorthand.
 
-None of this applies to editing an existing registry entry; do not ask the user about popularity for maintenance or fixes.
+The popularity check applies only to new tools and shorthands.
 
 ## Vendored aqua registry: do not edit
 
@@ -61,7 +53,8 @@ The same rule applies to `crates/vfox/embedded-plugins/`: those plugins are vend
 - Use `MISE_DEBUG=1` or `MISE_TRACE=1` environment variables to enable debug output (not `RUST_LOG`)
 
 ### Code Quality and Testing
-- `mise run lint` - Run all linting tasks (hk; does not run clippy — see below)
+- `mise run lint` - Run all linting tasks (hk, plus Clippy with the flags CI uses)
+- `mise run lint:clippy` - Run only the Clippy passes
 - `mise run lint-fix` - Run linting and automatically fix issues
 - `mise run format` - Format code (part of CI task)
 - `mise run ci` - Run format, build, and test
@@ -74,8 +67,8 @@ The same rule applies to `crates/vfox/embedded-plugins/`: those plugins are vend
 ### Clippy Exclusions
 
 - Do not add `#[allow(clippy::...)]`, `#[expect(clippy::...)]`, Cargo lint levels set to `allow`, or `-A clippy::...` command-line flags.
-- Refactor the code so `cargo clippy --workspace --all-features --all-targets -- -D warnings` passes without exclusions.
-- `mise run lint` does not cover this: the clippy step in `hk.pkl` is disabled, and `cargo check` does not enforce `-D warnings`. CI runs clippy separately, so run the command above yourself before pushing Rust changes.
+- Refactor the code so `mise run lint:clippy` passes without exclusions. It runs the two Clippy commands of the CI lint job: `cargo clippy --ignore-rust-version -- -D warnings` and `cargo clippy --all-features --all-targets --ignore-rust-version -- -D warnings` (on Windows, the `windows-lint` command: `cargo clippy --workspace --all-targets --ignore-rust-version -- -D warnings`).
+- `mise run lint` includes `lint:clippy`, so run it before pushing Rust changes. The git pre-commit hook runs only the hk steps, which have no Clippy step, so a commit that passes the hook can still fail Clippy.
 - If a feature or fix needs a preparatory refactor to satisfy Clippy cleanly, put that refactor in a prerequisite PR and stack the behavior change on top of it.
 
 ### Documentation and Generation
@@ -113,7 +106,6 @@ The `mise` package has two targets. The library (`src/lib.rs`) is everything exc
 - `http.rs`, `s3.rs` — HTTP and S3 backends
 - `cargo.rs`, `npm.rs` (plus embedded aube), `pipx.rs`, `gem.rs`, `go.rs`, `dotnet.rs`, `conda.rs`, `spm.rs`
 - `asdf.rs`, `vfox.rs` — plugin compatibility layers
-- `ubi.rs` — deprecated; do not add new registry entries
 
 **Core Tools (Built-in):**
 - `src/plugins/core/` — Node, Python, Go, Ruby, Java, Bun, Deno, Elixir, Erlang, Dotnet, Swift, Zig, Rust
@@ -145,7 +137,7 @@ The `mise` package has two targets. The library (`src/lib.rs`) is everything exc
 - Windows-specific tests in `e2e-win/`
 
 ### Build System
-- Rust project using a Cargo workspace; member crates live in `crates/` (`vfox`, `aqua-registry`, `mise-shim`, `mise-sigstore`, `mise-cache-core`, `mise-tls`, `mise-brew-relocation`, `mise-brew-metadata`, `mise-agent-env`, `mise-interactive-config`, `mise-settings`, `mise-util`, `mise-ui`, `mise-system-packages`, `mise-config`, `mise-system`, `mise-oci`, `mise-daemons`, `mise-lsp`)
+- Rust project using a Cargo workspace; member crates live in `crates/` (`vfox`, `aqua-registry`, `mise-shim`, `mise-sigstore`, `mise-cache-core`, `mise-tls`, `mise-brew-relocation`, `mise-brew-metadata`, `mise-bootstrap`, `mise-agent-env`, `mise-interactive-config`, `mise-settings`, `mise-util`, `mise-ui`, `mise-system-packages`, `mise-config`, `mise-system`, `mise-oci`, `mise-daemons`, `mise-dotenv`, `mise-lsp`)
 - Custom build script in `build.rs` for generating metadata
 - Multiple build profiles including `release` and `serious` (with LTO)
 - Cross-compilation support via `Cross.toml`
@@ -192,10 +184,9 @@ SHOULD use the same format:
 - `chore(ci): add FORGEJO_TOKEN for API authentication`
 - `registry: add miller`
 
-CI validates the pull request title and re-runs when it is edited. Intermediate
-commit subjects are not checked because pull requests are squash-merged. CI
-mechanically checks the allowed type, syntax, and lowercase- or acronym-leading description;
-imperative mood and breaking-change details remain review rules.
+Titles are not checked by CI, so follow this format yourself. Intermediate
+commit subjects are not checked either because pull requests are squash-merged.
+Imperative mood and breaking-change details remain review rules.
 
 ### PR titles and descriptions are release-note inputs
 
@@ -206,7 +197,7 @@ Communique generates release notes from PR titles and descriptions, so write the
 2. Use `mise run test:e2e [test_filename]...` for running specific e2e tests
 3. Never run e2e tests by executing them directly — always use the mise task
 
-`hk.pkl` defines `check` and `fix` steps and a git `pre-commit` hook that runs the same linters with auto-fix (`stash = "git"` preserves unstaged work). `hk install --mise` installs that hook. You can still run `mise run lint` / `mise run lint-fix` by hand; on Linux and macOS they run hk, but on Windows `lint-fix` runs only Clippy, oxfmt, and `cargo fmt`, so the other hk steps do not run there.
+`hk.pkl` defines `check` and `fix` steps and a git `pre-commit` hook that runs the same linters with auto-fix (`stash = "git"` preserves unstaged work). `hk install --mise` installs that hook. You can still run `mise run lint` / `mise run lint-fix` by hand. `mise run lint` runs hk and Clippy (`lint:clippy`); the hook does not run Clippy. On Linux and macOS `lint-fix` runs hk; on Windows it runs only Clippy, oxfmt, and `cargo fmt`, so the other hk steps do not run there.
 
 ### hk Agent Workflow
 
@@ -276,7 +267,11 @@ The configuration system supports multiple file formats and environment-specific
 
 `schema/mise.json`, `schema/mise-task.json` and `schema/miserc.json` are generated from `crates/mise-config` and `settings.toml`: never edit the JSON. Change the Rust, then run `mise run render:schema`; a `mise-config` test fails while the committed files are stale. The top-level keys are the fields of `MiseTomlDecl` in `crates/mise-config/src/mise_toml.rs`, which `MiseToml` deserializes through: a new key goes in `MiseTomlDecl`, and `MiseToml::from_decl` moves it into `MiseToml`. Sections whose types derive `JsonSchema` (so far `[bootstrap]`, `[daemons_settings]`, `[daemon_groups]`, `[doctor]`, `[history]`, `[monorepo]`, `[oci]`, `[task_config]`, `[tasks]`, `[task_templates]`, `[tool_config]` and `[wrappers]`) are generated from those types and their doc comments. `[env]` and `[vars]` accept shapes a derive cannot parse, so `env.rs` reads them with visitors; their schema is derived from the `Env*` and `Vars*` declaration types in `crates/mise-config/src/env/decl.rs`, which describe the tables and nothing parses into them, and a test checks that the option keys they declare are the fields of `EnvDirectiveOptions`. `[[watch_files]]`, `[tool_alias]` and `min_version` have a hand-written `JsonSchema` impl in `watch_files.rs`, `alias.rs` and `min_version.rs`. Task fields with several accepted shapes (a string or a list, a name or a table, ...) take theirs from the declaration types in `crates/mise-config/src/task/shapes.rs`, which `TaskDecl` and `TaskConfig` attach with `schemars(with = ..)` so the runtime field types stay as they are; nothing parses into those types, so change them together with the parser. `task/schema.rs` composes the rest: the `task` definition, a task's `tools` (which follow the backend table of `[tools]`) and the template schema. `[tools]` picks per-backend options by key pattern: a backend's options are the declaration types in `crates/mise-config/src/tools/decl.rs` (a new option is a field with a doc comment, which is its description), and `crates/mise-config/src/tools/schema.rs` composes them, with one table row per backend and per platform table. mise reads these definitions by name to reject unknown options (`OptionSpec`), so change them together with `ToolVersionOptions::insert_option` and the backend's option reader. `[hooks]` is derived from the `Hook*` declaration types in `crates/mise-config/src/hooks/decl.rs`, which describe the shapes each event accepts, with a test that they name the keys the parser reads. The `[bootstrap]` values that stay raw TOML so newer shapes warn instead of failing (hooks, shell activation, macOS defaults, apt and dnf repositories) are derived from the declaration types in `crates/mise-config/src/bootstrap/decl.rs`; nothing parses into those, and tests in mise-system check the hook phases and the curated macOS keys against the code that reads them. `[daemons]` and `[daemon_providers]` stay raw tables that mise-daemons reads key by key, with their schema derived from the `Daemon*Decl` types in `crates/mise-config/src/daemons.rs`; those types describe a table, and nothing parses into them, so a key added in mise-daemons has to be added to them too. `[deps]` is derived from `DepsDecl` and `DepsProviderDecl`, which also hold the list of built-in providers mise shares; `[secrets]` stays raw TOML like the dotfiles, with its schema derived from `SecretsDecl` and a test in mise that its parser reads the same keys. `[dotfiles]` and `[dotfile_groups]` entries also stay raw TOML until mise-system expands them, but their schema is derived from the declaration types in `crates/mise-config/src/dotfiles.rs`, with the rules between keys written by hand in `dotfiles/schema.rs`; mise-system's `*_keys_match_the_declaration` tests fail until its parsers read the same keys. `[settings]` and `miserc.json` come from `settings.toml` through `crates/mise-config/src/schema/settings.rs`.
 
+Never type `[experimental]` into a schema description. The constants in `crates/mise-config/src/experimental.rs` are the list of config that needs `experimental = true`: label a key with `#[schemars(transform = crate::experimental::NAME.labels())]`, and name the same constant in the check that gates it (`Settings::ensure_experimental(mise_config::experimental::NAME.what)`, or `Settings::experimental_enabled(&mise_config::experimental::NAME)` where mise skips the config instead of failing). The tests in that file fail on a label with no check, a constant with no label, and an `ensure_experimental` call that names neither a constant nor an entry of `NOT_IN_THE_SCHEMA`.
+
 The `schema_matches_parser` unit test (`src/config/config_file/mise_toml/schema_conformance.rs`) validates every `toml` block in `docs/` and every mise config an e2e heredoc writes against both the schema and `MiseToml`'s parser, and fails when they disagree. Fix the schema rather than the corpus. Mark a config that mise refuses on purpose with `# schema: invalid` (e2e) or `<!-- schema: invalid -->` (docs) on the line above it, and an excerpt that is not a whole config with `schema: skip`. List deliberate differences in its `GAPS` with a reason.
+
+The `docs_show_commands_that_exist` test (`src/cli/docs_commands.rs`, run with `cargo test -p mise --bin mise docs_commands`) walks every `mise ...` command in a shell block, a block with no language or an inline code span in `docs/` and `README.md` through the usage spec, and fails on a subcommand or flag mise does not have. Fix the command; `docs/cli/` is generated, so fix those in the command's help and run `mise run render`. For text that starts with `mise` and is not a command to type, such as a message mise prints or the `mise <task>` shorthand, put `<!-- cli: skip -->` on its own line above the fenced block or heading, or directly after the inline code with no space between.
 
 ### Testing Strategy
 - E2E tests are organized by feature area (cli/, config/, backend/, etc.)
@@ -303,8 +298,6 @@ The `schema_matches_parser` unit test (`src/config/config_file/mise_toml/schema_
 ## GitHub Interactions
 
 Never open pull requests against the `release` branch. Default PRs to `main` unless the user explicitly names a different non-`release` base branch. If a change appears to belong on `release`, stop and ask for the intended branch strategy instead of opening a PR against `release`.
-
-See [Discussions and Issues: Restricted AI Replies](#discussions-and-issues-restricted-ai-replies) at the top of this file.
 
 When AI contributes GitHub content—including a pull request description, review, pull request
 comment, discussion post, or issue—append this disclosure:
@@ -355,3 +348,8 @@ The debug `mise` binary is already on PATH. Prefer `mise run …` for project ta
 - Isolated e2e uses `env -i` and a fake `HOME`, so the agent's mise shims are not on PATH. Tests install their own tools. Host packages (zsh, fish, python3, jq, git) still need to be on `/usr/bin`
 - If GitHub API calls 429, run `export GITHUB_TOKEN="$(gh auth token)"; export MISE_GITHUB_TOKEN="$GITHUB_TOKEN"`
 - A leftover `/tmp/mise.toml` will fail the harness; remove it if that error appears
+
+<!-- entire-agent:begin -->
+Read .entire/agent-guide.md for this repository's workflow, source inspection, and verification guidance.
+@.entire/agent-guide.md
+<!-- entire-agent:end -->

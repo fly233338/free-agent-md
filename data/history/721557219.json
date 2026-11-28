@@ -2,12 +2,6 @@
   "full_name": "water-rs/waterui",
   "points": [
     {
-      "checked_at": "2026-10-29T10:04:58Z",
-      "commit_sha": "0951b62fe83304daa3371fd49a2da37746e5b112",
-      "pushed_at": "2026-10-29T10:04:59Z",
-      "stars": 524
-    },
-    {
       "checked_at": "2026-11-25T13:04:05Z",
       "commit_sha": "22ba2dfbf0eaae3d4f6f7b18a08b55a58b536459",
       "pushed_at": "2026-11-25T13:03:05Z",

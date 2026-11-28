@@ -2,12 +2,6 @@
   "full_name": "supabase/supabase",
   "points": [
     {
-      "checked_at": "2026-10-29T10:04:58Z",
-      "commit_sha": "6a421fe296346f0b85f2ff763f94b5d74f548b0c",
-      "pushed_at": "2026-10-29T09:26:51Z",
-      "stars": 114288
-    },
-    {
       "checked_at": "2026-10-30T10:08:14Z",
       "commit_sha": "1915615dcaf2fea1de753be8d1157bb8ed7f4669",
       "pushed_at": "2026-10-30T09:49:56Z",
@@ -180,6 +174,12 @@
       "commit_sha": "d85e9b8616190767254b81a5eedf61328fa4791b",
       "pushed_at": "2026-11-27T12:33:46Z",
       "stars": 115603
+    },
+    {
+      "checked_at": "2026-11-28T11:54:55Z",
+      "commit_sha": "fa9594b21317f6042c389014d7e797224ba734a9",
+      "pushed_at": "2026-11-28T11:26:42Z",
+      "stars": 115489
     }
   ],
   "repo_id": 214587193
